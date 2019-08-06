@@ -42,6 +42,7 @@
         <module>oap-ws-sso-api</module>
         <module>oap-ws-sso</module>
         <module>oap-ws-cat</module>
+        <module>oap-ws-media</module>
     </modules>
 
     <repositories>
@@ -63,7 +64,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>5.0.0</revision>
+        <revision>5.1.0</revision>
 
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
