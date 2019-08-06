@@ -1,0 +1,16 @@
+*.versionsBackup
+workspace.xml
+target
+.surefire*
+*.iml
+modules.xml
+compiler.xml
+encodings.xml
+scala_settings.xml
+misc.xml
+vcs.xml
+libraries
+inspectionProfiles
+kotlinc.xml
+.attach*
+.flattened-pom.xml
