@@ -32,7 +32,7 @@ import java.util.Optional;
 
 public class SSO {
     public static final String AUTHENTICATION_KEY = "Auth";
-    public static final String USER_KEY = "user";
+    public static final String USER_KEY = "loggedUser";
     public static final String EMAIL_KEY = "email";
 
     public static Optional<String> getToken( Request request ) {
