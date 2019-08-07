@@ -25,6 +25,7 @@ package oap.ws.validate.testng;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 import oap.json.Binder;
 import oap.reflect.Reflect;
 import oap.reflect.ReflectException;
@@ -35,6 +36,7 @@ import oap.ws.WsClientException;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.Validators;
 import org.assertj.core.api.AbstractAssert;
+import org.objenesis.ObjenesisStd;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -47,6 +49,8 @@ import static oap.util.Pair.__;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ValidationErrorsAssertion extends AbstractAssert<ValidationErrorsAssertion, ValidationErrors> {
+
+    private static final ObjenesisStd objenesis = new ObjenesisStd();
 
     protected ValidationErrorsAssertion( ValidationErrors actual ) {
         super( actual, ValidationErrorsAssertion.class );
@@ -95,7 +99,6 @@ public class ValidationErrorsAssertion extends AbstractAssert<ValidationErrorsAs
 
         @SuppressWarnings( "unchecked" )
         public ValidatedInvocation( I instance ) {
-            try {
                 var factory = new ProxyFactory();
                 factory.setSuperclass( instance.getClass() );
 
@@ -156,10 +159,11 @@ public class ValidationErrorsAssertion extends AbstractAssert<ValidationErrorsAs
                     }
                 };
 
-                this.instance = ( I ) factory.create( new Class<?>[0], new Object[0], handler );
-            } catch( NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e ) {
-                throw Throwables.propagate( e );
-            }
+            var klass = factory.createClass();
+
+            this.instance = ( I ) objenesis.getInstantiatorOf( klass ).newInstance();
+
+            ( ( ProxyObject ) this.instance ).setHandler( handler );
         }
 
         public ValidatedInvocation<I> hasCode( int code ) {
