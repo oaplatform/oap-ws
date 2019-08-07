@@ -95,8 +95,8 @@ public class SecureWSTest extends Fixtures {
     public static class SecureWS {
         @WsSecurity( permissions = "ALLOWED" )
         @WsMethod( path = "/", produces = "text/plain" )
-        public String secure( @WsParam( from = SESSION ) User user ) {
-            return user.getEmail();
+        public String secure( @WsParam( from = SESSION ) User loggedUser ) {
+            return loggedUser.getEmail();
         }
     }
 
