@@ -168,32 +168,6 @@ public class WebService implements Handler {
 
                 handleInternal( request, response, method, name, session );
 
-//                if( !sessionAware ) handleInternal( request, response, method, name, null );
-//                else {
-//
-//                    var cookieId = request.cookie( SessionManager.COOKIE_ID ).orElse( null );
-
-//                    var authToken = SecurityInterceptor.getSessionToken( request );
-//                    Session session;
-//                    if( cookieId != null
-//                        && ( session = sessionManager.get( cookieId ) ) != null
-//                        && Objects.equals( authToken, session.get( SecurityInterceptor.AUTHORIZATION ).orElse( null ) )
-//                    ) {
-//                        log.debug( "{}: Valid SID [{}] found in cookie", service(), cookieId );
-//
-//                        handleInternal( request, response, method, name, __( cookieId, session ) );
-//                    } else {
-//                        cookieId = UUID.randomUUID().toString();
-//
-//                        log.debug( "{}: Creating new session with SID [{}]", service(), cookieId );
-//
-//                        session = new Session();
-//                        if( authToken != null ) session.set( SecurityInterceptor.AUTHORIZATION, authToken );
-//                        sessionManager.put( cookieId, session );
-//
-//                        handleInternal( request, response, method, name, __( cookieId, session ) );
-//                    }
-//                }
             }
         } catch( Throwable e ) {
             wsError( response, e );
@@ -205,13 +179,6 @@ public class WebService implements Handler {
         log.trace( "{}: session: [{}]", this, session );
 
         var wsMethod = method.findAnnotation( WsMethod.class );
-
-        Function<Reflection.Parameter, Object> func = p -> {
-            var ret = getValue( session, request, wsMethod, p ).orElse( Optional.empty() );
-            if( ret instanceof Optional ) return ( ( Optional<?> ) ret ).orElse( null );
-
-            return ret;
-        };
 
         Interceptors.before( interceptors, request, session, method )
             .ifPresentOrElse( response::respond, () -> Metrics2.measureTimer( name, () -> {
