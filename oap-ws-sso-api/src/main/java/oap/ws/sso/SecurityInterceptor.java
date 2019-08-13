@@ -42,9 +42,9 @@ import static oap.ws.sso.SSO.USER_KEY;
 public class SecurityInterceptor implements Interceptor {
 
     private TokenService tokenService;
-    private Roles roles;
+    private SecurityRoles roles;
 
-    public SecurityInterceptor( TokenService tokenService, Roles roles ) {
+    public SecurityInterceptor( TokenService tokenService, SecurityRoles roles ) {
         this.tokenService = tokenService;
         this.roles = roles;
     }

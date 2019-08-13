@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
@@ -54,37 +55,36 @@ public class SecureWSTest extends Fixtures {
                 null,
                 100 ) );
             kernel.register( "security", new SecurityInterceptor( new DefaultTokenService( authService ),
-                new Roles( Map.of(
-                    "ADMIN", List.of( "ALLOWED" ),
-                    "USER", List.of()
-                ) ) ) );
+                new SecurityRoles( new SecurityRoles.Config( Map.of(
+                    "ADMIN", Set.of( "ALLOWED" ),
+                    "USER", Set.of()
+                ) ) ) ) );
             kernel.register( "secure", new SecureWS() );
         }, "ws-secure.conf" ) );
     }
 
     @Test
     public void allowed() {
-        wsFixture.server.kernel.<TestUserStorage>service( "user-storage" ).get()
-            .addUser( new TestUser( "admin@admin.com", "pass", "ADMIN" ) );
+        wsFixture.server.kernel.<TestUserStorage>service( "user-storage" )
+            .ifPresent( storage -> storage.addUser( new TestUser( "admin@admin.com", "pass", "ADMIN" ) ) );
         assertGet( HttpAsserts.httpUrl( "/auth/login?email=admin@admin.com&password=pass" ) )
             .hasCode( 200 );
         assertGet( HttpAsserts.httpUrl( "/secure" ) )
             .responded( 200, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "admin@admin.com" );
-
     }
 
     @Test
     public void notLoggedIn() {
-        wsFixture.server.kernel.<TestUserStorage>service( "user-storage" ).get()
-            .addUser( new TestUser( "admin@admin.com", "pass", "ADMIN" ) );
+        wsFixture.server.kernel.<TestUserStorage>service( "user-storage" )
+            .ifPresent( storage -> storage.addUser( new TestUser( "admin@admin.com", "pass", "ADMIN" ) ) );
         assertGet( HttpAsserts.httpUrl( "/secure" ) )
             .hasCode( 401 );
     }
 
     @Test
     public void denied() {
-        wsFixture.server.kernel.<TestUserStorage>service( "user-storage" ).get()
-            .addUser( new TestUser( "admin@admin.com", "pass", "USER" ) );
+        wsFixture.server.kernel.<TestUserStorage>service( "user-storage" )
+            .ifPresent( storage -> storage.addUser( new TestUser( "admin@admin.com", "pass", "USER" ) ) );
         assertGet( HttpAsserts.httpUrl( "/auth/login?email=admin@admin.com&password=pass" ) )
             .hasCode( 200 );
         assertGet( HttpAsserts.httpUrl( "/secure" ) )

@@ -64,7 +64,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>5.2.0</revision>
+        <revision>5.3.0</revision>
 
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
@@ -96,6 +96,7 @@
                     <compilerArgs>
                         <arg>-parameters</arg>
                         <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:preview</arg>
                         <arg>--enable-preview</arg>
                     </compilerArgs>
                 </configuration>
