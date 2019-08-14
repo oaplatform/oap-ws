@@ -52,11 +52,11 @@ public class SecurityRolesTest {
     @Test
     public void granted() {
         SecurityRoles securityRoles = new SecurityRoles( new SecurityRoles.Config( Map.of( "USER", Set.of( "A", "B" ) ) ) );
-        assertThat( securityRoles.granted( "VISITOR", Arrays.of( "A" ) ) ).isFalse();
-        assertThat( securityRoles.granted( "USER", Arrays.of( "A" ) ) ).isTrue();
-        assertThat( securityRoles.granted( "USER", Arrays.of( "C" ) ) ).isFalse();
-        assertThat( securityRoles.granted( "USER", Arrays.of( "A", "C" ) ) ).isFalse();
-        assertThat( securityRoles.granted( "USER", Arrays.of( "A", "B" ) ) ).isTrue();
+        assertThat( securityRoles.granted( "VISITOR", "A" ) ).isFalse();
+        assertThat( securityRoles.granted( "USER", "A" ) ).isTrue();
+        assertThat( securityRoles.granted( "USER", "C" ) ).isFalse();
+        assertThat( securityRoles.granted( "USER", "A", "C" ) ).isTrue();
+        assertThat( securityRoles.granted( "USER", "A", "B" ) ).isTrue();
     }
 
     public interface Roles extends oap.ws.sso.Roles {

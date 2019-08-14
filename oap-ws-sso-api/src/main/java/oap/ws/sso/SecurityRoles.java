@@ -53,10 +53,10 @@ public class SecurityRoles {
         return roles.get( role );
     }
 
-    public boolean granted( String role, String[] permissions ) {
+    public boolean granted( String role, String... permissions ) {
         Set<String> granted = permissionsOf( role );
-        for( String permission : permissions ) if( !granted.contains( permission ) ) return false;
-        return true;
+        for( String permission : permissions ) if( granted.contains( permission ) ) return true;
+        return false;
     }
 
     public Set<String> registeredRoles() {
