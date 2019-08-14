@@ -74,10 +74,11 @@ public class AuthWS {
     }
 
     @SuppressWarnings( "unused" )
-    public ValidationErrors validateUserAccess( String email, User user ) {
-        return Objects.equals( user.getEmail(), email )
-            ? ValidationErrors.empty()
-            : ValidationErrors.error( HTTP_FORBIDDEN, format( "User [%s] doesn't have enough permissions", user.getEmail() ) );
+    public ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
+        return email
+            .filter( e -> !loggedUser.getEmail().equalsIgnoreCase( e ) )
+            .map( e -> ValidationErrors.error( HTTP_FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
+            .orElse( ValidationErrors.empty() );
     }
 
     @WsMethod( method = GET, path = "/token/{id}" )
