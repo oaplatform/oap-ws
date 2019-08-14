@@ -35,6 +35,8 @@ public class Token implements Serializable {
     private static final long serialVersionUID = -2221117654361445000L;
 
     public String id;
+    @Deprecated
     public User user;
     public LocalDateTime created;
+    public String userId;
 }

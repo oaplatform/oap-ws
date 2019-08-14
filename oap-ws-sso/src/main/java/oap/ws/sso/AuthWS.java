@@ -67,10 +67,10 @@ public class AuthWS {
     @WsMethod( method = GET, path = "/logout" )
     @WsSecurity( permissions = MANAGE_SELF )
     @WsValidate( { "validateUserAccess" } )
-    public void logout( @WsParam( from = QUERY ) String email, @WsParam( from = SESSION ) User user ) {
+    public void logout( @WsParam( from = QUERY ) Optional<String> email, @WsParam( from = SESSION ) User loggedUser ) {
         log.debug( "Invalidating token for user [{}]", email );
 
-        authService.invalidateUser( email );
+        authService.invalidateUser( email.orElse( loggedUser.getEmail() ) );
     }
 
     @SuppressWarnings( "unused" )
