@@ -41,7 +41,7 @@ import java.util.Collections;
 import static oap.benchmark.Benchmark.benchmark;
 
 public class WebServicesPerformance {
-    private static final SessionManager SESSION_MANAGER = new SessionManager( 10, null, "/" );
+    private static final SessionManager SESSION_MANAGER = new SessionManager( 10 * 60 * 1000, null, "/" );
     private final int samples = 100000;
 
     @BeforeMethod

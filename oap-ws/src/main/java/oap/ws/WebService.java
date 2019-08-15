@@ -135,7 +135,9 @@ public class WebService implements Handler {
 
                 Session session = null;
                 if( sessionAware ) {
-                    session = sessionManager.getOrInit( request.cookie( SessionManager.COOKIE_ID ).orElse( null ) );
+                    String cookie = request.cookie( SessionManager.COOKIE_ID ).orElse( null );
+                    log.trace( "session cookie {}", cookie );
+                    session = sessionManager.getOrInit( cookie );
                     log.trace( "session for {} is {}", this, session );
                 }
 

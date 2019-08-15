@@ -81,7 +81,7 @@ public class WsFileUploaderTest extends Fixtures {
 
         server = new Server( 100, false );
         server.start();
-        ws = new WebServices( kernel, server, new SessionManager( 10, null, "/" ),
+        ws = new WebServices( kernel, server, new SessionManager( 10 * 60 * 1000, null, "/" ),
             GenericCorsPolicy.DEFAULT,
             WsConfig.CONFIGURATION.fromResource( getClass(), "ws-multipart.conf" )
         );

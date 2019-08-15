@@ -58,18 +58,20 @@ public class SecurityInterceptor implements Interceptor {
                 .response() );
 
             if( !session.containsKey( USER_KEY ) ) {
+                log.trace( "no user in session {}", session );
                 Optional<Token> authToken = SSO.getToken( request ).flatMap( tokenService::getToken );
                 if( authToken.isEmpty() ) {
-                    HttpResponse httpResponse = HttpResponse.status( HTTP_UNAUTHORIZED ).response();
-                    log.debug( httpResponse.toString() );
-                    return Optional.of( httpResponse );
+                    log.trace( "no auth token" );
+                    return Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
                 } else {
                     User user = authToken.get().user;
                     session.set( USER_KEY, user );
                     session.set( SSO.EMAIL_KEY, user.getEmail() );
+                    log.trace( "set user {} into session {}", user, session );
                 }
             }
 
+            log.trace( "session state {}", session );
             return session.<User>get( USER_KEY )
                 .filter( u -> !roles.granted( u.getRole(), annotation.get().permissions() ) )
                 .map( u -> {

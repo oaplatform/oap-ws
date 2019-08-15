@@ -49,7 +49,7 @@ public class AuthWS {
 
     private final AuthService authService;
     private final String cookieDomain;
-    private final int cookieExpiration;
+    private final long cookieExpiration;
 
     public AuthWS( AuthService authService, String cookieDomain, int cookieExpiration ) {
         this.authService = authService;
