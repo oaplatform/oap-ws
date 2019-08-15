@@ -10,8 +10,6 @@ services:
       sessionManager: "@service:session-manager"
       globalCorsPolicy: "@service:corsPolicy-generic"
       defaultResponse: JSON
-      exceptionToHttpCode:
-        "oap.storage.ConstraintException": 400
     supervision:
       supervise: true
     dependsOn:
