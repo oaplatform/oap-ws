@@ -31,10 +31,8 @@ import oap.ws.WsParam;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.WsValidate;
 
-import java.util.Objects;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static oap.http.Request.HttpMethod.GET;
@@ -43,6 +41,8 @@ import static oap.ws.WsParam.From.QUERY;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.Permissions.MANAGE_SELF;
 import static oap.ws.sso.SSO.authenticatedResponse;
+import static oap.ws.validate.ValidationErrors.empty;
+import static oap.ws.validate.ValidationErrors.error;
 
 @Slf4j
 public class AuthWS {
@@ -74,15 +74,15 @@ public class AuthWS {
     }
 
     @SuppressWarnings( "unused" )
-    public ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
+    protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
         return email
             .filter( e -> !loggedUser.getEmail().equalsIgnoreCase( e ) )
-            .map( e -> ValidationErrors.error( HTTP_FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
-            .orElse( ValidationErrors.empty() );
+            .map( e -> error( HTTP_FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
+            .orElse( empty() );
     }
 
     @WsMethod( method = GET, path = "/token/{id}" )
-    public Optional<Token> getToken( @WsParam( from = PATH ) String id ) {
+    public Optional<Token> token( @WsParam( from = PATH ) String id ) {
         return authService.getToken( id );
     }
 }
