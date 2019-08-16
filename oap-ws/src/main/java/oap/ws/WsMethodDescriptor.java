@@ -22,33 +22,35 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws;
 
-import oap.http.HttpResponse;
 import oap.http.Request;
-import org.joda.time.DateTime;
+import oap.reflect.Reflection;
+import oap.util.Strings;
 
 import java.util.Optional;
 
-public class SSO {
-    public static final String AUTHENTICATION_KEY = "Auth";
-    public static final String USER_KEY = "loggedUser";
-    public static final String EMAIL_KEY = "email";
+import static oap.http.Request.HttpMethod.GET;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
-    public static Optional<String> getToken( Request request ) {
-        return request.header( AUTHENTICATION_KEY ).or( () -> request.cookie( AUTHENTICATION_KEY ) );
-    }
+public class WsMethodDescriptor {
+    public final Reflection.Method method;
+    public final String path;
+    public final Request.HttpMethod[] methods;
+    public final String produces;
 
-    public static HttpResponse authenticatedResponse( Token token, String cookieDomain, long cookieExpiration ) {
-        return HttpResponse.ok( token )
-            .withHeader( SSO.AUTHENTICATION_KEY, token.id )
-            .withCookie( new HttpResponse.CookieBuilder()
-                .withValue( SSO.AUTHENTICATION_KEY, token.id )
-                .withDomain( cookieDomain )
-                .withPath( "/" )
-                .withExpires( DateTime.now().plus( cookieExpiration ) )
-                .httpOnly()
-                .build()
-            ).response();
+    public WsMethodDescriptor( Reflection.Method method ) {
+        this.method = method;
+        Optional<WsMethod> annotation = method.findAnnotation( WsMethod.class );
+        if( annotation.isPresent() ) {
+            WsMethod wsm = annotation.get();
+            this.path = Strings.isUndefined( wsm.path() ) ? method.name() : wsm.path();
+            this.methods = wsm.method();
+            this.produces = wsm.produces();
+        } else {
+            this.path = method.name();
+            this.methods = new Request.HttpMethod[] { GET };
+            this.produces = APPLICATION_JSON.getMimeType();
+        }
     }
 }

@@ -58,16 +58,13 @@ import java.util.Optional;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static oap.http.ContentTypes.TEXT_PLAIN;
 import static oap.http.HttpResponse.NOT_FOUND;
 import static oap.util.Collectors.toLinkedHashMap;
-import static oap.ws.WsResponse.TEXT;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @Slf4j
 public class WebService implements Handler {
     private final boolean sessionAware;
-    private final WsResponse defaultResponse;
     private final HashMap<Class<?>, Integer> exceptionToHttpCode = new HashMap<>();
     private final SessionManager sessionManager;
     private final List<Interceptor> interceptors;
@@ -75,10 +72,9 @@ public class WebService implements Handler {
     private WsMethodMatcher methodMatcher;
 
     public WebService( Object instance, boolean sessionAware,
-                       SessionManager sessionManager, List<Interceptor> interceptors, WsResponse defaultResponse,
+                       SessionManager sessionManager, List<Interceptor> interceptors,
                        Map<String, Integer> exceptionToHttpCode ) {
         this.instance = instance;
-        this.defaultResponse = defaultResponse;
         this.methodMatcher = new WsMethodMatcher( instance.getClass() );
         this.sessionAware = sessionAware;
         this.sessionManager = sessionManager;
@@ -101,23 +97,16 @@ public class WebService implements Handler {
         else if( e instanceof WsClientException ) {
             var clientException = ( WsClientException ) e;
             log.debug( this + ": " + e.toString(), e );
-            var builder = HttpResponse.status( clientException.code, e.getMessage() );
-            if( !clientException.errors.isEmpty() )
-                if( defaultResponse == TEXT )
-                    builder.withContent( String.join( "\n", clientException.errors ), TEXT_PLAIN );
-                else
-                    builder.withContent( Binder.json.marshal( new JsonErrorResponse( clientException.errors ) ), APPLICATION_JSON );
-            response.respond( builder.response() );
+            response.respond( clientException.errors.isEmpty()
+                ? HttpResponse.status( clientException.code, e.getMessage() ).response()
+                : HttpResponse.status( clientException.code, e.getMessage(),
+                    new ValidationErrors.ErrorResponse( clientException.errors ) ).response() );
         } else {
             log.error( this + ": " + e.toString(), e );
 
             var code = exceptionToHttpCode.getOrDefault( e.getClass(), HTTP_INTERNAL_ERROR );
 
-            var builder = HttpResponse.status( code, e.getMessage() );
-            if( defaultResponse == TEXT ) builder.withContent( Throwables.getRootCause( e ).getMessage(), TEXT_PLAIN );
-            else builder.withContent( Binder.json.marshal( new JsonStackTraceResponse( e ) ), APPLICATION_JSON );
-
-            response.respond( builder.response() );
+            response.respond( HttpResponse.status( code, e.getMessage(), new JsonStackTraceResponse( e ) ).response() );
         }
     }
 
@@ -187,6 +176,7 @@ public class WebService implements Handler {
                     .withPath( sessionManager.cookiePath )
                     .withExpires( DateTime.now().plusMinutes( sessionManager.cookieExpiration ) )
                     .withDomain( sessionManager.cookieDomain )
+                    .httpOnly()
                     .build()
                     : null;
                 response.respond( Interceptors.after( interceptors, rb.withCookie( cookie ).response(), session ) );
@@ -196,8 +186,8 @@ public class WebService implements Handler {
     private HttpResponse.Builder produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
         var isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
         var produces = wsMethod.map( wsm -> ContentType.create( wsm.produces() )
-                .withCharset( UTF_8 ) )
-                .orElse( APPLICATION_JSON );
+            .withCharset( UTF_8 ) )
+            .orElse( APPLICATION_JSON );
 
 
         HttpResponse.Builder responseBuilder;
@@ -326,15 +316,6 @@ public class WebService implements Handler {
                         } );
     }
 
-
-    private static class JsonErrorResponse implements Serializable {
-        private static long serialVersionUID = 4949051855248389697L;
-        public List<String> errors;
-
-        public JsonErrorResponse( List<String> errors ) {
-            this.errors = errors;
-        }
-    }
 
     private static class JsonStackTraceResponse implements Serializable {
         private static long serialVersionUID = 8431608226448804296L;

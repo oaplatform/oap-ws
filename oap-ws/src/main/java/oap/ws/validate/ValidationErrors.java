@@ -146,7 +146,7 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
         return HttpResponse.status( code, "validation failed", new ErrorResponse( errors ) );
     }
 
-    private static class ErrorResponse implements Serializable {
+    public static class ErrorResponse implements Serializable {
         public List<String> errors;
 
         public ErrorResponse( List<String> errors ) {

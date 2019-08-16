@@ -26,6 +26,7 @@ package oap.ws;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.Kernel;
 import oap.application.KernelHelper;
+import oap.http.Handler;
 import oap.http.HttpResponse;
 import oap.http.HttpServer;
 import oap.http.Protocol;
@@ -37,6 +38,7 @@ import org.apache.http.entity.ContentType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class WebServices {
@@ -50,8 +52,7 @@ public class WebServices {
     private final SessionManager sessionManager;
     private final CorsPolicy globalCorsPolicy;
     private final Kernel kernel;
-    //todo handle this case better
-    public WsResponse defaultResponse = WsResponse.TEXT;
+    public final Map<String, Object> services = new HashMap<>();
 
     public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy ) {
         this( kernel, server, sessionManager, globalCorsPolicy, WsConfig.CONFIGURATION.fromClassPath() );
@@ -71,6 +72,7 @@ public class WebServices {
 
     public void start() {
         log.info( "binding web services..." );
+
 
         for( var config : wsConfigs ) {
             log.trace( "config = {}", config );
@@ -105,11 +107,12 @@ public class WebServices {
 
                 var corsPolicy = handlerConfig.corsPolicy != null ? handlerConfig.corsPolicy : globalCorsPolicy;
 
-                server.bind( entry.getKey(), corsPolicy, kernel.serviceOrThrow( handlerConfig.service ),
-                    handlerConfig.protocol );
+                Protocol protocol = handlerConfig.protocol;
+                bind( entry.getKey(), corsPolicy, kernel.serviceOrThrow( handlerConfig.service ), protocol );
             }
         }
     }
+
 
     public void stop() {
         for( var config : wsConfigs ) {
@@ -118,11 +121,13 @@ public class WebServices {
         }
     }
 
-    public void bind( String context, CorsPolicy corsPolicy, Object impl, boolean sessionAware, SessionManager sessionManager,
-                      List<Interceptor> interceptors, Protocol protocol ) {
-        server.bind( context, corsPolicy,
-            new WebService( impl, sessionAware, sessionManager, interceptors, defaultResponse, exceptionToHttpCode ),
-            protocol );
+    public void bind( String context, CorsPolicy corsPolicy, Object service, boolean sessionAware,
+                      SessionManager sessionManager, List<Interceptor> interceptors, Protocol protocol ) {
+        services.put( context, service );
+        bind( context, corsPolicy, new WebService( service, sessionAware, sessionManager, interceptors, exceptionToHttpCode ), protocol );
     }
 
+    public void bind( String context, CorsPolicy corsPolicy, Handler handler, Protocol protocol ) {
+        server.bind( context, corsPolicy, handler, protocol );
+    }
 }

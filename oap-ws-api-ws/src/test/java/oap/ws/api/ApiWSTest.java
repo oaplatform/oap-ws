@@ -22,33 +22,34 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws.api;
 
-import oap.http.HttpResponse;
-import oap.http.Request;
-import org.joda.time.DateTime;
+import lombok.extern.slf4j.Slf4j;
+import oap.testng.Fixtures;
+import oap.ws.testng.WsFixture;
+import org.testng.annotations.Test;
 
-import java.util.Optional;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.testng.Asserts.contentOfTestResource;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
-public class SSO {
-    public static final String AUTHENTICATION_KEY = "Auth";
-    public static final String USER_KEY = "loggedUser";
-    public static final String EMAIL_KEY = "email";
-
-    public static Optional<String> getToken( Request request ) {
-        return request.header( AUTHENTICATION_KEY ).or( () -> request.cookie( AUTHENTICATION_KEY ) );
+@Slf4j
+public class ApiWSTest extends Fixtures {
+    {
+        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
+            kernel.register( "api", new ApiWS( ws ) );
+            kernel.register( "example", new ExampleWS() );
+        }, "ws.yaml" ) );
     }
 
-    public static HttpResponse authenticatedResponse( Token token, String cookieDomain, long cookieExpiration ) {
-        return HttpResponse.ok( token )
-            .withHeader( SSO.AUTHENTICATION_KEY, token.id )
-            .withCookie( new HttpResponse.CookieBuilder()
-                .withValue( SSO.AUTHENTICATION_KEY, token.id )
-                .withDomain( cookieDomain )
-                .withPath( "/" )
-                .withExpires( DateTime.now().plus( cookieExpiration ) )
-                .httpOnly()
-                .build()
-            ).response();
+    @Test
+    public void api() {
+        assertGet( httpUrl( "/api" ) )
+            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ),
+                contentOfTestResource( getClass(), "api.txt" ) );
     }
 }
+

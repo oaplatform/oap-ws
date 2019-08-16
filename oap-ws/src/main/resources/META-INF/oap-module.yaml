@@ -9,7 +9,6 @@ services:
       server: "@service:oap-http-server"
       sessionManager: "@service:session-manager"
       globalCorsPolicy: "@service:corsPolicy-generic"
-      defaultResponse: JSON
     supervision:
       supervise: true
     dependsOn:
