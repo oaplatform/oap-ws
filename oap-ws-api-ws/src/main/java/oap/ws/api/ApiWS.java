@@ -66,8 +66,8 @@ public class ApiWS {
             .map( ( context, s ) -> __( context, Reflect.reflect( s.getClass() ) ) )
             .peek( ( context, r ) -> log.trace( "service {} -> {}", context, r.name() ) )
             .mapToObj( ( context, r ) -> "######################################################################\n"
-                + "Service  " + r.name() + "\n"
-                + "Bound to  " + context + "\n"
+                + "Service " + r.name() + "\n"
+                + "Bound to " + context + "\n"
                 + "Methods:\n" + Stream.of( r.methods )
                 .filter( ApiWS::filterMethod )
                 .map( WsMethodDescriptor::new )
