@@ -29,8 +29,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import oap.util.Cuid;
+import org.joda.time.DateTime;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,7 +69,7 @@ public class AuthService {
         token = new Token();
         token.user = user;
         token.userId = user.getEmail();
-        token.created = LocalDateTime.now();
+        token.created = DateTime.now();
         token.id = cuid.next();
 
         cache.put( token.id, token );

@@ -25,9 +25,9 @@
 package oap.ws.sso;
 
 import lombok.ToString;
+import org.joda.time.DateTime;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @ToString
 public class Token implements Serializable {
@@ -37,6 +37,6 @@ public class Token implements Serializable {
     public String id;
     @Deprecated
     public User user;
-    public LocalDateTime created;
+    public DateTime created;
     public String userId;
 }

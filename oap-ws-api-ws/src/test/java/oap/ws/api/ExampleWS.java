@@ -29,6 +29,7 @@ import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.sso.Permissions;
 import oap.ws.sso.WsSecurity;
+import org.joda.time.LocalDateTime;
 
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
@@ -120,6 +121,7 @@ class ExampleWS {
     public static class Bean {
         public int i;
         public String s;
+        public LocalDateTime dt;
         public Bean2 b2;
 
         public Bean() {

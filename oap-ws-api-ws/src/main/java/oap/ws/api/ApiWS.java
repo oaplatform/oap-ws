@@ -38,6 +38,7 @@ import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
 import oap.ws.sso.WsSecurity;
+import org.joda.time.DateTime;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -105,6 +106,8 @@ public class ApiWS {
         if( r.assignableTo( Collection.class ) ) return formatType( shift, r.getCollectionComponentType() ) + "[]";
         if( r.isArray() ) return formatType( shift, Reflect.reflect( r.underlying.componentType() ) ) + "[]";
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
+        if( r.underlying.getPackageName().startsWith( DateTime.class.getPackageName() ) )
+            return r.underlying.getSimpleName();
         if( r.assignableTo( Integer.class ) ) return int.class.getSimpleName();
         if( r.assignableTo( Long.class ) ) return long.class.getSimpleName();
         if( r.assignableTo( Double.class ) ) return double.class.getSimpleName();
@@ -112,6 +115,7 @@ public class ApiWS {
         if( r.assignableTo( Byte.class ) ) return byte.class.getSimpleName();
         if( r.assignableTo( Character.class ) ) return char.class.getSimpleName();
         if( r.assignableTo( String.class ) ) return String.class.getSimpleName();
+        if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
         if( r.isEnum() ) return Strings.join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
         return formatComplexType( shift, r );
     }

@@ -25,6 +25,7 @@ Methods:
 					x: int
 				}
 ,
+				dt: LocalDateTime,
 				i: int,
 				s: String
 			}
@@ -76,6 +77,7 @@ Methods:
 					x: int
 				}
 ,
+				dt: LocalDateTime,
 				i: int,
 				s: String
 			}
@@ -88,6 +90,7 @@ Methods:
 					x: int
 				}
 ,
+				dt: LocalDateTime,
 				i: int,
 				s: String
 			}
