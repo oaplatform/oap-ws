@@ -74,7 +74,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
 
-        <oap.version>4.24.3</oap.version>
+        <oap.version>4.24.5</oap.version>
         <testng.version>6.11</testng.version>
         <assertj.version>3.12.2</assertj.version>
         <guava.version>27.1-jre</guava.version>
