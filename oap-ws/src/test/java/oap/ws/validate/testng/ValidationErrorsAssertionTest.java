@@ -29,6 +29,11 @@ import oap.ws.validate.WsValidate;
 import oap.ws.validate.WsValidateJson;
 import org.testng.annotations.Test;
 
+import java.net.HttpURLConnection;
+
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 import static oap.ws.validate.testng.ValidationErrorsAssertion.validating;
@@ -39,26 +44,26 @@ public class ValidationErrorsAssertionTest {
     public void validatedCall() {
         assertThat(
             validating( new CWS( "1" ) )
-                .isError( 404, "not found" )
+                .isError( HTTP_NOT_FOUND, "not found" )
                 .instance.m( "a" ) )
             .isNull();
         assertThat(
             validating( new CWS( "2" ) )
-                .isError( 404, "not found" )
+                .isError( HTTP_NOT_FOUND, "not found" )
                 .instance.m2( "a" ) )
             .isNull();
 
         assertThat(
             validating( new CWS( "3" ) )
                 .isFailed()
-                .hasCode( 404 )
+                .hasCode( HTTP_NOT_FOUND )
                 .containsErrors( "not found" )
                 .instance.m( "b" ) )
             .isNull();
         assertThat(
             validating( new CWS( "4" ) )
                 .isFailed()
-                .hasCode( 404 )
+                .hasCode( HTTP_NOT_FOUND )
                 .containsErrors( "not found" )
                 .instance.m2( "b" ) )
             .isNull();
@@ -77,7 +82,7 @@ public class ValidationErrorsAssertionTest {
     public void validateSchemaPreUnmarshalValidation() {
         validating( new CWS( "v" ) )
             .isFailed()
-            .hasCode( 400 )
+            .hasCode( HTTP_BAD_REQUEST )
             .containsErrors( "/b: required property is missing", "additional properties are not permitted [a]" )
             .instance.b( new B() );
     }
@@ -106,6 +111,7 @@ class CWS {
         return b;
     }
 
+    @Deprecated
     public String m2( String a ) {
         validateM( a )
             .merge( validateP( a ) )
@@ -114,12 +120,12 @@ class CWS {
     }
 
     public ValidationErrors validateM( String a ) {
-        return a.equals( "a" ) ? error( 404, "not found" )
+        return a.equals( "a" ) ? error( HTTP_NOT_FOUND, "not found" )
             : empty();
     }
 
     public ValidationErrors validateP( String a ) {
-        return a.equals( "b" ) ? error( 404, "not found" )
+        return a.equals( "b" ) ? error( HTTP_NOT_FOUND, "not found" )
             : empty();
     }
 }

@@ -25,18 +25,26 @@ package oap.ws.validate;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import oap.http.HttpResponse;
+import oap.json.Binder;
 import oap.reflect.Reflection;
 import oap.util.Lists;
 import oap.util.Mergeable;
+import oap.ws.WebService;
 import oap.ws.WsClientException;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static oap.http.ContentTypes.TEXT_PLAIN;
 import static oap.util.Lists.concat;
+import static oap.ws.WsResponse.TEXT;
 import static oap.ws.validate.Validators.forParameter;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @ToString
 @EqualsAndHashCode
@@ -123,9 +131,26 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
         return code == DEFAULT_CODE;
     }
 
+    @Deprecated
     public ValidationErrors throwIfInvalid() throws WsClientException {
         if( failed() )
             throw new WsClientException( errors.size() > 1 ? "validation failed" : errors.get( 0 ), code, errors );
         return this;
+    }
+
+    public HttpResponse.Builder ifEmpty( Supplier<HttpResponse.Builder> handle ) {
+        return errors.isEmpty() ? handle.get() : buildErrorResponse();
+    }
+
+    private HttpResponse.Builder buildErrorResponse() {
+        return HttpResponse.status( code, "validation failed", new ErrorResponse( errors ) );
+    }
+
+    private static class ErrorResponse implements Serializable {
+        public List<String> errors;
+
+        public ErrorResponse( List<String> errors ) {
+            this.errors = errors;
+        }
     }
 }

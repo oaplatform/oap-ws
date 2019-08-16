@@ -163,34 +163,24 @@ public class WebService implements Handler {
                 var parameters = method.parameters;
                 var originalValues = getOriginalValues( session, parameters, request, wsMethod );
 
-                var paramValidation = ValidationErrors.empty()
+                var rb = ValidationErrors.empty()
                     .validateParameters( originalValues, method, instance, true )
-                    .throwIfInvalid();
+                    .ifEmpty( () -> Validators.forMethod( method, instance, true )
+                        .validate( originalValues.values().toArray( new Object[0] ), originalValues )
+                        .ifEmpty( () -> {
+                            var values = getValues( originalValues );
 
-                Validators.forMethod( method, instance, true )
-                    .validate( originalValues.values().toArray( new Object[0] ), originalValues )
-                    .throwIfInvalid();
+                            return ValidationErrors.empty()
+                                .validateParameters( values, method, instance, false )
+                                .ifEmpty( () -> {
+                                    var paramValues = values.values().toArray( new Object[0] );
 
-                var values = getValues( originalValues );
-
-                paramValidation
-                    .validateParameters( values, method, instance, false )
-                    .throwIfInvalid();
-
-                var paramValues = values.values().toArray( new Object[0] );
-
-                Validators.forMethod( method, instance, false )
-                    .validate( paramValues, values )
-                    .throwIfInvalid();
-
-                var result = method.invoke( instance, paramValues );
-
-                var isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
-                var produces =
-                    wsMethod.map( wsm -> ContentType.create( wsm.produces() )
-                        .withCharset( UTF_8 ) )
-                        .orElse( APPLICATION_JSON );
-
+                                    return Validators.forMethod( method, instance, false )
+                                        .validate( paramValues, values )
+                                        .ifEmpty( () ->
+                                            produceResultResponse( method, session, wsMethod, method.invoke( instance, paramValues ) ) );
+                                } );
+                        } ) );
                 var cookie = session != null
                     ? new HttpResponse.CookieBuilder()
                     .withValue( SessionManager.COOKIE_ID, session.id )
@@ -199,30 +189,37 @@ public class WebService implements Handler {
                     .withDomain( sessionManager.cookieDomain )
                     .build()
                     : null;
-
-
-                HttpResponse.Builder responseBuilder;
-                if( method.isVoid() )
-                    responseBuilder = HttpResponse.status( HTTP_NO_CONTENT );
-                else if( result instanceof HttpResponse ) {
-                    HttpResponse r = ( HttpResponse ) result;
-                    if( session != null && !r.session.isEmpty() )
-                        session.setAll( r.session );
-                    responseBuilder = r.modify();
-                } else if( result instanceof Optional<?> )
-                    responseBuilder = ( ( Optional<?> ) result )
-                        .map( r -> HttpResponse.ok( r, isRaw, produces ) )
-                        .orElse( NOT_FOUND.modify() );
-                else if( result instanceof Result<?, ?> )
-                    responseBuilder = ( ( Result<?, ?> ) result ).isSuccess()
-                        ? ( ( Result<?, ?> ) result ).mapSuccess( r -> HttpResponse.ok( r, isRaw, produces ) ).successValue
-                        : ( ( Result<?, ?> ) result ).mapFailure( r -> HttpResponse.status( HTTP_INTERNAL_ERROR, "", r ) ).failureValue;
-                else if( result instanceof Stream<?> )
-                    responseBuilder = HttpResponse.stream( ( ( Stream<?> ) result ), isRaw, produces );
-                else responseBuilder = HttpResponse.ok( result, isRaw, produces );
-
-                response.respond( Interceptors.after( interceptors, responseBuilder.withCookie( cookie ).response(), session ) );
+                response.respond( Interceptors.after( interceptors, rb.withCookie( cookie ).response(), session ) );
             } ) );
+    }
+
+    private HttpResponse.Builder produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
+        var isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
+        var produces = wsMethod.map( wsm -> ContentType.create( wsm.produces() )
+                .withCharset( UTF_8 ) )
+                .orElse( APPLICATION_JSON );
+
+
+        HttpResponse.Builder responseBuilder;
+        if( method.isVoid() )
+            responseBuilder = HttpResponse.status( HTTP_NO_CONTENT );
+        else if( result instanceof HttpResponse ) {
+            HttpResponse r = ( HttpResponse ) result;
+            if( session != null && !r.session.isEmpty() )
+                session.setAll( r.session );
+            responseBuilder = r.modify();
+        } else if( result instanceof Optional<?> )
+            responseBuilder = ( ( Optional<?> ) result )
+                .map( r -> HttpResponse.ok( r, isRaw, produces ) )
+                .orElse( NOT_FOUND.modify() );
+        else if( result instanceof Result<?, ?> )
+            responseBuilder = ( ( Result<?, ?> ) result ).isSuccess()
+                ? ( ( Result<?, ?> ) result ).mapSuccess( r -> HttpResponse.ok( r, isRaw, produces ) ).successValue
+                : ( ( Result<?, ?> ) result ).mapFailure( r -> HttpResponse.status( HTTP_INTERNAL_ERROR, "", r ) ).failureValue;
+        else if( result instanceof Stream<?> )
+            responseBuilder = HttpResponse.stream( ( ( Stream<?> ) result ), isRaw, produces );
+        else responseBuilder = HttpResponse.ok( result, isRaw, produces );
+        return responseBuilder;
     }
 
     private LinkedHashMap<Reflection.Parameter, Object> getValues( LinkedHashMap<Reflection.Parameter, Object> values ) {
