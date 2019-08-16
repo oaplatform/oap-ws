@@ -23,18 +23,15 @@ Methods:
 				b2: Bean2
 				{
 					x: int
-				}
-,
+				},
 				dt: LocalDateTime,
 				ext: BeanExt
 				{
 					extension: String
-				}
-,
+				},
 				i: int,
 				s: String
-			}
-
+			}[]
 	Parameters
 		i: query int
 		s: query String
@@ -80,36 +77,30 @@ Methods:
 				b2: Bean2
 				{
 					x: int
-				}
-,
+				},
 				dt: LocalDateTime,
 				ext: BeanExt
 				{
 					extension: String
-				}
-,
+				},
 				i: int,
 				s: String
 			}
-
 	Parameters
 		bean: body Bean
 			{
 				b2: Bean2
 				{
 					x: int
-				}
-,
+				},
 				dt: LocalDateTime,
 				ext: BeanExt
 				{
 					extension: String
-				}
-,
+				},
 				i: int,
 				s: String
 			}
-
 
 	Method list
 	[GET] /examplelist

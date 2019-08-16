@@ -87,8 +87,8 @@ class ExampleWS {
         return req.getBaseUrl() + req.context.location;
     }
 
-    public Bean bean( int i, String s ) {
-        return new Bean( i, s );
+    public List<Bean> bean( int i, String s ) {
+        return List.of( new Bean( i, s ) );
     }
 
     public Bean json( @WsParam( from = BODY ) Bean bean ) {

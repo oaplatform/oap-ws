@@ -131,7 +131,7 @@ public class ApiWS {
             .sorted( comparing( Reflection.Field::name ) )
             .peek( f -> log.trace( "type field {}", f.name() ) )
             .map( f -> fill( "\t", shift + 1 ) + f.name() + ": " + formatField( shift, r, f ) )
-            .collect( joining( ",\n", fill( "\t", shift ) + "{\n", "\n" + fill( "\t", shift ) + "}\n" ) );
+            .collect( joining( ",\n", fill( "\t", shift ) + "{\n", "\n" + fill( "\t", shift ) + "}" ) );
     }
 
     private String formatField( int shift, Reflection r, Reflection.Field f ) {
