@@ -28,6 +28,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
 import oap.http.HttpResponse;
 import oap.http.Request;
+import oap.json.ext.Ext;
+import oap.json.ext.ExtDeserializer;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.util.BiStream;
@@ -77,7 +79,7 @@ public class ApiWS {
                     + "\t" + Arrays.toString( m.methods ) + " /" + context + m.path + "\n"
                     + "\tProduces " + m.produces + "\n"
                     + "\tPermissions " + formatPermissions( m.method ) + "\n"
-                    + "\tReturns " + formatType( 3, m.method.returnType() ) + "\n"
+                    + "\tReturns " + formatType( 3, r, m.method.returnType() ) + "\n"
                     + "\tParameters\n" + Stream.of( m.method.parameters )
                     .filter( ApiWS::filterParameter )
                     .peek( p -> log.trace( "parameter {}", p.name() ) )
@@ -97,14 +99,15 @@ public class ApiWS {
 
     private String formatParameter( Reflection.Parameter p ) {
         String from = p.findAnnotation( WsParam.class ).map( WsParam::from ).orElse( QUERY ).name().toLowerCase();
-        return p.name() + ": " + from + " " + formatType( 3, p.type() );
+        return p.name() + ": " + from + " " + formatType( 3, null, p.type() );
     }
 
-    private String formatType( int shift, Reflection r ) {
+    private String formatType( int shift, Reflection clazz, Reflection r ) {
         if( r.assignableTo( HttpResponse.class ) ) return "<http response>";
-        if( r.isOptional() ) return "optional " + formatType( shift, r.typeParameters.get( 0 ) );
-        if( r.assignableTo( Collection.class ) ) return formatType( shift, r.getCollectionComponentType() ) + "[]";
-        if( r.isArray() ) return formatType( shift, Reflect.reflect( r.underlying.componentType() ) ) + "[]";
+        if( r.isOptional() ) return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ) );
+        if( r.assignableTo( Collection.class ) )
+            return formatType( shift, clazz, r.getCollectionComponentType() ) + "[]";
+        if( r.isArray() ) return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ) ) + "[]";
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
         if( r.underlying.getPackageName().startsWith( DateTime.class.getPackageName() ) )
             return r.underlying.getSimpleName();
@@ -117,6 +120,7 @@ public class ApiWS {
         if( r.assignableTo( String.class ) ) return String.class.getSimpleName();
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
         if( r.isEnum() ) return Strings.join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
+
         return formatComplexType( shift, r );
     }
 
@@ -126,8 +130,15 @@ public class ApiWS {
             .filter( ApiWS::filterField )
             .sorted( comparing( Reflection.Field::name ) )
             .peek( f -> log.trace( "type field {}", f.name() ) )
-            .map( f -> fill( "\t", shift + 1 ) + f.name() + ": " + formatType( shift + 1, f.type() ) )
+            .map( f -> fill( "\t", shift + 1 ) + f.name() + ": " + formatField( shift, r, f ) )
             .collect( joining( ",\n", fill( "\t", shift ) + "{\n", "\n" + fill( "\t", shift ) + "}\n" ) );
+    }
+
+    private String formatField( int shift, Reflection r, Reflection.Field f ) {
+        Class<?> ext = f.type().assignableTo( Ext.class )
+            ? ExtDeserializer.extensionOf( r.underlying, f.name() ) : null;
+        Reflection target = ext != null ? Reflect.reflect( ext ) : f.type();
+        return formatType( shift + 1, r, target );
     }
 
     private static boolean filterField( Reflection.Field field ) {

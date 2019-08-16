@@ -25,6 +25,7 @@ package oap.ws.api;
 
 import oap.http.HttpResponse;
 import oap.http.Request;
+import oap.json.ext.Ext;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.sso.Permissions;
@@ -123,6 +124,7 @@ class ExampleWS {
         public String s;
         public LocalDateTime dt;
         public Bean2 b2;
+        public Ext ext;
 
         public Bean() {
         }
@@ -130,6 +132,10 @@ class ExampleWS {
         public Bean( int i, String s ) {
             this.i = i;
             this.s = s;
+        }
+
+        public static class BeanExt implements Ext {
+            public String extension;
         }
     }
 }

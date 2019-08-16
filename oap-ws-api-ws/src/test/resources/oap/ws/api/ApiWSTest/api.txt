@@ -1,6 +1,6 @@
 ######################################################################
-Service  oap.ws.api.ApiWS
-Bound to  api
+Service oap.ws.api.ApiWS
+Bound to api
 Methods:
 	Method api
 	[GET] /api/
@@ -11,8 +11,8 @@ Methods:
 
 
 ######################################################################
-Service  oap.ws.api.ExampleWS
-Bound to  example
+Service oap.ws.api.ExampleWS
+Bound to example
 Methods:
 	Method bean
 	[GET] /examplebean
@@ -26,6 +26,11 @@ Methods:
 				}
 ,
 				dt: LocalDateTime,
+				ext: BeanExt
+				{
+					extension: String
+				}
+,
 				i: int,
 				s: String
 			}
@@ -78,6 +83,11 @@ Methods:
 				}
 ,
 				dt: LocalDateTime,
+				ext: BeanExt
+				{
+					extension: String
+				}
+,
 				i: int,
 				s: String
 			}
@@ -91,6 +101,11 @@ Methods:
 				}
 ,
 				dt: LocalDateTime,
+				ext: BeanExt
+				{
+					extension: String
+				}
+,
 				i: int,
 				s: String
 			}
