@@ -131,7 +131,9 @@ public class ApiWS {
     }
 
     private static boolean filterField( Reflection.Field field ) {
-        return field.findAnnotation( JsonIgnore.class ).isEmpty();
+        return !field.isStatic()
+            && !field.underlying.isSynthetic()
+            && field.findAnnotation( JsonIgnore.class ).isEmpty();
     }
 
     private static boolean filterMethod( Reflection.Method m ) {
