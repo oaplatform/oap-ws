@@ -69,5 +69,14 @@ services:
     supervision:
       thread: true
 
+  ws-resource-service:
+    profile: ws-resource
+    implementation: oap.ws.resource.file.FileCdnService
+
+  ws-resource:
+    profile: ws-resource
+    implementation: oap.ws.resource.ResourceWS
+    parameters: "@service:ws-resource-service"
+
   ws-log:
     implementation: oap.ws.LogWS
