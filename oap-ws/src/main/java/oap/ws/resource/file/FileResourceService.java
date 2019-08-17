@@ -30,18 +30,31 @@ import oap.ws.resource.ResourceService;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@SuppressWarnings( "unused" )
 public class FileResourceService implements ResourceService {
+    private Path rootPath;
+
+    public FileResourceService( String rootPath ) {
+        this.rootPath = Paths.get( rootPath );
+    }
+
     @Override
     public void create( String path, String content ) throws IOException {
-        Files.write( Paths.get( path ), content.getBytes() );
+        Files.write( resolve( path ), content.getBytes() );
     }
 
     @Override
     public Resource read( String path ) throws IOException {
-        final byte[] content = Files.readAllBytes( Paths.get( path ) );
+        final Path fullPath = resolve( path );
+        final byte[] content = Files.readAllBytes( fullPath );
 
-        return new DefaultResource( path, content );
+        return new DefaultResource( fullPath.toAbsolutePath().toString(), content );
+    }
+
+    private Path resolve( String path ) {
+        return rootPath.resolve( path );
     }
 }

@@ -24,7 +24,6 @@
 
 package oap.ws.resource;
 
-@SuppressWarnings( "WeakerAccess" )
 public class ResourceRequest {
     public String base64Data;
 }

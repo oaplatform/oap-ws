@@ -68,7 +68,7 @@ services:
 
   ws-resource-service:
     profile: ws-resource
-    implementation: oap.ws.resource.file.FileCdnService
+    implementation: oap.ws.resource.file.FileResourceService
 
   ws-resource:
     profile: ws-resource
