@@ -23,6 +23,7 @@
  */
 package oap.ws.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.json.ext.Ext;
@@ -136,6 +137,19 @@ class ExampleWS {
 
         public static class BeanExt implements Ext {
             public String extension;
+        }
+
+        public String getSomething() {
+            return null;
+        }
+
+        @JsonIgnore
+        public String getIgnored() {
+            return null;
+        }
+
+        public String getS() {
+            return s;
         }
     }
 }

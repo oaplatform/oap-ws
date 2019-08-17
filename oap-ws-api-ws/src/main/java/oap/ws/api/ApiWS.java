@@ -32,9 +32,7 @@ import oap.json.ext.Ext;
 import oap.json.ext.ExtDeserializer;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
-import oap.util.BiStream;
-import oap.util.Stream;
-import oap.util.Strings;
+import oap.util.Lists;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
@@ -43,15 +41,18 @@ import oap.ws.sso.WsSecurity;
 import org.joda.time.DateTime;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import static ch.qos.logback.core.joran.util.beans.BeanUtil.getPropertyName;
+import static ch.qos.logback.core.joran.util.beans.BeanUtil.isGetter;
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.joining;
 import static oap.http.Request.HttpMethod.GET;
-import static oap.util.Pair.__;
 import static oap.util.Strings.fill;
+import static oap.util.Strings.join;
 import static oap.ws.WsParam.From.QUERY;
 
 @Slf4j
@@ -64,31 +65,41 @@ public class ApiWS {
 
     @WsMethod( produces = "text/plain", path = "/", method = GET )
     public String api() {
-        return BiStream.of( webServices.services )
-            .map( ( context, s ) -> __( context, Reflect.reflect( s.getClass() ) ) )
-            .peek( ( context, r ) -> log.trace( "service {} -> {}", context, r.name() ) )
-            .mapToObj( ( context, r ) -> "######################################################################\n"
-                + "Service " + r.name() + "\n"
-                + "Bound to " + context + "\n"
-                + "Methods:\n" + Stream.of( r.methods )
-                .filter( ApiWS::filterMethod )
-                .map( WsMethodDescriptor::new )
-                .sorted( comparing( m -> m.method.name() ) )
-                .peek( m -> log.trace( "method {}", m.method.name() ) )
-                .map( m -> "\tMethod " + m.method.name() + "\n"
-                    + "\t" + Arrays.toString( m.methods ) + " /" + context + m.path + "\n"
-                    + "\tProduces " + m.produces + "\n"
-                    + "\tPermissions " + formatPermissions( m.method ) + "\n"
-                    + "\tReturns " + formatType( 3, r, m.method.returnType() ) + "\n"
-                    + "\tParameters\n" + Stream.of( m.method.parameters )
-                    .filter( ApiWS::filterParameter )
-                    .peek( p -> log.trace( "parameter {}", p.name() ) )
-                    .map( p -> "\t\t" + formatParameter( p ) )
-                    .collect( joining( "\n" ) )
-                )
-                .collect( joining( "\n\n" ) )
-            )
-            .collect( joining( "\n\n" ) );
+        String result = "";
+        for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
+            var context = ws.getKey();
+            var r = Reflect.reflect( ws.getValue().getClass() );
+            log.trace( "service {} -> {}", context, r.name() );
+            result += "######################################################################\n";
+            result += "Service " + r.name() + "\n";
+            result += "Bound to " + context + "\n";
+            result += "Methods:\n";
+
+            List<Reflection.Method> methods = r.methods;
+            methods.sort( comparing( Reflection.Method::name ) );
+            for( Reflection.Method m : methods ) {
+                if( !filterMethod( m ) ) continue;
+                var d = new WsMethodDescriptor( m );
+                log.trace( "method {}", m.name() );
+                result += "\tMethod " + m.name() + "\n";
+                result += "\t" + Arrays.toString( d.methods ) + " /" + context + d.path + "\n";
+                result += "\tProduces " + d.produces + "\n";
+                result += "\tPermissions " + formatPermissions( m ) + "\n";
+                result += "\tReturns " + formatType( 3, r, m.returnType() ) + "\n";
+                List<Reflection.Parameter> params = Lists.filter( m.parameters, ApiWS::filterParameter );
+                if( params.isEmpty() ) result += "\tNo parameters\n";
+                else {
+                    result += "\tParameters\n";
+                    for( Reflection.Parameter p : params ) {
+                        log.trace( "parameter {}", p.name() );
+                        result += "\t\t" + formatParameter( p ) + "\n";
+                    }
+                }
+                result += "\n";
+            }
+            result += "\n";
+        }
+        return result;
     }
 
     private String formatPermissions( Reflection.Method method ) {
@@ -119,19 +130,38 @@ public class ApiWS {
         if( r.assignableTo( Character.class ) ) return char.class.getSimpleName();
         if( r.assignableTo( String.class ) ) return String.class.getSimpleName();
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
-        if( r.isEnum() ) return Strings.join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
+        if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
         return formatComplexType( shift, r );
     }
 
     private String formatComplexType( int shift, Reflection r ) {
+        var result = r.underlying.getSimpleName() + "\n";
         log.trace( "complex type {}", r.name() );
-        return r.underlying.getSimpleName() + "\n" + Stream.of( r.fields.values() )
-            .filter( ApiWS::filterField )
-            .sorted( comparing( Reflection.Field::name ) )
-            .peek( f -> log.trace( "type field {}", f.name() ) )
-            .map( f -> fill( "\t", shift + 1 ) + f.name() + ": " + formatField( shift, r, f ) )
-            .collect( joining( ",\n", fill( "\t", shift ) + "{\n", "\n" + fill( "\t", shift ) + "}" ) );
+        List<Reflection.Field> fields = new ArrayList<>( r.fields.values() );
+        fields.sort( comparing( Reflection.Field::name ) );
+        result += fill( "\t", shift ) + "{\n";
+        for( Reflection.Field f : fields ) {
+            if( !filterField( f ) ) continue;
+            log.trace( "type field {}", f.name() );
+            result += fill( "\t", shift + 1 ) + f.name() + ": " + formatField( shift, r, f ) + "\n";
+        }
+        List<Reflection.Method> methods = r.methods;
+        methods.sort( comparing( Reflection.Method::name ) );
+        for( Reflection.Method m : methods ) {
+            if( !filterGetters( m, fields ) ) continue;
+            log.trace( "type getter {}", m.name() );
+            result += fill( "\t", shift + 1 ) + getPropertyName( m.underlying ) + ": " + formatType( shift + 1, r, m.returnType() ) + "\n";
+        }
+        result += fill( "\t", shift ) + "}";
+        return result;
+    }
+
+    private boolean filterGetters( Reflection.Method m, List<Reflection.Field> fields ) {
+        return !m.underlying.getDeclaringClass().equals( Object.class )
+            && isGetter( m.underlying )
+            && m.findAnnotation( JsonIgnore.class ).isEmpty()
+            && !Lists.map( fields, Reflection.Field::name ).contains( getPropertyName( m.underlying ) );
     }
 
     private String formatField( int shift, Reflection r, Reflection.Field f ) {

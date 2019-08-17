@@ -7,7 +7,7 @@ Methods:
 	Produces text/plain
 	Permissions <unsecure>
 	Returns String
-	Parameters
+	No parameters
 
 
 ######################################################################
@@ -23,14 +23,15 @@ Methods:
 				b2: Bean2
 				{
 					x: int
-				},
-				dt: LocalDateTime,
+				}
+				dt: LocalDateTime
 				ext: BeanExt
 				{
 					extension: String
-				},
-				i: int,
+				}
+				i: int
 				s: String
+				something: String
 			}[]
 	Parameters
 		i: query int
@@ -77,14 +78,15 @@ Methods:
 				b2: Bean2
 				{
 					x: int
-				},
-				dt: LocalDateTime,
+				}
+				dt: LocalDateTime
 				ext: BeanExt
 				{
 					extension: String
-				},
-				i: int,
+				}
+				i: int
 				s: String
+				something: String
 			}
 	Parameters
 		bean: body Bean
@@ -92,14 +94,15 @@ Methods:
 				b2: Bean2
 				{
 					x: int
-				},
-				dt: LocalDateTime,
+				}
+				dt: LocalDateTime
 				ext: BeanExt
 				{
 					extension: String
-				},
-				i: int,
+				}
+				i: int
 				s: String
+				something: String
 			}
 
 	Method list
@@ -115,8 +118,7 @@ Methods:
 	Produces application/json
 	Permissions <unsecure>
 	Returns String
-	Parameters
-
+	No parameters
 
 	Method string
 	[GET] /examplestring
@@ -160,8 +162,7 @@ Methods:
 	Produces application/json
 	Permissions <unsecure>
 	Returns int
-	Parameters
-
+	No parameters
 
 	Method test1
 	[GET] /example/test/sort/{id}
@@ -176,8 +177,7 @@ Methods:
 	Produces application/json
 	Permissions <unsecure>
 	Returns String
-	Parameters
-
+	No parameters
 
 	Method testEqual
 	[GET] /example/test/sort={id}/test
@@ -195,3 +195,5 @@ Methods:
 	Parameters
 		i: query int
 		s: query String
+
+
