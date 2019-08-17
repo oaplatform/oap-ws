@@ -22,9 +22,34 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws.api;
 
-public interface Roles {
-    String ADMIN = "ADMIN";
-    String USER = "USER";
+import lombok.extern.slf4j.Slf4j;
+import oap.testng.Fixtures;
+import oap.ws.testng.WsFixture;
+import org.testng.annotations.Test;
+
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.testng.Asserts.contentOfTestResource;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
+
+@Slf4j
+public class ApiWSTest extends Fixtures {
+    {
+        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
+            kernel.register( "api", new ApiWS( ws ) );
+            kernel.register( "example", new ExampleWS() );
+        }, "ws.yaml" ) );
+    }
+
+    @Test
+    public void api() {
+        assertGet( httpUrl( "/api" ) )
+            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ),
+                contentOfTestResource( getClass(), "api.txt" ) );
+    }
 }
+

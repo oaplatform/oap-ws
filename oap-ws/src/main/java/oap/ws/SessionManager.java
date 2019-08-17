@@ -27,12 +27,14 @@ package oap.ws;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import oap.http.Session;
 import oap.util.Cuid;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class SessionManager {
     public static final String COOKIE_ID = "SID";
 
@@ -44,7 +46,7 @@ public class SessionManager {
 
     public SessionManager( int expirationTime, String cookieDomain, String cookiePath ) {
         this.sessions = CacheBuilder.newBuilder()
-            .expireAfterAccess( expirationTime, TimeUnit.MINUTES )
+            .expireAfterAccess( expirationTime, TimeUnit.MILLISECONDS )
             .build();
         this.cookieDomain = cookieDomain;
         this.cookiePath = cookiePath;
@@ -58,7 +60,10 @@ public class SessionManager {
     @SneakyThrows
     public Session getOrInit( String id ) {
         String sessionId = id == null ? cuid.next() : id;
-        return sessions.get( sessionId, () -> new Session( sessionId ) );
+        return sessions.get( sessionId, () -> {
+            log.trace( "creating new session {}", sessionId );
+            return new Session( sessionId );
+        } );
     }
 
     public void clear() {

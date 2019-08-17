@@ -43,6 +43,7 @@ import java.util.function.BiConsumer;
 
 import static oap.http.cors.GenericCorsPolicy.DEFAULT;
 import static oap.http.testng.HttpAsserts.reset;
+import static oap.testng.Asserts.urlOfTestResource;
 
 public class WsFixture implements Fixture {
 
@@ -78,9 +79,9 @@ public class WsFixture implements Fixture {
             kernel = new Kernel( List.of() );
             server = new Server( 100, false );
             server.start();
-            ws = new WebServices( kernel, server, new SessionManager( 10, null, "/" ) {{
+            ws = new WebServices( kernel, server, new SessionManager( 10 * 60 * 1000, null, "/" ) {{
                 this.cuid = Cuid.incremental( 0 );
-            }}, DEFAULT, Lists.map( configs, n -> WsConfig.CONFIGURATION.fromResource( contextClass, n ) ) );
+            }}, DEFAULT, Lists.map( configs, n -> WsConfig.CONFIGURATION.fromUrl( urlOfTestResource( contextClass, n ) ) ) );
 
             kernel.start();
             registerServices.accept( ws, kernel );

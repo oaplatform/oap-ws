@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractWsValidateTest {
-    private static final SessionManager SESSION_MANAGER = new SessionManager( 10, null, "/" );
+    private static final SessionManager SESSION_MANAGER = new SessionManager( 10 * 60 * 1000, null, "/" );
 
     private Server server;
     private WebServices ws;

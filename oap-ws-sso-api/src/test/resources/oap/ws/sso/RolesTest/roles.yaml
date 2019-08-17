@@ -7,6 +7,4 @@ services:
         ADMIN: ["PERM1", "PERM2"]
         USER: ["PERM1"]
   roles-path:
-    implementation: oap.ws.sso.Roles
-    parameters:
-      path: "/oap/ws/sso/RolesTest/test-roles.yaml"
+    implementation: oap.ws.sso.SecurityRoles

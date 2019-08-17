@@ -43,6 +43,7 @@
         <module>oap-ws-sso</module>
         <module>oap-ws-cat</module>
         <module>oap-ws-media</module>
+        <module>oap-ws-api-ws</module>
     </modules>
 
     <repositories>
@@ -64,16 +65,16 @@
     </distributionManagement>
 
     <properties>
-        <revision>5.1.4</revision>
+        <revision>5.3.15</revision>
 
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>12</maven.compiler.source>
+        <maven.compiler.target>12</maven.compiler.target>
 
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
 
-        <oap.version>4.17.10</oap.version>
+        <oap.version>4.24.6</oap.version>
         <testng.version>6.11</testng.version>
         <assertj.version>3.12.2</assertj.version>
         <guava.version>27.1-jre</guava.version>
@@ -96,6 +97,8 @@
                     <compilerArgs>
                         <arg>-parameters</arg>
                         <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:preview</arg>
+                        <arg>--enable-preview</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

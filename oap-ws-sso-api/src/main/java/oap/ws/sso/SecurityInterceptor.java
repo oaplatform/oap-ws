@@ -42,9 +42,9 @@ import static oap.ws.sso.SSO.USER_KEY;
 public class SecurityInterceptor implements Interceptor {
 
     private TokenService tokenService;
-    private Roles roles;
+    private SecurityRoles roles;
 
-    public SecurityInterceptor( TokenService tokenService, Roles roles ) {
+    public SecurityInterceptor( TokenService tokenService, SecurityRoles roles ) {
         this.tokenService = tokenService;
         this.roles = roles;
     }
@@ -58,22 +58,24 @@ public class SecurityInterceptor implements Interceptor {
                 .response() );
 
             if( !session.containsKey( USER_KEY ) ) {
+                log.trace( "no user in session {}", session );
                 Optional<Token> authToken = SSO.getToken( request ).flatMap( tokenService::getToken );
                 if( authToken.isEmpty() ) {
-                    HttpResponse httpResponse = HttpResponse.status( HTTP_UNAUTHORIZED ).response();
-                    log.debug( httpResponse.toString() );
-                    return Optional.of( httpResponse );
+                    log.trace( "no auth token" );
+                    return Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
                 } else {
                     User user = authToken.get().user;
                     session.set( USER_KEY, user );
                     session.set( SSO.EMAIL_KEY, user.getEmail() );
+                    log.trace( "set user {} into session {}", user, session );
                 }
             }
 
+            log.trace( "session state {}", session );
             return session.<User>get( USER_KEY )
                 .filter( u -> !roles.granted( u.getRole(), annotation.get().permissions() ) )
                 .map( u -> {
-                    log.debug( "denied access to method {}: role: {}, required: {}", method.name(), roles.permissionsOf( u.getRole() ), annotation.get().permissions() );
+                    log.debug( "denied access to method {} for {} with role {} {}: required {}", method.name(), u.getEmail(), u.getRole(), roles.permissionsOf( u.getRole() ), annotation.get().permissions() );
                     return HttpResponse.status( 403, format( "User [%s] has no access to method [%s]", u.getEmail(), method.name() ) ).response();
                 } );
         }

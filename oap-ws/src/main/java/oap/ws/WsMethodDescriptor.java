@@ -22,9 +22,35 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws;
 
-public interface Roles {
-    String ADMIN = "ADMIN";
-    String USER = "USER";
+import oap.http.Request;
+import oap.reflect.Reflection;
+import oap.util.Strings;
+
+import java.util.Optional;
+
+import static oap.http.Request.HttpMethod.GET;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
+
+public class WsMethodDescriptor {
+    public final Reflection.Method method;
+    public final String path;
+    public final Request.HttpMethod[] methods;
+    public final String produces;
+
+    public WsMethodDescriptor( Reflection.Method method ) {
+        this.method = method;
+        Optional<WsMethod> annotation = method.findAnnotation( WsMethod.class );
+        if( annotation.isPresent() ) {
+            WsMethod wsm = annotation.get();
+            this.path = Strings.isUndefined( wsm.path() ) ? method.name() : wsm.path();
+            this.methods = wsm.method();
+            this.produces = wsm.produces();
+        } else {
+            this.path = method.name();
+            this.methods = new Request.HttpMethod[] { GET };
+            this.produces = APPLICATION_JSON.getMimeType();
+        }
+    }
 }

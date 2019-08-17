@@ -4,6 +4,10 @@
     "x/v/math": {
       "service": "math",
       "protocol": "HTTP"
+    },
+    "__api": {
+      "service": "api",
+      "protocol": "HTTP"
     }
   },
   "handlers": {

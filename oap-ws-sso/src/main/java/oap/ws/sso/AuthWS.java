@@ -31,10 +31,8 @@ import oap.ws.WsParam;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.WsValidate;
 
-import java.util.Objects;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static oap.http.Request.HttpMethod.GET;
@@ -43,13 +41,15 @@ import static oap.ws.WsParam.From.QUERY;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.Permissions.MANAGE_SELF;
 import static oap.ws.sso.SSO.authenticatedResponse;
+import static oap.ws.validate.ValidationErrors.empty;
+import static oap.ws.validate.ValidationErrors.error;
 
 @Slf4j
 public class AuthWS {
 
     private final AuthService authService;
     private final String cookieDomain;
-    private final int cookieExpiration;
+    private final long cookieExpiration;
 
     public AuthWS( AuthService authService, String cookieDomain, int cookieExpiration ) {
         this.authService = authService;
@@ -67,21 +67,22 @@ public class AuthWS {
     @WsMethod( method = GET, path = "/logout" )
     @WsSecurity( permissions = MANAGE_SELF )
     @WsValidate( { "validateUserAccess" } )
-    public void logout( @WsParam( from = QUERY ) String email, @WsParam( from = SESSION ) User user ) {
+    public void logout( @WsParam( from = QUERY ) Optional<String> email, @WsParam( from = SESSION ) User loggedUser ) {
         log.debug( "Invalidating token for user [{}]", email );
 
-        authService.invalidateUser( email );
+        authService.invalidateUser( email.orElse( loggedUser.getEmail() ) );
     }
 
     @SuppressWarnings( "unused" )
-    public ValidationErrors validateUserAccess( String email, User user ) {
-        return Objects.equals( user.getEmail(), email )
-            ? ValidationErrors.empty()
-            : ValidationErrors.error( HTTP_FORBIDDEN, format( "User [%s] doesn't have enough permissions", user.getEmail() ) );
+    protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
+        return email
+            .filter( e -> !loggedUser.getEmail().equalsIgnoreCase( e ) )
+            .map( e -> error( HTTP_FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
+            .orElse( empty() );
     }
 
     @WsMethod( method = GET, path = "/token/{id}" )
-    public Optional<Token> getToken( @WsParam( from = PATH ) String id ) {
+    public Optional<Token> token( @WsParam( from = PATH ) String id ) {
         return authService.getToken( id );
     }
 }

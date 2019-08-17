@@ -30,7 +30,6 @@
     </appender>
 
     <logger name="org" level="DEBUG" additivity="false"/>
-    <logger name="oap.ws" level="TRACE" additivity="false"/>
     <logger name="javax.management" level="WARN" additivity="false"/>
 
     <root level="TRACE">

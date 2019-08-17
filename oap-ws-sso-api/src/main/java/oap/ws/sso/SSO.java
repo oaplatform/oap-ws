@@ -39,14 +39,15 @@ public class SSO {
         return request.header( AUTHENTICATION_KEY ).or( () -> request.cookie( AUTHENTICATION_KEY ) );
     }
 
-    public static HttpResponse authenticatedResponse( Token token, String cookieDomain, int cookieExpiration ) {
+    public static HttpResponse authenticatedResponse( Token token, String cookieDomain, long cookieExpiration ) {
         return HttpResponse.ok( token )
             .withHeader( SSO.AUTHENTICATION_KEY, token.id )
             .withCookie( new HttpResponse.CookieBuilder()
                 .withValue( SSO.AUTHENTICATION_KEY, token.id )
                 .withDomain( cookieDomain )
                 .withPath( "/" )
-                .withExpires( DateTime.now().plusMinutes( cookieExpiration ) )
+                .withExpires( DateTime.now().plus( cookieExpiration ) )
+                .httpOnly()
                 .build()
             ).response();
     }

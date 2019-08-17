@@ -29,23 +29,22 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import oap.util.Cuid;
+import org.joda.time.DateTime;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class AuthService {
 
-    private final Cache<String, Token> tokenStorage;
+    private final Cache<String, Token> cache;
     private final UserStorage userStorage;
     private Cuid cuid = Cuid.UNIQUE;
 
     public AuthService( UserStorage userStorage, int expirationTime ) {
-        this.tokenStorage = CacheBuilder.newBuilder()
+        this.cache = CacheBuilder.newBuilder()
             .expireAfterAccess( expirationTime, TimeUnit.MINUTES )
             .build();
         this.userStorage = userStorage;
@@ -60,43 +59,33 @@ public class AuthService {
     }
 
     private synchronized Token getToken( User user ) {
-        Token token = null;
 
-        for( Token t : tokenStorage.asMap().values() )
-            if( t.user.getEmail().equals( user.getEmail() ) ) {
-                token = t;
-                break;
-            }
+        for( Token t : cache.asMap().values() )
+            if( Objects.equals( t.user.getEmail(), user.getEmail() ) ) return t;
 
-        if( token != null ) {
-            log.debug( "Updating existing token for user [{}]...", user.getEmail() );
-            tokenStorage.put( token.id, token );
-
-            return token;
-        }
 
         log.debug( "Generating new token for user [{}]...", user.getEmail() );
+        Token token;
         token = new Token();
         token.user = user;
-        token.created = LocalDateTime.now();
+        token.userId = user.getEmail();
+        token.created = DateTime.now();
         token.id = cuid.next();
 
-        tokenStorage.put( token.id, token );
+        cache.put( token.id, token );
 
         return token;
     }
 
     public synchronized Optional<Token> getToken( String tokenId ) {
-        return Optional.ofNullable( tokenStorage.getIfPresent( tokenId ) );
+        return Optional.ofNullable( cache.getIfPresent( tokenId ) );
     }
 
     public void invalidateUser( String email ) {
-        final ConcurrentMap<String, Token> tokens = tokenStorage.asMap();
-
-        for( Map.Entry<String, Token> entry : tokens.entrySet() ) {
-            if( Objects.equals( entry.getValue().user.getEmail(), email.toLowerCase() ) ) {
+        for( Map.Entry<String, Token> entry : cache.asMap().entrySet() ) {
+            if( entry.getValue().userId.equalsIgnoreCase( email ) ) {
                 log.debug( "Deleting token [{}]...", entry.getKey() );
-                tokenStorage.invalidate( entry.getKey() );
+                cache.invalidate( entry.getKey() );
 
                 return;
             }

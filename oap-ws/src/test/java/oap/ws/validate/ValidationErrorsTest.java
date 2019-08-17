@@ -22,28 +22,24 @@
  * SOFTWARE.
  */
 
-package oap.ws;
+package oap.ws.validate;
 
+import oap.http.HttpResponse;
 import org.testng.annotations.Test;
 
-import java.util.Optional;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.testng.Assert.assertEquals;
-
-public class WsServicesTest {
+public class ValidationErrorsTest {
     @Test
-    public void compile() {
-        assertEquals( WsServices.compile( "/y/{year:(\\d\\d\\d\\d)}/{month}/{date}" ).toString(), "^/y/(\\d\\d\\d\\d)/([^/]+)/([^/]+)$" );
-        assertEquals( WsServices.compile( "/y/{year:(\\d{4})}/{month}/{date}" ).toString(), "^/y/(\\d{4})/([^/]+)/([^/]+)$" );
-        assertEquals( WsServices.compile( "/" ).toString(), "^/?$" );
+    public void ifEmpty() {
+        assertThat( ValidationErrors.empty()
+            .ifEmpty( () -> HttpResponse.ok( "ok" ) ).response().code )
+            .isEqualTo( HTTP_OK );
+        assertThat( ValidationErrors.error( HTTP_FORBIDDEN, "nono" )
+            .ifEmpty( () -> HttpResponse.ok( "ok" ) ).response().code )
+            .isEqualTo( HTTP_FORBIDDEN );
     }
 
-    @Test
-    public void pathParam() {
-        String mapping = "/y/{year:(\\d{4})}/{month}/{date}";
-        String path = "/y/2009/April/12";
-        assertEquals( Optional.of( "2009" ), WsServices.pathParam( mapping, path, "year" ) );
-        assertEquals( Optional.of( "April" ), WsServices.pathParam( mapping, path, "month" ) );
-        assertEquals( Optional.of( "12" ), WsServices.pathParam( mapping, path, "date" ) );
-    }
 }
