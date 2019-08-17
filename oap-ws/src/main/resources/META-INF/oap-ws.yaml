@@ -6,3 +6,6 @@ services:
   system/api:
     service: ws-api
     protocol: HTTP
+
+  resource:
+    service: ws-resource
