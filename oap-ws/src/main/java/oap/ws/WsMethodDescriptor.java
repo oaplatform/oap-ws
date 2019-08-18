@@ -48,7 +48,7 @@ public class WsMethodDescriptor {
             this.methods = wsm.method();
             this.produces = wsm.produces();
         } else {
-            this.path = method.name();
+            this.path = "/" + method.name();
             this.methods = new Request.HttpMethod[] { GET };
             this.produces = APPLICATION_JSON.getMimeType();
         }
