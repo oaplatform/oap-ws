@@ -70,7 +70,7 @@ public class ApiWS {
             var context = ws.getKey();
             var r = Reflect.reflect( ws.getValue().getClass() );
             log.trace( "service {} -> {}", context, r.name() );
-            result += "######################################################################\n";
+            result += fill( "#", 80 ) + "\n";
             result += "Service " + r.name() + "\n";
             result += "Bound to " + context + "\n";
             result += "Methods:\n";
