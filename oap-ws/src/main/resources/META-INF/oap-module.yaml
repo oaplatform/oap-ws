@@ -73,7 +73,8 @@ services:
   ws-resource:
     profile: ws-resource
     implementation: oap.ws.resource.ResourceWS
-    parameters: "@service:ws-resource-service"
+    parameters:
+      resourceService: "@service:ws-resource-service"
 
   ws-log:
     implementation: oap.ws.LogWS
