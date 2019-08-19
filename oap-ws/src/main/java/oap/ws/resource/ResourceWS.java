@@ -41,6 +41,7 @@ import static oap.http.Request.HttpMethod.GET;
 import static oap.http.Request.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
+import static oap.ws.resource.Schema.RESOURCE_REQUEST;
 
 public class ResourceWS {
     private final ResourceService resourceService;
@@ -50,7 +51,7 @@ public class ResourceWS {
     }
 
     @WsMethod( method = POST, path = "/" )
-    public HttpResponse receive( @WsParam( from = BODY ) @WsValidateJson( schema = Schema.CDN_REQUEST )
+    public HttpResponse receive( @WsParam( from = BODY ) @WsValidateJson( schema = RESOURCE_REQUEST )
                                      ResourceRequest request ) throws IOException {
         String[] data = request.base64Data.split( ";" );
         final String fileExtension = data[0].split( ":" )[1].split( "/" )[1];

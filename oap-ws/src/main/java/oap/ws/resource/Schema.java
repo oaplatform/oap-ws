@@ -25,5 +25,5 @@
 package oap.ws.resource;
 
 public interface Schema {
-    String CDN_REQUEST = "/oap/ws/resource/schema/resourceRequest.conf";
+    String RESOURCE_REQUEST = "/oap/ws/resource/schema/resourceRequest.conf";
 }
