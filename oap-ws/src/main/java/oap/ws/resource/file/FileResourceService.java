@@ -42,8 +42,8 @@ public class FileResourceService implements ResourceService {
     }
 
     @Override
-    public void create( String path, String content ) throws IOException {
-        Files.write( resolve( path ), content.getBytes() );
+    public void create( String path, byte[] content ) throws IOException {
+        Files.write( resolve( path ), content );
     }
 
     @Override

@@ -27,7 +27,7 @@ package oap.ws.resource;
 import java.io.IOException;
 
 public interface ResourceService {
-    void create( String path, String content ) throws IOException;
+    void create( String path, byte[] content ) throws IOException;
 
     Resource read( String path ) throws IOException;
 }

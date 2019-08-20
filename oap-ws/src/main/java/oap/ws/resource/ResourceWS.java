@@ -34,6 +34,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.HttpResponse.status;
@@ -57,7 +58,7 @@ public class ResourceWS {
         final String fileExtension = data[0].split( ":" )[1].split( "/" )[1];
         String newFileName = Cuid.UNIQUE.next() + "." + fileExtension;
         final String body = data[1].split( "," )[1];
-        resourceService.create( newFileName, body );
+        resourceService.create( newFileName, Base64.getDecoder().decode( body ) );
 
         return status( HttpStatus.SC_CREATED )
             .withContent( newFileName, ContentType.TEXT_PLAIN ).response();
