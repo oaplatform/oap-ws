@@ -28,6 +28,7 @@ import oap.ws.resource.DefaultResource;
 import oap.ws.resource.Resource;
 import oap.ws.resource.ResourceService;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,6 +40,10 @@ public class FileResourceService implements ResourceService {
 
     public FileResourceService( String rootPath ) {
         this.rootPath = Paths.get( rootPath );
+        final File path = this.rootPath.toFile();
+        if( !path.exists() ) {
+            path.mkdirs();
+        }
     }
 
     @Override
