@@ -31,7 +31,7 @@ import org.joda.time.DateTime;
 import java.util.Optional;
 
 public class SSO {
-    public static final String AUTHENTICATION_KEY = "Auth";
+    public static final String AUTHENTICATION_KEY = "Authorization";
     public static final String USER_KEY = "loggedUser";
     public static final String EMAIL_KEY = "email";
 
