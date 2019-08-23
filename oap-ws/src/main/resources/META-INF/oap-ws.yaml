@@ -3,9 +3,5 @@ services:
     service: ws-log
     protocol: LOCAL
 
-  system/api:
-    service: ws-api
-    protocol: HTTP
-
   resource:
     service: ws-resource
