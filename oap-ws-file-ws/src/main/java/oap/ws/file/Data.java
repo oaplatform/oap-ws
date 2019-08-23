@@ -22,44 +22,47 @@
   SOFTWARE.
  */
 
-package oap.ws.resource.file;
+package oap.ws.file;
 
-import oap.ws.resource.DefaultResource;
-import oap.ws.resource.Resource;
-import oap.ws.resource.ResourceService;
+import oap.io.MimeTypes;
+import oap.util.Pair;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Base64;
 
-@SuppressWarnings( "unused" )
-public class FileResourceService implements ResourceService {
-    private Path rootPath;
+import static oap.util.Strings.split;
 
-    public FileResourceService( String rootPath ) {
-        this.rootPath = Paths.get( rootPath );
-        final File path = this.rootPath.toFile();
-        if( !path.exists() ) {
-            path.mkdirs();
-        }
+/**
+ * todo create separate fields
+ */
+public class Data {
+    public String mimeType;
+    public String content;
+    public String name;
+
+    public Data() {
     }
 
-    @Override
-    public void create( String path, byte[] content ) throws IOException {
-        Files.write( resolve( path ), content );
+    public Data( String name, String mimeType, String content ) {
+        this.name = name;
+        this.mimeType = mimeType;
+        this.content = content;
     }
 
-    @Override
-    public Resource read( String path ) throws IOException {
-        final Path fullPath = resolve( path );
-        final byte[] content = Files.readAllBytes( fullPath );
-
-        return new DefaultResource( fullPath.toAbsolutePath().toString(), content );
+    public void setBase64Data( String base64Data ) {
+        Pair<String, String> data = split( base64Data, ";" );
+        this.mimeType = split( data._1, ":" )._2;
+        this.content = split( data._2, "," )._2;
     }
 
-    private Path resolve( String path ) {
-        return rootPath.resolve( path );
+    public byte[] decoded() {
+        return Base64.getDecoder().decode( content );
+    }
+
+    public String extension() {
+        return MimeTypes.extensionOf( mimeType ).orElse( "bin" );
+    }
+
+    public String nameOrConstruct( String prefix ) {
+        return name != null ? name : prefix + "." + extension();
     }
 }

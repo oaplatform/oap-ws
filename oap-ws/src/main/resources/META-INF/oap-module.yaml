@@ -66,15 +66,5 @@ services:
     supervision:
       thread: true
 
-  ws-resource-service:
-    profile: ws-resource
-    implementation: oap.ws.resource.file.FileResourceService
-
-  ws-resource:
-    profile: ws-resource
-    implementation: oap.ws.resource.ResourceWS
-    parameters:
-      resourceService: "@service:ws-resource-service"
-
   ws-log:
     implementation: oap.ws.LogWS

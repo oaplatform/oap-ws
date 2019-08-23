@@ -44,6 +44,7 @@
         <module>oap-ws-cat</module>
         <module>oap-ws-media</module>
         <module>oap-ws-api-ws</module>
+        <module>oap-ws-file-ws</module>
     </modules>
 
     <repositories>
@@ -65,7 +66,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>5.3.21</revision>
+        <revision>5.4.0</revision>
 
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
@@ -74,7 +75,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
 
-        <oap.version>4.24.6</oap.version>
+        <oap.version>4.24.13</oap.version>
         <testng.version>6.11</testng.version>
         <assertj.version>3.12.2</assertj.version>
         <guava.version>27.1-jre</guava.version>

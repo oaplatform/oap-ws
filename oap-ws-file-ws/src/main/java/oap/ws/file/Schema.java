@@ -22,12 +22,8 @@
   SOFTWARE.
  */
 
-package oap.ws.resource;
+package oap.ws.file;
 
-import java.io.IOException;
-
-public interface ResourceService {
-    void create( String path, byte[] content ) throws IOException;
-
-    Resource read( String path ) throws IOException;
+public interface Schema {
+    String DATA = "/oap/ws/file/schema/data.conf";
 }

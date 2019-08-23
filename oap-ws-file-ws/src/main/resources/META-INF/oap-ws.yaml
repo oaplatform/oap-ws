@@ -1,0 +1,5 @@
+services:
+  resource:
+    service: oap-ws-file
+  file:
+    service: oap-ws-file
