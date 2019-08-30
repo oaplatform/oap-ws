@@ -24,6 +24,7 @@
 package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import oap.http.Cookie;
 import oap.http.Handler;
 import oap.http.HttpResponse;
 import oap.http.Request;
@@ -171,13 +172,12 @@ public class WebService implements Handler {
                                 } );
                         } ) );
                 var cookie = session != null
-                    ? new HttpResponse.CookieBuilder()
-                    .withValue( SessionManager.COOKIE_ID, session.id )
+                    ? new Cookie( SessionManager.COOKIE_ID, session.id )
                     .withPath( sessionManager.cookiePath )
                     .withExpires( DateTime.now().plusMinutes( sessionManager.cookieExpiration ) )
                     .withDomain( sessionManager.cookieDomain )
                     .httpOnly()
-                    .build()
+                    .toString()
                     : null;
                 response.respond( Interceptors.after( interceptors, rb.withCookie( cookie ).response(), session ) );
             } ) );

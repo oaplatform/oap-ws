@@ -24,6 +24,7 @@
 
 package oap.ws.sso;
 
+import oap.http.Cookie;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import org.joda.time.DateTime;
@@ -42,13 +43,12 @@ public class SSO {
     public static HttpResponse authenticatedResponse( Token token, String cookieDomain, long cookieExpiration ) {
         return HttpResponse.ok( token )
             .withHeader( SSO.AUTHENTICATION_KEY, token.id )
-            .withCookie( new HttpResponse.CookieBuilder()
-                .withValue( SSO.AUTHENTICATION_KEY, token.id )
+            .withCookie( new Cookie( SSO.AUTHENTICATION_KEY, token.id )
                 .withDomain( cookieDomain )
                 .withPath( "/" )
                 .withExpires( DateTime.now().plus( cookieExpiration ) )
                 .httpOnly()
-                .build()
+                .toString()
             ).response();
     }
 }
