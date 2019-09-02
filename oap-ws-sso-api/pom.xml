@@ -44,35 +44,9 @@
             <version>${oap.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>oap</groupId>
             <artifactId>oap-ws</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-metrics</artifactId>
-            <version>${oap.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-json-schema</artifactId>
-            <version>${oap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-http</artifactId>
-            <version>${oap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-application</artifactId>
-            <version>${oap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

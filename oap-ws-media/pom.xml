@@ -38,7 +38,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>oap</groupId>
             <artifactId>oap-ws</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

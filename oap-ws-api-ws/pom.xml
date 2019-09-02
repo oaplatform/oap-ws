@@ -44,23 +44,13 @@
         </dependency>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-json</artifactId>
-            <version>${oap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
             <artifactId>oap-ws</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>oap</groupId>
             <artifactId>oap-ws-sso-api</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-http</artifactId>
-            <version>${oap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

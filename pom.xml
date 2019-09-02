@@ -41,7 +41,6 @@
         <module>oap-ws</module>
         <module>oap-ws-sso-api</module>
         <module>oap-ws-sso</module>
-        <module>oap-ws-cat</module>
         <module>oap-ws-media</module>
         <module>oap-ws-api-ws</module>
         <module>oap-ws-file-ws</module>
@@ -66,7 +65,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>5.4.1</revision>
+        <revision>5.5.0</revision>
 
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
@@ -75,7 +74,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
 
-        <oap.version>4.25.0</oap.version>
+        <oap.version>5.0.0</oap.version>
         <testng.version>6.11</testng.version>
         <assertj.version>3.12.2</assertj.version>
         <guava.version>27.1-jre</guava.version>
@@ -83,7 +82,7 @@
         <slf4j.version>1.7.21</slf4j.version>
         <httpcomponents.version>4.4.11</httpcomponents.version>
         <metrics.version>4.1.0</metrics.version>
-        <lombok.version>1.18.6</lombok.version>
+        <lombok.version>1.18.8</lombok.version>
         <jamm.version>0.2.5</jamm.version>
     </properties>
 

@@ -44,16 +44,6 @@
         </dependency>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-json-schema</artifactId>
-            <version>${oap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-http</artifactId>
-            <version>${oap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
             <artifactId>oap-ws</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

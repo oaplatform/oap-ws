@@ -68,3 +68,13 @@ services:
 
   ws-log:
     implementation: oap.ws.LogWS
+
+  local-http-listener:
+    profile: local-listener
+    dependsOn:
+      - oap-http-server
+    implementation: oap.http.LocalHttpListener
+    parameters:
+      port: 18546
+      server: "@service:oap-http-server"
+    supervision.thread: true
