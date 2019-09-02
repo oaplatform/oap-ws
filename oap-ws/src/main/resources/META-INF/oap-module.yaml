@@ -1,6 +1,6 @@
 name: oap-ws
 dependsOn:
-  - oap-http
+  - oap
 services:
   oap-ws-webservices:
     implementation: oap.ws.WebServices
