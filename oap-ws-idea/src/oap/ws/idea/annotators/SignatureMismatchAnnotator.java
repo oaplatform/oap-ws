@@ -26,7 +26,6 @@ package oap.ws.idea.annotators;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
@@ -37,7 +36,6 @@ import oap.ws.idea.ValidatorReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SignatureMismatchAnnotator implements Annotator {
@@ -50,16 +48,12 @@ public class SignatureMismatchAnnotator implements Annotator {
             PsiMethod validator = ( PsiMethod ) reference.resolve();
             PsiMethod method = PsiTreeUtil.getParentOfType( psiElement, PsiMethod.class );
             if( validator == null || !Types.isValidator( validator ) || method == null || !method.isValid() ) return;
-            Map<String, PsiParameter> methodParameters = Psi.toMap( method.getParameterList().getParameters() );
-            Logger.getInstance( getClass() ).info( "=?? " + method );
-            List<PsiParameter> validatorParameters = Psi.toList( validator.getParameterList().getParameters() );
-            validatorParameters.removeIf( p -> methodParameters.containsKey( p.getName() )
-                && p.getType().isAssignableFrom( methodParameters.get( p.getName() ).getType() ) );
-            Logger.getInstance( getClass() ).info( "=? bad " + validatorParameters );
-            if( !validatorParameters.isEmpty() )
+            List<PsiParameter> mismatch = Psi.getSignatureMismatch( validator, method );
+
+            if( !mismatch.isEmpty() )
                 holder.createErrorAnnotation( psiElement, "Method can't supply parameter"
-                    + ( validatorParameters.size() == 1 ? " " : "s " )
-                    + validatorParameters
+                    + ( mismatch.size() == 1 ? " " : "s " )
+                    + mismatch
                     .stream()
                     .map( p -> p.getType().getPresentableText() + " " + p.getName() )
                     .collect( Collectors.joining( ", " ) ) );

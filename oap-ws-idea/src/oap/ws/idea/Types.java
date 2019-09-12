@@ -20,6 +20,10 @@ public class Types {
     public static final String ANNOTATION_TYPE = "oap.ws.validate.WsValidate";
     public static final String VALIDATOR_RETURN_TYPE = "oap.ws.validate.ValidationErrors";
 
+    public static boolean isValidator( @NotNull PsiMethod psiMethod, @NotNull PsiMethod targetMethod ) {
+        return isValidator( psiMethod ) && Psi.getSignatureMismatch( psiMethod, targetMethod ).isEmpty();
+    }
+
     public static boolean isValidator( @NotNull PsiMethod psiMethod ) {
         PsiModifierList modifierList = psiMethod.getModifierList();
         return psiMethod.isValid()

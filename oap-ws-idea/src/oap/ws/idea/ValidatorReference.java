@@ -10,6 +10,7 @@ import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.ResolveResult;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,11 +35,11 @@ public class ValidatorReference extends PsiReferenceBase<PsiElement> implements 
 
     private List<PsiMethod> collectMatchingMethods() {
         String name = Psi.stripQuotes( myElement.getText() );
-        PsiClass psiClass = Psi.psiClassOf( myElement );
-        if( psiClass == null ) return List.of();
+        PsiClass psiClass = PsiTreeUtil.getParentOfType( myElement, PsiClass.class );
         List<PsiMethod> methods = new ArrayList<>();
-        for( PsiMethod method : psiClass.getAllMethods() )
-            if( method.isValid() && Objects.equals( name, method.getName() ) ) methods.add( method );
+        if( psiClass != null )
+            for( PsiMethod method : psiClass.getAllMethods() )
+                if( method.isValid() && Objects.equals( name, method.getName() ) ) methods.add( method );
         return methods;
     }
 
@@ -59,11 +60,12 @@ public class ValidatorReference extends PsiReferenceBase<PsiElement> implements 
     }
 
     private List<PsiMethod> collectValidators() {
-        PsiClass psiClass = Psi.psiClassOf( myElement );
-        if( psiClass == null ) return List.of();
+        PsiClass psiClass = PsiTreeUtil.getParentOfType( myElement, PsiClass.class );
+        PsiMethod annotatedMethod = PsiTreeUtil.getParentOfType( myElement, PsiMethod.class );
         List<PsiMethod> methods = new ArrayList<>();
-        for( PsiMethod method : psiClass.getAllMethods() )
-            if( Types.isValidator( method ) ) methods.add( method );
+        if( psiClass != null && annotatedMethod != null )
+            for( PsiMethod method : psiClass.getAllMethods() )
+                if( Types.isValidator( method, annotatedMethod ) ) methods.add( method );
         return methods;
     }
 
