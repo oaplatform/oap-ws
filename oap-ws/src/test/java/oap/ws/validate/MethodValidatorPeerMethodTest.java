@@ -110,32 +110,32 @@ public class MethodValidatorPeerMethodTest extends AbstractWsValidateTest {
 
 
         @SuppressWarnings( "unused" )
-        public ValidationErrors validateA( String a ) {
+        protected ValidationErrors validateA( String a ) {
             return error( a );
         }
 
         @SuppressWarnings( "unused" )
-        public ValidationErrors validateAB( String a, int b ) {
+        protected ValidationErrors validateAB( String a, int b ) {
             return error( a + b );
         }
 
         @SuppressWarnings( "unused" )
-        public ValidationErrors validateBA( int b, String a ) {
+        protected ValidationErrors validateBA( int b, String a ) {
             return error( b + a );
         }
 
         @SuppressWarnings( "unused" )
-        public ValidationErrors validateOk( String request ) {
+        protected ValidationErrors validateOk( String request ) {
             return empty();
         }
 
         @SuppressWarnings( "unused" )
-        public ValidationErrors validateFail( String request ) {
+        protected ValidationErrors validateFail( String request ) {
             return errors( List.of( "error1", "error2" ) );
         }
 
         @SuppressWarnings( "unused" )
-        public ValidationErrors validateFailCode( String request ) {
+        protected ValidationErrors validateFailCode( String request ) {
             return error( 403, "denied" );
         }
     }
