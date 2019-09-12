@@ -34,10 +34,4 @@ public class ValidatorReferenceContributor extends PsiReferenceContributor {
                 }
             } );
     }
-
-    private static String chain( PsiElement element ) {
-        StringBuilder result = new StringBuilder( element.toString() );
-        while( ( element = element.getParent() ) != null ) result.append( " => " ).append( element );
-        return result.toString();
-    }
 }
