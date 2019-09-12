@@ -61,11 +61,11 @@ class TestValidatedWS {
         return requiredParameter;
     }
 
-    public ValidationErrors brokenValidator( int requiredParameter ) {
+    protected ValidationErrors brokenValidator( int requiredParameter ) {
         throw new IllegalStateException( "CausedByException" );
     }
 
-    public ValidationErrors wrongArgsValidator( int missedParam ) {
+    protected ValidationErrors wrongArgsValidator( int missedParam ) {
         return ValidationErrors.empty();
     }
 
