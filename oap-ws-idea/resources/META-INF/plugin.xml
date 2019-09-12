@@ -37,7 +37,7 @@
     - goto declaration
     - rename
     - find usages
-    - completion
+    - signature aware completion
     - safe delete
     - highlight signature mismatch
     - highlight illegal methods
