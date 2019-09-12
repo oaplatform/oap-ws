@@ -2,6 +2,7 @@ package oap.ws.idea;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.icons.AllIcons;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementResolveResult;
@@ -53,9 +54,16 @@ public class ValidatorReference extends PsiReferenceBase<PsiElement> implements 
     @NotNull
     @Override
     public Object[] getVariants() {
-        List<PsiMethod> validators = collectValidators();
-        LookupElement[] lookups = new LookupElement[validators.size()];
-        for( int i = 0; i < validators.size(); i++ ) lookups[i] = LookupElementBuilder.create( validators.get( i ) );
+        List<PsiMethod> methods = collectValidators();
+        LookupElement[] lookups = new LookupElement[methods.size()];
+        for( int i = 0; i < methods.size(); i++ ) {
+            PsiMethod method = methods.get( i );
+            PsiClass containingClass = method.getContainingClass();
+            lookups[i] = LookupElementBuilder.create( method )
+                .withBoldness( method.getContainingFile() == myElement.getContainingFile() )
+                .withIcon( AllIcons.Nodes.Method )
+                .withTypeText( containingClass != null ? containingClass.getQualifiedName() : null, true );
+        }
         return lookups;
     }
 

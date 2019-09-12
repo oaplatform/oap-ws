@@ -4,11 +4,11 @@ import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiArrayInitializerMemberValue;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiLiteralExpression;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifierList;
 import com.intellij.psi.PsiNameValuePair;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -35,11 +35,8 @@ public class Types {
 
     public static boolean isValidatorReference( @NotNull PsiElement psiElement ) {
         if( !( psiElement instanceof PsiLiteralExpression ) ) return false;
-        PsiElement current = psiElement;
-        while( ( current = current.getParent() ) != null )
-            if( current instanceof PsiJavaFile ) return false;
-            else if( isValidatorAnnotation( current ) ) return true;
-        return false;
+        PsiAnnotation annotation = PsiTreeUtil.getParentOfType( psiElement, PsiAnnotation.class );
+        return annotation != null && annotation.hasQualifiedName( ANNOTATION_TYPE );
     }
 
     public static boolean isValidatorAnnotation( @NotNull PsiElement psiElement ) {
