@@ -62,7 +62,7 @@ public class ValidatorReference extends PsiReferenceBase<PsiElement> implements 
             lookups[i] = LookupElementBuilder.create( method )
                 .withBoldness( method.getContainingFile() == myElement.getContainingFile() )
                 .withIcon( AllIcons.Nodes.Method )
-                .withTypeText( containingClass != null ? containingClass.getQualifiedName() : null, true );
+                .withTypeText( containingClass != null ? containingClass.getName() : null, true );
         }
         return lookups;
     }
