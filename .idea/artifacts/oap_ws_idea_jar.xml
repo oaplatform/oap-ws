@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="oap-ws-idea:jar">
+    <output-path>$PROJECT_DIR$/oap-ws-idea/</output-path>
+    <root id="archive" name="oap-ws-idea.jar">
+      <element id="module-output" name="oap-ws-idea" />
+    </root>
+  </artifact>
+</component>
