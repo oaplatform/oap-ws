@@ -15,7 +15,7 @@ public class UndefinedValidatorAnnotator implements Annotator {
             ValidatorReference reference = ValidatorReference.find( psiElement.getReferences() );
             if( reference == null ) return;
             if( reference.resolve() == null )
-                holder.createErrorAnnotation( psiElement, "Undefined validator reference" );
+                holder.createErrorAnnotation( psiElement, "Undefined validator" );
         }
 
     }

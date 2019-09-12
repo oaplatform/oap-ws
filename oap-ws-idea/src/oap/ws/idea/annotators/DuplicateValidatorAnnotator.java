@@ -22,7 +22,7 @@ public class DuplicateValidatorAnnotator implements Annotator {
             Set<String> unique = new HashSet<>();
             for( PsiAnnotationMemberValue validator : validators ) {
                 if( unique.contains( validator.getText() ) )
-                    holder.createWarningAnnotation( validator, "Dublicate validator reference" );
+                    holder.createWarningAnnotation( validator, "Duplicate validator" );
                 else unique.add( validator.getText() );
             }
         }
