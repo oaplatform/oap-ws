@@ -2,6 +2,7 @@ package oap.ws.idea.annotators;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiElement;
@@ -20,10 +21,12 @@ public class DuplicateValidatorAnnotator implements Annotator {
             PsiAnnotation psiAnnotation = ( PsiAnnotation ) psiElement;
             List<PsiAnnotationMemberValue> validators = Types.validatorReferences( psiAnnotation );
             Set<String> unique = new HashSet<>();
-            for( PsiAnnotationMemberValue validator : validators )
+            Logger.getInstance( getClass() ).info( "===> " + validators );
+            for( PsiAnnotationMemberValue validator : validators ) {
                 if( unique.contains( validator.getText() ) )
                     holder.createWarningAnnotation( validator, "Dublicate validator reference" );
                 else unique.add( validator.getText() );
+            }
         }
     }
 

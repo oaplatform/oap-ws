@@ -38,9 +38,9 @@ public class Types {
         return false;
     }
 
-    public static boolean isValidatorAnnotation( @NotNull PsiElement current ) {
-        return current instanceof PsiAnnotation
-            && ANNOTATION_TYPE.equals( ( ( PsiAnnotation ) current ).getQualifiedName() );
+    public static boolean isValidatorAnnotation( @NotNull PsiElement psiElement ) {
+        return psiElement instanceof PsiAnnotation
+            && ( ( PsiAnnotation ) psiElement ).hasQualifiedName( ANNOTATION_TYPE );
     }
 
     public static List<PsiAnnotationMemberValue> validatorReferences( @NotNull PsiAnnotation annotation ) {

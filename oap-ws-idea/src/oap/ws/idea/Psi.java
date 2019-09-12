@@ -2,6 +2,14 @@ package oap.ws.idea;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Psi {
 
@@ -19,4 +27,14 @@ public class Psi {
     }
 
 
+    public static <T extends PsiNamedElement> Map<String, T> toMap( T[] elements ) {
+        Map<String, T> map = new HashMap<>();
+        for( T e : elements ) map.put( e.getName(), e );
+        return map;
+    }
+
+    @NotNull
+    public static <T extends PsiElement> List<T> toList( T[] elements ) {
+        return new ArrayList<>( Arrays.asList( elements ) );
+    }
 }
