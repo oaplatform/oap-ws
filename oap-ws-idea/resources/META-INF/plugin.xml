@@ -43,13 +43,13 @@
     - highlight illegal methods
     - highlight duplicates
     - highlight undefined validators
-    - path paremeter reference support
-    - highlight undfined path parameter references
+    - path parameter reference support
+    - highlight undefined path parameter references
     ]]></description>
 
     <change-notes><![CDATA[
-    - path paremeter reference support
-    - highlight undfined path parameter references
+    - path parameter reference support
+    - highlight undefined path parameter references
     ]]></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
