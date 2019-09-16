@@ -25,15 +25,15 @@
 <idea-plugin>
     <id>oap.ws.idea</id>
     <name>Open Application Platform Integration</name>
-    <version>1.1</version>
-    <vendor email="vladimir.kirichenko@gmail.com" url="http://github.com/oaplatform">Open Application Platform/Web Services</vendor>
+    <version>1.2</version>
+    <vendor email="vladimir.kirichenko@gmail.com" url="http://github.com/oaplatform">Open Application Platform/Web
+        Services
+    </vendor>
 
     <description><![CDATA[
-  OAP/WS Integration.
-  http://github.com/oaplatform
-    ]]></description>
+    OAP/WS Integration.
+    http://github.com/oaplatform
 
-    <change-notes><![CDATA[
     - goto declaration
     - rename
     - find usages
@@ -43,6 +43,13 @@
     - highlight illegal methods
     - highlight duplicates
     - highlight undefined validators
+    - path paremeter reference support
+    - highlight undfined path parameter references
+    ]]></description>
+
+    <change-notes><![CDATA[
+    - path paremeter reference support
+    - highlight undfined path parameter references
     ]]></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
@@ -53,11 +60,13 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <psi.referenceContributor language="JAVA" implementation="oap.ws.idea.ValidatorReferenceContributor"/>
-        <annotator language="JAVA" implementationClass="oap.ws.idea.annotators.UndefinedValidatorAnnotator"/>
-        <annotator language="JAVA" implementationClass="oap.ws.idea.annotators.DuplicateValidatorAnnotator"/>
-        <annotator language="JAVA" implementationClass="oap.ws.idea.annotators.IllegalValidatorAnnotator"/>
-        <annotator language="JAVA" implementationClass="oap.ws.idea.annotators.SignatureMismatchAnnotator"/>
+        <psi.referenceContributor language="JAVA" implementation="oap.ws.idea.validator.ReferenceContributor"/>
+        <annotator language="JAVA" implementationClass="oap.ws.idea.validator.annotators.UndefinedValidatorAnnotator"/>
+        <annotator language="JAVA" implementationClass="oap.ws.idea.validator.annotators.DuplicateValidatorAnnotator"/>
+        <annotator language="JAVA" implementationClass="oap.ws.idea.validator.annotators.IllegalValidatorAnnotator"/>
+        <annotator language="JAVA" implementationClass="oap.ws.idea.validator.annotators.SignatureMismatchAnnotator"/>
+        <psi.referenceContributor language="JAVA" implementation="oap.ws.idea.ws.ReferenceContributor"/>
+        <annotator language="JAVA" implementationClass="oap.ws.idea.ws.annotators.UndefinedParameterAnnotator"/>
     </extensions>
 
 </idea-plugin>

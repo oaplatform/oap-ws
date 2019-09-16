@@ -1,11 +1,11 @@
-package oap.ws.idea.annotators;
+package oap.ws.idea.validator.annotators;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiElement;
-import oap.ws.idea.Types;
+import oap.ws.idea.validator.Types;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -22,7 +22,7 @@ public class DuplicateValidatorAnnotator implements Annotator {
             Set<String> unique = new HashSet<>();
             for( PsiAnnotationMemberValue validator : validators ) {
                 if( unique.contains( validator.getText() ) )
-                    holder.createWarningAnnotation( validator, "Duplicate validator" );
+                    holder.createErrorAnnotation( validator, "Duplicate validator" );
                 else unique.add( validator.getText() );
             }
         }

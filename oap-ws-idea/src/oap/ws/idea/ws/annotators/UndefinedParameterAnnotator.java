@@ -22,27 +22,27 @@
  * SOFTWARE.
  */
 
-package oap.ws.idea.annotators;
+package oap.ws.idea.ws.annotators;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiMethod;
-import oap.ws.idea.Types;
-import oap.ws.idea.ValidatorReference;
-import org.jetbrains.annotations.NotNull;
+import oap.ws.idea.Psi;
+import oap.ws.idea.ws.PathParameterReference;
+import oap.ws.idea.ws.Types;
 
-public class IllegalValidatorAnnotator implements Annotator {
+import javax.annotation.Nonnull;
+
+public class UndefinedParameterAnnotator implements Annotator {
 
     @Override
-    public void annotate( @NotNull PsiElement psiElement, @NotNull AnnotationHolder holder ) {
-        if( Types.isValidatorReference( psiElement ) ) {
-            ValidatorReference reference = ValidatorReference.find( psiElement.getReferences() );
-            if( reference == null ) return;
-            PsiMethod validator = ( PsiMethod ) reference.resolve();
-            if( validator != null && !Types.isValidator( validator ) )
-                holder.createErrorAnnotation( psiElement, "Illegal validator (should be nonstatic, nonpublic, returning ValidationErrors)" );
+    public void annotate( @Nonnull PsiElement psiElement, @Nonnull AnnotationHolder holder ) {
+        if( Types.isPathVariableReference( psiElement ) ) {
+            var references = Psi.findReferences( psiElement, PathParameterReference.class );
+            for( PathParameterReference reference : references )
+                if( reference.resolve() == null )
+                    holder.createErrorAnnotation( Psi.inElementToGlobal( psiElement, reference.getRangeInElement() ),
+                        "No such parameter defined in the method signature" );
         }
-
     }
 }

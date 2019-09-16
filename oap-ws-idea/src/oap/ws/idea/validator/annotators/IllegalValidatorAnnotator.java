@@ -22,42 +22,28 @@
  * SOFTWARE.
  */
 
-package oap.ws.idea.annotators;
+package oap.ws.idea.validator.annotators;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiParameter;
-import com.intellij.psi.util.PsiTreeUtil;
 import oap.ws.idea.Psi;
-import oap.ws.idea.Types;
-import oap.ws.idea.ValidatorReference;
+import oap.ws.idea.validator.Types;
+import oap.ws.idea.validator.ValidatorReference;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class SignatureMismatchAnnotator implements Annotator {
+public class IllegalValidatorAnnotator implements Annotator {
 
     @Override
     public void annotate( @NotNull PsiElement psiElement, @NotNull AnnotationHolder holder ) {
         if( Types.isValidatorReference( psiElement ) ) {
-            ValidatorReference reference = ValidatorReference.find( psiElement.getReferences() );
+            ValidatorReference reference = Psi.findReference( psiElement, ValidatorReference.class );
             if( reference == null ) return;
             PsiMethod validator = ( PsiMethod ) reference.resolve();
-            PsiMethod method = PsiTreeUtil.getParentOfType( psiElement, PsiMethod.class );
-            if( validator == null || !Types.isValidator( validator ) || method == null || !method.isValid() ) return;
-            List<PsiParameter> mismatch = Psi.getSignatureMismatch( validator, method );
-
-            if( !mismatch.isEmpty() )
-                holder.createErrorAnnotation( psiElement, "Method can't supply parameter"
-                    + ( mismatch.size() == 1 ? " " : "s " )
-                    + mismatch
-                    .stream()
-                    .map( p -> p.getType().getPresentableText() + " " + p.getName() )
-                    .collect( Collectors.joining( ", " ) ) );
+            if( validator != null && !Types.isValidator( validator ) )
+                holder.createErrorAnnotation( psiElement, "Illegal validator (should be nonstatic, nonpublic, returning ValidationErrors)" );
         }
-    }
 
+    }
 }
