@@ -67,7 +67,7 @@ public class WebServiceSessionTest extends Fixtures {
     }
 
     @SuppressWarnings( "unused" )
-    private class TestWS {
+    private static class TestWS {
 
         public static final String IN_SESSION = "inSession";
 
