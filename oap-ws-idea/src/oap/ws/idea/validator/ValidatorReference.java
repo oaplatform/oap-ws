@@ -97,7 +97,7 @@ public class ValidatorReference extends PsiReferenceBase<PsiElement> implements 
         List<PsiMethod> methods = new ArrayList<>();
         if( psiClass != null && annotatedMethod != null )
             for( PsiMethod method : psiClass.getAllMethods() )
-                if( Types.isValidator( method, annotatedMethod ) ) methods.add( method );
+                if( Types.isPossibleValidator( method ) ) methods.add( method );
         return methods;
     }
 

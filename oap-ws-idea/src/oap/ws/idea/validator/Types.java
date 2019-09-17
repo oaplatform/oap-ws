@@ -45,17 +45,21 @@ public class Types {
     public static final String ANNOTATION_TYPE = "oap.ws.validate.WsValidate";
     public static final String VALIDATOR_RETURN_TYPE = "oap.ws.validate.ValidationErrors";
 
-    public static boolean isValidator( @NotNull PsiMethod psiMethod, @NotNull PsiMethod targetMethod ) {
+    public static boolean isMatchingValidator( @NotNull PsiMethod psiMethod, @NotNull PsiMethod targetMethod ) {
         return isValidator( psiMethod ) && Psi.getSignatureMismatch( psiMethod, targetMethod ).isEmpty();
     }
 
-    public static boolean isValidator( @NotNull PsiMethod psiMethod ) {
+    public static boolean isPossibleValidator( @NotNull PsiMethod psiMethod ) {
         PsiModifierList modifierList = psiMethod.getModifierList();
         return psiMethod.isValid()
             && psiMethod.getReturnType() != null
             && Objects.equals( psiMethod.getReturnType().getCanonicalText(), VALIDATOR_RETURN_TYPE )
-            && !modifierList.hasExplicitModifier( "public" )
             && !modifierList.hasExplicitModifier( "static" );
+    }
+
+    public static boolean isValidator( @NotNull PsiMethod psiMethod ) {
+        return isPossibleValidator( psiMethod )
+            && !psiMethod.getModifierList().hasExplicitModifier( "public" );
     }
 
     public static boolean isValidatorReference( @NotNull PsiElement psiElement ) {
