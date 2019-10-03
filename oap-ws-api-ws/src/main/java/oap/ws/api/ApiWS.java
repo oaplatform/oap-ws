@@ -44,6 +44,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -122,6 +123,7 @@ public class ApiWS {
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
         if( r.underlying.getPackageName().startsWith( DateTime.class.getPackageName() ) )
             return r.underlying.getSimpleName();
+        if( r.underlying.equals( Date.class ) ) return r.underlying.getSimpleName();
         if( r.assignableTo( Integer.class ) ) return int.class.getSimpleName();
         if( r.assignableTo( Long.class ) ) return long.class.getSimpleName();
         if( r.assignableTo( Double.class ) ) return double.class.getSimpleName();
