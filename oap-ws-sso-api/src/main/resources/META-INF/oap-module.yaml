@@ -1,4 +1,4 @@
-name: oap-ws-sso
+name: oap-ws-sso-api
 services:
   oap-ws-sso-roles:
     implementation: oap.ws.sso.SecurityRoles
