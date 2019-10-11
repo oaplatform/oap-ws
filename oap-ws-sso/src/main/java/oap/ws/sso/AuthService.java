@@ -51,7 +51,11 @@ public class AuthService {
     }
 
     public Optional<Token> authenticate( String email, String password ) {
-        return userStorage.getAuthenticated( email, password ).map( this::getToken );
+        return userStorage.getUser( email )
+            .map( User::isEmailVerified )
+            .filter( isTrue -> isTrue )
+            .flatMap( x -> userStorage.getAuthenticated( email, password )
+                .map( this::getToken ) );
     }
 
     public Optional<Token> authenticate( String email ) {

@@ -29,6 +29,10 @@ import java.io.Serializable;
 public interface User extends Serializable {
     String getEmail();
 
+    default boolean isEmailVerified() {
+        return true;
+    }
+
     String getPassword();
 
     String getRole();
