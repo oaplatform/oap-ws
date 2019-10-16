@@ -132,6 +132,7 @@ public class ApiWS {
         if( r.assignableTo( Character.class ) ) return char.class.getSimpleName();
         if( r.assignableTo( String.class ) ) return String.class.getSimpleName();
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
+        if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
         return formatComplexType( shift, r );
