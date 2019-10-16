@@ -26,6 +26,7 @@ package oap.ws.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
+import oap.dictionary.Dictionary;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.json.ext.Ext;
@@ -133,6 +134,7 @@ public class ApiWS {
         if( r.assignableTo( String.class ) ) return String.class.getSimpleName();
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
+        if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
         return formatComplexType( shift, r );
