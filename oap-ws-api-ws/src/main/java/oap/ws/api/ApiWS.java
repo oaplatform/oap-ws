@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.getPropertyName;
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.isGetter;
@@ -135,6 +136,8 @@ public class ApiWS {
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
+        if( r.assignableTo( List.class ) ) return List.class.getSimpleName();
+        if( r.assignableTo( Set.class ) ) return Set.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
         return formatComplexType( shift, r );
