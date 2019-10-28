@@ -42,7 +42,6 @@ import static oap.benchmark.Benchmark.benchmark;
 
 public class WebServicesPerformance {
     private static final SessionManager SESSION_MANAGER = new SessionManager( 10 * 60 * 1000, null, "/" );
-    private final int samples = 100000;
 
     @BeforeMethod
     public void init() {
@@ -61,6 +60,7 @@ public class WebServicesPerformance {
                 Collections.emptyList(), Protocol.HTTP );
 
             HttpAsserts.reset();
+            int samples = 100000;
             benchmark( "Server.invocations", samples, () -> HttpAsserts.assertGet( HttpAsserts.httpUrl( "/x/v/math/id?a=aaa" ) ).responded( 200, "OK",
                 ContentType.APPLICATION_JSON, "\"aaa\"" )
             ).inThreads( 5000 ).run();

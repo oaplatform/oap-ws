@@ -37,6 +37,7 @@ import oap.metrics.Metrics2;
 import oap.metrics.Name;
 import oap.reflect.ReflectException;
 import oap.reflect.Reflection;
+import oap.util.Lists;
 import oap.util.Result;
 import oap.util.Stream;
 import oap.util.Throwables;
@@ -61,6 +62,7 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.HttpResponse.NOT_FOUND;
 import static oap.util.Collectors.toLinkedHashMap;
+import static oap.ws.WsParams.uncamelHeaderName;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @Slf4j
@@ -273,47 +275,51 @@ public class WebService implements Handler {
                 ) ) );
     }
 
-    public Optional<Object> getValue(
-        Session session,
-        Request request,
-        Optional<WsMethod> wsMethod,
-        Reflection.Parameter parameter ) {
+    public Optional<Object> getValue( Session session,
+                                      Request request,
+                                      Optional<WsMethod> wsMethod,
+                                      Reflection.Parameter parameter ) {
 
-        return
-            parameter.type().assignableFrom( Request.class )
-                ? Optional.of( request )
-                : parameter.type().assignableFrom( Session.class )
-                    ? Optional.ofNullable( session )
-                    : parameter.findAnnotation( WsParam.class )
-                        .map( wsParam -> {
-                            switch( wsParam.from() ) {
-                                case SESSION:
-                                    if( session == null ) return null;
-                                    return parameter.type().isOptional()
-                                        ? session.get( parameter.name() )
-                                        : session.get( parameter.name() ).orElse( null );
-                                case HEADER:
-                                    return unwrap( parameter, request.header( parameter.name() ) );
-                                case PATH:
-                                    return wsMethod.map( wsm -> WsMethodMatcher.pathParam( wsm.path(), request.getRequestLine(),
-                                        parameter.name() ) )
-                                        .orElseThrow( () -> new WsException(
-                                            "path parameter " + parameter.name() + " without "
-                                                + WsMethod.class.getName() + " annotation" ) );
-                                case BODY:
-                                    return parameter.type().assignableFrom( byte[].class )
-                                        ? ( parameter.type().isOptional() ? request.readBody()
-                                        : request.readBody()
-                                            .orElseThrow( () -> new WsClientException(
-                                                "no body for " + parameter.name() ) )
-                                    ) : unwrap( parameter, request.readBody().map( String::new ) );
-                                default:
-                                    return parameter.type().assignableTo( List.class )
-                                        ? request.parameters( parameter.name() )
-                                        : unwrap( parameter, request.parameter( parameter.name() ) );
+        return parameter.type().assignableFrom( Request.class )
+            ? Optional.of( request )
+            : parameter.type().assignableFrom( Session.class )
+                ? Optional.ofNullable( session )
+                : parameter.findAnnotation( WsParam.class )
+                    .map( wsParam -> {
+                        switch( wsParam.from() ) {
+                            case SESSION:
+                                if( session == null ) return null;
+                                return parameter.type().isOptional()
+                                    ? session.get( parameter.name() )
+                                    : session.get( parameter.name() ).orElse( null );
+                            case HEADER:
+                                var names = Lists.addAll( Lists.of( wsParam.name() ), uncamelHeaderName( parameter.name() ), parameter.name() );
+                                Optional<String> header;
+                                for( String name : names ) {
+                                    header = request.header( name );
+                                    if( header.isPresent() ) return unwrap( parameter, header );
+                                }
+                                return unwrap( parameter, Optional.empty() );
+                            case PATH:
+                                return wsMethod.map( wsm -> WsMethodMatcher.pathParam( wsm.path(), request.getRequestLine(),
+                                    parameter.name() ) )
+                                    .orElseThrow( () -> new WsException(
+                                        "path parameter " + parameter.name() + " without "
+                                            + WsMethod.class.getName() + " annotation" ) );
+                            case BODY:
+                                return parameter.type().assignableFrom( byte[].class )
+                                    ? ( parameter.type().isOptional() ? request.readBody()
+                                    : request.readBody()
+                                        .orElseThrow( () -> new WsClientException(
+                                            "no body for " + parameter.name() ) )
+                                ) : unwrap( parameter, request.readBody().map( String::new ) );
+                            default:
+                                return parameter.type().assignableTo( List.class )
+                                    ? request.parameters( parameter.name() )
+                                    : unwrap( parameter, request.parameter( parameter.name() ) );
 
-                            }
-                        } );
+                        }
+                    } );
     }
 
 

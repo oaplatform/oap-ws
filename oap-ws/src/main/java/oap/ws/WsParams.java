@@ -24,24 +24,22 @@
 
 package oap.ws;
 
+import javax.annotation.Nonnull;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import static java.lang.Character.isUpperCase;
+import static java.lang.Character.toUpperCase;
 
-/**
- * @author Vladimir Kirichenko <vladimir.kirichenko@gmail.com>
- */
-@Target( ElementType.PARAMETER )
-@Retention( RetentionPolicy.RUNTIME )
-public @interface WsParam {
+public class WsParams {
 
-    From from() default From.QUERY;
-
-    String[] name() default {};
-
-    enum From {
-        QUERY, PATH, BODY, HEADER, SESSION
+    @Nonnull
+    public static String uncamelHeaderName( @Nonnull String camel ) {
+        StringBuilder result = new StringBuilder();
+        for( int i = 0; i < camel.length(); i++ ) {
+            char c = camel.charAt( i );
+            if( i == 0 ) result.append( toUpperCase( c ) );
+            else if( isUpperCase( c ) ) result.append( "-" ).append( c );
+            else result.append( c );
+        }
+        return result.toString();
     }
 }

@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import static oap.http.Request.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.HEADER;
 import static oap.ws.WsParam.From.PATH;
 
 class MathWS {
@@ -108,6 +109,10 @@ class MathWS {
 
     public String string( @WsParam( from = BODY ) String bytes ) {
         return bytes;
+    }
+
+    public String header( @WsParam( from = HEADER, name = { "X-Custom-Header" } ) String header, @WsParam( from = HEADER ) String xCustomHeader ) {
+        return header + xCustomHeader;
     }
 
     public static class Bean {

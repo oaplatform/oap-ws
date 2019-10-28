@@ -38,6 +38,7 @@ import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -49,12 +50,11 @@ import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 
 @Slf4j
-public class WebServicesTest extends Fixtures {
+public class WSTest extends Fixtures {
     {
         fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
             kernel.register( "math", new MathWS() );
@@ -80,6 +80,12 @@ public class WebServicesTest extends Fixtures {
     public void equal() {
         assertGet( httpUrl( "/x/v/math/test/sort=3/test" ) )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"3\"" );
+    }
+
+    @Test
+    public void header() {
+        assertGet( httpUrl( "/x/v/math/header" ), Map.of(), Map.of( "X-Custom-Header", "header" ) )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"headerheader\"" );
     }
 
 
@@ -160,8 +166,8 @@ public class WebServicesTest extends Fixtures {
     public void defaultHeaders() {
         assertGet( httpUrl( "/x/h/" ) )
             .containsHeader( "Access-Control-Allow-Origin", "*" );
-        assertPost( httpUrl( "/x/v/math/json" ), "{\"i\":1,\"s\":\"sss\"}",
-            APPLICATION_OCTET_STREAM ).containsHeader( "Access-Control-Allow-Origin", "*" );
+        assertPost( httpUrl( "/x/v/math/json" ), "{\"i\":1,\"s\":\"sss\"}", APPLICATION_OCTET_STREAM )
+            .containsHeader( "Access-Control-Allow-Origin", "*" );
     }
 
     @Test

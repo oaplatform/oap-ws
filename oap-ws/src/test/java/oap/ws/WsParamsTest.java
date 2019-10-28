@@ -24,24 +24,13 @@
 
 package oap.ws;
 
+import org.testng.annotations.Test;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import static oap.testng.Asserts.assertString;
 
-/**
- * @author Vladimir Kirichenko <vladimir.kirichenko@gmail.com>
- */
-@Target( ElementType.PARAMETER )
-@Retention( RetentionPolicy.RUNTIME )
-public @interface WsParam {
-
-    From from() default From.QUERY;
-
-    String[] name() default {};
-
-    enum From {
-        QUERY, PATH, BODY, HEADER, SESSION
+public class WsParamsTest {
+    @Test
+    public void uncamelHeaderName() {
+        assertString( WsParams.uncamelHeaderName( "xCustomHeader" ) ).isEqualTo( "X-Custom-Header" );
     }
 }
