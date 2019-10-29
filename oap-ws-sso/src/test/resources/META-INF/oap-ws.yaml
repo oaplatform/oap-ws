@@ -1,0 +1,15 @@
+name: oap-ws-sso-test
+services:
+
+  auth:
+    service: auth-ws
+    protocol: HTTP
+    sessionAware: true
+
+  secure:
+    service: secure-ws
+    protocol: HTTP
+    sessionAware: true
+
+interceptors:
+  - security-interceptor

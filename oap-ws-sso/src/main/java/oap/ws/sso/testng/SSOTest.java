@@ -22,21 +22,36 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws.sso.testng;
 
-import lombok.ToString;
-import org.joda.time.DateTime;
+import oap.application.testng.KernelFixture;
+import oap.testng.Fixtures;
 
-import java.io.Serializable;
+import java.nio.file.Path;
 
-@ToString
-public class Token implements Serializable {
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.httpUrl;
 
-    private static final long serialVersionUID = -2221117654361445000L;
+public class SSOTest extends Fixtures {
+    protected KernelFixture kernelFixture;
 
-    public String id;
-    @Deprecated
-    public User user;
-    public DateTime created;
-    public String email;
+    public SSOTest( Path conf ) {
+        fixture( kernelFixture = new KernelFixture( conf ) );
+    }
+
+    public SSOTest( Path conf, String confd ) {
+        fixture( kernelFixture = new KernelFixture( conf, confd ) );
+    }
+
+    protected static void assertLogin( String login, String password ) {
+        assertGet( httpUrl( "/auth/login?email=" + login + "&password=" + password ) )
+            .hasCode( HTTP_OK );
+    }
+
+    protected static void assertLogout() {
+        assertGet( httpUrl( "/auth/logout" ) )
+            .hasCode( HTTP_NO_CONTENT );
+    }
 }

@@ -1,0 +1,30 @@
+name: oap-ws-sso-test
+services:
+  oap-ws-sso-user-storage-test:
+    implementation: oap.ws.sso.IntegratedTest$TestUserStorage
+    profile: ws-security
+
+  oap-ws-sso-auth-service-test:
+    implementation: oap.ws.sso.AuthService
+    profile: ws-security
+    parameters:
+      userStorage: "@service:oap-ws-sso-user-storage-test"
+      expirationTime: 1440
+    supervision:
+      supervise: true
+
+  token-service-server:
+    implementation: oap.ws.sso.DefaultTokenService
+    profile: ws-security
+    parameters:
+      authService: "@service:oap-ws-sso-auth-service-test"
+
+  auth-ws:
+    implementation: oap.ws.sso.AuthWS
+    parameters:
+      authService: "@service:oap-ws-sso-auth-service-test"
+      cookieDomain: ""
+      cookieExpiration: 7d
+
+  secure-ws:
+    implementation: oap.ws.sso.SecurityInterceptorTest$SecureWS

@@ -3,3 +3,16 @@ services:
   oap-ws-sso-roles:
     implementation: oap.ws.sso.SecurityRoles
     profile: ws-security
+
+  token-service:
+    implementation: oap.ws.sso.TokenService
+    profile: ws-security
+    remote:
+      name: token-service-server
+
+  security-interceptor:
+    profile: ws-security
+    implementation: oap.ws.sso.SecurityInterceptor
+    parameters:
+      tokenService: "@service:token-service"
+      roles: "@service:oap-ws-sso-roles"

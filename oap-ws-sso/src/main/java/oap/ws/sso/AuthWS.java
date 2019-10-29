@@ -58,7 +58,7 @@ public class AuthWS {
     }
 
     @WsMethod( method = GET, path = "/login" )
-    public HttpResponse login( @WsParam( from = QUERY ) String email, @WsParam( from = QUERY ) String password ) {
+    public HttpResponse login( String email, String password ) {
         return authService.authenticate( email, password )
             .map( t -> authenticatedResponse( t, cookieDomain, cookieExpiration ) )
             .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ).response() );
@@ -73,7 +73,6 @@ public class AuthWS {
         authService.invalidateUser( email.orElse( loggedUser.getEmail() ) );
     }
 
-    @SuppressWarnings( "unused" )
     protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
         return email
             .filter( e -> !loggedUser.getEmail().equalsIgnoreCase( e ) )

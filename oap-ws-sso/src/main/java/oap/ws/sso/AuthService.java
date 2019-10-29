@@ -51,11 +51,8 @@ public class AuthService {
     }
 
     public Optional<Token> authenticate( String email, String password ) {
-        return userStorage.getUser( email )
-            .map( User::isEmailVerified )
-            .filter( isTrue -> isTrue )
-            .flatMap( x -> userStorage.getAuthenticated( email, password )
-                .map( this::getToken ) );
+        return userStorage.getAuthenticated( email, password )
+            .map( this::getToken );
     }
 
     public Optional<Token> authenticate( String email ) {
@@ -65,14 +62,13 @@ public class AuthService {
     private synchronized Token getToken( User user ) {
 
         for( Token t : cache.asMap().values() )
-            if( Objects.equals( t.user.getEmail(), user.getEmail() ) ) return t;
-
+            if( Objects.equals( t.email, user.getEmail() ) ) return t;
 
         log.debug( "Generating new token for user [{}]...", user.getEmail() );
         Token token;
         token = new Token();
         token.user = user;
-        token.userId = user.getEmail();
+        token.email = user.getEmail();
         token.created = DateTime.now();
         token.id = cuid.next();
 
@@ -87,7 +83,7 @@ public class AuthService {
 
     public void invalidateUser( String email ) {
         for( Map.Entry<String, Token> entry : cache.asMap().entrySet() ) {
-            if( entry.getValue().userId.equalsIgnoreCase( email ) ) {
+            if( entry.getValue().email.equalsIgnoreCase( email ) ) {
                 log.debug( "Deleting token [{}]...", entry.getKey() );
                 cache.invalidate( entry.getKey() );
 
