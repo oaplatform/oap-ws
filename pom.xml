@@ -41,7 +41,7 @@
         <module>oap-ws</module>
         <module>oap-ws-sso-api</module>
         <module>oap-ws-sso</module>
-        <module>oap-ws-media</module>
+<!--        <module>oap-ws-media</module>-->
         <module>oap-ws-api-ws</module>
         <module>oap-ws-file-ws</module>
     </modules>
