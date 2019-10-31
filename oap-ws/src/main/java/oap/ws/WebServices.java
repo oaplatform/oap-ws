@@ -83,33 +83,26 @@ public class WebServices {
                 continue;
             }
 
-            var interceptors = Lists.map( config.interceptors, kernel::<Interceptor>serviceOrThrow );
 
-            for( var entry : config.services.entrySet() ) {
-                var serviceConfig = entry.getValue();
-
-                log.trace( "service = {}", entry );
-
+            config.services.forEach( ( serviceName, serviceConfig ) -> {
+                var interceptors = Lists.map( serviceConfig.interceptors, kernel::<Interceptor>serviceOrThrow );
+                log.trace( "service = {}", serviceConfig );
                 if( !KernelHelper.profileEnabled( serviceConfig.profiles, kernel.profiles ) ) {
-                    log.debug( "skipping " + entry.getKey() + " web service initialization with "
+                    log.debug( "skipping " + serviceName + " web service initialization with "
                         + "service profiles " + serviceConfig.profiles );
-                    continue;
+                    return;
                 }
-
                 var corsPolicy = serviceConfig.corsPolicy != null ? serviceConfig.corsPolicy : globalCorsPolicy;
-                bind( entry.getKey(), corsPolicy, kernel.serviceOrThrow( serviceConfig.service ),
+                bind( serviceName, corsPolicy, kernel.serviceOrThrow( serviceConfig.service ),
                     serviceConfig.sessionAware, sessionManager, interceptors, serviceConfig.protocol );
-            }
+            } );
 
-            for( var entry : config.handlers.entrySet() ) {
-                var handlerConfig = entry.getValue();
-                log.trace( "handler = {}", entry );
-
+            config.handlers.forEach( ( handlerName, handlerConfig ) -> {
+                log.trace( "handler = {}", handlerConfig );
                 var corsPolicy = handlerConfig.corsPolicy != null ? handlerConfig.corsPolicy : globalCorsPolicy;
-
                 Protocol protocol = handlerConfig.protocol;
-                bind( entry.getKey(), corsPolicy, kernel.serviceOrThrow( handlerConfig.service ), protocol );
-            }
+                bind( handlerName, corsPolicy, kernel.serviceOrThrow( handlerConfig.service ), protocol );
+            } );
         }
     }
 

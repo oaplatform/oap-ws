@@ -44,7 +44,6 @@ public class WsConfig {
 
     public final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
     public final LinkedHashMap<String, Service> handlers = new LinkedHashMap<>();
-    public final ArrayList<String> interceptors = new ArrayList<>();
 
     public String name;
 
@@ -57,5 +56,6 @@ public class WsConfig {
         public CorsPolicy corsPolicy = null;
         public Protocol protocol;
         public boolean sessionAware;
+        public final ArrayList<String> interceptors = new ArrayList<>();
     }
 }
