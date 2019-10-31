@@ -65,28 +65,6 @@ public class UserAuthenticator implements Authenticator {
             } );
     }
 
-//    public Optional<Authentication> authenticate( String email ) {
-//        return userProvider.getUser( email ).map( this::getToken );
-//    }
-
-//    private synchronized Authentication getToken( User user ) {
-//
-//        //todo why is this?
-//        for( Authentication authentication : authentications.asMap().values() )
-//            if( Objects.equals( authentication.user.getEmail(), user.getEmail() ) ) return authentication;
-//
-//        log.debug( "Generating new token for user [{}]...", user.getEmail() );
-//        Authentication authentication = new Authentication( cuid.next(), user );
-//
-//        authentications.put( authentication.id, authentication );
-//
-//        return authentication;
-//    }
-
-    public synchronized Optional<Authentication> getToken( String tokenId ) {
-        return Optional.ofNullable( authentications.getIfPresent( tokenId ) );
-    }
-
     @Override
     public void invalidateByEmail( String email ) {
         for( Map.Entry<String, Authentication> entry : authentications.asMap().entrySet() ) {
