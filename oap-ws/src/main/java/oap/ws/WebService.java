@@ -29,7 +29,6 @@ import oap.http.Handler;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.http.Response;
-import oap.http.Session;
 import oap.json.Binder;
 import oap.json.JsonException;
 import oap.metrics.Metrics;

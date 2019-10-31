@@ -4,15 +4,15 @@ services:
     implementation: oap.ws.sso.SecurityRoles
     profile: ws-security
 
-  token-service:
-    implementation: oap.ws.sso.TokenService
+  oap-ws-sso-authenticator:
+    implementation: oap.ws.sso.Authenticator
     profile: ws-security
     remote:
-      name: token-service-server
+      name: oap-ws-sso-authenticator-server
 
-  security-interceptor:
+  oap-ws-sso-security-interceptor:
     profile: ws-security
     implementation: oap.ws.sso.SecurityInterceptor
     parameters:
-      tokenService: "@service:token-service"
+      authenticator: "@service:oap-ws-sso-authenticator"
       roles: "@service:oap-ws-sso-roles"

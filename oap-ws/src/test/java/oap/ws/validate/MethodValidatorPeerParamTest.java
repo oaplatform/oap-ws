@@ -23,7 +23,6 @@
  */
 package oap.ws.validate;
 
-import oap.http.testng.HttpAsserts;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.testng.annotations.Test;
@@ -31,9 +30,12 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.Optional;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.ContentTypes.TEXT_PLAIN;
 import static oap.http.Request.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
+import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
 import static oap.ws.validate.ValidationErrors.empty;
@@ -48,102 +50,96 @@ public class MethodValidatorPeerParamTest extends AbstractWsValidateTest {
 
     @Test
     public void validationDefault() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/default?q=1" ), "test", TEXT_PLAIN )
-            .responded( 200, "OK", APPLICATION_JSON, "\"1test\"" );
+        assertPost( httpUrl( "/test/run/validation/default?i=1" ), "test", TEXT_PLAIN )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1test\"" );
     }
 
     @Test
     public void validationOk() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/ok?q=1" ), "test", TEXT_PLAIN )
-            .responded( 200, "OK", APPLICATION_JSON, "\"1test\"" );
+        assertPost( httpUrl( "/test/run/validation/ok?i=1" ), "test", TEXT_PLAIN )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1test\"" );
     }
 
     @Test
     public void validationOkList() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/ok?q=1&ql=_11&ql=_12" ), "test", TEXT_PLAIN )
-            .responded( 200, "OK", APPLICATION_JSON, "\"1_11/_12test\"" );
+        assertPost( httpUrl( "/test/run/validation/ok?i=1&listString=_11&listString=_12" ), "test", TEXT_PLAIN )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1_11/_12test\"" );
     }
 
     @Test
     public void validationOkOptional() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/ok?q=1&q2=2" ), "test", TEXT_PLAIN )
-            .responded( 200, "OK", APPLICATION_JSON, "\"12test\"" );
+        assertPost( httpUrl( "/test/run/validation/ok?i=1&optString=2" ), "test", TEXT_PLAIN )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"12test\"" );
     }
 
     @Test
     public void validationFail() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/fail?q=1" ), "test", TEXT_PLAIN )
-            .responded( 400, "validation failed", TEXT_PLAIN, "error:1\nerror:test" );
+        assertPost( httpUrl( "/test/run/validation/fail?i=1" ), "test", TEXT_PLAIN )
+            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\": [\"error:1\", \"error:test\"]}" );
     }
 
     @Test
     public void validationRequiredFailed() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/ok" ), "test", TEXT_PLAIN )
-            .responded( 400, "q is required", TEXT_PLAIN, "q is required" );
+        assertPost( httpUrl( "/test/run/validation/ok" ), "test", TEXT_PLAIN )
+            .respondedJson( HTTP_BAD_REQUEST, "i is required", "{\"errors\": [\"i is required\"]}" );
     }
 
     @Test
     public void validationTypeFailed() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/ok?q=test" ), "test", TEXT_PLAIN )
-            .hasCode( 400 );
+        assertPost( httpUrl( "/test/run/validation/ok?i=test" ), "test", TEXT_PLAIN )
+            .hasCode( HTTP_BAD_REQUEST );
     }
 
     public static class TestWS {
 
         @WsMethod( path = "/run/validation/default", method = POST )
         public String validationDefault(
-            @WsParam( from = QUERY ) int q,
-            @WsParam( from = BODY ) String body
+            @WsParam( from = QUERY ) int i,
+            @WsParam( from = BODY ) String string
         ) {
-            return q + body;
+            return i + string;
         }
 
         @WsMethod( path = "/run/validation/ok", method = POST )
         public String validationOk(
-            @WsParam( from = QUERY ) @WsValidate( "validateOkInt" ) int q,
-            @WsParam( from = QUERY ) @WsValidate( "validateOkOptString" ) Optional<String> q2,
-            @WsParam( from = QUERY ) @WsValidate( "validateOkListString" ) List<String> ql,
-            @WsParam( from = BODY ) @WsValidate( "validateOkString" ) String body
+            @WsParam( from = QUERY ) @WsValidate( "validateOkInt" ) int i,
+            @WsParam( from = QUERY ) @WsValidate( "validateOkOptString" ) Optional<String> optString,
+            @WsParam( from = QUERY ) @WsValidate( "validateOkListString" ) List<String> listString,
+            @WsParam( from = BODY ) @WsValidate( "validateOkString" ) String string
         ) {
-            return q + q2.orElse( "" ) + String.join( "/", ql ) + body;
+            return i + optString.orElse( "" ) + String.join( "/", listString ) + string;
         }
 
         @WsMethod( path = "/run/validation/fail", method = POST )
         public String validationFail(
-            @WsParam( from = QUERY ) @WsValidate( "validateFailInt" ) int q,
-            @WsParam( from = BODY ) @WsValidate( "validateFailString" ) String body
+            @WsParam( from = QUERY ) @WsValidate( "validateFailInt" ) int i,
+            @WsParam( from = BODY ) @WsValidate( "validateFailString" ) String string
         ) {
-            return q + body;
+            return i + string;
         }
 
-        @SuppressWarnings( "unused" )
-        public ValidationErrors validateOkInt( int value ) {
+        protected ValidationErrors validateOkInt( int i ) {
             return empty();
         }
 
-        @SuppressWarnings( "unused" )
-        public ValidationErrors validateOkOptString( Optional<String> value ) {
+        protected ValidationErrors validateOkOptString( Optional<String> optString ) {
             return empty();
         }
 
-        @SuppressWarnings( "unused" )
-        public ValidationErrors validateOkListString( List<String> value ) {
+        protected ValidationErrors validateOkListString( List<String> listString ) {
             return empty();
         }
 
-        @SuppressWarnings( "unused" )
-        public ValidationErrors validateOkString( String value ) {
+        protected ValidationErrors validateOkString( String string ) {
             return empty();
         }
 
-        @SuppressWarnings( "unused" )
-        public ValidationErrors validateFailInt( int value ) {
-            return error( "error:" + value );
+        protected ValidationErrors validateFailInt( int i ) {
+            return error( "error:" + i );
         }
 
-        @SuppressWarnings( "unused" )
-        public ValidationErrors validateFailString( String value ) {
-            return error( "error:" + value );
+        protected ValidationErrors validateFailString( String string ) {
+            return error( "error:" + string );
         }
     }
 }

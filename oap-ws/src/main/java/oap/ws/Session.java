@@ -21,13 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package oap.ws;
 
-package oap.ws.sso;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
-public interface UserStorage {
-    Optional<User> getUser( String email );
+@ToString
+@EqualsAndHashCode( of = "id" )
+public class Session {
+    public final String id;
+    private final Map<String, Object> values = new ConcurrentHashMap<>();
 
-    Optional<User> getAuthenticated( String email, String password );
+    public Session( String id ) {
+        this.id = id;
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public <A> Optional<A> get( String key ) {
+        return Optional.ofNullable( ( A ) values.get( key ) );
+    }
+
+    public void set( String key, Object value ) {
+        values.put( key, value );
+    }
+
+    public void invalidate() {
+        values.clear();
+    }
+
+    public void setAll( Map<String, Object> values ) {
+        this.values.putAll( values );
+    }
+
+    public boolean containsKey( String key ) {
+        return values.containsKey( key );
+    }
 }

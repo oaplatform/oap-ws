@@ -29,11 +29,11 @@ import oap.testng.Fixtures;
 import oap.ws.testng.WsFixture;
 import org.testng.annotations.Test;
 
-import java.nio.charset.StandardCharsets;
-
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @Slf4j
 public class ValidationTest extends Fixtures {
@@ -48,30 +48,29 @@ public class ValidationTest extends Fixtures {
     @Test
     public void brokenValidator() {
         assertGet( httpUrl( "/vaildation/service/methodWithBrokenValidator?requiredParameter=10" ) )
-            .responded( 500, "CausedByException", TEXT_PLAIN.withCharset( StandardCharsets.UTF_8 ),
-                "CausedByException" );
+            .respondedJson( HTTP_INTERNAL_ERROR, "CausedByException", "{\"message\":\"CausedByException\"}" );
     }
 
     @Test
     public void wrongValidatorName() {
         String errorMessage = "No such method wrongValidatorName with the following parameters: [int requiredParameter]";
         assertGet( httpUrl( "/vaildation/service/methodWithWrongValidatorName?requiredParameter=10" ) )
-            .responded( 500, errorMessage, TEXT_PLAIN.withCharset( StandardCharsets.UTF_8 ), errorMessage );
+            .respondedJson( HTTP_INTERNAL_ERROR, errorMessage, "{\"message\":\"" + errorMessage + "\"}" );
     }
 
     @Test
     public void validatorWithWrongParameters() {
         String errorMessage = "missedParam required by validator wrongArgsValidator is not supplied by web method";
         assertGet( httpUrl( "/vaildation/service/methodWithWrongValidatorArgs?requiredParameter=10" ) )
-            .responded( 500, errorMessage, TEXT_PLAIN.withCharset( StandardCharsets.UTF_8 ), errorMessage );
+            .responded( HTTP_INTERNAL_ERROR, errorMessage, APPLICATION_JSON, "{\"message\":\"" + errorMessage + "\"}" );
     }
 
     @Test
     public void exception() {
         assertGet( httpUrl( "/vaildation/service/exceptionRuntimeException" ) )
-            .hasCode( 500 );
+            .hasCode( HTTP_INTERNAL_ERROR );
         assertGet( httpUrl( "/vaildation/service/exceptionIllegalAccessException" ) )
-            .hasCode( 400 );
+            .hasCode( HTTP_BAD_REQUEST );
     }
 }
 

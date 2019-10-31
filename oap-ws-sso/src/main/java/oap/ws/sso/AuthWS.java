@@ -26,51 +26,50 @@ package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.http.HttpResponse;
+import oap.ws.Session;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.validate.ValidationErrors;
-import oap.ws.validate.WsValidate;
 
 import java.util.Optional;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static oap.http.Request.HttpMethod.GET;
-import static oap.ws.WsParam.From.PATH;
-import static oap.ws.WsParam.From.QUERY;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.Permissions.MANAGE_SELF;
 import static oap.ws.sso.SSO.authenticatedResponse;
+import static oap.ws.sso.SSO.logoutResponse;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 
 @Slf4j
 public class AuthWS {
 
-    private final AuthService authService;
+    private final Authenticator authenticator;
     private final String cookieDomain;
     private final long cookieExpiration;
 
-    public AuthWS( AuthService authService, String cookieDomain, int cookieExpiration ) {
-        this.authService = authService;
+    public AuthWS( Authenticator authenticator, String cookieDomain, long cookieExpiration ) {
+        this.authenticator = authenticator;
         this.cookieDomain = cookieDomain;
         this.cookieExpiration = cookieExpiration;
     }
 
     @WsMethod( method = GET, path = "/login" )
     public HttpResponse login( String email, String password ) {
-        return authService.authenticate( email, password )
-            .map( t -> authenticatedResponse( t, cookieDomain, cookieExpiration ) )
+        return authenticator.authenticate( email, password )
+            .map( authentication -> authenticatedResponse( authentication, cookieDomain, cookieExpiration ) )
             .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ).response() );
     }
 
     @WsMethod( method = GET, path = "/logout" )
     @WsSecurity( permissions = MANAGE_SELF )
-    @WsValidate( { "validateUserAccess" } )
-    public void logout( @WsParam( from = QUERY ) Optional<String> email, @WsParam( from = SESSION ) User loggedUser ) {
-        log.debug( "Invalidating token for user [{}]", email );
-
-        authService.invalidateUser( email.orElse( loggedUser.getEmail() ) );
+    public HttpResponse logout( @WsParam( from = SESSION ) User loggedUser, Session session ) {
+        log.debug( "Invalidating token for user [{}]", loggedUser.getEmail() );
+        authenticator.invalidateByEmail( loggedUser.getEmail() );
+        session.invalidate();
+        return logoutResponse( cookieDomain );
     }
 
     protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
@@ -80,8 +79,8 @@ public class AuthWS {
             .orElse( empty() );
     }
 
-    @WsMethod( method = GET, path = "/token/{id}" )
-    public Optional<Token> token( @WsParam( from = PATH ) String id ) {
-        return authService.getToken( id );
+    @WsMethod( method = GET, path = "/current" )
+    public Optional<User.View> current( Session session ) {
+        return session.<User>get( SSO.USER_KEY ).map( User::getView );
     }
 }

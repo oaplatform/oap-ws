@@ -35,12 +35,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.WsParam.From.SESSION;
+import static oap.ws.sso.Roles.ADMIN;
+import static oap.ws.sso.Roles.USER;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 public class SecurityInterceptorTest extends IntegratedTest {
     @Test
     public void allowed() {
-        userStorage().addUser( new TestUser( "admin@admin.com", "pass", "ADMIN" ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
             .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "admin@admin.com" );
@@ -52,14 +54,14 @@ public class SecurityInterceptorTest extends IntegratedTest {
 
     @Test
     public void notLoggedIn() {
-        userStorage().addUser( new TestUser( "admin@admin.com", "pass", "ADMIN" ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         assertGet( httpUrl( "/secure" ) )
             .hasCode( HTTP_UNAUTHORIZED );
     }
 
     @Test
     public void denied() {
-        userStorage().addUser( new TestUser( "admin@admin.com", "pass", "USER" ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", USER ) );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/auth/login?email=admin@admin.com&password=pass" ) )
             .hasCode( HTTP_OK );

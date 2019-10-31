@@ -1,4 +1,4 @@
 services:
   system/api:
-    service: ws-api
+    service: api-ws
     protocol: HTTP

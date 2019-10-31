@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
 
+import static oap.ws.validate.ValidationErrors.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ValidatorsTest {
@@ -47,8 +48,8 @@ public class ValidatorsTest {
         @WsValidate( "validate" )
         public void m( String a ) { }
 
-        public ValidationErrors validate( String a ) {
-            return ValidationErrors.empty();
+        protected ValidationErrors validate( String a ) {
+            return empty();
         }
     }
 }

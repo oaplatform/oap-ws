@@ -30,10 +30,9 @@ import org.testng.annotations.Test;
 /**
  * Created by igor.petrenko on 20.03.2019.
  */
-@Test( enabled = false )
 @Slf4j
 public class LogWSTest {
-    @Test( enabled = false )
+    @Test
     public void logs() {
         var logWS = new LogWS();
 

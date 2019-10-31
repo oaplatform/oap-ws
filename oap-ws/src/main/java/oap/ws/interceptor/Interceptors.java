@@ -26,9 +26,9 @@ package oap.ws.interceptor;
 
 import oap.http.HttpResponse;
 import oap.http.Request;
-import oap.http.Session;
 import oap.reflect.Reflection;
 import oap.util.Stream;
+import oap.ws.Session;
 import org.apache.commons.collections4.iterators.ReverseListIterator;
 
 import java.util.List;

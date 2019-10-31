@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FileWSTest extends Fixtures {
     {
         fixture( TestDirectory.FIXTURE );
-        fixture( new KernelFixture( pathOfTestResource( getClass(), "application.conf" ) ) );
+        fixture( new KernelFixture( pathOfTestResource( getClass(), "application.test.conf" ) ) );
     }
 
     @Test

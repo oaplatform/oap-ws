@@ -26,8 +26,8 @@ package oap.ws.interceptor;
 
 import oap.http.HttpResponse;
 import oap.http.Request;
-import oap.http.Session;
 import oap.reflect.Reflection;
+import oap.ws.Session;
 
 import java.util.Optional;
 

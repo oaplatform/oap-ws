@@ -27,57 +27,61 @@ package oap.ws.sso;
 import lombok.extern.slf4j.Slf4j;
 import oap.http.HttpResponse;
 import oap.http.Request;
-import oap.http.Session;
 import oap.reflect.Reflection;
+import oap.ws.Session;
 import oap.ws.interceptor.Interceptor;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static oap.ws.sso.SSO.USER_KEY;
 
 @Slf4j
 public class SecurityInterceptor implements Interceptor {
 
-    private TokenService tokenService;
+    private Authenticator authenticator;
     private SecurityRoles roles;
 
-    public SecurityInterceptor( TokenService tokenService, SecurityRoles roles ) {
-        this.tokenService = tokenService;
+    public SecurityInterceptor( Authenticator authenticator, SecurityRoles roles ) {
+        this.authenticator = authenticator;
         this.roles = roles;
     }
 
     @Override
-    public Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
+    @Nonnull
+    public Optional<HttpResponse> before( @Nonnull Request request, Session session, @Nonnull Reflection.Method method ) {
+
+
+        if( !session.containsKey( USER_KEY ) ) {
+            log.trace( "no user in session {}", session );
+            Optional<Authentication> authentication = SSO.getAuthentication( request ).flatMap( authenticator::authenticate );
+            if( authentication.isEmpty() ) {
+                log.trace( "no auth token" );
+//                return Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
+            } else {
+                User user = authentication.get().user;
+                session.set( USER_KEY, user );
+                log.trace( "set user {} into session {}", user, session );
+            }
+        }
+
+        log.trace( "session state {}", session );
+
         Optional<WsSecurity> annotation = method.findAnnotation( WsSecurity.class );
         if( annotation.isPresent() ) {
-            if( session == null ) return Optional.of( HttpResponse
-                .status( HTTP_INTERNAL_ERROR, "no session provided for security interceptor" )
-                .response() );
+            log.trace( "secure method {}", method );
 
-            if( !session.containsKey( USER_KEY ) ) {
-                log.trace( "no user in session {}", session );
-                Optional<Token> authToken = SSO.getToken( request ).flatMap( tokenService::getToken );
-                if( authToken.isEmpty() ) {
-                    log.trace( "no auth token" );
-                    return Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
-                } else {
-                    User user = authToken.get().user;
-                    session.set( USER_KEY, user );
-                    session.set( SSO.EMAIL_KEY, user.getEmail() );
-                    log.trace( "set user {} into session {}", user, session );
-                }
-            }
-
-            log.trace( "session state {}", session );
-            return session.<User>get( USER_KEY )
+            return session.containsKey( USER_KEY )
+                ? session.<User>get( USER_KEY )
                 .filter( u -> !roles.granted( u.getRole(), annotation.get().permissions() ) )
                 .map( u -> {
-                    log.debug( "denied access to method {} for {} with role {} {}: required {}", method.name(), u.getEmail(), u.getRole(), roles.permissionsOf( u.getRole() ), annotation.get().permissions() );
-                    return HttpResponse.status( 403, format( "User [%s] has no access to method [%s]", u.getEmail(), method.name() ) ).response();
-                } );
+                    log.trace( "denied access to method {} for {} with role {} {}: required {}", method.name(), u.getEmail(), u.getRole(), roles.permissionsOf( u.getRole() ), annotation.get().permissions() );
+                    return HttpResponse.status( HTTP_FORBIDDEN, format( "User [%s] has no access to method [%s]", u.getEmail(), method.name() ) ).response();
+                } )
+                : Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
         }
         return Optional.empty();
     }

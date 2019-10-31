@@ -1,21 +1,42 @@
-######################################################################
+################################################################################
+Service oap.ws.LogWS
+Bound to system/admin/logs
+Methods:
+	Method reset
+	[GET] /system/admin/logs/reset
+	Produces application/json
+	Permissions <unsecure>
+	Returns void
+	No parameters
+
+	Method setLevel
+	[GET, POST, PATCH] /system/admin/logs/{level}/{packageName}
+	Produces application/json
+	Permissions <unsecure>
+	Returns void
+	Parameters
+		level: path String
+		packageName: path String
+
+
+################################################################################
 Service oap.ws.api.ApiWS
-Bound to api
+Bound to system/api
 Methods:
 	Method api
-	[GET] /api/
+	[GET] /system/api/
 	Produces text/plain
 	Permissions <unsecure>
 	Returns String
 	No parameters
 
 
-######################################################################
+################################################################################
 Service oap.ws.api.ExampleWS
 Bound to example
 Methods:
 	Method bean
-	[GET] /examplebean
+	[GET] /example/bean
 	Produces application/json
 	Permissions <unsecure>
 	Returns Bean
@@ -38,7 +59,7 @@ Methods:
 		s: query String
 
 	Method bytes
-	[GET] /examplebytes
+	[GET] /example/bytes
 	Produces application/json
 	Permissions <unsecure>
 	Returns String
@@ -46,7 +67,7 @@ Methods:
 		bytes: body byte[]
 
 	Method code
-	[GET] /examplecode
+	[GET] /example/code
 	Produces application/json
 	Permissions <unsecure>
 	Returns <http response>
@@ -54,7 +75,7 @@ Methods:
 		code: query int
 
 	Method en
-	[GET] /exampleen
+	[GET] /example/en
 	Produces application/json
 	Permissions <unsecure>
 	Returns ["SOURCE","CLASS","RUNTIME"]
@@ -62,7 +83,7 @@ Methods:
 		a: query ["SOURCE","CLASS","RUNTIME"]
 
 	Method id
-	[GET] /exampleid
+	[GET] /example/id
 	Produces application/json
 	Permissions <unsecure>
 	Returns String
@@ -70,7 +91,7 @@ Methods:
 		a: query String
 
 	Method json
-	[GET] /examplejson
+	[GET] /example/json
 	Produces application/json
 	Permissions <unsecure>
 	Returns Bean
@@ -106,7 +127,7 @@ Methods:
 			}
 
 	Method list
-	[GET] /examplelist
+	[GET] /example/list
 	Produces application/json
 	Permissions <unsecure>
 	Returns String[]
@@ -114,14 +135,14 @@ Methods:
 		str: body String[]
 
 	Method req
-	[GET] /examplereq
+	[GET] /example/req
 	Produces application/json
 	Permissions <unsecure>
 	Returns String
 	No parameters
 
 	Method string
-	[GET] /examplestring
+	[GET] /example/string
 	Produces application/json
 	Permissions <unsecure>
 	Returns String
@@ -129,7 +150,7 @@ Methods:
 		bytes: body String
 
 	Method sum
-	[GET] /examplesum
+	[GET] /example/sum
 	Produces application/json
 	Permissions [MANAGE_SELF]
 	Returns int
@@ -140,7 +161,7 @@ Methods:
 		rp: query optional ["SOURCE","CLASS","RUNTIME"]
 
 	Method sumab
-	[GET] /examplesumab
+	[GET] /example/sumab
 	Produces application/json
 	Permissions <unsecure>
 	Returns int
@@ -149,7 +170,7 @@ Methods:
 		b: query int
 
 	Method sumabopt
-	[GET] /examplesumabopt
+	[GET] /example/sumabopt
 	Produces application/json
 	Permissions <unsecure>
 	Returns int
@@ -188,7 +209,7 @@ Methods:
 		id: path String
 
 	Method x
-	[GET] /examplex
+	[GET] /example/x
 	Produces application/json
 	Permissions <unsecure>
 	Returns int

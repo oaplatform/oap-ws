@@ -31,7 +31,8 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static oap.http.ContentTypes.TEXT_PLAIN;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.Request.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
@@ -52,22 +53,22 @@ public class WsValidatePartialJsonTest extends AbstractWsValidateTest {
     public void validation1() {
         bean = new TestBean( "id1" );
         assertPost( httpUrl( "/test/run/validation/1/id1" ), "{\"id\":1}", APPLICATION_JSON )
-            .respondedJson( 200, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
+            .respondedJson( HTTP_OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
         assertPost( httpUrl( "/test/run/validation/1/id1" ), "{\"b\":[{\"element\":\"test\"}],\"id\":1}", APPLICATION_JSON )
-            .respondedJson( 200, "OK", "{\"a\":[{\"id\":1,\"b\":[{\"element\":\"test\"}]}],\"id\":\"id1\"}" );
+            .respondedJson( HTTP_OK, "OK", "{\"a\":[{\"id\":1,\"b\":[{\"element\":\"test\"}]}],\"id\":\"id1\"}" );
         assertPost( httpUrl( "/test/run/validation/1/id1" ), "{}", APPLICATION_JSON )
-            .responded( 400, "/a/1/id: required property is missing", TEXT_PLAIN, "/a/1/id: required property is missing" );
+            .responded( HTTP_BAD_REQUEST, "validation failed", APPLICATION_JSON, "{\"errors\":[\"/a/1/id: required property is missing\"]}" );
     }
 
     @Test
     public void validation2() {
         bean = new TestBean( "id1" );
         assertPost( httpUrl( "/test/run/validation/2/id1" ), "{\"id\":1}", APPLICATION_JSON )
-            .respondedJson( 200, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
+            .respondedJson( HTTP_OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
         assertPost( httpUrl( "/test/run/validation/2/id1" ), "{}", APPLICATION_JSON )
-            .respondedJson( 200, "OK", "{\"a\":[{}],\"id\":\"id1\"}" );
+            .respondedJson( HTTP_OK, "OK", "{\"a\":[{}],\"id\":\"id1\"}" );
         assertPost( httpUrl( "/test/run/validation/2/id1" ), "{\"c\":1}", APPLICATION_JSON )
-            .responded( 400, "/a/1: additional properties are not permitted [c]", TEXT_PLAIN, "/a/1: additional properties are not permitted [c]" );
+            .responded( HTTP_BAD_REQUEST, "validation failed", APPLICATION_JSON, "{\"errors\":[\"/a/1: additional properties are not permitted [c]\"]}" );
     }
 
     @Test
@@ -82,7 +83,7 @@ public class WsValidatePartialJsonTest extends AbstractWsValidateTest {
         bean.a.add( itemA );
         bean.a.add( itemB );
         assertPost( httpUrl( "/test/run/validation/3/id1/2" ), "{\"element\":\"some text\"}", APPLICATION_JSON )
-            .respondedJson( 200, "OK", "{\"a\":[{\"id\":1},{\"id\":2,\"b\":[{\"element\":\"some text\"}]}],\"id\":\"id1\"}" );
+            .respondedJson( HTTP_OK, "OK", "{\"a\":[{\"id\":1},{\"id\":2,\"b\":[{\"element\":\"some text\"}]}],\"id\":\"id1\"}" );
     }
 
     @SuppressWarnings( "unused" )

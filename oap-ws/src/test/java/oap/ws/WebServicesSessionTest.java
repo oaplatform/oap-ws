@@ -25,7 +25,6 @@
 package oap.ws;
 
 import oap.http.HttpResponse;
-import oap.http.Session;
 import oap.testng.Fixtures;
 import oap.util.Maps;
 import oap.ws.testng.WsFixture;
@@ -38,7 +37,7 @@ import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
 import static oap.ws.WsParam.From.SESSION;
 
-public class WebServiceSessionTest extends Fixtures {
+public class WebServicesSessionTest extends Fixtures {
 
     {
         fixture( new WsFixture( getClass(), ( ws, kernel ) -> {

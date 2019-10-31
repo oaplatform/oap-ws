@@ -65,7 +65,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>5.5.10</revision>
+        <revision>6.0.0</revision>
 
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
@@ -109,7 +109,7 @@
                 <configuration>
                     <argLine>
                         -ea
-                        -Dlogback.configurationFile=${session.executionRootDirectory}/oap-stdlib/src/test/resources/logback-test.xml
+                        --enable-preview
                     </argLine>
                     <trimStackTrace>false</trimStackTrace>
                     <!--TODO: remove this ignore once all tests pass

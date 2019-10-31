@@ -39,7 +39,7 @@ class MathWS {
 
     public int sum( int a, List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
         return a + b.stream().mapToInt( Integer::intValue ).sum()
-            + ( c.isPresent() ? c.get() : 0 )
+            + c.orElse( 0 )
             + ( rp.isPresent() ? 5 : 0 );
     }
 

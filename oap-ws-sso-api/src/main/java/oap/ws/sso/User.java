@@ -24,6 +24,8 @@
 
 package oap.ws.sso;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 
 public interface User extends Serializable {
@@ -32,4 +34,13 @@ public interface User extends Serializable {
     String getPassword();
 
     String getRole();
+
+    @JsonIgnore
+    View getView();
+
+    interface View extends Serializable {
+        String getEmail();
+
+        String getRole();
+    }
 }

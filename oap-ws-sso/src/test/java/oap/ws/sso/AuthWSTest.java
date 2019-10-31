@@ -22,36 +22,36 @@
  * SOFTWARE.
  */
 
-package oap.ws.api;
+package oap.ws.sso;
 
-import lombok.extern.slf4j.Slf4j;
-import oap.application.testng.KernelFixture;
-import oap.io.Resources;
-import oap.testng.Fixtures;
+
 import org.testng.annotations.Test;
 
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
-import static oap.testng.Asserts.contentOfTestResource;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
-@Slf4j
-public class ApiWSTest extends Fixtures {
-    {
-        fixture( new KernelFixture( Resources.filePath( getClass(), "/application.test.conf" ).orElseThrow() ) );
-//        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
-//            kernel.register( "api", new ApiWS( ws ) );
-//            kernel.register( "example", new ExampleWS() );
-//        }, "oap-ws.yaml" ) );
+public class AuthWSTest extends IntegratedTest {
+
+    @Test
+    public void login() {
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", Roles.ADMIN ) );
+        assertLogin( "admin@admin.com", "pass" );
+        assertGet( httpUrl( "/auth/current" ) )
+            .respondedJson( HTTP_OK, "OK", "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
     }
 
     @Test
-    public void api() {
-        assertGet( httpUrl( "/system/api" ) )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ),
-                contentOfTestResource( getClass(), "api.txt" ) );
+    public void logout() {
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", Roles.ADMIN ) );
+        userProvider().addUser( new TestUser( "user@admin.com", "pass", Roles.USER ) );
+        assertLogin( "admin@admin.com", "pass" );
+        assertLogout();
+        assertGet( httpUrl( "/auth/current" ) )
+            .hasCode( HTTP_NOT_FOUND );
+        assertLogin( "user@admin.com", "pass" );
+        assertGet( httpUrl( "/auth/current" ) )
+            .respondedJson( HTTP_OK, "OK", "{\"email\":\"user@admin.com\", \"role\":\"USER\"}" );
     }
 }
-

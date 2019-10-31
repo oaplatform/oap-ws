@@ -1,8 +1,8 @@
-name: oap-ws-sso-test
+name: oap-ws-sso
 services:
 
-  secure:
-    service: secure-ws
+  auth:
+    service: auth-ws
     protocol: HTTP
     sessionAware: true
 

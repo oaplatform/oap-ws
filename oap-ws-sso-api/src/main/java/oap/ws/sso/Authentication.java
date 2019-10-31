@@ -24,8 +24,41 @@
 
 package oap.ws.sso;
 
-import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.joda.time.DateTime;
 
-public interface TokenService {
-    Optional<Token> getToken( String tokenId );
+import java.io.Serializable;
+
+@ToString
+@EqualsAndHashCode
+public class Authentication implements Serializable {
+    private static final long serialVersionUID = -2221117654361445000L;
+    public String id;
+    public User user;
+    public DateTime created;
+
+    public Authentication( String id, User user ) {
+        this.id = id;
+        this.user = user;
+        this.created = new DateTime();
+    }
+
+    @JsonIgnore
+    public View view = new View();
+
+    public class View implements Serializable {
+        public String getId() {
+            return id;
+        }
+
+        public DateTime getCreated() {
+            return created;
+        }
+
+        public User.View getUser() {
+            return user.getView();
+        }
+    }
 }

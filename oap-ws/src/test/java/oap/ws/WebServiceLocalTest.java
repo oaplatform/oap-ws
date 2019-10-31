@@ -48,7 +48,7 @@ public class WebServiceLocalTest extends Fixtures {
     private static class TestWS {
 
         @WsMethod( path = "/text", method = GET, produces = "text/plain" )
-        public String text( @WsParam( from = WsParam.From.QUERY ) String value ) {
+        public String text( String value ) {
             return "ok";
         }
     }

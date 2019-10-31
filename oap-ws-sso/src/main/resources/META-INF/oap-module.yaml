@@ -1,0 +1,20 @@
+name: oap-ws-sso
+services:
+
+  auth-ws:
+    implementation: oap.ws.sso.AuthWS
+    parameters:
+      authenticator: "@service:oap-ws-sso-authenticator-server"
+      cookieDomain: ""
+      cookieExpiration: 7d
+
+  oap-ws-sso-authenticator-server:
+    implementation: oap.ws.sso.UserAuthenticator
+    parameters:
+      userProvider: "@service:oap-ws-sso-user-provider"
+      expirationTime: 7d
+
+  oap-ws-sso-user-provider:
+    implementation: oap.ws.sso.UserProvider
+    remote:
+      name: oap-ws-sso-user-provider-server

@@ -26,9 +26,9 @@ package oap.ws.interceptor;
 
 import oap.http.HttpResponse;
 import oap.http.Request;
-import oap.http.Session;
 import oap.reflect.Reflection;
 import oap.testng.Fixtures;
+import oap.ws.Session;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.testng.WsFixture;

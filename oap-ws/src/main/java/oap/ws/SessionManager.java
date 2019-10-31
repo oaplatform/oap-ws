@@ -28,11 +28,11 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import oap.http.Session;
 import oap.util.Cuid;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Slf4j
 public class SessionManager {
@@ -46,7 +46,7 @@ public class SessionManager {
 
     public SessionManager( int expirationTime, String cookieDomain, String cookiePath ) {
         this.sessions = CacheBuilder.newBuilder()
-            .expireAfterAccess( expirationTime, TimeUnit.MILLISECONDS )
+            .expireAfterAccess( expirationTime, MILLISECONDS )
             .build();
         this.cookieDomain = cookieDomain;
         this.cookiePath = cookiePath;

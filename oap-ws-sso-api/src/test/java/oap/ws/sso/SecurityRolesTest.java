@@ -24,7 +24,6 @@
 
 package oap.ws.sso;
 
-import oap.util.Arrays;
 import org.testng.annotations.Test;
 
 import java.util.Map;
@@ -38,7 +37,6 @@ import static oap.ws.sso.SecurityRolesTest.Permissions.MEGATEST;
 import static oap.ws.sso.SecurityRolesTest.Roles.MEGADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings( "checkstyle:InterfaceIsType" )
 public class SecurityRolesTest {
     @Test
     public void merge() {

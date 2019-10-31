@@ -31,23 +31,32 @@ import org.joda.time.DateTime;
 
 import java.util.Optional;
 
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+
 public class SSO {
     public static final String AUTHENTICATION_KEY = "Authorization";
     public static final String USER_KEY = "loggedUser";
-    public static final String EMAIL_KEY = "email";
 
-    public static Optional<String> getToken( Request request ) {
+    public static Optional<String> getAuthentication( Request request ) {
         return request.header( AUTHENTICATION_KEY ).or( () -> request.cookie( AUTHENTICATION_KEY ) );
     }
 
-    public static HttpResponse authenticatedResponse( Token token, String cookieDomain, long cookieExpiration ) {
-        return HttpResponse.ok( token )
-            .withHeader( SSO.AUTHENTICATION_KEY, token.id )
-            .withCookie( new Cookie( SSO.AUTHENTICATION_KEY, token.id )
+    public static HttpResponse authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
+        return HttpResponse.ok( authentication.view )
+            .withHeader( AUTHENTICATION_KEY, authentication.id )
+            .withCookie( new Cookie( AUTHENTICATION_KEY, authentication.id )
                 .withDomain( cookieDomain )
                 .withPath( "/" )
                 .withExpires( DateTime.now().plus( cookieExpiration ) )
                 .httpOnly()
+                .toString()
+            ).response();
+    }
+
+    public static HttpResponse logoutResponse( String cookieDomain ) {
+        return HttpResponse.status( HTTP_NO_CONTENT )
+            .withCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
+                .withExpires( new DateTime( 1970, 1, 1, 1, 1 ) )
                 .toString()
             ).response();
     }

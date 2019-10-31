@@ -39,12 +39,12 @@ public class IntegratedTest extends SSOTest {
         super( Resources.filePath( SecurityInterceptorTest.class, "/application.test.conf" ).orElseThrow() );
     }
 
-    protected TestUserStorage userStorage() {
-        return kernelFixture.service( TestUserStorage.class );
+    protected TestUserProvider userProvider() {
+        return kernelFixture.service( TestUserProvider.class );
     }
 
     @Slf4j
-    public static class TestUserStorage implements UserStorage {
+    public static class TestUserProvider implements UserProvider {
         public final List<User> users = new ArrayList<>();
 
         public void addUser( TestUser user ) {
@@ -93,5 +93,26 @@ public class IntegratedTest extends SSOTest {
         public String getRole() {
             return role;
         }
+
+
+        public View view = new View();
+
+        @Override
+        public View getView() {
+            return view;
+        }
+
+        public class View implements User.View {
+            @Override
+            public String getEmail() {
+                return TestUser.this.getEmail();
+            }
+
+            @Override
+            public String getRole() {
+                return TestUser.this.getRole();
+            }
+        }
+
     }
 }

@@ -24,18 +24,21 @@
 package oap.ws.validate;
 
 import oap.http.HttpResponse;
-import oap.http.testng.HttpAsserts;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.ContentTypes.TEXT_PLAIN;
 import static oap.http.Request.HttpMethod.GET;
 import static oap.http.Request.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
+import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
@@ -49,32 +52,32 @@ public class MethodValidatorPeerMethodTest extends AbstractWsValidateTest {
 
     @Test
     public void validationDefault() throws InterruptedException {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/default" ), "test", TEXT_PLAIN )
-            .responded( 200, "OK", TEXT_PLAIN, "test" );
+        assertPost( httpUrl( "/test/run/validation/default" ), "test", TEXT_PLAIN )
+            .responded( HTTP_OK, "OK", TEXT_PLAIN, "test" );
     }
 
     @Test
     public void validationOk() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/ok" ), "test", TEXT_PLAIN )
-            .responded( 200, "OK", TEXT_PLAIN, "test" );
+        assertPost( httpUrl( "/test/run/validation/ok" ), "test", TEXT_PLAIN )
+            .responded( HTTP_OK, "OK", TEXT_PLAIN, "test" );
     }
 
     @Test
     public void validationFail() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/fail" ), "test", TEXT_PLAIN )
-            .responded( 400, "validation failed", TEXT_PLAIN, "error1\nerror2" );
+        assertPost( httpUrl( "/test/run/validation/fail" ), "test", TEXT_PLAIN )
+            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"error1\",\"error2\"]}" );
     }
 
     @Test
     public void validationFailCode() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/fail-code" ), "test", TEXT_PLAIN )
-            .responded( 403, "denied", TEXT_PLAIN, "denied" );
+        assertPost( httpUrl( "/test/run/validation/fail-code" ), "test", TEXT_PLAIN )
+            .respondedJson( HTTP_FORBIDDEN, "validation failed", "{\"errors\":[\"denied\"]}" );
     }
 
     @Test
     public void validationMethods() {
-        assertGet( HttpAsserts.httpUrl( "/test/run/validation/methods?a=a&b=5&c=c" ) )
-            .responded( 400, "validation failed", TEXT_PLAIN, "a\na5\n5a" );
+        assertGet( httpUrl( "/test/run/validation/methods?a=a&b=5&c=c" ) )
+            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"a\",\"a5\",\"5a\"]}" );
     }
 
     public static class TestWS {
@@ -108,35 +111,28 @@ public class MethodValidatorPeerMethodTest extends AbstractWsValidateTest {
             return a + b + c;
         }
 
-
-        @SuppressWarnings( "unused" )
         protected ValidationErrors validateA( String a ) {
             return error( a );
         }
 
-        @SuppressWarnings( "unused" )
         protected ValidationErrors validateAB( String a, int b ) {
             return error( a + b );
         }
 
-        @SuppressWarnings( "unused" )
         protected ValidationErrors validateBA( int b, String a ) {
             return error( b + a );
         }
 
-        @SuppressWarnings( "unused" )
         protected ValidationErrors validateOk( String request ) {
             return empty();
         }
 
-        @SuppressWarnings( "unused" )
         protected ValidationErrors validateFail( String request ) {
             return errors( List.of( "error1", "error2" ) );
         }
 
-        @SuppressWarnings( "unused" )
         protected ValidationErrors validateFailCode( String request ) {
-            return error( 403, "denied" );
+            return error( HTTP_FORBIDDEN, "denied" );
         }
     }
 }

@@ -26,16 +26,8 @@ package oap.ws.sso;
 
 import java.util.Optional;
 
-public class DefaultTokenService implements TokenService {
+public interface UserProvider {
+    Optional<User> getUser( String email );
 
-    private final AuthService authService;
-
-    public DefaultTokenService( AuthService authService ) {
-        this.authService = authService;
-    }
-
-    @Override
-    public Optional<Token> getToken( String tokenId ) {
-        return authService.getToken( tokenId );
-    }
+    Optional<User> getAuthenticated( String email, String password );
 }

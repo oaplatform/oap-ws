@@ -24,19 +24,13 @@
 
 package oap.ws.sso;
 
-import lombok.ToString;
-import org.joda.time.DateTime;
+import java.util.Optional;
 
-import java.io.Serializable;
+public interface Authenticator {
 
-@ToString
-public class Token implements Serializable {
+    Optional<Authentication> authenticate( String authId );
 
-    private static final long serialVersionUID = -2221117654361445000L;
+    Optional<Authentication> authenticate( String email, String password );
 
-    public String id;
-    @Deprecated
-    public User user;
-    public DateTime created;
-    public String email;
+    void invalidateByEmail( String email );
 }

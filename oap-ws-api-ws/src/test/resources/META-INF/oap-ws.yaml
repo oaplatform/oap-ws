@@ -2,6 +2,3 @@ services:
   example:
     service: example
     protocol: HTTP
-  api:
-    service: api
-    protocol: HTTP
