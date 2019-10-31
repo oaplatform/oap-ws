@@ -57,11 +57,11 @@ public class SecurityInterceptor implements Interceptor {
 
         if( !session.containsKey( USER_KEY ) ) {
             log.trace( "no user in session {}", session );
-            Optional<Authentication> authentication = SSO.getAuthentication( request ).flatMap( authenticator::authenticate );
-            if( authentication.isEmpty() ) {
-                log.trace( "no auth token" );
-//                return Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
-            } else {
+            var authId = SSO.getAuthentication( request );
+            log.trace( "auth id {}", authId );
+            Optional<Authentication> authentication = authId.flatMap( authenticator::authenticate );
+            if( authentication.isEmpty() ) log.trace( "not authenticated" );
+            else {
                 User user = authentication.get().user;
                 session.set( USER_KEY, user );
                 log.trace( "set user {} into session {}", user, session );

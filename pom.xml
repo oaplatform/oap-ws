@@ -65,7 +65,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>6.0.2</revision>
+        <revision>6.0.3</revision>
 
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
