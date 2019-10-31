@@ -25,7 +25,9 @@
 package oap.ws.sso.testng;
 
 import oap.application.testng.KernelFixture;
+import oap.http.Cookie;
 import oap.testng.Fixtures;
+import org.joda.time.DateTime;
 
 import java.nio.file.Path;
 
@@ -33,6 +35,7 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
 
 public class SSOTest extends Fixtures {
     protected KernelFixture kernelFixture;
@@ -52,6 +55,8 @@ public class SSOTest extends Fixtures {
 
     protected static void assertLogout() {
         assertGet( httpUrl( "/auth/logout" ) )
-            .hasCode( HTTP_NO_CONTENT );
+            .hasCode( HTTP_NO_CONTENT )
+            .containsCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
+                .withExpires( new DateTime( 1970, 1, 1, 1, 1 ) ) );
     }
 }
