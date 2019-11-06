@@ -42,6 +42,6 @@ public @interface WsParam {
     String[] name() default {};
 
     enum From {
-        QUERY, PATH, BODY, HEADER, SESSION
+        QUERY, PATH, BODY, HEADER, SESSION, COOKIE
     }
 }

@@ -56,7 +56,7 @@ public class WebServicesPerformance {
         listener.start();
         try {
             WebServices ws = new WebServices( new Kernel( Lists.empty() ), server, SESSION_MANAGER, GenericCorsPolicy.DEFAULT );
-            ws.bind( "x/v/math", GenericCorsPolicy.DEFAULT, new MathWS(), false, SESSION_MANAGER,
+            ws.bind( "x/v/math", GenericCorsPolicy.DEFAULT, new WebServiceTest.MathWS(), false, SESSION_MANAGER,
                 Collections.emptyList(), Protocol.HTTP );
 
             HttpAsserts.reset();

@@ -291,7 +291,7 @@ public class WebService implements Handler {
                                 return parameter.type().isOptional()
                                     ? session.get( parameter.name() )
                                     : session.get( parameter.name() ).orElse( null );
-                            case HEADER:
+                            case HEADER: {
                                 var names = Lists.addAll( Lists.of( wsParam.name() ), uncamelHeaderName( parameter.name() ), parameter.name() );
                                 Optional<String> header;
                                 for( String name : names ) {
@@ -299,6 +299,16 @@ public class WebService implements Handler {
                                     if( header.isPresent() ) return unwrap( parameter, header );
                                 }
                                 return unwrap( parameter, Optional.empty() );
+                            }
+                            case COOKIE: {
+                                var names = Lists.addAll( Lists.of( wsParam.name() ), parameter.name() );
+                                Optional<String> cookie;
+                                for( String name : names ) {
+                                    cookie = request.cookie( name );
+                                    if( cookie.isPresent() ) return unwrap( parameter, cookie );
+                                }
+                                return unwrap( parameter, Optional.empty() );
+                            }
                             case PATH:
                                 return wsMethod.map( wsm -> WsMethodMatcher.pathParam( wsm.path(), request.getRequestLine(),
                                     parameter.name() ) )
