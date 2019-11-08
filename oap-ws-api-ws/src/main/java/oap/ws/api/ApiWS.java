@@ -136,8 +136,7 @@ public class ApiWS {
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
-        if( r.assignableTo( List.class ) ) return List.class.getSimpleName();
-        if( r.assignableTo( Set.class ) ) return Set.class.getSimpleName();
+        if( r.assignableTo( Iterable.class ) ) return Iterable.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
         return formatComplexType( shift, r );
