@@ -1,6 +1,6 @@
 # oap-ws
 
-## oap-ws-wile-ws
+## oap-ws-file-ws
 
     oap-ws-file-bucket-manager.parameters.buckets {
          DEFAULT = /path/to/default
