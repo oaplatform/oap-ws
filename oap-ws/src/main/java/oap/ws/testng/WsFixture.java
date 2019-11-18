@@ -45,6 +45,10 @@ import static oap.http.cors.GenericCorsPolicy.DEFAULT;
 import static oap.http.testng.HttpAsserts.reset;
 import static oap.testng.Asserts.urlOfTestResource;
 
+/**
+ * @see oap.application.testng.KernelFixture
+ */
+@Deprecated
 public class WsFixture implements Fixture {
 
     private Class<?> contextClass;

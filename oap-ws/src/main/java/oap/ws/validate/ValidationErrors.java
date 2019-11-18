@@ -141,6 +141,8 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
         return HttpResponse.status( code, "validation failed", new ErrorResponse( errors ) );
     }
 
+    @EqualsAndHashCode
+    @ToString
     public static class ErrorResponse implements Serializable {
         public List<String> errors;
 

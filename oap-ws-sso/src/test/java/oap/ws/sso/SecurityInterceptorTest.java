@@ -24,8 +24,6 @@
 
 package oap.ws.sso;
 
-import oap.ws.WsMethod;
-import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
@@ -34,7 +32,6 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
-import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.Roles.ADMIN;
 import static oap.ws.sso.Roles.USER;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
@@ -54,28 +51,16 @@ public class SecurityInterceptorTest extends IntegratedTest {
 
     @Test
     public void notLoggedIn() {
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         assertGet( httpUrl( "/secure" ) )
             .hasCode( HTTP_UNAUTHORIZED );
     }
 
     @Test
     public void denied() {
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", USER ) );
-        assertLogin( "admin@admin.com", "pass" );
-        assertGet( httpUrl( "/auth/login?email=admin@admin.com&password=pass" ) )
-            .hasCode( HTTP_OK );
+        userProvider().addUser( new TestUser( "user@user.com", "pass", USER ) );
+        assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
             .hasCode( HTTP_FORBIDDEN );
-    }
-
-    @SuppressWarnings( "unused" )
-    public static class SecureWS {
-        @WsSecurity( permissions = "ALLOWED" )
-        @WsMethod( path = "/", produces = "text/plain" )
-        public String secure( @WsParam( from = SESSION ) User loggedUser ) {
-            return loggedUser.getEmail();
-        }
     }
 
 }

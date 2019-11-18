@@ -22,8 +22,17 @@
  * SOFTWARE.
  */
 
-package oap.ws;
+package oap.ws.sso;
 
-public enum WsResponse {
-    TEXT, JSON
+import oap.ws.WsMethod;
+import oap.ws.WsParam;
+
+import static oap.ws.WsParam.From.SESSION;
+
+public class SecureWS {
+    @WsSecurity( permissions = "ALLOWED" )
+    @WsMethod( path = "/", produces = "text/plain" )
+    public String secure( @WsParam( from = SESSION ) User loggedUser ) {
+        return loggedUser.getEmail();
+    }
 }

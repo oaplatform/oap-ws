@@ -48,6 +48,12 @@ import java.util.function.Function;
 import static oap.util.Pair.__;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @see oap.application.testng.KernelFixture
+ * @see oap.http.testng.HttpAsserts
+ * @see ValidationAssertion
+ */
+@Deprecated
 public class ValidationErrorsAssertion extends AbstractAssert<ValidationErrorsAssertion, ValidationErrors> {
 
     private static final ObjenesisStd objenesis = new ObjenesisStd();
@@ -99,65 +105,65 @@ public class ValidationErrorsAssertion extends AbstractAssert<ValidationErrorsAs
 
         @SuppressWarnings( "unchecked" )
         public ValidatedInvocation( I instance ) {
-                var factory = new ProxyFactory();
-                factory.setSuperclass( instance.getClass() );
+            var factory = new ProxyFactory();
+            factory.setSuperclass( instance.getClass() );
 
-                MethodHandler handler = ( self, jmethod, proceed, args ) -> {
-                    var method = Reflect.reflect( instance.getClass() )
-                        .method( jmethod )
-                        .orElse( null );
-                    if( method == null ) throw new NoSuchMethodError( jmethod.toString() );
-                    var paramErrors = ValidationErrors.empty();
+            MethodHandler handler = ( self, jmethod, proceed, args ) -> {
+                var method = Reflect.reflect( instance.getClass() )
+                    .method( jmethod )
+                    .orElse( null );
+                if( method == null ) throw new NoSuchMethodError( jmethod.toString() );
+                var paramErrors = ValidationErrors.empty();
 
-                    var parameters = method.parameters;
+                var parameters = method.parameters;
 
-                    Map<Reflection.Parameter, Object> originalValues = Stream.of( parameters )
-                        .zipWithIndex()
-                        .<Reflection.Parameter, Object>map( ( parameter, i ) -> __( parameter, Binder.json.marshal( args[i] ) ) )
-                        .toMap();
+                Map<Reflection.Parameter, Object> originalValues = Stream.of( parameters )
+                    .zipWithIndex()
+                    .<Reflection.Parameter, Object>map( ( parameter, i ) -> __( parameter, Binder.json.marshal( args[i] ) ) )
+                    .toMap();
 
-                    paramErrors = paramErrors.validateParameters( originalValues, method, instance, true );
+                paramErrors = paramErrors.validateParameters( originalValues, method, instance, true );
 
-                    if( paramErrors.failed() ) {
-                        runAsserts( paramErrors );
+                if( paramErrors.failed() ) {
+                    runAsserts( paramErrors );
+                    return null;
+                }
+
+                var values = new LinkedHashMap<Reflection.Parameter, Object>();
+
+                for( int i = 0; i < parameters.size(); i++ ) values.put( parameters.get( i ), args[i] );
+
+                paramErrors = paramErrors.validateParameters( values, method, instance, false );
+
+                if( paramErrors.failed() ) {
+                    runAsserts( paramErrors );
+                    return null;
+                }
+
+                var methodErrors = Validators
+                    .forMethod( method, instance, false )
+                    .validate( args, values );
+                if( methodErrors.failed() )
+                    runAsserts( methodErrors );
+                if( methodErrors.failed() ) return null;
+
+                try {
+                    return method.invoke( instance, args );
+                } catch( ReflectException e ) {
+                    var cause = e.getCause();
+                    if( cause instanceof InvocationTargetException && ( cause = cause.getCause() ) instanceof WsClientException ) {
+                        var wsClientException = ( WsClientException ) cause;
+                        var code = wsClientException.code;
+                        var errors = wsClientException.errors;
+
+                        var validationErrors = ValidationErrors.errors( code, errors );
+                        runAsserts( validationErrors );
                         return null;
+                    } else {
+                        throw Throwables.propagate( e );
                     }
-
-                    var values = new LinkedHashMap<Reflection.Parameter, Object>();
-
-                    for( int i = 0; i < parameters.size(); i++ ) values.put( parameters.get( i ), args[i] );
-
-                    paramErrors = paramErrors.validateParameters( values, method, instance, false );
-
-                    if( paramErrors.failed() ) {
-                        runAsserts( paramErrors );
-                        return null;
-                    }
-
-                    var methodErrors = Validators
-                        .forMethod( method, instance, false )
-                        .validate( args, values );
-                    if( methodErrors.failed() )
-                        runAsserts( methodErrors );
-                    if( methodErrors.failed() ) return null;
-
-                    try {
-                        return method.invoke( instance, args );
-                    } catch( ReflectException e ) {
-                        var cause = e.getCause();
-                        if( cause instanceof InvocationTargetException && ( cause = cause.getCause() ) instanceof WsClientException ) {
-                            var wsClientException = ( WsClientException ) cause;
-                            var code = wsClientException.code;
-                            var errors = wsClientException.errors;
-
-                            var validationErrors = ValidationErrors.errors( code, errors );
-                            runAsserts( validationErrors );
-                            return null;
-                        } else {
-                            throw Throwables.propagate( e );
-                        }
-                    }
-                };
+                }
+            };
 
             var klass = factory.createClass();
 
