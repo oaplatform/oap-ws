@@ -31,9 +31,6 @@ import oap.http.Request;
 import oap.http.Response;
 import oap.json.Binder;
 import oap.json.JsonException;
-import oap.metrics.Metrics;
-import oap.metrics.Metrics2;
-import oap.metrics.Name;
 import oap.reflect.ReflectException;
 import oap.reflect.Reflection;
 import oap.util.Lists;
@@ -119,11 +116,6 @@ public class WebService implements Handler {
             var method = methodMatcher.findMethod( requestLine, request.getHttpMethod() );
             log.trace( "invoking {} for {}", method, requestLine );
             method.ifPresentOrElse( m -> {
-                var name = Metrics
-                    .name( "rest_timer" )
-                    .tag( "service", toString() )
-                    .tag( "method", m.name() );
-
                 Session session = null;
                 if( sessionAware ) {
                     String cookie = request.cookie( SessionManager.COOKIE_ID ).orElse( null );
@@ -132,7 +124,7 @@ public class WebService implements Handler {
                     log.trace( "session for {} is {}", this, session );
                 }
 
-                handleInternal( request, response, m, name, session );
+                handleInternal( request, response, m, session );
             }, () -> {
                 log.trace( "[{}] not found", requestLine );
                 response.respond( NOT_FOUND );
@@ -143,14 +135,13 @@ public class WebService implements Handler {
         }
     }
 
-    private void handleInternal( Request request, Response response, Reflection.Method method,
-                                 Name name, Session session ) {
+    private void handleInternal( Request request, Response response, Reflection.Method method, Session session ) {
         log.trace( "{}: session: [{}]", this, session );
 
         var wsMethod = method.findAnnotation( WsMethod.class );
 
         Interceptors.before( interceptors, request, session, method )
-            .ifPresentOrElse( response::respond, () -> Metrics2.measureTimer( name, () -> {
+            .ifPresentOrElse( response::respond, () -> {
                 var parameters = method.parameters;
                 var originalValues = getOriginalValues( session, parameters, request, wsMethod );
 
@@ -181,7 +172,7 @@ public class WebService implements Handler {
                     .toString()
                     : null;
                 response.respond( Interceptors.after( interceptors, rb.withCookie( cookie ).response(), session ) );
-            } ) );
+            } );
     }
 
     private HttpResponse.Builder produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {

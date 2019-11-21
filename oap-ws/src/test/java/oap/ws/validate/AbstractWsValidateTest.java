@@ -31,7 +31,6 @@ import oap.http.Protocol;
 import oap.http.Server;
 import oap.http.cors.GenericCorsPolicy;
 import oap.http.testng.HttpAsserts;
-import oap.metrics.Metrics;
 import oap.testng.Env;
 import oap.util.Lists;
 import oap.ws.SessionManager;
@@ -53,7 +52,6 @@ public abstract class AbstractWsValidateTest {
     @BeforeClass
     public void start() {
         Env.resetPorts();
-        Metrics.resetAll();
 
         server = new Server( 100, false );
         server.start();
@@ -76,6 +74,5 @@ public abstract class AbstractWsValidateTest {
         server.unbind( "test" );
 
         HttpAsserts.reset();
-        Metrics.resetAll();
     }
 }

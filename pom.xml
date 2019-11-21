@@ -69,7 +69,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>7.0.1</revision>
+        <revision>7.0.2</revision>
 
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
@@ -78,8 +78,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
 
-        <oap.version>6.0.2</oap.version>
-        <testng.version>6.11</testng.version>
+        <oap.version>6.1.0</oap.version>
         <assertj.version>3.12.2</assertj.version>
         <guava.version>27.1-jre</guava.version>
         <logback.version>1.2.3</logback.version>

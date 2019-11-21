@@ -29,7 +29,6 @@ import oap.http.Handler;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.http.Response;
-import oap.metrics.Metrics;
 import oap.testng.Fixtures;
 import oap.util.Maps;
 import oap.util.Pair;
@@ -59,7 +58,6 @@ import static oap.ws.WsParam.From.PATH;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertEquals;
 
 @Slf4j
 public class WebServiceTest extends Fixtures {
@@ -123,11 +121,6 @@ public class WebServiceTest extends Fixtures {
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
         assertGet( httpUrl( "/x/v/math/code?code=204" ) )
             .hasCode( HTTP_NO_CONTENT );
-        assertEquals(
-            Metrics.snapshot( Metrics.name( "rest_timer" )
-                .tag( "service", MathWS.class.getName() )
-                .tag( "method", "bean" ) ).count,
-            1 );
         assertGet( httpUrl( "/x/h/" ) ).hasCode( HTTP_NO_CONTENT );
         assertGet( httpUrl( "/hocon/x/v/math/x?i=1&s=2" ) )
             .respondedJson( HTTP_INTERNAL_ERROR, "failed", "{\"message\":\"failed\"}" );
