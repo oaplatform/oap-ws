@@ -4,4 +4,4 @@ services:
     implementation: oap.ws.sso.IntegratedTest$TestUserProvider
 
   secure-ws:
-    implementation: oap.ws.sso.SecurityInterceptorTest$SecureWS
+    implementation: oap.ws.sso.SecureWS

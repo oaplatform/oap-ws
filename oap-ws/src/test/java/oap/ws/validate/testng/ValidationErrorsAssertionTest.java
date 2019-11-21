@@ -29,16 +29,14 @@ import oap.ws.validate.WsValidate;
 import oap.ws.validate.WsValidateJson;
 import org.testng.annotations.Test;
 
-import java.net.HttpURLConnection;
-
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 import static oap.ws.validate.testng.ValidationErrorsAssertion.validating;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Deprecated
 public class ValidationErrorsAssertionTest {
     @Test
     public void validatedCall() {
