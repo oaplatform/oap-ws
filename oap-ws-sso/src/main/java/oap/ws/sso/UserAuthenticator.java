@@ -51,7 +51,7 @@ public class UserAuthenticator implements Authenticator {
 
     @Override
     public Optional<Authentication> authenticate( String authId ) {
-        log.trace( "Available authentications: {}", authentications.asMap().values() );
+        log.trace( "Available authentications: {}", authentications.asMap().keySet() );
         var auth = Optional.ofNullable( authentications.getIfPresent( authId ) );
         if( auth.isEmpty() ) log.error( "authId: {} is not among the available authentications", authId );
         return auth;
@@ -60,6 +60,18 @@ public class UserAuthenticator implements Authenticator {
     @Override
     public Optional<Authentication> authenticate( String email, String password ) {
         return userProvider.getAuthenticated( email, password )
+            .map( user -> {
+                var id = cuid.next();
+                log.trace( "generating new authentication for user {} -> {}", user.getEmail(), id );
+                Authentication authentication = new Authentication( id, user );
+                authentications.put( authentication.id, authentication );
+                return authentication;
+            } );
+    }
+
+    @Override
+    public Optional<Authentication> authenticateTrusted( String email ) {
+        return userProvider.getUser( email )
             .map( user -> {
                 var id = cuid.next();
                 log.trace( "generating new authentication for user {} -> {}", user.getEmail(), id );
