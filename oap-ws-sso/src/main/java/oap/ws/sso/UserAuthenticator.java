@@ -51,8 +51,10 @@ public class UserAuthenticator implements Authenticator {
 
     @Override
     public Optional<Authentication> authenticate( String authId ) {
-        log.trace( "available authentications {}", authentications.asMap().keySet() );
-        return Optional.ofNullable( authentications.getIfPresent( authId ) );
+        log.trace( "Available authentications: {}", authentications.asMap().values() );
+        var auth = Optional.ofNullable( authentications.getIfPresent( authId ) );
+        if( auth.isEmpty() ) log.error( "authId: {} is not among the available authentications", authId );
+        return auth;
     }
 
     @Override
