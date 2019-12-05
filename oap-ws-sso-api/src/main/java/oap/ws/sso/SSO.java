@@ -41,7 +41,7 @@ public class SSO {
         return request.header( AUTHENTICATION_KEY ).or( () -> request.cookie( AUTHENTICATION_KEY ) );
     }
 
-    public static HttpResponse authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
+    public static HttpResponse.Builder authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
         return HttpResponse.ok( authentication.view )
             .withHeader( AUTHENTICATION_KEY, authentication.id )
             .withCookie( new Cookie( AUTHENTICATION_KEY, authentication.id )
@@ -50,14 +50,14 @@ public class SSO {
                 .withExpires( DateTime.now().plus( cookieExpiration ) )
                 .httpOnly()
                 .toString()
-            ).response();
+            );
     }
 
-    public static HttpResponse logoutResponse( String cookieDomain ) {
+    public static HttpResponse.Builder logoutResponse( String cookieDomain ) {
         return HttpResponse.status( HTTP_NO_CONTENT )
             .withCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
                 .withExpires( new DateTime( 1970, 1, 1, 1, 1 ) )
                 .toString()
-            ).response();
+            );
     }
 }

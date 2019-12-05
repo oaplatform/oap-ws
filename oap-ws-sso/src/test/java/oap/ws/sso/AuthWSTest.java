@@ -28,8 +28,8 @@ package oap.ws.sso;
 import org.testng.annotations.Test;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
@@ -43,8 +43,8 @@ public class AuthWSTest extends IntegratedTest {
     public void login() {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         assertLogin( "admin@admin.com", "pass" );
-        assertGet( httpUrl( "/auth/current" ) )
-            .respondedJson( HTTP_OK, "OK", "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
     }
 
     @Test
@@ -53,11 +53,11 @@ public class AuthWSTest extends IntegratedTest {
         userProvider().addUser( new TestUser( "user@admin.com", "pass", USER ) );
         assertLogin( "admin@admin.com", "pass" );
         assertLogout();
-        assertGet( httpUrl( "/auth/current" ) )
-            .hasCode( HTTP_NOT_FOUND );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .hasCode( HTTP_UNAUTHORIZED );
         assertLogin( "user@admin.com", "pass" );
-        assertGet( httpUrl( "/auth/current" ) )
-            .respondedJson( HTTP_OK, "OK", "{\"email\":\"user@admin.com\", \"role\":\"USER\"}" );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .respondedJson( "{\"email\":\"user@admin.com\", \"role\":\"USER\"}" );
     }
 
     @Test

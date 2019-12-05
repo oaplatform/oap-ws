@@ -61,7 +61,8 @@ public class AuthWS {
         loggedUser.ifPresent( user -> logout( user, session ) );
         return authenticator.authenticate( email, password )
             .map( authentication -> authenticatedResponse( authentication, cookieDomain, cookieExpiration ) )
-            .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ).response() );
+            .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ) )
+            .response();
     }
 
     @WsMethod( method = GET, path = "/logout" )
@@ -70,7 +71,7 @@ public class AuthWS {
         log.debug( "Invalidating token for user [{}]", loggedUser.getEmail() );
         authenticator.invalidateByEmail( loggedUser.getEmail() );
         session.invalidate();
-        return logoutResponse( cookieDomain );
+        return logoutResponse( cookieDomain ).response();
     }
 
     protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
@@ -80,8 +81,20 @@ public class AuthWS {
             .orElse( empty() );
     }
 
+    /**
+     * @see #whoami(Session)
+     */
+    @Deprecated
     @WsMethod( method = GET, path = "/current" )
     public Optional<User.View> current( Session session ) {
         return session.<User>get( SSO.USER_KEY ).map( User::getView );
+    }
+
+    @WsMethod( method = GET, path = "/whoami" )
+    public HttpResponse whoami( Session session ) {
+        return session.<User>get( SSO.USER_KEY )
+            .map( user -> HttpResponse.ok( user.getView() ) )
+            .orElseGet( () -> HttpResponse.status( HTTP_UNAUTHORIZED ) )
+            .response();
     }
 }
