@@ -27,7 +27,7 @@ package oap.ws.sso;
 import java.util.Optional;
 
 public interface UserProvider {
-    Optional<User> getUser( String email );
+    Optional<? extends User> getUser( String email );
 
-    Optional<User> getAuthenticated( String email, String password );
+    Optional<? extends User> getAuthenticated( String email, String password );
 }

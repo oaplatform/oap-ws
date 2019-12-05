@@ -33,15 +33,11 @@
 
     <name>oap-ws-parent</name>
 
-    <prerequisites>
-        <maven>3.5.0</maven>
-    </prerequisites>
-
     <modules>
         <module>oap-ws</module>
         <module>oap-ws-sso-api</module>
         <module>oap-ws-sso</module>
-<!--        <module>oap-ws-media</module>-->
+        <!--        <module>oap-ws-media</module>-->
         <module>oap-ws-api-ws</module>
         <module>oap-ws-file-ws</module>
     </modules>
@@ -69,7 +65,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>7.0.4</revision>
+        <revision>7.0.5</revision>
 
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
