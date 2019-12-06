@@ -37,7 +37,6 @@ services:
     implementation: oap.ws.SessionManager
     parameters:
       expirationTime: 24h
-      cookieDomain: ""
       cookiePath: "/"
     supervision:
       supervise: true

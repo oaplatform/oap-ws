@@ -5,7 +5,6 @@ services:
     implementation: oap.ws.sso.AuthWS
     parameters:
       authenticator: "@service:oap-ws-sso-authenticator-server"
-      cookieDomain: ""
       cookieExpiration: 7d
 
   oap-ws-sso-authenticator-server:
