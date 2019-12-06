@@ -48,23 +48,23 @@ public class ApiKeyInterceptor implements Interceptor {
 
     @Override
     public Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
-        if( !session.containsKey( SESSION_USER_KEY ) )
-            return request.parameter( "accessKey" )
-                .flatMap( accessKey -> request.parameter( "apiKey" )
-                    .flatMap( apiKey -> {
-                            var authentication = authenticator.authenticateWithApiKey( accessKey, apiKey );
-                            if( authentication.isPresent() ) {
-                                User user = authentication.get().user;
-                                session.set( SESSION_USER_KEY, user );
-                                session.set( SESSION_API_KEY_AUTHENTICATED, true );
-                                log.trace( "set user {} into session {}", user, session );
-                                return Optional.empty();
-                            } else return Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
-                        }
-                    ) );
-        else return Optional.of( HttpResponse
-            .status( HTTP_CONFLICT, "invoking service with apiKey while logged in" )
-            .response() );
+        return request.parameter( "accessKey" )
+            .flatMap( accessKey -> request.parameter( "apiKey" )
+                .flatMap( apiKey -> {
+                        if( session.containsKey( SESSION_USER_KEY ) ) return Optional.of( HttpResponse
+                            .status( HTTP_CONFLICT, "invoking service with apiKey while logged in" )
+                            .response() );
+
+                        var authentication = authenticator.authenticateWithApiKey( accessKey, apiKey );
+                        if( authentication.isPresent() ) {
+                            User user = authentication.get().user;
+                            session.set( SESSION_USER_KEY, user );
+                            session.set( SESSION_API_KEY_AUTHENTICATED, true );
+                            log.trace( "set user {} into session {}", user, session );
+                            return Optional.empty();
+                        } else return Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
+                    }
+                ) );
     }
 
     @Override
