@@ -16,3 +16,9 @@ services:
     parameters:
       authenticator: "@service:oap-ws-sso-authenticator"
       roles: "@service:oap-ws-sso-roles"
+
+  oap-ws-sso-api-key-interceptor:
+    profile: ws-security
+    implementation: oap.ws.sso.ApiKeyInterceptor
+    parameters:
+      authenticator: "@service:oap-ws-sso-authenticator"

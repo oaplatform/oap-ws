@@ -24,17 +24,19 @@
 
 package oap.ws.sso;
 
-import java.util.Optional;
+import org.testng.annotations.Test;
 
-public interface Authenticator {
+import static oap.testng.Asserts.assertString;
 
-    Optional<Authentication> authenticate( String authId );
-
-    Optional<Authentication> authenticate( String email, String password );
-
-    Optional<Authentication> authenticateTrusted( String email );
-
-    Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey );
-
-    void invalidateByEmail( String email );
+public class UserProviderTest {
+    @Test
+    public void toAccessKey() {
+        assertString( UserProvider.toAccessKey( "j.smith@smith.com" ) ).isEqualTo( "HXMLFVRJTSMS" );
+        assertString( UserProvider.toAccessKey( "j@smith.com" ) ).isEqualTo( "HUMMFNRJNSQC" );
+        assertString( UserProvider.toAccessKey( "a" ) ).isEqualTo( "ZIWJXUYTMVKL" );
+        assertString( UserProvider.toAccessKey( "A" ) ).isEqualTo( "TYQXROSNUPWV" );
+        assertString( UserProvider.toAccessKey( "b" ) ).isEqualTo( "HMELFCGBIDKJ" );
+        assertString( UserProvider.toAccessKey( "/" ) ).isEqualTo( "PKYLZWQVOXMN" );
+        assertString( UserProvider.toAccessKey( "@" ) ).isEqualTo( "SXPWQNRMTOVU" );
+    }
 }

@@ -29,10 +29,13 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import oap.io.Resources;
 import oap.ws.sso.testng.SSOTest;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static oap.ws.sso.UserProvider.toAccessKey;
 
 public class IntegratedTest extends SSOTest {
     public IntegratedTest() {
@@ -45,23 +48,35 @@ public class IntegratedTest extends SSOTest {
 
     @Slf4j
     public static class TestUserProvider implements UserProvider {
-        public final List<User> users = new ArrayList<>();
+        public final List<TestUser> users = new ArrayList<>();
 
-        public void addUser( TestUser user ) {
+        public TestUser addUser( String email, String password, String role ) {
+            return addUser( new TestUser( email, password, role ) );
+        }
+
+        public TestUser addUser( TestUser user ) {
             users.add( user );
+            return user;
         }
 
         @Override
-        public Optional<User> getUser( String email ) {
+        public Optional<TestUser> getUser( String email ) {
             return users.stream().filter( u -> u.getEmail().equalsIgnoreCase( email ) ).findAny();
         }
 
         @Override
-        public Optional<User> getAuthenticated( String email, String password ) {
+        public Optional<TestUser> getAuthenticated( String email, String password ) {
             log.trace( "authenticating {} with {}", email, password );
             log.trace( "users {}", users );
             return users.stream()
                 .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.getPassword().equals( password ) )
+                .findAny();
+        }
+
+        @Override
+        public Optional<TestUser> getAuthenticatedByApiKey( String accessKey, String apiKey ) {
+            return users.stream()
+                .filter( u -> u.getAccessKey().equals( accessKey ) && u.apiKey.equals( apiKey ) )
                 .findAny();
         }
     }
@@ -72,6 +87,7 @@ public class IntegratedTest extends SSOTest {
         public final String email;
         public final String password;
         public final String role;
+        public final String apiKey = RandomStringUtils.random( 10, true, true );
 
         public TestUser( String email, String password, String role ) {
             this.email = email;
@@ -100,6 +116,10 @@ public class IntegratedTest extends SSOTest {
         @Override
         public View getView() {
             return view;
+        }
+
+        public String getAccessKey() {
+            return toAccessKey( email );
         }
 
         public class View implements User.View {

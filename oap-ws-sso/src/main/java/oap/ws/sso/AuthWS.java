@@ -87,12 +87,12 @@ public class AuthWS {
     @Deprecated
     @WsMethod( method = GET, path = "/current" )
     public Optional<User.View> current( Session session ) {
-        return session.<User>get( SSO.USER_KEY ).map( User::getView );
+        return session.<User>get( SSO.SESSION_USER_KEY ).map( User::getView );
     }
 
     @WsMethod( method = GET, path = "/whoami" )
     public HttpResponse whoami( Session session ) {
-        return session.<User>get( SSO.USER_KEY )
+        return session.<User>get( SSO.SESSION_USER_KEY )
             .map( user -> HttpResponse.ok( user.getView() ) )
             .orElseGet( () -> HttpResponse.status( HTTP_UNAUTHORIZED ) )
             .response();

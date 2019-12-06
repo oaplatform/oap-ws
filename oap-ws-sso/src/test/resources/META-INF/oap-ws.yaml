@@ -6,4 +6,5 @@ services:
     protocol: HTTP
     sessionAware: true
     interceptors:
+      - oap-ws-sso-api-key-interceptor
       - oap-ws-sso-security-interceptor

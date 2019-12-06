@@ -35,7 +35,7 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 
 public class SSO {
     public static final String AUTHENTICATION_KEY = "Authorization";
-    public static final String USER_KEY = "loggedUser";
+    public static final String SESSION_USER_KEY = "loggedUser";
 
     public static Optional<String> getAuthentication( Request request ) {
         return request.header( AUTHENTICATION_KEY ).or( () -> request.cookie( AUTHENTICATION_KEY ) );

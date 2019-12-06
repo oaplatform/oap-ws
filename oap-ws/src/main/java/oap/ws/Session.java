@@ -49,6 +49,10 @@ public class Session {
         values.put( key, value );
     }
 
+    public void remove( String key ) {
+        values.remove( key );
+    }
+
     public void invalidate() {
         values.clear();
     }

@@ -37,7 +37,7 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static oap.ws.sso.SSO.USER_KEY;
+import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 @Slf4j
 public class SecurityInterceptor implements Interceptor {
@@ -54,8 +54,7 @@ public class SecurityInterceptor implements Interceptor {
     @Nonnull
     public Optional<HttpResponse> before( @Nonnull Request request, Session session, @Nonnull Reflection.Method method ) {
 
-
-        if( !session.containsKey( USER_KEY ) ) {
+        if( !session.containsKey( SESSION_USER_KEY ) ) {
             log.trace( "no user in session {}", session );
             var authId = SSO.getAuthentication( request );
             log.trace( "auth id {}", authId );
@@ -63,7 +62,7 @@ public class SecurityInterceptor implements Interceptor {
             if( authentication.isEmpty() ) log.trace( "not authenticated" );
             else {
                 User user = authentication.get().user;
-                session.set( USER_KEY, user );
+                session.set( SESSION_USER_KEY, user );
                 log.trace( "set user {} into session {}", user, session );
             }
         }
@@ -74,8 +73,8 @@ public class SecurityInterceptor implements Interceptor {
         if( annotation.isPresent() ) {
             log.trace( "secure method {}", method );
 
-            return session.containsKey( USER_KEY )
-                ? session.<User>get( USER_KEY )
+            return session.containsKey( SESSION_USER_KEY )
+                ? session.<User>get( SESSION_USER_KEY )
                 .filter( u -> !roles.granted( u.getRole(), annotation.get().permissions() ) )
                 .map( u -> {
                     log.trace( "denied access to method {} for {} with role {} {}: required {}", method.name(), u.getEmail(), u.getRole(), roles.permissionsOf( u.getRole() ), annotation.get().permissions() );

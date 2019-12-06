@@ -24,6 +24,7 @@
 
 package oap.ws.interceptor;
 
+import lombok.extern.slf4j.Slf4j;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.reflect.Reflection;
@@ -34,9 +35,11 @@ import org.apache.commons.collections4.iterators.ReverseListIterator;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class Interceptors {
     public static Optional<HttpResponse> before( List<Interceptor> interceptors, Request request, Session session, Reflection.Method method ) {
         for( var interceptor : interceptors ) {
+            log.trace( "running before call {}", interceptor.getClass().getSimpleName() );
             var response = interceptor.before( request, session, method );
             if( response.isPresent() ) return response;
         }
@@ -45,6 +48,9 @@ public class Interceptors {
 
     public static HttpResponse after( List<Interceptor> interceptors, HttpResponse response, Session session ) {
         return Stream.of( new ReverseListIterator<>( interceptors ) )
-            .foldLeft( response, ( r, i ) -> i.after( r, session ) );
+            .foldLeft( response, ( r, interceptor ) -> {
+                log.trace( "running after call {}", interceptor.getClass().getSimpleName() );
+                return interceptor.after( r, session );
+            } );
     }
 }

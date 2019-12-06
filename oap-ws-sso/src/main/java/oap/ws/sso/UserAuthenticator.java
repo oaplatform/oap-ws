@@ -51,9 +51,9 @@ public class UserAuthenticator implements Authenticator {
 
     @Override
     public Optional<Authentication> authenticate( String authId ) {
-        log.trace( "Available authentications: {}", authentications.asMap().keySet() );
+        log.trace( "available authentications: {}", authentications.asMap().keySet() );
         var auth = Optional.ofNullable( authentications.getIfPresent( authId ) );
-        if( auth.isEmpty() ) log.error( "authId: {} is not among the available authentications", authId );
+        log.trace( "authentication for {} -> {}", authId, auth );
         return auth;
     }
 
@@ -91,6 +91,16 @@ public class UserAuthenticator implements Authenticator {
                 return;
             }
         }
+    }
+
+    @Override
+    public Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey ) {
+        return userProvider.getAuthenticatedByApiKey( accessKey, apiKey )
+            .map( user -> {
+                var id = cuid.next();
+                log.trace( "generating temporaty authentication for user {} -> {}", user.getEmail(), id );
+                return new Authentication( id, user );
+            } );
     }
 
 }
