@@ -33,6 +33,7 @@ import oap.json.ext.Ext;
 import oap.json.ext.ExtDeserializer;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
+import oap.util.AssocList;
 import oap.util.Lists;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
@@ -137,6 +138,7 @@ public class ApiWS {
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
         if( r.assignableTo( Iterable.class ) ) return Iterable.class.getSimpleName();
+        if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
         return formatComplexType( shift, r );
