@@ -120,6 +120,7 @@ public class ApiWS {
     private String formatType( int shift, Reflection clazz, Reflection r ) {
         if( r.assignableTo( HttpResponse.class ) ) return "<http response>";
         if( r.isOptional() ) return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ) );
+        if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
         if( r.assignableTo( Collection.class ) ) {
             log.trace( "DEBUG: Collections recursion - {}/{}/{}", shift, clazz, r );
             return formatType( shift, clazz, r.getCollectionComponentType() ) + "[]";
@@ -139,8 +140,6 @@ public class ApiWS {
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
-        if( r.assignableTo( Iterable.class ) ) return Iterable.class.getSimpleName();
-        if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
         return formatComplexType( shift, r );
