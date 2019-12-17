@@ -120,8 +120,10 @@ public class ApiWS {
     private String formatType( int shift, Reflection clazz, Reflection r ) {
         if( r.assignableTo( HttpResponse.class ) ) return "<http response>";
         if( r.isOptional() ) return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ) );
-        if( r.assignableTo( Collection.class ) )
+        if( r.assignableTo( Collection.class ) ) {
+            log.trace( "DEBUG: Collections recursion - {}/{}/{}", shift, clazz, r );
             return formatType( shift, clazz, r.getCollectionComponentType() ) + "[]";
+        }
         if( r.isArray() ) return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ) ) + "[]";
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
         if( r.underlying.getPackageName().startsWith( DateTime.class.getPackageName() ) )
