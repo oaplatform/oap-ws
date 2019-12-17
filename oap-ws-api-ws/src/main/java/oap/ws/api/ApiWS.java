@@ -121,6 +121,7 @@ public class ApiWS {
         if( r.assignableTo( HttpResponse.class ) ) return "<http response>";
         if( r.isOptional() ) return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ) );
         if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
+        if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Collection.class ) ) {
             log.trace( "DEBUG: Collections recursion - {}/{}/{}", shift, clazz, r );
             return formatType( shift, clazz, r.getCollectionComponentType() ) + "[]";
@@ -138,7 +139,6 @@ public class ApiWS {
         if( r.assignableTo( Character.class ) ) return char.class.getSimpleName();
         if( r.assignableTo( String.class ) ) return String.class.getSimpleName();
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
-        if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
