@@ -50,7 +50,10 @@ public class SSOTest extends Fixtures {
 
     protected static void assertLogin( String login, String password ) {
         assertGet( httpUrl( "/auth/login?email=" + login + "&password=" + password ) )
-            .hasCode( HTTP_OK );
+            .hasCode( HTTP_OK )
+            .is( response -> {
+                System.out.println( response.headers );
+            } );
     }
 
     protected static void assertLogout() {
