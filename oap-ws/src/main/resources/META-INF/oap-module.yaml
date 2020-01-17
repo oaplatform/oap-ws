@@ -29,7 +29,7 @@ services:
     implementation: oap.http.cors.PatternCorsPolicy
     parameters:
       domainRegexp: "^[^:/]*\\.oaplatform\\.org$"
-      allowHeaders: "Content-type, Authorization, Set-cookie"
+      allowHeaders: "Content-type, Authorization, Set-cookie, Cookie"
       allowCredentials: true
       allowMethods: [HEAD, POST, GET, PUT, DELETE, OPTIONS]
 
