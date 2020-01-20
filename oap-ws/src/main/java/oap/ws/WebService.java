@@ -283,7 +283,9 @@ public class WebService implements Handler {
                                     ? session.get( parameter.name() )
                                     : session.get( parameter.name() ).orElse( null );
                             case HEADER: {
+                                log.trace( "headers: {}", request.getHeaders() );
                                 var names = Lists.addAll( Lists.of( wsParam.name() ), uncamelHeaderName( parameter.name() ), parameter.name() );
+                                log.trace( "names: {}", names );
                                 Optional<String> header;
                                 for( String name : names ) {
                                     header = request.header( name );
