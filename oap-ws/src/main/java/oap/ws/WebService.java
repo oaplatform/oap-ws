@@ -168,7 +168,7 @@ public class WebService implements Handler {
                     .withPath( sessionManager.cookiePath )
                     .withExpires( DateTime.now().plusMinutes( sessionManager.cookieExpiration ) )
                     .withDomain( sessionManager.cookieDomain )
-                    .httpOnly()
+//                    .httpOnly()todo:temporary solution
                     .toString()
                     : null;
                 response.respond( Interceptors.after( interceptors, rb.withCookie( cookie ).response(), session ) );
