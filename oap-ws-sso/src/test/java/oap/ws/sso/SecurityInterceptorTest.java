@@ -40,7 +40,10 @@ public class SecurityInterceptorTest extends IntegratedTest {
     @Test
     public void allowed() {
         userProvider().addUser( "admin@admin.com", "pass", ADMIN );
-        assertLogin( "admin@admin.com", "pass" );
+        assertLogin( "{\n" +
+            "  \"email\": \"admin@admin.com\",\n" +
+            "  \"password\": \"pass\"\n" +
+            "}" );
         assertGet( httpUrl( "/secure" ) )
             .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "admin@admin.com" );
         assertGet( httpUrl( "/secure" ) )
@@ -58,7 +61,10 @@ public class SecurityInterceptorTest extends IntegratedTest {
     @Test
     public void denied() {
         userProvider().addUser( "user@user.com", "pass", USER );
-        assertLogin( "user@user.com", "pass" );
+        assertLogin( "{\n" +
+            "  \"email\": \"user@admin.com\",\n" +
+            "  \"password\": \"pass\"\n" +
+            "}" );
         assertGet( httpUrl( "/secure" ) )
             .hasCode( HTTP_FORBIDDEN );
     }

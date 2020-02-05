@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
 
@@ -48,8 +49,8 @@ public class SSOTest extends Fixtures {
         fixture( kernelFixture = new KernelFixture( conf, confd ) );
     }
 
-    protected static void assertLogin( String login, String password ) {
-        assertGet( httpUrl( "/auth/login?email=" + login + "&password=" + password ) )
+    protected static void assertLogin( String content ) {
+        assertPost( httpUrl( "/auth/login" ), content )
             .hasCode( HTTP_OK )
             .is( response -> {
                 System.out.println( response.headers );

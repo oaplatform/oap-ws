@@ -64,7 +64,10 @@ public class ApiKeyInterceptorTest extends IntegratedTest {
             __( "apiKey", user.apiKey )
         ).responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "admin@admin.com" );
 
-        assertLogin( user.getEmail(), user.getPassword() );
+        assertLogin( "{\n" +
+            "  \"email\": \"admin@admin.com\",\n" +
+            "  \"password\": \"pass\"\n" +
+            "}" );
         assertGet( httpUrl( "/secure" ) )
             .hasCode( HTTP_OK );
         assertGet( httpUrl( "/secure" ),

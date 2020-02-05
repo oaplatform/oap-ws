@@ -36,6 +36,8 @@ import java.util.Optional;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static oap.http.Request.HttpMethod.GET;
+import static oap.http.Request.HttpMethod.POST;
+import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.Permissions.MANAGE_SELF;
 import static oap.ws.sso.SSO.authenticatedResponse;
@@ -56,10 +58,10 @@ public class AuthWS {
         this.cookieExpiration = cookieExpiration;
     }
 
-    @WsMethod( method = GET, path = "/login" )
-    public HttpResponse login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+    @WsMethod( method = POST, path = "/login" )
+    public HttpResponse login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
-        return authenticator.authenticate( email, password )
+        return authenticator.authenticate( credentials.email, credentials.password )
             .map( authentication -> authenticatedResponse( authentication, cookieDomain, cookieExpiration ) )
             .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ) )
             .response();
@@ -96,5 +98,15 @@ public class AuthWS {
             .map( user -> HttpResponse.ok( user.getView() ) )
             .orElseGet( () -> HttpResponse.status( HTTP_UNAUTHORIZED ) )
             .response();
+    }
+
+    private static class Credentials {
+        public String email;
+        public String password;
+
+        public Credentials( String email, String password ) {
+            this.email = email;
+            this.password = password;
+        }
     }
 }
