@@ -62,7 +62,7 @@ public class SecurityInterceptorTest extends IntegratedTest {
     public void denied() {
         userProvider().addUser( "user@user.com", "pass", USER );
         assertLogin( "{\n" +
-            "  \"email\": \"user@admin.com\",\n" +
+            "  \"email\": \"user@user.com\",\n" +
             "  \"password\": \"pass\"\n" +
             "}" );
         assertGet( httpUrl( "/secure" ) )
