@@ -51,10 +51,6 @@
             <id>oap</id>
             <url>https://mvn.oaplatform.org</url>
         </repository>
-        <repository>
-            <id>projectlombok.org</id>
-            <url>https://projectlombok.org/edge-releases</url>
-        </repository>
     </repositories>
 
     <distributionManagement>
@@ -65,7 +61,7 @@
     </distributionManagement>
 
     <properties>
-        <revision>7.0.19</revision>
+        <revision>7.0.20</revision>
 
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
@@ -74,13 +70,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
 
-        <oap.version>6.4.17</oap.version>
+        <oap.version>6.5.2</oap.version>
         <assertj.version>3.12.2</assertj.version>
         <guava.version>27.1-jre</guava.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.21</slf4j.version>
         <httpcomponents.version>4.4.11</httpcomponents.version>
-        <lombok.version>edge-SNAPSHOT</lombok.version>
+        <lombok.version>1.18.12</lombok.version>
         <jamm.version>0.2.5</jamm.version>
     </properties>
 

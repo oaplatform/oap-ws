@@ -48,6 +48,7 @@ services:
       port: 8880
       server: "@service:oap-http-server"
     supervision:
+      supervise: true
       thread: true
     dependsOn:
       - oap-http-server
@@ -63,6 +64,7 @@ services:
     dependsOn:
       - oap-http-server
     supervision:
+      supervise: true
       thread: true
 
   ws-log:
@@ -76,4 +78,6 @@ services:
     parameters:
       port: 18546
       server: "@service:oap-http-server"
-    supervision.thread: true
+    supervision:
+      supervise: true
+      thread: true
