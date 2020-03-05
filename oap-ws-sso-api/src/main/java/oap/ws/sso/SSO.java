@@ -48,7 +48,7 @@ public class SSO {
                 .withDomain( cookieDomain )
                 .withPath( "/" )
                 .withExpires( DateTime.now().plus( cookieExpiration ) )
-                .httpOnly( false )
+                .httpOnly( true )
                 .toString()
             );
     }
