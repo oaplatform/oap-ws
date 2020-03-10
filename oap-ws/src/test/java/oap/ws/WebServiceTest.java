@@ -33,10 +33,13 @@ import oap.testng.Fixtures;
 import oap.util.Maps;
 import oap.util.Pair;
 import oap.ws.testng.WsFixture;
+import org.apache.commons.io.IOUtils;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Map;
@@ -115,16 +118,30 @@ public class WebServiceTest extends Fixtures {
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "1" );
         assertGet( httpUrl( "/x/v/math/bean?i=1&s=sss" ) )
             .respondedJson( HTTP_OK, "OK", "{\"i\":1,\"s\":\"sss\"}" );
-        assertPost( httpUrl( "/x/v/math/bytes" ), "1234", APPLICATION_OCTET_STREAM )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
-        assertPost( httpUrl( "/x/v/math/string" ), "1234", APPLICATION_OCTET_STREAM )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
         assertGet( httpUrl( "/x/v/math/code?code=204" ) )
             .hasCode( HTTP_NO_CONTENT );
         assertGet( httpUrl( "/x/h/" ) ).hasCode( HTTP_NO_CONTENT );
         assertGet( httpUrl( "/hocon/x/v/math/x?i=1&s=2" ) )
             .respondedJson( HTTP_INTERNAL_ERROR, "failed", "{\"message\":\"failed\"}" );
 
+    }
+
+    @Test
+    public void testInvocationBytes() {
+        assertPost( httpUrl( "/x/v/math/bytes" ), "1234", APPLICATION_OCTET_STREAM )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
+    }
+
+    @Test
+    public void testInvocationString() {
+        assertPost( httpUrl( "/x/v/math/string" ), "1234", APPLICATION_OCTET_STREAM )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
+    }
+
+    @Test
+    public void testInvocationInputStream() {
+        assertPost( httpUrl( "/x/v/math/inputStream" ), "1234", APPLICATION_OCTET_STREAM )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
     }
 
     @Test
@@ -184,7 +201,7 @@ public class WebServiceTest extends Fixtures {
         gzip.write( "{\"i\":1,\"s\":\"sss\"}".getBytes( UTF_8 ) );
         gzip.close();
 
-        final Client.Response response = Client
+        var response = Client
             .custom()
             .build()
             .post( httpUrl( "/x/v/math/json" ),
@@ -276,6 +293,10 @@ public class WebServiceTest extends Fixtures {
 
         public String string( @WsParam( from = BODY ) String bytes ) {
             return bytes;
+        }
+
+        public String inputStream( @WsParam( from = BODY ) InputStream body ) throws IOException {
+            return IOUtils.toString( body, UTF_8 );
         }
 
         public String header( @WsParam( from = HEADER, name = { "X-Custom-Header" } ) String header, @WsParam( from = HEADER ) String xCustomHeader ) {

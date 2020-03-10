@@ -44,6 +44,7 @@ import oap.ws.validate.Validators;
 import org.apache.http.entity.ContentType;
 import org.joda.time.DateTime;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -309,12 +310,15 @@ public class WebService implements Handler {
                                         "path parameter " + parameter.name() + " without "
                                             + WsMethod.class.getName() + " annotation" ) );
                             case BODY:
-                                return parameter.type().assignableFrom( byte[].class )
-                                    ? ( parameter.type().isOptional() ? request.readBody()
-                                    : request.readBody()
-                                        .orElseThrow( () -> new WsClientException(
-                                            "no body for " + parameter.name() ) )
-                                ) : unwrap( parameter, request.readBody().map( String::new ) );
+                                if( parameter.type().assignableFrom( byte[].class ) )
+                                    return ( parameter.type().isOptional()
+                                        ? request.readBody()
+                                        : request.readBody().orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) )
+                                    );
+                                else if( parameter.type().assignableFrom( InputStream.class ) )
+                                    return request.body.orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) );
+
+                                return unwrap( parameter, request.readBody().map( String::new ) );
                             default:
                                 return parameter.type().assignableTo( List.class )
                                     ? request.parameters( parameter.name() )
