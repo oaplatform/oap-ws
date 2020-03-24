@@ -33,7 +33,7 @@
     <parent>
         <groupId>oap</groupId>
         <artifactId>oap-ws-parent</artifactId>
-        <version>${revision}</version>
+        <version>${oap.project.version}</version>
     </parent>
 
     <dependencies>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
+            <version>${oap.deps.lombok.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

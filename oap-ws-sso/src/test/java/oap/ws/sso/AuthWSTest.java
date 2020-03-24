@@ -42,10 +42,7 @@ public class AuthWSTest extends IntegratedTest {
     @Test
     public void login() {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
-        assertLogin( "{\n" +
-            "  \"email\": \"admin@admin.com\",\n" +
-            "  \"password\": \"pass\"\n" +
-            "}" );
+        assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
     }
@@ -54,17 +51,11 @@ public class AuthWSTest extends IntegratedTest {
     public void logout() {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         userProvider().addUser( new TestUser( "user@admin.com", "pass", USER ) );
-        assertLogin( "{\n" +
-            "  \"email\": \"admin@admin.com\",\n" +
-            "  \"password\": \"pass\"\n" +
-            "}" );
+        assertLogin( "admin@admin.com", "pass" );
         assertLogout();
         assertGet( httpUrl( "/auth/whoami" ) )
             .hasCode( HTTP_UNAUTHORIZED );
-        assertLogin( "{\n" +
-            "  \"email\": \"user@admin.com\",\n" +
-            "  \"password\": \"pass\"\n" +
-            "}" );
+        assertLogin( "user@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"user@admin.com\", \"role\":\"USER\"}" );
     }
@@ -73,18 +64,11 @@ public class AuthWSTest extends IntegratedTest {
     public void relogin() {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         userProvider().addUser( new TestUser( "user@user.com", "pass", USER ) );
-        assertLogin( "{\n" +
-            "  \"email\": \"admin@admin.com\",\n" +
-            "  \"password\": \"pass\"\n" +
-            "}" );
+        assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
             .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "admin@admin.com" );
-        assertLogin( "{\n" +
-            "  \"email\": \"user@user.com\",\n" +
-            "  \"password\": \"pass\"\n" +
-            "}" );
+        assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
             .hasCode( HTTP_FORBIDDEN );
     }
-
 }

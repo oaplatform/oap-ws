@@ -60,8 +60,13 @@ public class AuthWS {
 
     @WsMethod( method = POST, path = "/login" )
     public HttpResponse login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+        return login( credentials.email, credentials.password, loggedUser, session );
+    }
+
+    @WsMethod( method = GET, path = "/login" )
+    public HttpResponse login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
-        return authenticator.authenticate( credentials.email, credentials.password )
+        return authenticator.authenticate( email, password )
             .map( authentication -> authenticatedResponse( authentication, cookieDomain, cookieExpiration ) )
             .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ) )
             .response();

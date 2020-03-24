@@ -32,6 +32,7 @@ import org.joda.time.DateTime;
 import java.util.Optional;
 
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static org.joda.time.DateTimeZone.UTC;
 
 public class SSO {
     public static final String AUTHENTICATION_KEY = "Authorization";
@@ -47,7 +48,7 @@ public class SSO {
             .withCookie( new Cookie( AUTHENTICATION_KEY, authentication.id )
                 .withDomain( cookieDomain )
                 .withPath( "/" )
-                .withExpires( DateTime.now().plus( cookieExpiration ) )
+                .withExpires( new DateTime( UTC ).plus( cookieExpiration ) )
                 .httpOnly( true )
                 .toString()
             );
@@ -56,7 +57,7 @@ public class SSO {
     public static HttpResponse.Builder logoutResponse( String cookieDomain ) {
         return HttpResponse.status( HTTP_NO_CONTENT )
             .withCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
-                .withExpires( new DateTime( 1970, 1, 1, 1, 1 ) )
+                .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
                 .toString()
             );
     }

@@ -25,7 +25,6 @@
 package oap.ws.sso.testng;
 
 import oap.application.testng.KernelFixture;
-import oap.http.Cookie;
 import oap.testng.Fixtures;
 import org.joda.time.DateTime;
 
@@ -33,10 +32,12 @@ import java.nio.file.Path;
 
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static oap.http.testng.HttpAsserts.CookieHttpAssertion.assertCookie;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
+import static org.joda.time.DateTimeZone.UTC;
 
 public class SSOTest extends Fixtures {
     protected KernelFixture kernelFixture;
@@ -49,18 +50,19 @@ public class SSOTest extends Fixtures {
         fixture( kernelFixture = new KernelFixture( conf, confd ) );
     }
 
-    protected static void assertLogin( String content ) {
-        assertPost( httpUrl( "/auth/login" ), content )
+    protected static void assertLogin( String login, String password ) {
+        assertPost( httpUrl( "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
             .hasCode( HTTP_OK )
-            .is( response -> {
-                System.out.println( response.headers );
-            } );
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() );
     }
 
     protected static void assertLogout() {
         assertGet( httpUrl( "/auth/logout" ) )
             .hasCode( HTTP_NO_CONTENT )
-            .containsCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
-                .withExpires( new DateTime( 1970, 1, 1, 1, 1 ) ) );
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasValue( "<logged out>" )
+                .expiresAt( new DateTime( 1970, 1, 1, 1, 1, UTC ) ) );
     }
 }
