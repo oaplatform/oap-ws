@@ -33,7 +33,6 @@
     </parent>
 
     <packaging>pom</packaging>
-    <groupId>oap</groupId>
     <artifactId>oap-ws-parent</artifactId>
     <version>${oap.project.version}</version>
 
