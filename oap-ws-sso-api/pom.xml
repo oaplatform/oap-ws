@@ -41,7 +41,7 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-stdlib</artifactId>
-            <version>${oap.version}</version>
+            <version>${oap.deps.oap.version}</version>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
