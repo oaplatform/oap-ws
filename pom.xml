@@ -62,7 +62,7 @@
     </distributionManagement>
 
     <properties>
-        <oap.project.version>7.1.2</oap.project.version>
+        <oap.project.version>7.1.3</oap.project.version>
 
         <oap.deps.oap.version>6.8.1</oap.deps.oap.version>
         <oap.deps.assertj.version>3.12.2</oap.deps.assertj.version>
