@@ -15,3 +15,4 @@ kotlinc.xml
 .attach*
 .flattened-pom.xml
 /oap-ws-idea/oap-ws-idea.jar
+/.idea/jarRepositories.xml
