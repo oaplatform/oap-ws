@@ -39,7 +39,7 @@ public class WebServicesProfileTest extends Fixtures {
             kernel.register( "no-profile", new TestWS() );
             kernel.register( "with-profile", new TestWS() );
             kernel.register( "new-profile", new TestWS() );
-            kernel.enableProfiles( "test-profile" );
+            kernel.enableProfile( "test-profile" );
 
         }, "ws-profile.conf" ) );
     }
