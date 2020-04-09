@@ -34,7 +34,6 @@ import oap.json.JsonException;
 import oap.reflect.ReflectException;
 import oap.reflect.Reflection;
 import oap.util.Result;
-import oap.util.Stream;
 import oap.util.Throwables;
 import oap.ws.interceptor.Interceptor;
 import oap.ws.interceptor.Interceptors;
@@ -51,6 +50,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
@@ -197,8 +197,8 @@ public class WebService implements Handler {
             responseBuilder = ( ( Result<?, ?> ) result ).isSuccess()
                 ? ( ( Result<?, ?> ) result ).mapSuccess( r -> HttpResponse.ok( r, isRaw, produces ) ).successValue
                 : ( ( Result<?, ?> ) result ).mapFailure( r -> HttpResponse.status( HTTP_INTERNAL_ERROR, "", r ) ).failureValue;
-        else if( result instanceof Stream<?> )
-            responseBuilder = HttpResponse.stream( ( ( Stream<?> ) result ), isRaw, produces );
+        else if( result instanceof java.util.stream.Stream<?> )
+            responseBuilder = HttpResponse.stream( ( ( java.util.stream.Stream<?> ) result ), isRaw, produces );
         else responseBuilder = HttpResponse.ok( result, isRaw, produces );
         return responseBuilder;
     }
