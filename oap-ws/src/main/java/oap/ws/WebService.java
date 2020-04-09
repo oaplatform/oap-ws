@@ -33,7 +33,6 @@ import oap.json.Binder;
 import oap.json.JsonException;
 import oap.reflect.ReflectException;
 import oap.reflect.Reflection;
-import oap.util.Lists;
 import oap.util.Result;
 import oap.util.Stream;
 import oap.util.Throwables;
@@ -44,7 +43,6 @@ import oap.ws.validate.Validators;
 import org.apache.http.entity.ContentType;
 import org.joda.time.DateTime;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -59,7 +57,7 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.HttpResponse.NOT_FOUND;
 import static oap.util.Collectors.toLinkedHashMap;
-import static oap.ws.WsParams.uncamelHeaderName;
+import static oap.ws.WsParams.unwrapOptionalOfRequired;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @Slf4j
@@ -177,7 +175,7 @@ public class WebService implements Handler {
     }
 
     private HttpResponse.Builder produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
-        var isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
+        boolean isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
         var produces = wsMethod.map( wsm -> ContentType.create( wsm.produces() )
             .withCharset( UTF_8 ) )
             .orElse( APPLICATION_JSON );
@@ -223,12 +221,12 @@ public class WebService implements Handler {
     @SuppressWarnings( "unchecked" )
     private Object map( Reflection reflection, Object value ) {
         if( reflection.isOptional() )
-            if( ( ( Optional ) value ).isEmpty() ) return Optional.empty();
+            if( ( ( Optional<?> ) value ).isEmpty() ) return Optional.empty();
             else return Optional.ofNullable(
-                map( reflection.typeParameters.get( 0 ), ( ( Optional ) value ).get() )
+                map( reflection.typeParameters.get( 0 ), ( ( Optional<?> ) value ).orElseThrow() )
             );
         else {
-            if( value instanceof Optional ) return map( reflection, ( ( Optional ) value ).get() );
+            if( value instanceof Optional ) return map( reflection, ( ( Optional<?> ) value ).orElseThrow() );
             if( reflection.isEnum() ) return Enum.valueOf( ( Class<Enum> ) reflection.underlying, ( String ) value );
 
             // what is this for? I sincerelly hope there is a test for it.
@@ -245,12 +243,6 @@ public class WebService implements Handler {
         return instance.getClass().getName();
     }
 
-    private Object unwrap( Reflection.Parameter parameter, Optional<?> opt ) {
-        if( parameter.type().isOptional() ) return opt;
-
-        return opt.orElseThrow( () -> new WsClientException( parameter.name() + " is required" ) );
-    }
-
     public LinkedHashMap<Reflection.Parameter, Object> getOriginalValues( Session session,
                                                                           List<Reflection.Parameter> parameters,
                                                                           Request request,
@@ -262,7 +254,7 @@ public class WebService implements Handler {
             parameter -> getValue( session, request, wsMethod, parameter )
                 .orElseGet( () -> parameter.type().assignableTo( List.class )
                     ? request.parameters( parameter.name() )
-                    : unwrap( parameter, request.parameter( parameter.name() ) )
+                    : unwrapOptionalOfRequired( parameter, request.parameter( parameter.name() ) )
                 ) ) );
     }
 
@@ -276,55 +268,15 @@ public class WebService implements Handler {
             : parameter.type().assignableFrom( Session.class )
                 ? Optional.ofNullable( session )
                 : parameter.findAnnotation( WsParam.class )
-                    .map( wsParam -> {
-                        switch( wsParam.from() ) {
-                            case SESSION:
-                                if( session == null ) return null;
-                                return parameter.type().isOptional()
-                                    ? session.get( parameter.name() )
-                                    : session.get( parameter.name() ).orElse( null );
-                            case HEADER: {
-                                log.trace( "headers: {}", request.getHeaders() );
-                                var names = Lists.addAll( Lists.of( wsParam.name() ), uncamelHeaderName( parameter.name() ), parameter.name() );
-                                log.trace( "names: {}", names );
-                                Optional<String> header;
-                                for( String name : names ) {
-                                    header = request.header( name );
-                                    if( header.isPresent() ) return unwrap( parameter, header );
-                                }
-                                return unwrap( parameter, Optional.empty() );
-                            }
-                            case COOKIE: {
-                                var names = Lists.addAll( Lists.of( wsParam.name() ), parameter.name() );
-                                Optional<String> cookie;
-                                for( String name : names ) {
-                                    cookie = request.cookie( name );
-                                    if( cookie.isPresent() ) return unwrap( parameter, cookie );
-                                }
-                                return unwrap( parameter, Optional.empty() );
-                            }
-                            case PATH:
-                                return wsMethod.map( wsm -> WsMethodMatcher.pathParam( wsm.path(), request.getRequestLine(),
-                                    parameter.name() ) )
-                                    .orElseThrow( () -> new WsException(
-                                        "path parameter " + parameter.name() + " without "
-                                            + WsMethod.class.getName() + " annotation" ) );
-                            case BODY:
-                                if( parameter.type().assignableFrom( byte[].class ) )
-                                    return ( parameter.type().isOptional()
-                                        ? request.readBody()
-                                        : request.readBody().orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) )
-                                    );
-                                else if( parameter.type().assignableFrom( InputStream.class ) )
-                                    return request.body.orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) );
-
-                                return unwrap( parameter, request.readBody().map( String::new ) );
-                            default:
-                                return parameter.type().assignableTo( List.class )
-                                    ? request.parameters( parameter.name() )
-                                    : unwrap( parameter, request.parameter( parameter.name() ) );
-
-                        }
+                    .map( wsParam -> switch( wsParam.from() ) {
+                        case SESSION -> WsParams.fromSesstion( session, parameter );
+                        case HEADER -> WsParams.fromHeader( request, parameter, wsParam );
+                        case COOKIE -> WsParams.fromCookie( request, parameter, wsParam );
+                        case PATH -> WsParams.fromPath( request, wsMethod, parameter );
+                        case BODY -> WsParams.fromBody( request, parameter );
+                        case QUERY -> parameter.type().assignableTo( List.class )
+                            ? request.parameters( parameter.name() )
+                            : unwrapOptionalOfRequired( parameter, request.parameter( parameter.name() ) );
                     } );
     }
 

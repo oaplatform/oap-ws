@@ -127,19 +127,19 @@ public class WebServiceTest extends Fixtures {
     }
 
     @Test
-    public void testInvocationBytes() {
+    public void invocationBytes() {
         assertPost( httpUrl( "/x/v/math/bytes" ), "1234", APPLICATION_OCTET_STREAM )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
     }
 
     @Test
-    public void testInvocationString() {
+    public void invocationString() {
         assertPost( httpUrl( "/x/v/math/string" ), "1234", APPLICATION_OCTET_STREAM )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
     }
 
     @Test
-    public void testInvocationInputStream() {
+    public void invocationInputStream() {
         assertPost( httpUrl( "/x/v/math/inputStream" ), "1234", APPLICATION_OCTET_STREAM )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
     }

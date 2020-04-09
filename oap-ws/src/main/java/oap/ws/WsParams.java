@@ -24,11 +24,19 @@
 
 package oap.ws;
 
+import lombok.extern.slf4j.Slf4j;
+import oap.http.Request;
+import oap.reflect.Reflection;
+import oap.util.Sets;
+
 import javax.annotation.Nonnull;
+import java.io.InputStream;
+import java.util.Optional;
 
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toUpperCase;
 
+@Slf4j
 public class WsParams {
 
     @Nonnull
@@ -41,5 +49,63 @@ public class WsParams {
             else result.append( c );
         }
         return result.toString();
+    }
+
+    public static Object fromSesstion( Session session, Reflection.Parameter parameter ) {
+        return session == null ? null
+            : parameter.type().isOptional()
+                ? session.get( parameter.name() )
+                : session.get( parameter.name() ).orElse( null );
+    }
+
+    public static Object fromHeader( Request request, Reflection.Parameter parameter, WsParam wsParam ) {
+        log.trace( "headers: {}", request.getHeaders() );
+
+        var names = Sets.of( wsParam.name() );
+        names.add( uncamelHeaderName( parameter.name() ) );
+        names.add( parameter.name() );
+        log.trace( "names: {}", names );
+        Optional<String> header;
+        for( String name : names ) {
+            header = request.header( name );
+            if( header.isPresent() ) return unwrapOptionalOfRequired( parameter, header );
+        }
+        return unwrapOptionalOfRequired( parameter, Optional.empty() );
+    }
+
+    public static Object unwrapOptionalOfRequired( Reflection.Parameter parameter, Optional<?> opt ) {
+        if( parameter.type().isOptional() ) return opt;
+
+        return opt.orElseThrow( () -> new WsClientException( parameter.name() + " is required" ) );
+    }
+
+    public static Object fromCookie( Request request, Reflection.Parameter parameter, WsParam wsParam ) {
+        var names = Sets.of( wsParam.name() );
+        names.add( parameter.name() );
+        Optional<String> cookie;
+        for( String name : names ) {
+            cookie = request.cookie( name );
+            if( cookie.isPresent() )
+                return unwrapOptionalOfRequired( parameter, cookie );
+        }
+        return unwrapOptionalOfRequired( parameter, Optional.empty() );
+    }
+
+    public static Optional<String> fromPath( Request request, Optional<WsMethod> wsMethod, Reflection.Parameter parameter ) {
+        return wsMethod.map( wsm -> WsMethodMatcher.pathParam( wsm.path(), request.getRequestLine(),
+            parameter.name() ) )
+            .orElseThrow( () -> new WsException( "path parameter " + parameter.name() + " without " + WsMethod.class.getName() + " annotation" ) );
+    }
+
+    public static Object fromBody( Request request, Reflection.Parameter parameter ) {
+        if( parameter.type().assignableFrom( byte[].class ) )
+            return ( parameter.type().isOptional()
+                ? request.readBody()
+                : request.readBody().orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) )
+            );
+        else if( parameter.type().assignableFrom( InputStream.class ) )
+            return request.body.orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) );
+        else
+            return unwrapOptionalOfRequired( parameter, request.readBody().map( String::new ) );
     }
 }
