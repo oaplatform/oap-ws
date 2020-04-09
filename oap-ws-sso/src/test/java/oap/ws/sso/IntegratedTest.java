@@ -69,7 +69,7 @@ public class IntegratedTest extends SSOTest {
             log.trace( "authenticating {} with {}", email, password );
             log.trace( "users {}", users );
             return users.stream()
-                .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.getPassword().equals( password ) )
+                .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
                 .findAny();
         }
 
@@ -98,11 +98,6 @@ public class IntegratedTest extends SSOTest {
         @Override
         public String getEmail() {
             return email;
-        }
-
-        @Override
-        public String getPassword() {
-            return password;
         }
 
         @Override

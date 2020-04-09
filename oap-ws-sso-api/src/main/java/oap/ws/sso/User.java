@@ -31,8 +31,6 @@ import java.io.Serializable;
 public interface User extends Serializable {
     String getEmail();
 
-    String getPassword();
-
     String getRole();
 
     @JsonIgnore
