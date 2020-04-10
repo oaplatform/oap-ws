@@ -40,7 +40,7 @@ public class UserAuthenticator implements Authenticator {
 
     private final Cache<String, Authentication> authentications;
     private final UserProvider userProvider;
-    private Cuid cuid = Cuid.UNIQUE;
+    protected Cuid cuid = Cuid.UNIQUE;
 
     public UserAuthenticator( UserProvider userProvider, long expirationTime ) {
         this.authentications = CacheBuilder.newBuilder()

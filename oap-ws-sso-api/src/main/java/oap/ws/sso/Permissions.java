@@ -24,6 +24,7 @@
 
 package oap.ws.sso;
 
+@SuppressWarnings( "CheckStyle" )
 public interface Permissions {
     String SUPERUSER = "SUPERUSER";
     String MANAGE_SELF = "MANAGE_SELF";

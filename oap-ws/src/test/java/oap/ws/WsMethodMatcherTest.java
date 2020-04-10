@@ -102,8 +102,8 @@ public class WsMethodMatcherTest {
     @Test
     public void comparator() {
         Reflection reflect = Reflect.reflect( OWS.class );
-        Reflection.Method register = reflect.method( "register" ).get();
-        Reflection.Method store = reflect.method( "store" ).get();
+        Reflection.Method register = reflect.method( "register" ).orElseThrow();
+        Reflection.Method store = reflect.method( "store" ).orElseThrow();
         ArrayList<Reflection.Method> list = Lists.of( register, store );
         list.sort( WsMethodMatcher::constantFirst );
         assertThat( list ).containsExactly( register, store );

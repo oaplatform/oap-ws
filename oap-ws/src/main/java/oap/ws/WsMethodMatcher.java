@@ -46,7 +46,7 @@ public class WsMethodMatcher {
 
 
     private final Reflection reflection;
-    private Map<String, Pattern> paths;
+    private final Map<String, Pattern> paths;
 
     public WsMethodMatcher( Class<?> wsClass ) {
         this.reflection = Reflect.reflect( wsClass );
@@ -100,7 +100,7 @@ public class WsMethodMatcher {
                 Matcher matcher1 = compile( mapping ).matcher( path );
                 return matcher1.matches() && group <= matcher1.groupCount()
                     ? Optional.of( matcher1.group( group + 1 ) )
-                    : Optional.<String>empty();
+                    : Optional.empty();
             } );
     }
 }

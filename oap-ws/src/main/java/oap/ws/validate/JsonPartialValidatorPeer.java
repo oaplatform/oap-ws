@@ -62,7 +62,7 @@ public class JsonPartialValidatorPeer implements ValidatorPeer {
             .stream()
             .filter( p -> p.getKey().name().equals( name ) )
             .findFirst()
-            .get()
+            .orElseThrow()
             .getValue();
     }
 
@@ -74,7 +74,7 @@ public class JsonPartialValidatorPeer implements ValidatorPeer {
             Object objectId = getValue( originalValues, validate.idParameterName() );
 
             String id = objectId instanceof Optional
-                ? ( ( Optional ) objectId ).get().toString() : objectId.toString();
+                ? ( ( Optional<?> ) objectId ).orElseThrow().toString() : objectId.toString();
 
             Object root = method.invoke( instance, id );
 
@@ -98,14 +98,14 @@ public class JsonPartialValidatorPeer implements ValidatorPeer {
                     Preconditions.checkState( next != null, "schema has no elements for value " + split[0] );
                     Preconditions.checkState( next instanceof List, split[0] + " should be of type list" );
 
-                    Object idValue = ( ( Optional ) getValue( originalValues,
-                        split[1].replaceAll( "\\$|\\{|\\}", "" ) ) ).get();
+                    Object idValue = ( ( Optional<?> ) getValue( originalValues,
+                        split[1].replaceAll( "\\$|\\{|\\}", "" ) ) ).orElseThrow();
 
-                    Optional matchedChild = ( ( List<Object> ) next ).stream()
-                        .filter( o -> idValue.equals( ( ( Map ) o ).get( "id" ).toString() ) )
+                    Optional<?> matchedChild = ( ( List<Object> ) next ).stream()
+                        .filter( o -> idValue.equals( ( ( Map<String, ?> ) o ).get( "id" ).toString() ) )
                         .findFirst();
 
-                    child = ( Map<Object, Object> ) matchedChild.get();
+                    child = ( Map<Object, Object> ) matchedChild.orElseThrow();
 
                     continue;
                 }
@@ -116,12 +116,12 @@ public class JsonPartialValidatorPeer implements ValidatorPeer {
 
                     break;
                 } else if( next instanceof List ) {
-                    final List childElements = ( List ) next;
+                    List childElements = ( List<?> ) next;
 
                     childElements.removeIf( elements -> {
                         final Object partialValueId = partialValue.get( "id" );
 
-                        return partialValueId != null && partialValueId.toString().equals( ( ( Map ) elements ).get( "id" ).toString() );
+                        return partialValueId != null && partialValueId.toString().equals( ( ( Map<String, ?> ) elements ).get( "id" ).toString() );
                     } );
 
                     childElements.add( partialValue );
@@ -129,9 +129,7 @@ public class JsonPartialValidatorPeer implements ValidatorPeer {
                     child.put( pathElement, childElements );
 
                     break;
-                } else {
-                    child = ( Map ) next;
-                }
+                } else child = ( Map<Object, Object> ) next;
             }
 
             return ValidationErrors.errors( schema.validate( rootMap, validate.ignoreRequired() ) );

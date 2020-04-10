@@ -42,7 +42,7 @@ public class SessionManager {
     public final String cookiePath;
     public final int cookieExpiration;
     private final Cache<String, Session> sessions;
-    public Cuid cuid = Cuid.UNIQUE;
+    protected Cuid cuid = Cuid.UNIQUE;
 
     public SessionManager( int expirationTime, String cookieDomain, String cookiePath ) {
         this.sessions = CacheBuilder.newBuilder()

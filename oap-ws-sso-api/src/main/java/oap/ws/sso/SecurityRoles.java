@@ -34,15 +34,15 @@ import java.util.Map;
 import java.util.Set;
 
 public class SecurityRoles {
-    public static Configuration<Config> CONFIGURAION = new Configuration<>( Config.class, "oap-ws-roles" );
-    private SetMultimap<String, String> roles = MultimapBuilder.SetMultimapBuilder.hashKeys().linkedHashSetValues().build();
+    public static final Configuration<Config> CONFIGURAION = new Configuration<>( Config.class, "oap-ws-roles" );
+    private final SetMultimap<String, String> roles = MultimapBuilder.SetMultimapBuilder.hashKeys().linkedHashSetValues().build();
 
     public SecurityRoles( Config config ) {
         this( List.of( config ) );
     }
 
     public SecurityRoles( List<Config> configs ) {
-        for( Config config : configs ) config.roles.forEach( ( r, ps ) -> roles.putAll( r, ps ) );
+        for( Config config : configs ) config.roles.forEach( roles::putAll );
     }
 
     public SecurityRoles() {

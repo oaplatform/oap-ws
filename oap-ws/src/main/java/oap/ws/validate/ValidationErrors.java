@@ -47,7 +47,7 @@ import static oap.ws.validate.Validators.forParameter;
 public final class ValidationErrors implements Mergeable<ValidationErrors> {
     public static final int DEFAULT_CODE = HTTP_BAD_REQUEST;
     public final List<String> errors;
-    public int code;
+    public final int code;
 
     private ValidationErrors( int code, List<String> errors ) {
         this.code = code;
@@ -144,7 +144,7 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
     @EqualsAndHashCode
     @ToString
     public static class ErrorResponse implements Serializable {
-        public List<String> errors;
+        public final List<String> errors;
 
         public ErrorResponse( List<String> errors ) {
             this.errors = errors;

@@ -49,7 +49,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.getPropertyName;
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.isGetter;
@@ -61,7 +60,7 @@ import static oap.ws.WsParam.From.QUERY;
 
 @Slf4j
 public class ApiWS {
-    private WebServices webServices;
+    private final WebServices webServices;
 
     public ApiWS( WebServices webServices ) {
         this.webServices = webServices;

@@ -40,7 +40,7 @@ import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
 import static org.joda.time.DateTimeZone.UTC;
 
 public class SSOTest extends Fixtures {
-    protected KernelFixture kernelFixture;
+    protected final KernelFixture kernelFixture;
 
     public SSOTest( Path conf ) {
         fixture( kernelFixture = new KernelFixture( conf ) );

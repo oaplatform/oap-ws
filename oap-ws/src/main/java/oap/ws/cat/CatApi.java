@@ -1,4 +1,4 @@
-package oap.ws.cat;/*
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) Open Application Platform Authors
@@ -21,6 +21,7 @@ package oap.ws.cat;/*
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package oap.ws.cat;
 
 import oap.http.HttpResponse;
 import org.apache.commons.lang3.StringUtils;

@@ -24,6 +24,7 @@
 
 package oap.ws.sso;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -105,8 +106,8 @@ public class IntegratedTest extends SSOTest {
             return role;
         }
 
-
-        public View view = new View();
+        @JsonIgnore
+        public final View view = new View();
 
         @Override
         public View getView() {

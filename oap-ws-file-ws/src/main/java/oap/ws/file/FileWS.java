@@ -45,7 +45,7 @@ import static oap.ws.file.Schema.DATA;
 import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
 
 public class FileWS {
-    private BucketManager bucketManager;
+    private final BucketManager bucketManager;
 
     public FileWS( BucketManager bucketManager ) {
         this.bucketManager = bucketManager;

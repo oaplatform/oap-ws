@@ -106,8 +106,8 @@ public class AuthWS {
     }
 
     private static class Credentials {
-        public String email;
-        public String password;
+        public final String email;
+        public final String password;
 
         public Credentials( String email, String password ) {
             this.email = email;

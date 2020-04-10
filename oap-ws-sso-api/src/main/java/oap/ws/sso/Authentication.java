@@ -35,8 +35,8 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class Authentication implements Serializable {
     private static final long serialVersionUID = -2221117654361445000L;
-    public String id;
-    public User user;
+    public final String id;
+    public final User user;
     public DateTime created;
 
     public Authentication( String id, User user ) {

@@ -37,8 +37,7 @@ public class CatApiTest {
     public void table() throws Exception {
         final HttpResponse table = CatApi.table( List.of( "1", "test23" ), List.of( "bbbb", "2" ) );
 
-        assertString( Strings.readString( table.contentEntity.getContent() ) ).isEqualTo( "1    test23\n"
-            + "bbbb 2     \n" );
+        assertString( Strings.readString( table.contentEntity.getContent() ) ).isEqualTo( "1    test23\nbbbb 2     \n" );
     }
 
 }

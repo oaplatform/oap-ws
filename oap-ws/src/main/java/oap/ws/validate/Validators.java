@@ -36,8 +36,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Validators {
-    private static ConcurrentHashMap<Key<Reflection.Parameter>, Validator> forParams = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<Key<Reflection.Method>, Validator> forMethods = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Key<Reflection.Parameter>, Validator> forParams = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Key<Reflection.Method>, Validator> forMethods = new ConcurrentHashMap<>();
 
     public static Validator forParameter( Reflection.Method method,
                                           Reflection.Parameter parameter,

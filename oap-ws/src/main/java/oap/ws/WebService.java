@@ -50,7 +50,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
@@ -66,8 +65,8 @@ public class WebService implements Handler {
     private final HashMap<Class<?>, Integer> exceptionToHttpCode = new HashMap<>();
     private final SessionManager sessionManager;
     private final List<Interceptor> interceptors;
-    private Object instance;
-    private WsMethodMatcher methodMatcher;
+    private final Object instance;
+    private final WsMethodMatcher methodMatcher;
 
     public WebService( Object instance, boolean sessionAware,
                        SessionManager sessionManager, List<Interceptor> interceptors,
@@ -282,9 +281,9 @@ public class WebService implements Handler {
 
 
     private static class JsonStackTraceResponse implements Serializable {
-        private static long serialVersionUID = 8431608226448804296L;
+        private static final long serialVersionUID = 8431608226448804296L;
 
-        public String message;
+        public final String message;
 
         public JsonStackTraceResponse( Throwable t ) {
             message = Throwables.getRootCause( t ).getMessage();

@@ -31,8 +31,8 @@ import oap.ws.validate.ValidationErrors;
 import static oap.http.testng.HttpAsserts.JsonHttpAssertion.assertJsonResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ValidationAssertion {
-    private ValidationErrors errors;
+public final class ValidationAssertion {
+    private final ValidationErrors errors;
 
     private ValidationAssertion( Client.Response response ) {
         errors = Binder.json.unmarshal( ValidationErrors.class, response.contentString() );

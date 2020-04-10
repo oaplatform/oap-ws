@@ -40,7 +40,7 @@ import static oap.ws.sso.SSO.SESSION_USER_KEY;
 @Slf4j
 public class ApiKeyInterceptor implements Interceptor {
     public static final String SESSION_API_KEY_AUTHENTICATED = "apiKeyAuthenticated";
-    private Authenticator authenticator;
+    private final Authenticator authenticator;
 
     public ApiKeyInterceptor( Authenticator authenticator ) {
         this.authenticator = authenticator;

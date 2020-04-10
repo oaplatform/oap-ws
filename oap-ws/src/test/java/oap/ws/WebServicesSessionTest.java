@@ -40,9 +40,7 @@ import static oap.ws.WsParam.From.SESSION;
 public class WebServicesSessionTest extends Fixtures {
 
     {
-        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
-            kernel.register( "test", new TestWS() );
-        }, "ws-session.conf" ) );
+        fixture( new WsFixture( getClass(), ( ws, kernel ) -> kernel.register( "test", new TestWS() ), "ws-session.conf" ) );
     }
 
     @Test

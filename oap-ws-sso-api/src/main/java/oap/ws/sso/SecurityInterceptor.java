@@ -41,9 +41,8 @@ import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 @Slf4j
 public class SecurityInterceptor implements Interceptor {
-
-    private Authenticator authenticator;
-    private SecurityRoles roles;
+    private final Authenticator authenticator;
+    private final SecurityRoles roles;
 
     public SecurityInterceptor( Authenticator authenticator, SecurityRoles roles ) {
         this.authenticator = authenticator;

@@ -51,7 +51,7 @@ public class MethodValidatorPeerMethodTest extends AbstractWsValidateTest {
     }
 
     @Test
-    public void validationDefault() throws InterruptedException {
+    public void validationDefault() {
         assertPost( httpUrl( "/test/run/validation/default" ), "test", TEXT_PLAIN )
             .responded( HTTP_OK, "OK", TEXT_PLAIN, "test" );
     }

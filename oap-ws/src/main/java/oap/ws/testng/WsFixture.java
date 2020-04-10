@@ -51,7 +51,7 @@ import static oap.testng.Asserts.urlOfTestResource;
 @Deprecated
 public class WsFixture implements Fixture {
 
-    private Class<?> contextClass;
+    private final Class<?> contextClass;
     private final BiConsumer<WebServices, Kernel> registerServices;
     private final String[] configs;
     public TestWebServer server;
@@ -73,10 +73,10 @@ public class WsFixture implements Fixture {
     }
 
     public class TestWebServer implements Closeable {
-        protected WebServices ws;
-        private Server server;
-        private SynchronizedThread listener;
-        public Kernel kernel;
+        protected final WebServices ws;
+        private final Server server;
+        private final SynchronizedThread listener;
+        public final Kernel kernel;
 
         private TestWebServer( List<String> configs, BiConsumer<WebServices, Kernel> registerServices ) {
             Env.resetPorts();

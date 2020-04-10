@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class PathParameterReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
-    private String variable;
+    private final String variable;
 
     public PathParameterReference( @Nonnull PsiElement element, String variable, int offset ) {
         super( element, new TextRange( offset, offset + variable.length() ) );

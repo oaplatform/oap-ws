@@ -30,16 +30,17 @@ import oap.util.Strings;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class BucketManager {
     public static final String DEFAULT_BUCKET = Strings.DEFAULT;
-    public Map<String, Path> buckets;
-    public Cuid cuid = Cuid.UNIQUE;
+    public final Map<String, Path> buckets = new LinkedHashMap<>();
+    protected Cuid cuid = Cuid.UNIQUE;
 
     public BucketManager( Map<String, Path> buckets ) {
-        this.buckets = buckets;
+        this.buckets.putAll( buckets );
     }
 
     public String put( Data data ) {

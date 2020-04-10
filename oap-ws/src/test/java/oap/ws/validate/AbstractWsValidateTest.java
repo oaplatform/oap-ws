@@ -45,7 +45,6 @@ public abstract class AbstractWsValidateTest {
     private static final SessionManager SESSION_MANAGER = new SessionManager( 10 * 60 * 1000, null, "/" );
 
     private Server server;
-    private WebServices ws;
     private SynchronizedThread listener;
 
 
@@ -55,7 +54,7 @@ public abstract class AbstractWsValidateTest {
 
         server = new Server( 100, false );
         server.start();
-        ws = new WebServices( new Kernel( Lists.empty() ), server, SESSION_MANAGER, GenericCorsPolicy.DEFAULT );
+        WebServices ws = new WebServices( new Kernel( Lists.empty() ), server, SESSION_MANAGER, GenericCorsPolicy.DEFAULT );
 
         for( var wsInstance : getWsInstances() )
             ws.bind( "test", GenericCorsPolicy.DEFAULT, wsInstance, false, SESSION_MANAGER, Collections.emptyList(), Protocol.HTTP );

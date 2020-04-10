@@ -85,7 +85,7 @@ public class WebServices {
 
 
             config.services.forEach( ( serviceName, serviceConfig ) -> {
-                var interceptors = Lists.map( serviceConfig.interceptors, kernel::<Interceptor>serviceOrThrow );
+                var interceptors = Lists.map( serviceConfig.interceptors, ( String name ) -> kernel.<Interceptor>service( name ).orElseThrow() );
                 log.trace( "service = {}", serviceConfig );
                 if( !KernelHelper.profileEnabled( serviceConfig.profiles, kernel.profiles ) ) {
                     log.debug( "skipping " + serviceName + " web service initialization with "
@@ -93,7 +93,7 @@ public class WebServices {
                     return;
                 }
                 var corsPolicy = serviceConfig.corsPolicy != null ? serviceConfig.corsPolicy : globalCorsPolicy;
-                bind( serviceName, corsPolicy, kernel.serviceOrThrow( serviceConfig.service ),
+                bind( serviceName, corsPolicy, kernel.service( serviceConfig.service ).orElseThrow(),
                     serviceConfig.sessionAware, sessionManager, interceptors, serviceConfig.protocol );
             } );
 
@@ -101,7 +101,7 @@ public class WebServices {
                 log.trace( "handler = {}", handlerConfig );
                 var corsPolicy = handlerConfig.corsPolicy != null ? handlerConfig.corsPolicy : globalCorsPolicy;
                 Protocol protocol = handlerConfig.protocol;
-                bind( handlerName, corsPolicy, kernel.serviceOrThrow( handlerConfig.service ), protocol );
+                bind( handlerName, corsPolicy, kernel.<Handler>service( handlerConfig.service ).orElseThrow(), protocol );
             } );
         }
     }
