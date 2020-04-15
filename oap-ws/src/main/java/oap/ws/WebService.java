@@ -167,9 +167,10 @@ public class WebService implements Handler {
                     .withExpires( DateTime.now().plusMinutes( sessionManager.cookieExpiration ) )
                     .withDomain( sessionManager.cookieDomain )
                     .httpOnly( true )
-                    .toString()
                     : null;
-                response.respond( Interceptors.after( interceptors, rb.withCookie( cookie ).response(), session ) );
+                response.respond( Interceptors.after( interceptors,
+                    ( cookie != null ? rb.withCookie( cookie ) : rb ).response(),
+                    session ) );
             } );
     }
 
