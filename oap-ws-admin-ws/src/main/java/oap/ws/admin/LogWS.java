@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package oap.ws;
+package oap.ws.admin;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -31,9 +31,12 @@ import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import lombok.extern.slf4j.Slf4j;
+import oap.ws.WsMethod;
+import oap.ws.WsParam;
 import org.slf4j.LoggerFactory;
 
 import static oap.http.Request.HttpMethod.GET;
+import static oap.ws.WsParam.From.PATH;
 
 /**
  * Created by igor.petrenko on 20.03.2019.
@@ -62,8 +65,8 @@ public class LogWS {
 
     @WsMethod( path = "/{level}/{packageName}" )
     public void setLevel(
-        @WsParam( from = WsParam.From.PATH ) String level,
-        @WsParam( from = WsParam.From.PATH ) String packageName
+        @WsParam( from = PATH ) String level,
+        @WsParam( from = PATH ) String packageName
     ) {
         log.debug( "set {} for {}", level, packageName );
 

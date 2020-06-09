@@ -1,5 +1,5 @@
 ################################################################################
-Service oap.ws.LogWS
+Service oap.ws.admin.LogWS
 Bound to system/admin/logs
 Methods:
 	Method reset

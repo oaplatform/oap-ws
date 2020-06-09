@@ -67,9 +67,6 @@ services:
       supervise: true
       thread: true
 
-  ws-log:
-    implementation: oap.ws.LogWS
-
   local-http-listener:
     profile: local-listener
     dependsOn:

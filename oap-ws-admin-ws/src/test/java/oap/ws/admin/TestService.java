@@ -22,28 +22,22 @@
  * SOFTWARE.
  */
 
-package oap.ws;
+package oap.ws.admin;
 
-import lombok.extern.slf4j.Slf4j;
-import org.testng.annotations.Test;
+import lombok.ToString;
 
 /**
- * Created by igor.petrenko on 20.03.2019.
+ * Created by igor.petrenko on 2020-06-06.
  */
-@Slf4j
-public class LogWSTest {
-    @Test
-    public void logs() {
-        var logWS = new LogWS();
+@ToString
+public class TestService {
+    private String value = "";
 
-        log.trace( "test trace" );
+    public String getV2() {
+        return value;
+    }
 
-        logWS.setLevel( "ERROR", getClass().getPackageName() );
-        log.trace( "test trace1" );
-        log.debug( "test debug1" );
-        log.error( "test error1" );
-
-        logWS.reset();
-        log.trace( "test trace2" );
+    public void setV2( String value ) {
+        this.value = value;
     }
 }

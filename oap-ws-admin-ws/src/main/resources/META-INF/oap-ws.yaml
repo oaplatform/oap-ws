@@ -2,3 +2,6 @@ services:
   system/admin/logs:
     service: ws-log
     protocol: LOCAL
+  system/admin/jpath:
+    service: ws-jpath
+    protocol: LOCAL
