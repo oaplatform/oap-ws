@@ -46,13 +46,13 @@ public class WebServices {
         HttpResponse.registerProducer( ContentType.APPLICATION_JSON.getMimeType(), Binder.json::marshal );
     }
 
+    public final Map<String, Object> services = new HashMap<>();
     final HashMap<String, Integer> exceptionToHttpCode = new HashMap<>();
     private final List<WsConfig> wsConfigs;
     private final HttpServer server;
     private final SessionManager sessionManager;
     private final CorsPolicy globalCorsPolicy;
     private final Kernel kernel;
-    public final Map<String, Object> services = new HashMap<>();
 
     public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy ) {
         this( kernel, server, sessionManager, globalCorsPolicy, WsConfig.CONFIGURATION.fromClassPath() );
@@ -79,17 +79,18 @@ public class WebServices {
 
             if( !KernelHelper.profileEnabled( config.profiles, kernel.profiles ) ) {
                 log.debug( "skipping " + config.name + " web configuration initialization with "
-                    + "service profiles " + config.profiles );
+                           + "service profiles " + config.profiles );
                 continue;
             }
 
 
             config.services.forEach( ( serviceName, serviceConfig ) -> {
-                var interceptors = Lists.map( serviceConfig.interceptors, ( String name ) -> kernel.<Interceptor>service( name ).orElseThrow() );
                 log.trace( "service = {}", serviceConfig );
+                var interceptors = Lists.map( serviceConfig.interceptors, ( String name ) -> kernel.<Interceptor>service( name )
+                    .orElseThrow( () -> new RuntimeException( "interceptor " + name + " not found" ) ) );
                 if( !KernelHelper.profileEnabled( serviceConfig.profiles, kernel.profiles ) ) {
                     log.debug( "skipping " + serviceName + " web service initialization with "
-                        + "service profiles " + serviceConfig.profiles );
+                               + "service profiles " + serviceConfig.profiles );
                     return;
                 }
                 var corsPolicy = serviceConfig.corsPolicy != null ? serviceConfig.corsPolicy : globalCorsPolicy;
