@@ -41,8 +41,19 @@ public class SessionManager {
     public final String cookieDomain;
     public final String cookiePath;
     public final int cookieExpiration;
+    public final Boolean cookieSecure;
     private final Cache<String, Session> sessions;
     protected Cuid cuid = Cuid.UNIQUE;
+
+    public SessionManager( int expirationTime, String cookieDomain, String cookiePath, Boolean cookieSecure ) {
+        this.sessions = CacheBuilder.newBuilder()
+            .expireAfterAccess( expirationTime, MILLISECONDS )
+            .build();
+        this.cookieDomain = cookieDomain;
+        this.cookiePath = cookiePath;
+        this.cookieExpiration = expirationTime;
+        this.cookieSecure = cookieSecure;
+    }
 
     public SessionManager( int expirationTime, String cookieDomain, String cookiePath ) {
         this.sessions = CacheBuilder.newBuilder()
@@ -51,6 +62,7 @@ public class SessionManager {
         this.cookieDomain = cookieDomain;
         this.cookiePath = cookiePath;
         this.cookieExpiration = expirationTime;
+        this.cookieSecure = false;
     }
 
     public Optional<Session> get( String id ) {

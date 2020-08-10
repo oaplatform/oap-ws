@@ -135,7 +135,7 @@ class ExampleWS {
             this.s = s;
         }
 
-        public static class BeanExt implements Ext {
+        public static class BeanExt extends Ext {
             public String extension;
         }
 

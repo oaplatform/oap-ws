@@ -166,6 +166,7 @@ public class WebService implements Handler {
                     .withPath( sessionManager.cookiePath )
                     .withExpires( DateTime.now().plusMinutes( sessionManager.cookieExpiration ) )
                     .withDomain( sessionManager.cookieDomain )
+                    .secure( sessionManager.cookieSecure )
                     .httpOnly( true )
                     : null;
                 response.respond( Interceptors.after( interceptors,

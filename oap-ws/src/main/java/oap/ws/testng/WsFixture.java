@@ -83,7 +83,7 @@ public class WsFixture implements Fixture {
             kernel = new Kernel( List.of() );
             server = new Server( 100, false );
             server.start();
-            ws = new WebServices( kernel, server, new SessionManager( 10 * 60 * 1000, null, "/" ) {{
+            ws = new WebServices( kernel, server, new SessionManager( 10 * 60 * 1000, null, "/", false ) {{
                 this.cuid = Cuid.incremental( 0 );
             }}, DEFAULT, Lists.map( configs, n -> WsConfig.CONFIGURATION.fromUrl( urlOfTestResource( contextClass, n ) ) ) );
 
