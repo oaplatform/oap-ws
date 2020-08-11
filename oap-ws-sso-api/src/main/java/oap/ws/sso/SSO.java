@@ -55,6 +55,10 @@ public class SSO {
             );
     }
 
+    public static HttpResponse.Builder authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
+        return authenticatedResponse( authentication, cookieDomain, cookieExpiration, false );
+    }
+
     public static HttpResponse.Builder logoutResponse( String cookieDomain ) {
         return HttpResponse.status( HTTP_NO_CONTENT )
             .withCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
