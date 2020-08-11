@@ -42,7 +42,7 @@ public class SSO {
         return request.header( AUTHENTICATION_KEY ).or( () -> request.cookie( AUTHENTICATION_KEY ) );
     }
 
-    public static HttpResponse.Builder authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
+    public static HttpResponse.Builder authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
         return HttpResponse.ok( authentication.view )
             .withHeader( AUTHENTICATION_KEY, authentication.id )
             .withCookie( new Cookie( AUTHENTICATION_KEY, authentication.id )
@@ -50,6 +50,7 @@ public class SSO {
                 .withPath( "/" )
                 .withExpires( new DateTime( UTC ).plus( cookieExpiration ) )
                 .httpOnly( true )
+                .secure( cookieSecure )
                 .toString()
             );
     }

@@ -50,12 +50,21 @@ public class AuthWS {
 
     private final Authenticator authenticator;
     private final String cookieDomain;
+    private final Boolean cookieSecure;
     private final long cookieExpiration;
 
     public AuthWS( Authenticator authenticator, String cookieDomain, long cookieExpiration ) {
         this.authenticator = authenticator;
         this.cookieDomain = cookieDomain;
         this.cookieExpiration = cookieExpiration;
+        this.cookieSecure = false;
+    }
+
+    public AuthWS( Authenticator authenticator, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
+        this.authenticator = authenticator;
+        this.cookieDomain = cookieDomain;
+        this.cookieExpiration = cookieExpiration;
+        this.cookieSecure = cookieSecure;
     }
 
     @WsMethod( method = POST, path = "/login" )
@@ -67,7 +76,7 @@ public class AuthWS {
     public HttpResponse login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
         return authenticator.authenticate( email, password )
-            .map( authentication -> authenticatedResponse( authentication, cookieDomain, cookieExpiration ) )
+            .map( authentication -> authenticatedResponse( authentication, cookieDomain, cookieExpiration, cookieSecure ) )
             .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ) )
             .response();
     }
