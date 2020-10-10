@@ -47,7 +47,7 @@ public class JPathWSTest extends Fixtures {
     public void testJavaBeanPropertyAccess() {
         fixture.kernel.serviceOfClass2( TestService.class ).setV2( "testv" );
 
-        assertGet( httpUrl( "/system/admin/jpath?query=var:test-service.getV2()" ) )
+        assertGet( httpUrl( "/system/admin/jpath?query=test-service.getV2()" ) )
             .isOk()
             .hasBody( "\"testv\"" );
     }
@@ -56,7 +56,7 @@ public class JPathWSTest extends Fixtures {
     public void testPublicFieldAccess() {
         fixture.kernel.serviceOfClass2( TestService.class ).setV2( "testv" );
 
-        assertGet( httpUrl( "/system/admin/jpath?query=var:test-service.value" ) )
+        assertGet( httpUrl( "/system/admin/jpath?query=test-service.value" ) )
             .isOk()
             .hasBody( "\"testv\"" );
     }

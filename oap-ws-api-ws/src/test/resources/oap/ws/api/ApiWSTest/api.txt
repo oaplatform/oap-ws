@@ -1,25 +1,4 @@
 ################################################################################
-Service oap.ws.admin.LogWS
-Bound to system/admin/logs
-Methods:
-	Method reset
-	[GET] /system/admin/logs/reset
-	Produces application/json
-	Permissions <unsecure>
-	Returns void
-	No parameters
-
-	Method setLevel
-	[GET, POST, PATCH] /system/admin/logs/{level}/{packageName}
-	Produces application/json
-	Permissions <unsecure>
-	Returns void
-	Parameters
-		level: path String
-		packageName: path String
-
-
-################################################################################
 Service oap.ws.api.ApiWS
 Bound to system/api
 Methods:
