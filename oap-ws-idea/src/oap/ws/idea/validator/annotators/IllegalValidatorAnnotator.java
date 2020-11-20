@@ -33,6 +33,8 @@ import oap.ws.idea.validator.Types;
 import oap.ws.idea.validator.ValidatorReference;
 import org.jetbrains.annotations.NotNull;
 
+import static com.intellij.lang.annotation.HighlightSeverity.ERROR;
+
 public class IllegalValidatorAnnotator implements Annotator {
 
     @Override
@@ -42,7 +44,9 @@ public class IllegalValidatorAnnotator implements Annotator {
             if( reference == null ) return;
             PsiMethod validator = ( PsiMethod ) reference.resolve();
             if( validator != null && !Types.isValidator( validator ) )
-                holder.createErrorAnnotation( psiElement, "Illegal validator (should be nonstatic, nonpublic, returning ValidationErrors)" );
+                holder.newAnnotation( ERROR, "Illegal validator (should be nonstatic, nonpublic, returning ValidationErrors)" )
+                    .range( psiElement )
+                    .create();
         }
 
     }

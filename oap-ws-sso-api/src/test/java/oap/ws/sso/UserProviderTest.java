@@ -26,6 +26,11 @@ package oap.ws.sso;
 
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 import static oap.testng.Asserts.assertString;
 
 public class UserProviderTest {
@@ -38,5 +43,15 @@ public class UserProviderTest {
         assertString( UserProvider.toAccessKey( "b" ) ).isEqualTo( "HMELFCGBIDKJ" );
         assertString( UserProvider.toAccessKey( "/" ) ).isEqualTo( "PKYLZWQVOXMN" );
         assertString( UserProvider.toAccessKey( "@" ) ).isEqualTo( "SXPWQNRMTOVU" );
+    }
+
+    @Test
+    public void stable() {
+        List<Integer> l1 = Arrays.asList( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 );
+        List<Integer> l2 = Arrays.asList( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 );
+        Collections.shuffle( l1, new Random( l1.size() ) );
+        System.out.println( l1 );
+        Collections.shuffle( l2, new Random( l2.size() ) );
+        System.out.println( l2 );
     }
 }

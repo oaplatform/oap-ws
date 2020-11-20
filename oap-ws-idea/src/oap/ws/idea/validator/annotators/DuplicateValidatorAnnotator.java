@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.intellij.lang.annotation.HighlightSeverity.ERROR;
+
 public class DuplicateValidatorAnnotator implements Annotator {
 
     @Override
@@ -22,7 +24,9 @@ public class DuplicateValidatorAnnotator implements Annotator {
             Set<String> unique = new HashSet<>();
             for( PsiAnnotationMemberValue validator : validators ) {
                 if( unique.contains( validator.getText() ) )
-                    holder.createErrorAnnotation( validator, "Duplicate validator" );
+                    holder.newAnnotation( ERROR, "Duplicate validator" )
+                        .range( validator )
+                        .create();
                 else unique.add( validator.getText() );
             }
         }

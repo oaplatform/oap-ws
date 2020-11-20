@@ -38,6 +38,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.intellij.lang.annotation.HighlightSeverity.ERROR;
+
 public class SignatureMismatchAnnotator implements Annotator {
 
     @Override
@@ -51,12 +53,14 @@ public class SignatureMismatchAnnotator implements Annotator {
             List<PsiParameter> mismatch = Psi.getSignatureMismatch( validator, method );
 
             if( !mismatch.isEmpty() )
-                holder.createErrorAnnotation( psiElement, "Method can't supply parameter"
-                    + ( mismatch.size() == 1 ? " " : "s " )
-                    + mismatch
-                    .stream()
-                    .map( p -> p.getType().getPresentableText() + " " + p.getName() )
-                    .collect( Collectors.joining( ", " ) ) );
+                holder.newAnnotation( ERROR, "Method can't supply parameter"
+                                             + ( mismatch.size() == 1 ? " " : "s " )
+                                             + mismatch
+                                                 .stream()
+                                                 .map( p -> p.getType().getPresentableText() + " " + p.getName() )
+                                                 .collect( Collectors.joining( ", " ) ) )
+                    .range( psiElement )
+                    .create();
         }
     }
 
