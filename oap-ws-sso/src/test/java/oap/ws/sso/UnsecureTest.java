@@ -22,7 +22,31 @@
  * SOFTWARE.
  */
 
-package oap.ws.interceptor;
+package oap.ws.sso;
 
-public class NothingInterceptor implements Interceptor {
+import oap.io.Resources;
+import oap.ws.sso.testng.SSOTest;
+import org.testng.annotations.Test;
+
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.ws.interceptor.UnsecureInterceptor.ANONYMOUS;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
+
+public class UnsecureTest extends SSOTest {
+    public UnsecureTest() {
+        super( Resources.filePath( SecurityInterceptorTest.class, "/application.unsecure.test.conf" ).orElseThrow() );
+    }
+
+    @Test
+    public void allowed() {
+        assertGet( httpUrl( "/secure" ) )
+            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), ANONYMOUS.getEmail() );
+        assertGet( httpUrl( "/secure" ) )
+            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), ANONYMOUS.getEmail() );
+        assertGet( httpUrl( "/secure" ) )
+            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), ANONYMOUS.getEmail() );
+    }
 }

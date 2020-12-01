@@ -28,15 +28,51 @@ import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.reflect.Reflection;
 import oap.ws.Session;
+import oap.ws.sso.User;
 
 import java.util.Optional;
 
-public interface Interceptor {
-    default Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
+import static oap.ws.sso.SSO.SESSION_USER_KEY;
+
+public class UnsecureInterceptor implements Interceptor {
+    public static User ANONYMOUS = new User() {
+        @Override
+        public String getEmail() {
+            return "ANONYMOUS";
+        }
+
+        @Override
+        public String getRole() {
+            return "ANONYMOUS";
+        }
+
+        @Override
+        public View getView() {
+            return view;
+        }
+
+        private final View view = new View() {
+            @Override
+            public String getEmail() {
+                return ANONYMOUS.getEmail();
+            }
+
+            @Override
+            public String getRole() {
+                return ANONYMOUS.getRole();
+            }
+        };
+    };
+
+    @Override
+    public Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
+        session.set( SESSION_USER_KEY, ANONYMOUS );
         return Optional.empty();
     }
 
-    default HttpResponse after( HttpResponse response, Session session ) {
+    @Override
+    public HttpResponse after( HttpResponse response, Session session ) {
+        session.remove( SESSION_USER_KEY );
         return response;
     }
 }
