@@ -12,13 +12,25 @@ services:
 
   oap-ws-sso-security-interceptor:
     profile: ws-security
-    implementation: oap.ws.sso.SecurityInterceptor
+    implementation: oap.ws.sso.interceptor.SecurityInterceptor
+    name: oap-ws-sso-security-interceptor
     parameters:
       authenticator: "@service:oap-ws-sso-authenticator"
       roles: "@service:oap-ws-sso-roles"
 
   oap-ws-sso-api-key-interceptor:
     profile: ws-security
-    implementation: oap.ws.sso.ApiKeyInterceptor
+    implementation: oap.ws.sso.interceptor.ApiKeyInterceptor
+    name: oap-ws-sso-api-key-interceptor
     parameters:
       authenticator: "@service:oap-ws-sso-authenticator"
+
+  oap-ws-sso-security-nothing-interceptor:
+    profile: -ws-security
+    implementation: oap.ws.interceptor.NothingInterceptor
+    name: oap-ws-sso-api-key-interceptor
+
+  oap-ws-sso-api-key-nothing-interceptor:
+    profile: -ws-security
+    implementation: oap.ws.interceptor.NothingInterceptor
+    name: oap-ws-sso-api-key-interceptor

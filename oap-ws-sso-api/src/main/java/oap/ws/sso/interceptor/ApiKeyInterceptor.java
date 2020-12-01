@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.http.HttpResponse;
@@ -30,6 +30,8 @@ import oap.http.Request;
 import oap.reflect.Reflection;
 import oap.ws.Session;
 import oap.ws.interceptor.Interceptor;
+import oap.ws.sso.Authenticator;
+import oap.ws.sso.User;
 
 import java.util.Optional;
 

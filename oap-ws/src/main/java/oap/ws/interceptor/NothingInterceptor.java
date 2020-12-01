@@ -24,21 +24,5 @@
 
 package oap.ws.interceptor;
 
-import oap.http.HttpResponse;
-import oap.http.Request;
-import oap.reflect.Reflection;
-import oap.ws.Session;
-
-import java.util.Optional;
-
-public interface Interceptor {
-    Interceptor NOTHING = new NothingInterceptor();
-
-    default Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
-        return Optional.empty();
-    }
-
-    default HttpResponse after( HttpResponse response, Session session ) {
-        return response;
-    }
+public class NothingInterceptor implements Interceptor {
 }
