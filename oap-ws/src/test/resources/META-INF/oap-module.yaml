@@ -32,3 +32,15 @@ services:
     implementation: oap.ws.interceptor.InterceptorTest$PassInterceptor
   error-interceptor:
     implementation: oap.ws.interceptor.InterceptorTest$ErrorInterceptor
+
+  mvpm:
+    implementation: oap.ws.validate.MethodValidatorPeerMethodTest$TestWS
+
+  mvpp:
+    implementation: oap.ws.validate.MethodValidatorPeerParamTest$TestWS
+
+  vj:
+    implementation: oap.ws.validate.ValidateJsonTest$TestWS
+
+  vpj:
+    implementation: oap.ws.validate.ValidatePartialJsonTest$TestWS

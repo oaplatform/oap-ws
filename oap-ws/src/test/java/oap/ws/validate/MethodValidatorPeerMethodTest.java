@@ -23,7 +23,9 @@
  */
 package oap.ws.validate;
 
+import oap.application.testng.KernelFixture;
 import oap.http.HttpResponse;
+import oap.testng.Fixtures;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.testng.annotations.Test;
@@ -44,39 +46,38 @@ import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 import static oap.ws.validate.ValidationErrors.errors;
 
-public class MethodValidatorPeerMethodTest extends AbstractWsValidateTest {
-    @Override
-    protected List<Object> getWsInstances() {
-        return List.of( new TestWS() );
+public class MethodValidatorPeerMethodTest extends Fixtures {
+    {
+        fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
     public void validationDefault() {
-        assertPost( httpUrl( "/test/run/validation/default" ), "test", TEXT_PLAIN )
+        assertPost( httpUrl( "/mvpm/run/validation/default" ), "test", TEXT_PLAIN )
             .responded( HTTP_OK, "OK", TEXT_PLAIN, "test" );
     }
 
     @Test
     public void validationOk() {
-        assertPost( httpUrl( "/test/run/validation/ok" ), "test", TEXT_PLAIN )
+        assertPost( httpUrl( "/mvpm/run/validation/ok" ), "test", TEXT_PLAIN )
             .responded( HTTP_OK, "OK", TEXT_PLAIN, "test" );
     }
 
     @Test
     public void validationFail() {
-        assertPost( httpUrl( "/test/run/validation/fail" ), "test", TEXT_PLAIN )
+        assertPost( httpUrl( "/mvpm/run/validation/fail" ), "test", TEXT_PLAIN )
             .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"error1\",\"error2\"]}" );
     }
 
     @Test
     public void validationFailCode() {
-        assertPost( httpUrl( "/test/run/validation/fail-code" ), "test", TEXT_PLAIN )
+        assertPost( httpUrl( "/mvpm/run/validation/fail-code" ), "test", TEXT_PLAIN )
             .respondedJson( HTTP_FORBIDDEN, "validation failed", "{\"errors\":[\"denied\"]}" );
     }
 
     @Test
     public void validationMethods() {
-        assertGet( httpUrl( "/test/run/validation/methods?a=a&b=5&c=c" ) )
+        assertGet( httpUrl( "/mvpm/run/validation/methods?a=a&b=5&c=c" ) )
             .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"a\",\"a5\",\"5a\"]}" );
     }
 
