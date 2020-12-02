@@ -24,10 +24,10 @@
 
 package oap.ws;
 
+import oap.application.testng.KernelFixture;
 import oap.http.HttpResponse;
 import oap.testng.Fixtures;
 import oap.util.Maps;
-import oap.ws.testng.WsFixture;
 import org.testng.annotations.Test;
 
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
@@ -40,27 +40,25 @@ import static oap.ws.WsParam.From.SESSION;
 public class WebServicesSessionTest extends Fixtures {
 
     {
-        fixture( new WsFixture( getClass(), ( ws, kernel ) -> kernel.register( "test", new TestWS() ), "ws-session.conf" ) );
+        fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
     public void sessionViaResponse() {
-        assertGet( httpUrl( "/test/put" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
+        assertGet( httpUrl( "/session/put" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
             .hasCode( 204 );
-        assertGet( httpUrl( "/test/get" ), Maps.empty(), Maps.of( __( "Cookie", "SID=1" ) ) )
+        assertGet( httpUrl( "/session/get" ) )
             .hasCode( 200 )
             .hasBody( "vvv" );
-
     }
 
     @Test
     public void sessionDirectly() {
-        assertGet( httpUrl( "/test/putDirectly" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
+        assertGet( httpUrl( "/session/putDirectly" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
             .hasCode( 204 );
-        assertGet( httpUrl( "/test/get" ), Maps.empty(), Maps.of( __( "Cookie", "SID=1" ) ) )
+        assertGet( httpUrl( "/session/get" ) )
             .hasCode( 200 )
             .hasBody( "vvv" );
-
     }
 
     @SuppressWarnings( "unused" )

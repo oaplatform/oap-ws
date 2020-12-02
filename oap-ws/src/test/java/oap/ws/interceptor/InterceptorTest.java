@@ -24,6 +24,7 @@
 
 package oap.ws.interceptor;
 
+import oap.application.testng.KernelFixture;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.reflect.Reflection;
@@ -31,7 +32,6 @@ import oap.testng.Fixtures;
 import oap.ws.Session;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
-import oap.ws.testng.WsFixture;
 import org.testng.annotations.Test;
 
 import java.util.Optional;
@@ -43,17 +43,12 @@ import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class InterceptorTest extends Fixtures {
     {
-        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
-            kernel.register( "test", new TestWS() );
-            kernel.register( "pass-interceptor", new PassInterceptor() );
-            kernel.register( "error-interceptor", new ErrorInterceptor() );
-
-        }, "ws-interceptors.conf" ) );
+        fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
     public void shouldAllowRequestWhenEmptyInterceptor() {
-        assertGet( httpUrl( "/test/text?value=empty" ) )
+        assertGet( httpUrl( "/interceptor/text?value=empty" ) )
             .isOk()
             .hasReason( "modified by interceptor" )
             .hasBody( "ok" );
@@ -61,7 +56,7 @@ public class InterceptorTest extends Fixtures {
 
     @Test
     public void shouldNotAllowRequestWhenErrorInterceptor() {
-        assertGet( httpUrl( "/test/text?value=error" ) )
+        assertGet( httpUrl( "/interceptor/text?value=error" ) )
             .hasCode( 403 )
             .hasBody( "caused by interceptor" );
     }

@@ -47,7 +47,6 @@ public class WebServices {
     }
 
     public final Map<String, Object> services = new HashMap<>();
-    final HashMap<String, Integer> exceptionToHttpCode = new HashMap<>();
     private final List<WsConfig> wsConfigs;
     private final HttpServer server;
     private final SessionManager sessionManager;
@@ -118,7 +117,7 @@ public class WebServices {
     public void bind( String context, CorsPolicy corsPolicy, Object service, boolean sessionAware,
                       SessionManager sessionManager, List<Interceptor> interceptors, Protocol protocol ) {
         services.put( context, service );
-        bind( context, corsPolicy, new WebService( service, sessionAware, sessionManager, interceptors, exceptionToHttpCode ), protocol );
+        bind( context, corsPolicy, new WebService( service, sessionAware, sessionManager, interceptors ), protocol );
     }
 
     public void bind( String context, CorsPolicy corsPolicy, Handler handler, Protocol protocol ) {

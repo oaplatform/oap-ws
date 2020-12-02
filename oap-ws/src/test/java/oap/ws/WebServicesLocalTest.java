@@ -24,19 +24,17 @@
 
 package oap.ws;
 
+import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
-import oap.ws.testng.WsFixture;
 import org.testng.annotations.Test;
 
 import static oap.http.Request.HttpMethod.GET;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 
-public class WebServiceLocalTest extends Fixtures {
+public class WebServicesLocalTest extends Fixtures {
     {
-        fixture( new WsFixture( getClass(),
-            ( ws, kernel ) -> kernel.register( "test", new TestWS() ),
-            "ws-local.conf" ) );
+        fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
