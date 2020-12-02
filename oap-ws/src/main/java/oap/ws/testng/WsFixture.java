@@ -81,7 +81,7 @@ public class WsFixture implements Fixture {
         private TestWebServer( List<String> configs, BiConsumer<WebServices, Kernel> registerServices ) {
             Env.resetPorts();
             kernel = new Kernel( List.of() );
-            server = new Server( 100, false );
+            server = new Server( 100, 1000, false );
             server.start();
             ws = new WebServices( kernel, server, new SessionManager( 10 * 60 * 1000, null, "/", false ) {{
                 this.cuid = Cuid.incremental( 0 );

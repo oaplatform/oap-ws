@@ -79,5 +79,10 @@
             <artifactId>slf4j-api</artifactId>
             <version>${oap.deps.slf4j.version}</version>
         </dependency>
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>${oap.deps.javaassist.version}</version>
+        </dependency>
     </dependencies>
 </project>

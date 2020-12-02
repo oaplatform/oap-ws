@@ -52,7 +52,7 @@ public abstract class AbstractWsValidateTest {
     public void start() {
         Env.resetPorts();
 
-        server = new Server( 100, false );
+        server = new Server( 100, 100,false );
         server.start();
         WebServices ws = new WebServices( new Kernel( Lists.empty() ), server, SESSION_MANAGER, GenericCorsPolicy.DEFAULT );
 

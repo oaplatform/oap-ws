@@ -46,10 +46,6 @@ public class SSOTest extends Fixtures {
         fixture( kernelFixture = new KernelFixture( conf ) );
     }
 
-    public SSOTest( Path conf, String confd ) {
-        fixture( kernelFixture = new KernelFixture( conf, confd ) );
-    }
-
     protected static void assertLogin( String login, String password ) {
         assertPost( httpUrl( "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
             .hasCode( HTTP_OK )
