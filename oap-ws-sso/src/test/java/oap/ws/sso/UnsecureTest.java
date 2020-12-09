@@ -24,8 +24,7 @@
 
 package oap.ws.sso;
 
-import oap.io.Resources;
-import oap.ws.sso.testng.SSOTest;
+import oap.ws.sso.testng.SecureWSTest;
 import org.testng.annotations.Test;
 
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -35,9 +34,9 @@ import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.interceptor.UnsecureInterceptor.ANONYMOUS;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
-public class UnsecureTest extends SSOTest {
+public class UnsecureTest extends SecureWSTest {
     public UnsecureTest() {
-        super( Resources.filePath( SecurityInterceptorTest.class, "/application.unsecure.test.conf" ).orElseThrow() );
+        super( "/application.unsecure.test.conf" );
     }
 
     @Test

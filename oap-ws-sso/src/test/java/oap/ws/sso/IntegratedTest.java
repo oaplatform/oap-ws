@@ -28,8 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import oap.io.Resources;
-import oap.ws.sso.testng.SSOTest;
+import oap.ws.sso.testng.SecureWSTest;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
@@ -38,9 +37,9 @@ import java.util.Optional;
 
 import static oap.ws.sso.UserProvider.toAccessKey;
 
-public class IntegratedTest extends SSOTest {
+public class IntegratedTest extends SecureWSTest {
     public IntegratedTest() {
-        super( Resources.filePath( SecurityInterceptorTest.class, "/application.test.conf" ).orElseThrow() );
+        super( "/application.test.conf" );
     }
 
     protected TestUserProvider userProvider() {
