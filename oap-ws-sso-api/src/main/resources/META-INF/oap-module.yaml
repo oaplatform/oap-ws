@@ -2,11 +2,9 @@ name: oap-ws-sso-api
 services:
   oap-ws-sso-roles:
     implementation: oap.ws.sso.SecurityRoles
-    profile: ws-security
 
   oap-ws-sso-authenticator:
     implementation: oap.ws.sso.Authenticator
-    profile: ws-security
     remote:
       name: oap-ws-sso-authenticator-server
 
