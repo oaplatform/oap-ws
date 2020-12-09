@@ -22,13 +22,3 @@ services:
     name: oap-ws-sso-api-key-interceptor
     parameters:
       authenticator: "@service:oap-ws-sso-authenticator"
-
-  oap-ws-sso-security-unsecure-interceptor:
-    profile: -ws-security
-    implementation: oap.ws.interceptor.UnsecureInterceptor
-    name: oap-ws-sso-security-interceptor
-
-  oap-ws-sso-api-key-unsecure-interceptor:
-    profile: -ws-security
-    implementation: oap.ws.interceptor.UnsecureInterceptor
-    name: oap-ws-sso-api-key-interceptor
