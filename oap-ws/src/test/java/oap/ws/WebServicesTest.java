@@ -101,6 +101,12 @@ public class WebServicesTest extends Fixtures {
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"theCookieohoh\"" );
     }
 
+    @Test
+    public void renamed() {
+        assertGet( httpUrl( "/x/v/math/renamed?renamed=aaa" ) )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"aaa\"" );
+    }
+
 
     @Test
     public void invocations() {
@@ -221,8 +227,8 @@ public class WebServicesTest extends Fixtures {
 
         public int sum( int a, List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
             return a + b.stream().mapToInt( Integer::intValue ).sum()
-                + c.orElse( 0 )
-                + ( rp.isPresent() ? 5 : 0 );
+                   + c.orElse( 0 )
+                   + ( rp.isPresent() ? 5 : 0 );
         }
 
         @WsMethod( method = GET, path = "/" )
@@ -254,6 +260,10 @@ public class WebServicesTest extends Fixtures {
         }
 
         public String id( String a ) {
+            return a;
+        }
+
+        public String renamed( @WsParam( name = "renamed" ) String a ) {
             return a;
         }
 
