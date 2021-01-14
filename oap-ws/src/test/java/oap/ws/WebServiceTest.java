@@ -121,6 +121,8 @@ public class WebServiceTest extends Fixtures {
         assertGet( httpUrl( "/x/v/math/code?code=204" ) )
             .hasCode( HTTP_NO_CONTENT );
         assertGet( httpUrl( "/x/h/" ) ).hasCode( HTTP_NO_CONTENT );
+        assertGet( httpUrl( "" ) ).hasCode( HTTP_NO_CONTENT );//for default domain mapping
+        assertGet( httpUrl( "/" ) ).hasCode( HTTP_NO_CONTENT );//for default domain mapping
         assertGet( httpUrl( "/hocon/x/v/math/x?i=1&s=2" ) )
             .respondedJson( HTTP_INTERNAL_ERROR, "failed", "{\"message\":\"failed\"}" );
 

@@ -10,6 +10,10 @@
     "x/h": {
       "service": "handler",
       "protocol": "HTTP"
+    },
+    "": {
+      "service": "handler",
+      "protocol": "HTTP"
     }
   }
 }
