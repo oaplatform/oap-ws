@@ -33,6 +33,8 @@ import oap.ws.idea.ws.Types;
 
 import javax.annotation.Nonnull;
 
+import static com.intellij.lang.annotation.HighlightSeverity.ERROR;
+
 public class UndefinedParameterAnnotator implements Annotator {
 
     @Override
@@ -41,8 +43,9 @@ public class UndefinedParameterAnnotator implements Annotator {
             var references = Psi.findReferences( psiElement, PathParameterReference.class );
             for( PathParameterReference reference : references )
                 if( reference.resolve() == null )
-                    holder.createErrorAnnotation( Psi.inElementToGlobal( psiElement, reference.getRangeInElement() ),
-                        "No such parameter defined in the method signature" );
+                    holder.newAnnotation( ERROR, "No such parameter defined in the method signature" )
+                        .range( Psi.inElementToGlobal( psiElement, reference.getRangeInElement() ) )
+                        .create();
         }
     }
 }

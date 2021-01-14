@@ -24,9 +24,9 @@
 
 package oap.ws;
 
+import oap.application.testng.KernelFixture;
 import oap.http.testng.HttpAsserts;
 import oap.testng.Fixtures;
-import oap.ws.testng.WsFixture;
 import org.testng.annotations.Test;
 
 import static oap.http.Request.HttpMethod.GET;
@@ -35,13 +35,7 @@ import static oap.http.testng.HttpAsserts.assertGet;
 public class WebServicesProfileTest extends Fixtures {
 
     {
-        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
-            kernel.register( "no-profile", new TestWS() );
-            kernel.register( "with-profile", new TestWS() );
-            kernel.register( "new-profile", new TestWS() );
-            kernel.enableProfile( "test-profile" );
-
-        }, "ws-profile.conf" ) );
+        fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
@@ -59,25 +53,8 @@ public class WebServicesProfileTest extends Fixtures {
         assertGet( HttpAsserts.httpUrl( "/new-profile/text?value=empty" ) ).hasCode( 501 );
     }
 
-//    @Test
-//    public void configProfile() {
-//        try( var ignored = webServer( ( ws, kernel ) -> {
-//            kernel.register( "test", new TestWS() );
-//            kernel.enableProfiles( "test-profile" );
-//
-//        }, "ws-config-profile.yaml" ) ) {
-//            assertGet( HttpAsserts.httpUrl( "/s/text?value=empty" ) ).isOk().hasBody( "\"ok\"" );
-//
-//        }
-//
-//        try( var ignored = webServer( ( ws, kernel ) -> {
-//            kernel.register( "test", new TestWS() );
-//        }, "ws-config-profile.yaml" ) ) {
-//            assertGet( HttpAsserts.httpUrl( "/s/text?value=empty" ) ).hasCode( 501 );
-//        }
-//    }
 
-    protected static class TestWS {
+    public static class TestWS {
         @WsMethod( path = "/text", method = GET, produces = "text/plain" )
         public String text( @WsParam( from = WsParam.From.QUERY ) String value ) {
             return "ok";

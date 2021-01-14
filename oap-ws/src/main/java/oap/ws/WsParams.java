@@ -31,7 +31,9 @@ import oap.util.Sets;
 
 import javax.annotation.Nonnull;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toUpperCase;
@@ -107,5 +109,25 @@ public class WsParams {
             return request.body.orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) );
         else
             return unwrapOptionalOfRequired( parameter, request.readBody().map( String::new ) );
+    }
+
+    public static Object fromQuery( Request request, Reflection.Parameter parameter, WsParam wsParam ) {
+        Set<String> names = wsParam == null ? Sets.of() : Sets.of( wsParam.name() );
+        names.add( parameter.name() );
+        if( parameter.type().assignableTo( List.class ) )
+            return names.stream()
+                .map( request::parameters )
+                .filter( values -> !values.isEmpty() )
+                .findAny()
+                .orElse( List.of() );
+        else return unwrapOptionalOfRequired( parameter, names.stream()
+            .map( request::parameter )
+            .filter( Optional::isPresent )
+            .map( Optional::orElseThrow )
+            .findAny() );
+    }
+
+    public static Object fromQuery( Request request, Reflection.Parameter parameter ) {
+        return fromQuery( request, parameter, null );
     }
 }

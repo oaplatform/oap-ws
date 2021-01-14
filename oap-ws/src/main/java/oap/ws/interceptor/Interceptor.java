@@ -32,7 +32,9 @@ import oap.ws.Session;
 import java.util.Optional;
 
 public interface Interceptor {
-    Optional<HttpResponse> before( Request request, Session session, Reflection.Method method );
+    default Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
+        return Optional.empty();
+    }
 
     default HttpResponse after( HttpResponse response, Session session ) {
         return response;

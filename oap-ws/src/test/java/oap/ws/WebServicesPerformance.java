@@ -50,13 +50,13 @@ public class WebServicesPerformance {
 
     @Test
     public void blockingThreads() {
-        Server server = new Server( 5000, false );
+        Server server = new Server( 5000, 1000,false );
         server.start();
         SynchronizedThread listener = new SynchronizedThread( new PlainHttpListener( server, Env.port() ) );
         listener.start();
         try {
             WebServices ws = new WebServices( new Kernel( Lists.empty() ), server, SESSION_MANAGER, GenericCorsPolicy.DEFAULT );
-            ws.bind( "x/v/math", GenericCorsPolicy.DEFAULT, new WebServiceTest.MathWS(), false, SESSION_MANAGER,
+            ws.bind( "x/v/math", GenericCorsPolicy.DEFAULT, new WebServicesTest.MathWS(), false, SESSION_MANAGER,
                 Collections.emptyList(), Protocol.HTTP );
 
             HttpAsserts.reset();

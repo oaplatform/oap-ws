@@ -24,6 +24,7 @@
 package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import oap.application.testng.KernelFixture;
 import oap.http.Client;
 import oap.http.Handler;
 import oap.http.HttpResponse;
@@ -32,7 +33,6 @@ import oap.http.Response;
 import oap.testng.Fixtures;
 import oap.util.Maps;
 import oap.util.Pair;
-import oap.ws.testng.WsFixture;
 import org.apache.commons.io.IOUtils;
 import org.testng.annotations.Test;
 
@@ -63,12 +63,10 @@ import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-public class WebServiceTest extends Fixtures {
+public class WebServicesTest extends Fixtures {
+
     {
-        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
-            kernel.register( "math", new MathWS() );
-            kernel.register( "handler", new TestHandler() );
-        }, "ws.json", "ws.conf" ) );
+        fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
@@ -103,6 +101,12 @@ public class WebServiceTest extends Fixtures {
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"theCookieohoh\"" );
     }
 
+    @Test
+    public void renamed() {
+        assertGet( httpUrl( "/x/v/math/renamed?renamed=aaa" ) )
+            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"aaa\"" );
+    }
+
 
     @Test
     public void invocations() {
@@ -123,7 +127,7 @@ public class WebServiceTest extends Fixtures {
         assertGet( httpUrl( "/x/h/" ) ).hasCode( HTTP_NO_CONTENT );
         assertGet( httpUrl( "" ) ).hasCode( HTTP_NO_CONTENT );//for default domain mapping
         assertGet( httpUrl( "/" ) ).hasCode( HTTP_NO_CONTENT );//for default domain mapping
-        assertGet( httpUrl( "/hocon/x/v/math/x?i=1&s=2" ) )
+        assertGet( httpUrl( "/x/v/math/x?i=1&s=2" ) )
             .respondedJson( HTTP_INTERNAL_ERROR, "failed", "{\"message\":\"failed\"}" );
 
     }
@@ -225,8 +229,8 @@ public class WebServiceTest extends Fixtures {
 
         public int sum( int a, List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
             return a + b.stream().mapToInt( Integer::intValue ).sum()
-                + c.orElse( 0 )
-                + ( rp.isPresent() ? 5 : 0 );
+                   + c.orElse( 0 )
+                   + ( rp.isPresent() ? 5 : 0 );
         }
 
         @WsMethod( method = GET, path = "/" )
@@ -258,6 +262,10 @@ public class WebServiceTest extends Fixtures {
         }
 
         public String id( String a ) {
+            return a;
+        }
+
+        public String renamed( @WsParam( name = "renamed" ) String a ) {
             return a;
         }
 

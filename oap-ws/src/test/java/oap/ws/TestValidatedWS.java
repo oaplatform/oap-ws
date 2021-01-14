@@ -30,8 +30,8 @@ import oap.ws.validate.WsValidate;
 import static oap.http.Request.HttpMethod.GET;
 import static oap.ws.WsParam.From.QUERY;
 
-class TestValidatedWS {
-
+@SuppressWarnings( "unused" )
+public class TestValidatedWS {
 
     @WsMethod( method = GET )
     @WsValidate( "brokenValidator" )
@@ -43,11 +43,6 @@ class TestValidatedWS {
     @WsValidate( "wrongArgsValidator" )
     public int methodWithWrongValidatorArgs( @WsParam( from = QUERY ) int requiredParameter ) {
         return requiredParameter;
-    }
-
-    @WsMethod( method = GET )
-    public int exceptionIllegalAccessException() throws IllegalAccessException {
-        throw new IllegalAccessException( "" );
     }
 
     @WsMethod( method = GET )

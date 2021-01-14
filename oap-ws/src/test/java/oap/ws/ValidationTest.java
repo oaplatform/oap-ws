@@ -25,11 +25,10 @@
 package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
-import oap.ws.testng.WsFixture;
 import org.testng.annotations.Test;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
@@ -37,12 +36,9 @@ import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @Slf4j
 public class ValidationTest extends Fixtures {
+
     {
-        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
-            kernel.register( "validatedWS", new TestValidatedWS() );
-            ws.exceptionToHttpCode.put( IllegalAccessException.class.getName(), 400 );
-            ws.exceptionToHttpCode.put( "unknownclass", 400 );
-        }, "validation-services.conf" ) );
+        fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
@@ -69,8 +65,6 @@ public class ValidationTest extends Fixtures {
     public void exception() {
         assertGet( httpUrl( "/vaildation/service/exceptionRuntimeException" ) )
             .hasCode( HTTP_INTERNAL_ERROR );
-        assertGet( httpUrl( "/vaildation/service/exceptionIllegalAccessException" ) )
-            .hasCode( HTTP_BAD_REQUEST );
     }
 }
 

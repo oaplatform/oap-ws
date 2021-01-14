@@ -24,12 +24,12 @@
 
 package oap.ws.validate;
 
+import oap.application.testng.KernelFixture;
 import oap.http.testng.HttpAsserts;
+import oap.testng.Fixtures;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.testng.annotations.Test;
-
-import java.util.List;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -39,44 +39,43 @@ import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
-public class WsValidateJsonTest extends AbstractWsValidateTest {
-    @Override
-    protected List<Object> getWsInstances() {
-        return List.of( new TestWS() );
+public class ValidateJsonTest extends Fixtures {
+    {
+        fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
     public void validation1() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/1" ), "{\"a\":1}", APPLICATION_JSON )
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/1" ), "{\"a\":1}", APPLICATION_JSON )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "{\"a\":1}" );
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/1" ), "{}", APPLICATION_JSON )
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/1" ), "{}", APPLICATION_JSON )
             .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"/a: required property is missing\"]}" );
     }
 
     @Test
     public void validation2() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/2" ), "{\"a\":1}", APPLICATION_JSON )
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{\"a\":1}", APPLICATION_JSON )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "{\"a\":1}" );
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/2" ), "{}", APPLICATION_JSON )
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{}", APPLICATION_JSON )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "{}" );
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/2" ), "{\"b\":1}", APPLICATION_JSON )
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{\"b\":1}", APPLICATION_JSON )
             .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"additional properties are not permitted [b]\"]}" );
     }
 
     @Test
     public void validation3() {
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/3?type=type1" ), "{\"a\":1}", APPLICATION_JSON )
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type1" ), "{\"a\":1}", APPLICATION_JSON )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "{\"a\":1}" );
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/3?type=type2" ), "{\"b\":1}", APPLICATION_JSON )
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type2" ), "{\"b\":1}", APPLICATION_JSON )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "{\"b\":1}" );
-        assertPost( HttpAsserts.httpUrl( "/test/run/validation/3?type=type1" ), "{\"b\":1}", APPLICATION_JSON )
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type1" ), "{\"b\":1}", APPLICATION_JSON )
             .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"/a: required property is missing\"]}" );
     }
 
     public static class TestWS {
         @WsMethod( path = "/run/validation/1", method = POST )
         public TestBean validation1(
-            @WsValidateJson( schema = "/oap/ws/validate/WsValidateJsonTest/schema.conf" )
+            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/schema.conf" )
             @WsParam( from = BODY ) TestBean body
         ) {
             return body;
@@ -84,7 +83,7 @@ public class WsValidateJsonTest extends AbstractWsValidateTest {
 
         @WsMethod( path = "/run/validation/2", method = POST )
         public TestBean validation2(
-            @WsValidateJson( schema = "/oap/ws/validate/WsValidateJsonTest/schema.conf", ignoreRequired = true )
+            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/schema.conf", ignoreRequired = true )
             @WsParam( from = BODY ) TestBean body
         ) {
             return body;
@@ -92,7 +91,7 @@ public class WsValidateJsonTest extends AbstractWsValidateTest {
 
         @WsMethod( path = "/run/validation/3", method = POST )
         public TestBean validation3(
-            @WsValidateJson( schema = "/oap/ws/validate/WsValidateJsonTest/${type}-schema.conf" )
+            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/${type}-schema.conf" )
             @WsParam( from = BODY ) TestBean body,
             @WsParam( from = QUERY ) String type
         ) {

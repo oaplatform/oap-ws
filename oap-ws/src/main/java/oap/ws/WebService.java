@@ -42,13 +42,12 @@ import oap.ws.validate.Validators;
 import org.apache.http.entity.ContentType;
 import org.joda.time.DateTime;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -56,34 +55,23 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.HttpResponse.NOT_FOUND;
 import static oap.util.Collectors.toLinkedHashMap;
-import static oap.ws.WsParams.unwrapOptionalOfRequired;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @Slf4j
 public class WebService implements Handler {
     private final boolean sessionAware;
-    private final HashMap<Class<?>, Integer> exceptionToHttpCode = new HashMap<>();
     private final SessionManager sessionManager;
     private final List<Interceptor> interceptors;
     private final Object instance;
     private final WsMethodMatcher methodMatcher;
 
     public WebService( Object instance, boolean sessionAware,
-                       SessionManager sessionManager, List<Interceptor> interceptors,
-                       Map<String, Integer> exceptionToHttpCode ) {
+                       SessionManager sessionManager, List<Interceptor> interceptors ) {
         this.instance = instance;
         this.methodMatcher = new WsMethodMatcher( instance.getClass() );
         this.sessionAware = sessionAware;
         this.sessionManager = sessionManager;
         this.interceptors = interceptors;
-
-        exceptionToHttpCode.forEach( ( clazz, code ) -> {
-            try {
-                this.exceptionToHttpCode.put( Class.forName( clazz ), code );
-            } catch( ClassNotFoundException e ) {
-                log.trace( e.getMessage(), e );
-            }
-        } );
     }
 
     private void wsError( Response response, Throwable e ) {
@@ -100,10 +88,7 @@ public class WebService implements Handler {
                     new ValidationErrors.ErrorResponse( clientException.errors ) ).response() );
         } else {
             log.error( this + ": " + e.toString(), e );
-
-            var code = exceptionToHttpCode.getOrDefault( e.getClass(), HTTP_INTERNAL_ERROR );
-
-            response.respond( HttpResponse.status( code, e.getMessage(), new JsonStackTraceResponse( e ) ).response() );
+            response.respond( HttpResponse.status( HTTP_INTERNAL_ERROR, e.getMessage(), new JsonStackTraceResponse( e ) ).response() );
         }
     }
 
@@ -253,10 +238,7 @@ public class WebService implements Handler {
         return parameters.stream().collect( toLinkedHashMap(
             parameter -> parameter,
             parameter -> getValue( session, request, wsMethod, parameter )
-                .orElseGet( () -> parameter.type().assignableTo( List.class )
-                    ? request.parameters( parameter.name() )
-                    : unwrapOptionalOfRequired( parameter, request.parameter( parameter.name() ) )
-                ) ) );
+                .orElseGet( () -> WsParams.fromQuery( request, parameter ) ) ) );
     }
 
     public Optional<Object> getValue( Session session,
@@ -275,14 +257,13 @@ public class WebService implements Handler {
                         case COOKIE -> WsParams.fromCookie( request, parameter, wsParam );
                         case PATH -> WsParams.fromPath( request, wsMethod, parameter );
                         case BODY -> WsParams.fromBody( request, parameter );
-                        case QUERY -> parameter.type().assignableTo( List.class )
-                            ? request.parameters( parameter.name() )
-                            : unwrapOptionalOfRequired( parameter, request.parameter( parameter.name() ) );
+                        case QUERY -> WsParams.fromQuery( request, parameter, wsParam );
                     } );
     }
 
 
     private static class JsonStackTraceResponse implements Serializable {
+        @Serial
         private static final long serialVersionUID = 8431608226448804296L;
 
         public final String message;
