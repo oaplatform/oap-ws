@@ -25,27 +25,22 @@
 package oap.ws.admin;
 
 import oap.application.testng.KernelFixture;
-import oap.io.Resources;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 
-/**
- * Created by igor.petrenko on 2020-06-06.
- */
 public class JPathWSTest extends Fixtures {
-    private final KernelFixture fixture;
+    private final KernelFixture kernelFixture;
 
     {
-        fixture = new KernelFixture( Resources.filePath( getClass(), "/test-application.conf" ).get() );
-        fixture( fixture );
+        kernelFixture = fixture( new KernelFixture( "/application.test.conf" ) );
     }
 
     @Test
     public void testJavaBeanPropertyAccess() {
-        fixture.kernel.serviceOfClass2( TestService.class ).setV2( "testv" );
+        kernelFixture.service( TestService.class ).setV2( "testv" );
 
         assertGet( httpUrl( "/system/admin/jpath?query=test-service.getV2()" ) )
             .isOk()
@@ -54,8 +49,7 @@ public class JPathWSTest extends Fixtures {
 
     @Test
     public void testPublicFieldAccess() {
-        fixture.kernel.serviceOfClass2( TestService.class ).setV2( "testv" );
-
+        kernelFixture.service( TestService.class ).setV2( "testv" );
         assertGet( httpUrl( "/system/admin/jpath?query=test-service.value" ) )
             .isOk()
             .hasBody( "\"testv\"" );

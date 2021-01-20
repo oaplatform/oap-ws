@@ -27,9 +27,6 @@ package oap.ws.admin;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.Test;
 
-/**
- * Created by igor.petrenko on 20.03.2019.
- */
 @Slf4j
 public class LogWSTest {
     @Test

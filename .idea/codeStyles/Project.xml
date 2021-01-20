@@ -11,7 +11,6 @@
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
     <codeStyleSettings language="JAVA">
-      <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
       <option name="SPACE_WITHIN_PARENTHESES" value="true" />
       <option name="SPACE_WITHIN_METHOD_CALL_PARENTHESES" value="true" />
       <option name="SPACE_WITHIN_METHOD_PARENTHESES" value="true" />
@@ -45,3 +44,4 @@
     </codeStyleSettings>
   </code_scheme>
 </component>
+

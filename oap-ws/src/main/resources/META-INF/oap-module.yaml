@@ -4,6 +4,7 @@ dependsOn:
 services:
   oap-ws-webservices:
     implementation: oap.ws.WebServices
+    profile: http
     parameters:
       kernel: "@kernel"
       server: "@service:oap-http-server"
@@ -17,61 +18,11 @@ services:
       - corsPolicy-generic
       - corsPolicy-subdomain
 
-  corsPolicy-generic:
-    implementation: oap.http.cors.GenericCorsPolicy
-    parameters:
-      allowOrigin: "*"
-      allowHeaders: "Content-type, Authorization, Set-cookie"
-      allowCredentials: true
-      allowMethods: [HEAD, POST, GET, PUT, DELETE, OPTIONS]
-
-  corsPolicy-subdomain:
-    implementation: oap.http.cors.PatternCorsPolicy
-    parameters:
-      domainRegexp: "^[^:/]*\\.oaplatform\\.org$"
-      allowHeaders: "Content-type, Authorization, Set-cookie, Cookie"
-      allowCredentials: true
-      allowMethods: [HEAD, POST, GET, PUT, DELETE, OPTIONS]
-
   session-manager:
     implementation: oap.ws.SessionManager
+    profile: http
     parameters:
       expirationTime: 24h
       cookiePath: "/"
     supervision:
       supervise: true
-
-  plain-http-listener:
-    profile: plain-listener
-    implementation: oap.http.PlainHttpListener
-    parameters:
-      port: 8880
-      server: "@service:oap-http-server"
-    supervision:
-      thread: true
-    dependsOn:
-      - oap-http-server
-
-  secure-http-listener:
-    profile: secure-listener
-    implementation: oap.http.SecureHttpListener
-    parameters:
-      port: 8443
-      server: "@service:oap-http-server"
-      keystoreLocation: "/etc/oap/keystore.jks"
-      keystorePassword: "changeit"
-    dependsOn:
-      - oap-http-server
-    supervision:
-      thread: true
-
-  local-http-listener:
-    profile: local-listener
-    dependsOn:
-      - oap-http-server
-    implementation: oap.http.LocalHttpListener
-    parameters:
-      port: 18546
-      server: "@service:oap-http-server"
-    supervision:
-      thread: true

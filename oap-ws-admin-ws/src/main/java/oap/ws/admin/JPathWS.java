@@ -29,24 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 import oap.application.Kernel;
 import oap.http.HttpResponse;
 import oap.jpath.JPath;
-import oap.jpath.JPathOutput;
-import oap.jpath.Pointer;
-import oap.json.Binder;
-import oap.util.Try;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
-import org.apache.http.entity.ContentType;
 
-import java.io.OutputStreamWriter;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.Request.HttpMethod.GET;
 import static oap.ws.WsParam.From.QUERY;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
-/**
- * Created by igor.petrenko on 2020-06-06.
- */
 @Slf4j
 public class JPathWS {
     private final Kernel kernel;
@@ -59,23 +51,14 @@ public class JPathWS {
     public HttpResponse get( @WsParam( from = QUERY ) String query ) {
         log.debug( "query = {}", query );
         try {
-
-
-            return HttpResponse.outputStream( Try.consume( out -> {
-                try( var osw = new OutputStreamWriter( out, UTF_8 ) ) {
-                    JPath.evaluate( query, kernel.services, new JPathOutput() {
-                        @Override
-                        public void write( Pointer pointer ) {
-                            Binder.json.marshal( pointer.get(), osw );
-                        }
-                    } );
-                }
-            } ), ContentType.APPLICATION_JSON ).response();
+            AtomicReference<Object> result = new AtomicReference<>();
+            JPath.evaluate( query, kernel.services, pointer -> result.set( pointer.get() ) );
+            return HttpResponse.ok( result.get() ).response();
         } catch( Exception e ) {
             log.error( e.getMessage(), e );
-
-            return HttpResponse.status( HTTP_BAD_REQUEST ).withReason( e.getMessage() )
-                .withContent( Throwables.getStackTraceAsString( e ), ContentType.DEFAULT_TEXT )
+            return HttpResponse.status( HTTP_BAD_REQUEST )
+                .withReason( e.getMessage() )
+                .withContent( Throwables.getStackTraceAsString( e ), TEXT_PLAIN )
                 .response();
         }
     }

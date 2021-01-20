@@ -38,9 +38,6 @@ import org.slf4j.LoggerFactory;
 import static oap.http.Request.HttpMethod.GET;
 import static oap.ws.WsParam.From.PATH;
 
-/**
- * Created by igor.petrenko on 20.03.2019.
- */
 @Slf4j
 public class LogWS {
     @WsMethod( path = "/reset", method = GET )

@@ -26,9 +26,6 @@ package oap.ws.admin;
 
 import lombok.ToString;
 
-/**
- * Created by igor.petrenko on 2020-06-06.
- */
 @ToString
 public class TestService {
     private String value = "";

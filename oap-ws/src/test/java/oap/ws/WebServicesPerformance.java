@@ -25,10 +25,10 @@ package oap.ws;
 
 import oap.application.Kernel;
 import oap.concurrent.SynchronizedThread;
-import oap.http.PlainHttpListener;
 import oap.http.Protocol;
-import oap.http.Server;
 import oap.http.cors.GenericCorsPolicy;
+import oap.http.server.apache.ApacheHttpServer;
+import oap.http.server.apache.PlainHttpListener;
 import oap.http.testng.HttpAsserts;
 import oap.testng.Env;
 import oap.util.Lists;
@@ -50,7 +50,7 @@ public class WebServicesPerformance {
 
     @Test
     public void blockingThreads() {
-        Server server = new Server( 5000, 1000,false );
+        ApacheHttpServer server = new ApacheHttpServer( 5000, 1000,false );
         server.start();
         SynchronizedThread listener = new SynchronizedThread( new PlainHttpListener( server, Env.port() ) );
         listener.start();
@@ -72,4 +72,3 @@ public class WebServicesPerformance {
         }
     }
 }
-
