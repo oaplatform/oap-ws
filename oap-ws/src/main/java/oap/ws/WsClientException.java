@@ -29,7 +29,7 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 
 public class WsClientException extends WsException {
     public final List<String> errors;
-    public int code = HTTP_BAD_REQUEST;
+    public final int code;
 
     public WsClientException( String message, int code, List<String> errors ) {
         super( message );
@@ -38,8 +38,7 @@ public class WsClientException extends WsException {
     }
 
     public WsClientException( String message, List<String> errors ) {
-        super( message );
-        this.errors = errors;
+        this( message, HTTP_BAD_REQUEST, errors );
     }
 
     public WsClientException( String message ) {
@@ -49,10 +48,10 @@ public class WsClientException extends WsException {
     public WsClientException( String message, Throwable cause ) {
         super( message, cause );
         this.errors = List.of( message );
+        this.code = HTTP_BAD_REQUEST;
     }
 
     public WsClientException( Throwable cause ) {
-        super( cause );
-        this.errors = List.of( cause.getMessage() );
+        this( cause.getMessage(), cause );
     }
 }

@@ -58,11 +58,6 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
         return errors( List.of() );
     }
 
-    @Deprecated
-    public static ValidationErrors create( String error ) {
-        return errors( List.of( error ) );
-    }
-
     public static ValidationErrors error( String error ) {
         return errors( List.of( error ) );
     }
@@ -71,18 +66,17 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
         return errors( List.of( String.format( message, args ) ) );
     }
 
-    @Deprecated
-    public static ValidationErrors create( List<String> errors ) {
-        return new ValidationErrors( DEFAULT_CODE, errors );
+    public static ValidationErrors error( int code, String error ) {
+        return errors( code, List.of( error ) );
     }
+
+    public static ValidationErrors error( int code, String message, Object... args ) {
+        return errors( code, List.of( String.format( message, args ) ) );
+    }
+
 
     public static ValidationErrors errors( List<String> errors ) {
         return new ValidationErrors( DEFAULT_CODE, errors );
-    }
-
-    @Deprecated
-    public static ValidationErrors create( int code, List<String> errors ) {
-        return new ValidationErrors( code, errors );
     }
 
     public static ValidationErrors errors( int code, List<String> errors ) {
@@ -90,16 +84,23 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
     }
 
     @Deprecated
+    public static ValidationErrors create( List<String> errors ) {
+        return new ValidationErrors( DEFAULT_CODE, errors );
+    }
+
+    @Deprecated
+    public static ValidationErrors create( String error ) {
+        return errors( List.of( error ) );
+    }
+
+    @Deprecated
+    public static ValidationErrors create( int code, List<String> errors ) {
+        return new ValidationErrors( code, errors );
+    }
+
+    @Deprecated
     public static ValidationErrors create( int code, String error ) {
         return errors( code, Lists.of( error ) );
-    }
-
-    public static ValidationErrors error( int code, String error ) {
-        return errors( code, List.of( error ) );
-    }
-
-    public static ValidationErrors error( int code, String message, Object... args ) {
-        return errors( code, List.of( String.format( message, args ) ) );
     }
 
     public ValidationErrors merge( ValidationErrors otherErrors ) {

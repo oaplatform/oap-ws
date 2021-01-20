@@ -41,10 +41,10 @@ import static oap.http.Request.HttpMethod.POST;
 import static oap.io.MimeTypes.mimetypeOf;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
-import static oap.ws.file.Schema.DATA;
 import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
 
 public class FileWS {
+    public static final String DATA_SCHEMA = "/oap/ws/file/schema/data.conf";
     private final BucketManager bucketManager;
 
     public FileWS( BucketManager bucketManager ) {
@@ -52,7 +52,7 @@ public class FileWS {
     }
 
     @WsMethod( method = POST, path = "/", produces = "text/plain" )
-    public String upload( @WsParam( from = BODY ) @WsValidateJson( schema = DATA ) Data data, Optional<String> bucket ) {
+    public String upload( @WsParam( from = BODY ) @WsValidateJson( schema = DATA_SCHEMA ) Data data, Optional<String> bucket ) {
         return bucket.map( b -> bucketManager.put( b, data ) )
             .orElseGet( () -> bucketManager.put( data ) );
     }

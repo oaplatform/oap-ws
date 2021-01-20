@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class MethodValidatorPeer implements ValidatorPeer {
-    private final List<Validator> validators;
+    private final List<AbstractValidator> validators;
 
     public MethodValidatorPeer( WsValidate validate, Reflection.Method targetMethod, Object instance, Type type ) {
         if( type == Type.PARAMETER )
@@ -58,11 +58,11 @@ public class MethodValidatorPeer implements ValidatorPeer {
         return ret;
     }
 
-    private abstract static class Validator {
+    private abstract static class AbstractValidator {
         protected final Reflection.Method method;
         protected final Object instance;
 
-        protected Validator( String method, Reflection.Method targetMethod, Object instance ) {
+        protected AbstractValidator( String method, Reflection.Method targetMethod, Object instance ) {
             this.method = Reflect.reflect( instance.getClass() )
                 .method( method ) // TODO: replace it with method( method, targetMethod.parameters ),
                 //  once the issue with @WsValidate is fixed
@@ -74,8 +74,8 @@ public class MethodValidatorPeer implements ValidatorPeer {
         abstract ValidationErrors validate( Object value );
     }
 
-    private static class ParameterValidator extends Validator {
-        public ParameterValidator( String method, Reflection.Method targetMethod, Object instatnce ) {
+    private static class ParameterValidator extends AbstractValidator {
+        private ParameterValidator( String method, Reflection.Method targetMethod, Object instatnce ) {
             super( method, targetMethod, instatnce );
         }
 
@@ -85,10 +85,10 @@ public class MethodValidatorPeer implements ValidatorPeer {
         }
     }
 
-    private static class MethodValidator extends Validator {
+    private static class MethodValidator extends AbstractValidator {
         private final Map<String, Integer> validatorMethodParamIndices;
 
-        protected MethodValidator( String method, Reflection.Method targetMethod, Object instance ) {
+        private MethodValidator( String method, Reflection.Method targetMethod, Object instance ) {
             super( method, targetMethod, instance );
             validatorMethodParamIndices = Stream.of( targetMethod.parameters )
                 .map( Reflection.Parameter::name )

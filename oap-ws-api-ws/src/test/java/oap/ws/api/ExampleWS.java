@@ -41,6 +41,7 @@ import static oap.http.Request.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
 
+@SuppressWarnings( "unused" )
 class ExampleWS {
 
     @WsSecurity( permissions = { Permissions.MANAGE_SELF } )
@@ -127,10 +128,10 @@ class ExampleWS {
         public Bean2 b2;
         public Ext ext;
 
-        public Bean() {
+        protected Bean() {
         }
 
-        public Bean( int i, String s ) {
+        protected Bean( int i, String s ) {
             this.i = i;
             this.s = s;
         }

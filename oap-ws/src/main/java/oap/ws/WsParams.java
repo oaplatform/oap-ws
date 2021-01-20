@@ -101,10 +101,9 @@ public class WsParams {
 
     public static Object fromBody( Request request, Reflection.Parameter parameter ) {
         if( parameter.type().assignableFrom( byte[].class ) )
-            return ( parameter.type().isOptional()
+            return parameter.type().isOptional()
                 ? request.readBody()
-                : request.readBody().orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) )
-            );
+                : request.readBody().orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) );
         else if( parameter.type().assignableFrom( InputStream.class ) )
             return request.body.orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) );
         else

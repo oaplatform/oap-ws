@@ -50,7 +50,7 @@ public class WebServicesPerformance {
 
     @Test
     public void blockingThreads() {
-        ApacheHttpServer server = new ApacheHttpServer( 5000, 1000,false );
+        ApacheHttpServer server = new ApacheHttpServer( 5000, 1000, false );
         server.start();
         SynchronizedThread listener = new SynchronizedThread( new PlainHttpListener( server, Env.port() ) );
         listener.start();

@@ -25,10 +25,10 @@ package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.http.Cookie;
-import oap.http.Handler;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.http.Response;
+import oap.http.server.Handler;
 import oap.json.Binder;
 import oap.json.JsonException;
 import oap.reflect.ReflectException;
@@ -184,7 +184,7 @@ public class WebService implements Handler {
                 ? ( ( Result<?, ?> ) result ).mapSuccess( r -> HttpResponse.ok( r, isRaw, produces ) ).successValue
                 : ( ( Result<?, ?> ) result ).mapFailure( r -> HttpResponse.status( HTTP_INTERNAL_ERROR, "", r ) ).failureValue;
         else if( result instanceof java.util.stream.Stream<?> )
-            responseBuilder = HttpResponse.stream( ( ( java.util.stream.Stream<?> ) result ), isRaw, produces );
+            responseBuilder = HttpResponse.stream( ( java.util.stream.Stream<?> ) result, isRaw, produces );
         else responseBuilder = HttpResponse.ok( result, isRaw, produces );
         return responseBuilder;
     }
@@ -204,7 +204,7 @@ public class WebService implements Handler {
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( { "unchecked", "checkstyle:ParameterAssignment" } )
     private Object map( Reflection reflection, Object value ) {
         if( reflection.isOptional() )
             if( ( ( Optional<?> ) value ).isEmpty() ) return Optional.empty();
@@ -268,7 +268,7 @@ public class WebService implements Handler {
 
         public final String message;
 
-        public JsonStackTraceResponse( Throwable t ) {
+        private JsonStackTraceResponse( Throwable t ) {
             message = Throwables.getRootCause( t ).getMessage();
         }
     }

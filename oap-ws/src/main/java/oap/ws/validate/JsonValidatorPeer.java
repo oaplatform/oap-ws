@@ -67,7 +67,7 @@ public class JsonValidatorPeer implements ValidatorPeer {
 
         StringBuilder id = new StringBuilder();
 
-        var ref = Strings.substitute( schemaRef, ( key ) -> originalValues
+        var ref = Strings.substitute( schemaRef, key -> originalValues
             .entrySet()
             .stream()
             .filter( e -> key.equals( e.getKey().name() ) )

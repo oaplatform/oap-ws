@@ -57,10 +57,12 @@ public class SecurityRolesTest {
         assertThat( securityRoles.granted( "USER", "A", "B" ) ).isTrue();
     }
 
+    @SuppressWarnings( "checkstyle:InterfaceIsType" )
     public interface Roles extends oap.ws.sso.Roles {
         String MEGADMIN = "MEGADMIN";
     }
 
+    @SuppressWarnings( "checkstyle:InterfaceIsType" )
     public interface Permissions extends oap.ws.sso.Permissions {
         String MEGATEST = "MEGATEST";
     }

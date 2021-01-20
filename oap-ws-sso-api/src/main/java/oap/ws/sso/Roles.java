@@ -24,7 +24,7 @@
 
 package oap.ws.sso;
 
-@SuppressWarnings( "CheckStyle" )
+@SuppressWarnings( "checkstyle:InterfaceIsType" )
 public interface Roles {
     String ADMIN = "ADMIN";
     String USER = "USER";

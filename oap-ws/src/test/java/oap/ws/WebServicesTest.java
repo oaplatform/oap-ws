@@ -26,10 +26,10 @@ package oap.ws;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.http.Client;
-import oap.http.Handler;
 import oap.http.HttpResponse;
 import oap.http.Request;
 import oap.http.Response;
+import oap.http.server.Handler;
 import oap.testng.Fixtures;
 import oap.util.Maps;
 import oap.util.Pair;
@@ -216,6 +216,7 @@ public class WebServicesTest extends Fixtures {
         assertThat( response.contentString() ).isEqualTo( "{\"i\":1,\"s\":\"sss\"}" );
     }
 
+    @SuppressWarnings( "unused" )
     static class TestHandler implements Handler {
         @Override
         public void handle( Request request, Response response ) {
@@ -223,12 +224,13 @@ public class WebServicesTest extends Fixtures {
         }
     }
 
+    @SuppressWarnings( "unused" )
     static class MathWS {
 
         public int sum( int a, List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
             return a + b.stream().mapToInt( Integer::intValue ).sum()
-                   + c.orElse( 0 )
-                   + ( rp.isPresent() ? 5 : 0 );
+                + c.orElse( 0 )
+                + ( rp.isPresent() ? 5 : 0 );
         }
 
         @WsMethod( method = GET, path = "/" )
@@ -319,14 +321,13 @@ public class WebServicesTest extends Fixtures {
             public int i;
             public String s;
 
-            public Bean() {
+            Bean() {
             }
 
-            public Bean( int i, String s ) {
+            Bean( int i, String s ) {
                 this.i = i;
                 this.s = s;
             }
         }
     }
 }
-

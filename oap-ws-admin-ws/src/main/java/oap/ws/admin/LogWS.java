@@ -53,8 +53,8 @@ public class LogWS {
             configurator.setContext( loggerContext );
             loggerContext.reset();
             configurator.doConfigure( url );
-        } catch( JoranException je ) {
-            log.error( je.getMessage(), je );
+        } catch( JoranException e ) {
+            log.error( e.getMessage(), e );
         }
 
         StatusPrinter.printInCaseOfErrorsOrWarnings( loggerContext );

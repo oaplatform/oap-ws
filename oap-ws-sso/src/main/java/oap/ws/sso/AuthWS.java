@@ -46,6 +46,7 @@ import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 
 @Slf4j
+@SuppressWarnings( "unused" )
 public class AuthWS {
 
     private final Authenticator authenticator;
@@ -118,7 +119,7 @@ public class AuthWS {
         public final String email;
         public final String password;
 
-        public Credentials( String email, String password ) {
+        private Credentials( String email, String password ) {
             this.email = email;
             this.password = password;
         }
