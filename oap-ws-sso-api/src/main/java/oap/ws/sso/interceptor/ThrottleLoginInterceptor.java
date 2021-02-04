@@ -67,7 +67,7 @@ public class ThrottleLoginInterceptor implements Interceptor {
     @Nonnull
     public Optional<HttpResponse> before( @Nonnull Request request, Session session, @Nonnull Reflection.Method method ) {
         var id = session.id;
-        if( validateId( id ) || session.containsKey( SESSION_USER_KEY )) {
+        if( validateId( id ) || session.containsKey( SESSION_USER_KEY ) ) {
             return Optional.empty();
         } else {
             if( log.isTraceEnabled() )
@@ -87,7 +87,8 @@ public class ThrottleLoginInterceptor implements Interceptor {
         if( ts != null ) {
             var duration = Duration.between( ts, now );
             if( duration.getSeconds() <= delay ) {
-                if( log.isTraceEnabled() ) log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
+                if( log.isTraceEnabled() )
+                    log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
                 attemptCache.computeIfPresent( id, ( k, v ) -> now );
                 return false;
             } else {
