@@ -7,3 +7,4 @@ services:
     sessionAware: true
     interceptors:
       - oap-ws-sso-security-interceptor
+      - oap-ws-sso-throttle-login-interceptor

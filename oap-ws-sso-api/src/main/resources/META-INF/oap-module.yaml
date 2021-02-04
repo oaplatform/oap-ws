@@ -22,3 +22,10 @@ services:
     name: oap-ws-sso-api-key-interceptor
     parameters:
       authenticator: "@service:oap-ws-sso-authenticator"
+
+  oap-ws-sso-throttle-login-interceptor:
+    profile: ws-security
+    implementation: oap.ws.sso.interceptor.ThrottleLoginInterceptor
+    name: oap-ws-sso-throttle-login-interceptor
+    parameters:
+      authenticator: "@service:oap-ws-sso-authenticator"

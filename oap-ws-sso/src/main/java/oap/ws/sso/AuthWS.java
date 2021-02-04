@@ -114,14 +114,4 @@ public class AuthWS {
             .orElseGet( () -> HttpResponse.status( HTTP_UNAUTHORIZED ) )
             .response();
     }
-
-    private static class Credentials {
-        public final String email;
-        public final String password;
-
-        private Credentials( String email, String password ) {
-            this.email = email;
-            this.password = password;
-        }
-    }
 }
