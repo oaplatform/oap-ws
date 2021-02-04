@@ -30,7 +30,6 @@ import oap.http.Request;
 import oap.reflect.Reflection;
 import oap.ws.Session;
 import oap.ws.interceptor.Interceptor;
-import oap.ws.sso.Authenticator;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
@@ -49,17 +48,17 @@ import static oap.ws.sso.SSO.SESSION_USER_KEY;
 public class ThrottleLoginInterceptor implements Interceptor {
     private static final Integer DEFAULT = 5;
 
-    private final Authenticator authenticator;
     private final ConcurrentHashMap<String, Temporal> attemptCache = new ConcurrentHashMap<>();
     private final Integer delay;
 
-    public ThrottleLoginInterceptor( Authenticator authenticator, Integer delay ) {
-        this.authenticator = authenticator;
+    /**
+     * @param delay timeout between login attempt. In seconds
+     * */
+    public ThrottleLoginInterceptor( Integer delay ) {
         this.delay = delay;
     }
 
-    public ThrottleLoginInterceptor( Authenticator authenticator ) {
-        this.authenticator = authenticator;
+    public ThrottleLoginInterceptor() {
         this.delay = DEFAULT;
     }
 
@@ -86,7 +85,7 @@ public class ThrottleLoginInterceptor implements Interceptor {
         var ts = attemptCache.putIfAbsent( id, now );
         if( ts != null ) {
             var duration = Duration.between( ts, now );
-            if( duration.getSeconds() <= delay ) {
+            if( duration.getSeconds() <= this.delay ) {
                 if( log.isTraceEnabled() )
                     log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
                 attemptCache.computeIfPresent( id, ( k, v ) -> now );
