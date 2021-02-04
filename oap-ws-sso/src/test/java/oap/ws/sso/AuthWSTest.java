@@ -48,11 +48,12 @@ public class AuthWSTest extends IntegratedTest {
     }
 
     @Test
-    public void logout() {
+    public void logout() throws Exception {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         userProvider().addUser( new TestUser( "user@admin.com", "pass", USER ) );
         assertLogin( "admin@admin.com", "pass" );
         assertLogout();
+        Thread.sleep( 1000 * 6 );
         assertGet( httpUrl( "/auth/whoami" ) )
             .hasCode( HTTP_UNAUTHORIZED );
         assertLogin( "user@admin.com", "pass" );

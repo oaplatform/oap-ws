@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 /**
  * The main purpose of ThrottleLoginInterceptor is to prevent users from brut-forcing our login endpoints
@@ -66,7 +67,7 @@ public class ThrottleLoginInterceptor implements Interceptor {
     @Nonnull
     public Optional<HttpResponse> before( @Nonnull Request request, Session session, @Nonnull Reflection.Method method ) {
         var id = session.id;
-        if( validateId( id ) ) {
+        if( validateId( id ) || session.containsKey( SESSION_USER_KEY )) {
             return Optional.empty();
         } else {
             if( log.isTraceEnabled() )
