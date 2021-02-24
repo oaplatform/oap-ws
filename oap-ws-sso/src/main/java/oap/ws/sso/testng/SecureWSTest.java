@@ -26,16 +26,8 @@ package oap.ws.sso.testng;
 
 import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
-import org.joda.time.DateTime;
 
 import java.nio.file.Path;
-
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
-import static oap.http.testng.HttpAsserts.CookieHttpAssertion.assertCookie;
-import static oap.http.testng.HttpAsserts.assertGet;
-import static oap.http.testng.HttpAsserts.httpUrl;
-import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
-import static org.joda.time.DateTimeZone.UTC;
 
 public class SecureWSTest extends Fixtures {
     protected final KernelFixture kernelFixture;
