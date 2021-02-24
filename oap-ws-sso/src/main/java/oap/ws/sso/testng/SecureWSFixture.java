@@ -24,43 +24,35 @@
 
 package oap.ws.sso.testng;
 
-import oap.application.testng.KernelFixture;
-import oap.testng.Fixtures;
+import oap.testng.Fixture;
 import org.joda.time.DateTime;
 
-import java.nio.file.Path;
-
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.testng.HttpAsserts.CookieHttpAssertion.assertCookie;
 import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
 import static org.joda.time.DateTimeZone.UTC;
 
-public class SecureWSTest extends Fixtures {
-    protected final KernelFixture kernelFixture;
-
-    public SecureWSTest( Path conf ) {
-        this( new KernelFixture( conf ) );
+/**
+ * Created by igor.petrenko on 2021-02-24.
+ */
+public class SecureWSFixture implements Fixture {
+    public static void assertLogin( String login, String password ) {
+        assertPost( httpUrl( "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
+            .hasCode( HTTP_OK )
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() );
     }
 
-    public SecureWSTest( KernelFixture kernelFixture ) {
-        this.kernelFixture = fixture( kernelFixture );
-    }
-
-    public SecureWSTest( String conf ) {
-        this( new KernelFixture( conf ) );
-    }
-
-    public SecureWSTest( String conf, String confd ) {
-        this( new KernelFixture( conf, confd ) );
-    }
-
-    protected static void assertLogin( String login, String password ) {
-        SecureWSFixture.assertLogin( login, password );
-    }
-
-    protected static void assertLogout() {
-        SecureWSFixture.assertLogout();
+    public static void assertLogout() {
+        assertGet( httpUrl( "/auth/logout" ) )
+            .hasCode( HTTP_NO_CONTENT )
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasValue( "<logged out>" )
+                .expiresAt( new DateTime( 1970, 1, 1, 1, 1, UTC ) ) );
     }
 }
