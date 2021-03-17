@@ -50,6 +50,7 @@ import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static oap.cli.Option.__;
 import static oap.http.Request.HttpMethod.GET;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
@@ -142,6 +143,9 @@ public class WebServicesTest extends Fixtures {
     public void invocationString() {
         assertPost( httpUrl( "/x/v/math/string" ), "1234", APPLICATION_OCTET_STREAM )
             .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1234\"" );
+        assertPost( httpUrl( "/x/v/math/string" ), "1234", APPLICATION_OCTET_STREAM )
+            .satisfies( response -> assertThat( response.headers )
+                .contains( __( "Content-Type", "application/json; charset=UTF-8" ) ) );
     }
 
     @Test
