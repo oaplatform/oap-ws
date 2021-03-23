@@ -2,9 +2,9 @@ name: oap-ws-sso-test
 services:
 
   secure:
-    service: secure-ws
+    service: oap-ws-sso-test.secure-ws
     protocol: HTTP
     sessionAware: true
     interceptors:
-      - oap-ws-sso-api-key-interceptor
-      - oap-ws-sso-security-interceptor
+      - oap-ws-sso-api.oap-ws-sso-api-key-interceptor
+      - oap-ws-sso-api.oap-ws-sso-security-interceptor

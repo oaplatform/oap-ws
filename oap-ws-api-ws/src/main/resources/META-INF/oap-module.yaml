@@ -1,8 +1,0 @@
-name: oap-ws-api-ws
-dependsOn:
-  - oap-ws
-services:
-  api-ws:
-    implementation: oap.ws.api.ApiWS
-    parameters:
-      webServices: "@service:oap-ws-webservices"

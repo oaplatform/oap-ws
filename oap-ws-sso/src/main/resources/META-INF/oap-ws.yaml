@@ -2,9 +2,9 @@ name: oap-ws-sso
 services:
 
   auth:
-    service: auth-ws
+    service: oap-ws-sso.auth-ws
     protocol: HTTP
     sessionAware: true
     interceptors:
-      - oap-ws-sso-security-interceptor
-      - oap-ws-sso-throttle-login-interceptor
+      - oap-ws-sso-api.oap-ws-sso-security-interceptor
+      - oap-ws-sso-api.oap-ws-sso-throttle-login-interceptor

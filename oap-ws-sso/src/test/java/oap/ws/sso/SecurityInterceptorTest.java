@@ -34,6 +34,7 @@ import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.Roles.ADMIN;
 import static oap.ws.sso.Roles.USER;
+import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 public class SecurityInterceptorTest extends IntegratedTest {

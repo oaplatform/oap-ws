@@ -40,17 +40,17 @@ public class JPathWSTest extends Fixtures {
 
     @Test
     public void testJavaBeanPropertyAccess() {
-        kernelFixture.service( TestService.class ).setV2( "testv" );
+        kernelFixture.service( "oap-ws-admin-ws-test", TestService.class ).setV2( "testv" );
 
-        assertGet( httpUrl( "/system/admin/jpath?query=test-service.getV2()" ) )
+        assertGet( httpUrl( "/system/admin/jpath?query=oap-ws-admin-ws-test.test-service.getV2()" ) )
             .isOk()
             .hasBody( "\"testv\"" );
     }
 
     @Test
     public void testPublicFieldAccess() {
-        kernelFixture.service( TestService.class ).setV2( "testv" );
-        assertGet( httpUrl( "/system/admin/jpath?query=test-service.value" ) )
+        kernelFixture.service( "oap-ws-admin-ws-test", TestService.class ).setV2( "testv" );
+        assertGet( httpUrl( "/system/admin/jpath?query=oap-ws-admin-ws-test.test-service.value" ) )
             .isOk()
             .hasBody( "\"testv\"" );
     }

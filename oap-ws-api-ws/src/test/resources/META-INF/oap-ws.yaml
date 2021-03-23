@@ -1,4 +1,4 @@
 services:
   example:
-    service: example
+    service: oap-ws-api-ws-test.example
     protocol: HTTP
