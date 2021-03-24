@@ -41,7 +41,7 @@ import static org.joda.time.DateTimeZone.UTC;
  */
 public class SecureWSFixture {
     public static void assertLogin( String login, String password ) {
-        assertLogin( login, password, getTestHttpPort() );
+        assertLogin( login, password, getTestHttpPort().orElse( 80 ) );
     }
 
     public static void assertLogin( String login, String password, int port ) {
@@ -53,7 +53,7 @@ public class SecureWSFixture {
     }
 
     public static void assertLogout() {
-        assertLogout( getTestHttpPort() );
+        assertLogout( getTestHttpPort().orElse( 80 ) );
     }
 
     public static void assertLogout( int port ) {
