@@ -24,7 +24,6 @@
 
 package oap.ws.sso.testng;
 
-import oap.testng.Fixture;
 import org.joda.time.DateTime;
 
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
@@ -32,6 +31,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.testng.HttpAsserts.CookieHttpAssertion.assertCookie;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
+import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
 import static org.joda.time.DateTimeZone.UTC;
@@ -39,9 +39,13 @@ import static org.joda.time.DateTimeZone.UTC;
 /**
  * Created by igor.petrenko on 2021-02-24.
  */
-public class SecureWSFixture implements Fixture {
+public class SecureWSFixture {
     public static void assertLogin( String login, String password ) {
-        assertPost( httpUrl( "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
+        assertLogin( login, password, getTestHttpPort() );
+    }
+
+    public static void assertLogin( String login, String password, int port ) {
+        assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
             .hasCode( HTTP_OK )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasPath( "/" )
@@ -49,7 +53,11 @@ public class SecureWSFixture implements Fixture {
     }
 
     public static void assertLogout() {
-        assertGet( httpUrl( "/auth/logout" ) )
+        assertLogout( getTestHttpPort() );
+    }
+
+    public static void assertLogout( int port ) {
+        assertGet( httpUrl( port, "/auth/logout" ) )
             .hasCode( HTTP_NO_CONTENT )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasValue( "<logged out>" )

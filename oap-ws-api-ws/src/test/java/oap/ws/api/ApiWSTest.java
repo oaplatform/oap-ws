@@ -40,7 +40,7 @@ import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 @Slf4j
 public class ApiWSTest extends Fixtures {
     {
-        fixture( new KernelFixture( Resources.filePath( getClass(), "/application.test.conf" ).orElseThrow() ) );
+        fixture( new KernelFixture( Resources.url( getClass(), "/application.test.conf" ).orElseThrow() ) );
 //        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
 //            kernel.register( "api", new ApiWS( ws ) );
 //            kernel.register( "example", new ExampleWS() );
