@@ -29,11 +29,9 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.Configuration;
-import oap.application.Configuration.ConfigurationWithURL;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -42,14 +40,14 @@ public class SecurityRoles {
     private final SetMultimap<String, String> roles = MultimapBuilder.SetMultimapBuilder.hashKeys().linkedHashSetValues().build();
 
     public SecurityRoles( Config config ) {
-        this( List.of( new ConfigurationWithURL<>( config, Optional.empty() ) ) );
+        this( List.of( config ) );
     }
 
-    public SecurityRoles( List<ConfigurationWithURL<Config>> configs ) {
+    public SecurityRoles( List<Config> configs ) {
         log.info( "configs = {}", configs );
 
         for( var configWithUrl : configs ) {
-            configWithUrl.configuration.roles.forEach( roles::putAll );
+            configWithUrl.roles.forEach( roles::putAll );
         }
     }
 
