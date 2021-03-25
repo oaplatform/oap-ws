@@ -24,6 +24,8 @@
 package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import oap.application.ApplicationException;
+import oap.application.Configuration.ConfigurationWithURL;
 import oap.application.Kernel;
 import oap.application.KernelHelper;
 import oap.http.HttpResponse;
@@ -39,6 +41,7 @@ import org.apache.http.entity.ContentType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public class WebServices {
@@ -47,7 +50,7 @@ public class WebServices {
     }
 
     public final Map<String, Object> services = new HashMap<>();
-    private final List<WsConfig> wsConfigs;
+    private final List<ConfigurationWithURL<WsConfig>> wsConfigs;
     private final HttpServer server;
     private final SessionManager sessionManager;
     private final CorsPolicy globalCorsPolicy;
@@ -58,10 +61,10 @@ public class WebServices {
     }
 
     public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy, WsConfig... wsConfigs ) {
-        this( kernel, server, sessionManager, globalCorsPolicy, List.of( wsConfigs ) );
+        this( kernel, server, sessionManager, globalCorsPolicy, Lists.map( wsConfigs, wsc -> new ConfigurationWithURL<>( wsc, Optional.empty() ) ) );
     }
 
-    public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy, List<WsConfig> wsConfigs ) {
+    public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy, List<ConfigurationWithURL<WsConfig>> wsConfigs ) {
         this.kernel = kernel;
         this.wsConfigs = wsConfigs;
         this.server = server;
@@ -73,15 +76,16 @@ public class WebServices {
         log.info( "binding web services..." );
 
 
-        for( var config : wsConfigs ) {
-            log.trace( "config = {}", config );
+        for( var configWithURL : wsConfigs ) {
+            log.trace( "config = {}", configWithURL );
+
+            var config = configWithURL.configuration;
 
             if( !KernelHelper.profileEnabled( config.profiles, kernel.profiles ) ) {
                 log.debug( "skipping " + config.name + " web configuration initialization with "
-                           + "service profiles " + config.profiles );
+                    + "service profiles " + config.profiles );
                 continue;
             }
-
 
             config.services.forEach( ( serviceName, serviceConfig ) -> {
                 log.trace( "service = {}", serviceConfig );
@@ -89,7 +93,7 @@ public class WebServices {
                     .orElseThrow( () -> new RuntimeException( "interceptor " + name + " not found" ) ) );
                 if( !KernelHelper.profileEnabled( serviceConfig.profiles, kernel.profiles ) ) {
                     log.debug( "skipping " + serviceName + " web service initialization with "
-                               + "service profiles " + serviceConfig.profiles );
+                        + "service profiles " + serviceConfig.profiles );
                     return;
                 }
                 var corsPolicy = serviceConfig.corsPolicy != null ? serviceConfig.corsPolicy : globalCorsPolicy;
@@ -101,14 +105,17 @@ public class WebServices {
                 log.trace( "handler = {}", handlerConfig );
                 var corsPolicy = handlerConfig.corsPolicy != null ? handlerConfig.corsPolicy : globalCorsPolicy;
                 Protocol protocol = handlerConfig.protocol;
-                bind( handlerName, corsPolicy, kernel.<Handler>service( handlerConfig.service ).orElseThrow(), protocol );
+                bind( handlerName, corsPolicy, kernel.<Handler>service( handlerConfig.service )
+                    .orElseThrow( () -> new ApplicationException( "service " + handlerConfig.service + " not found." ) ), protocol );
             } );
         }
     }
 
 
     public void stop() {
-        for( var config : wsConfigs ) {
+        for( var configWithURL : wsConfigs ) {
+            var config = configWithURL.configuration;
+
             config.handlers.keySet().forEach( server::unbind );
             config.services.keySet().forEach( server::unbind );
         }

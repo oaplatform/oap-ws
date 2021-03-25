@@ -52,10 +52,10 @@ public class WsConfig {
     public static class Service {
         @JsonAlias( { "profile", "profiles" } )
         public final LinkedHashSet<String> profiles = new LinkedHashSet<>();
+        public final ArrayList<String> interceptors = new ArrayList<>();
         public String service;
         public CorsPolicy corsPolicy;
         public Protocol protocol;
         public boolean sessionAware;
-        public final ArrayList<String> interceptors = new ArrayList<>();
     }
 }
