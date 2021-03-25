@@ -93,7 +93,8 @@ public class WebServices {
                     return;
                 }
                 var corsPolicy = serviceConfig.corsPolicy != null ? serviceConfig.corsPolicy : globalCorsPolicy;
-                bind( serviceName, corsPolicy, kernel.service( serviceConfig.service ).orElseThrow(),
+                bind( serviceName, corsPolicy, kernel.service( serviceConfig.service )
+                        .orElseThrow( () -> new ApplicationException( "service " + serviceConfig.service + " not found." ) ),
                     serviceConfig.sessionAware, sessionManager, interceptors, serviceConfig.protocol );
             } );
 
