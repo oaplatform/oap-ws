@@ -1,4 +1,0 @@
-services:
-  system/api:
-    service: oap-ws-api-ws.api-ws
-    protocol: HTTP

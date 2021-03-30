@@ -31,10 +31,11 @@ import org.testng.annotations.Test;
 import static oap.http.Request.HttpMethod.GET;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.io.Resources.urlOrThrow;
 
 public class WebServicesLocalTest extends Fixtures {
     {
-        fixture( new KernelFixture( "/application.test.conf" ) );
+        fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test

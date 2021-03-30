@@ -1,7 +1,0 @@
-services:
-  system/admin/logs:
-    service: oap-ws-admin-ws.ws-log
-    protocol: LOCAL
-  system/admin/jpath:
-    service: oap-ws-admin-ws.ws-jpath
-    protocol: LOCAL

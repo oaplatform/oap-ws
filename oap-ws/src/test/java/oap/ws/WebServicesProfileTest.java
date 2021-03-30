@@ -31,21 +31,17 @@ import org.testng.annotations.Test;
 
 import static oap.http.Request.HttpMethod.GET;
 import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.io.Resources.urlOrThrow;
 
 public class WebServicesProfileTest extends Fixtures {
 
     {
-        fixture( new KernelFixture( "/application.test.conf" ) );
+        fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test
     public void shouldStartWebServiceIfProfileIsNotConfiguredForServiceAndWS() {
         assertGet( HttpAsserts.httpUrl( "/test-no-profile/text?value=empty" ) ).isOk().hasBody( "ok" );
-    }
-
-    @Test
-    public void shouldStartWebServiceIfProfileIsConfiguredForServiceAndWS() {
-        assertGet( HttpAsserts.httpUrl( "/test-with-profile/text?value=empty" ) ).isOk().hasBody( "ok" );
     }
 
     @Test
