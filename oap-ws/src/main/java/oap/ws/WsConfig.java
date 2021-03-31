@@ -30,26 +30,16 @@ import oap.http.Protocol;
 import oap.http.cors.CorsPolicy;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 @EqualsAndHashCode
 @ToString
 public class WsConfig {
-    public final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
-    public final LinkedHashMap<String, Service> handlers = new LinkedHashMap<>();
-
-    public String name;
-
-    @EqualsAndHashCode
-    @ToString
-    public static class Service {
-        @JsonAlias( { "profile", "profiles" } )
-        public final LinkedHashSet<String> profiles = new LinkedHashSet<>();
-        public final ArrayList<String> interceptors = new ArrayList<>();
-        public LinkedHashSet<String> path = new LinkedHashSet<>();
-        public CorsPolicy corsPolicy;
-        public Protocol protocol = Protocol.HTTP;
-        public boolean sessionAware;
-    }
+    @JsonAlias( { "profile", "profiles" } )
+    public final LinkedHashSet<String> profiles = new LinkedHashSet<>();
+    public final ArrayList<String> interceptors = new ArrayList<>();
+    public LinkedHashSet<String> path = new LinkedHashSet<>();
+    public CorsPolicy corsPolicy;
+    public Protocol protocol = Protocol.HTTP;
+    public boolean sessionAware;
 }
