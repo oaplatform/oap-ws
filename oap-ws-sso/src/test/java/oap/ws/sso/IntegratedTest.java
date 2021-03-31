@@ -36,14 +36,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static oap.io.Resources.urlOrThrow;
 import static oap.ws.sso.UserProvider.toAccessKey;
 
 public class IntegratedTest extends Fixtures {
     private final KernelFixture kernelFixture;
 
     public IntegratedTest() {
-
-        kernelFixture = fixture( new KernelFixture( "/application.test.conf" ) );
+        kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     protected TestUserProvider userProvider() {
