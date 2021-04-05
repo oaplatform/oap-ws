@@ -40,7 +40,7 @@ import static oap.io.Resources.urlOrThrow;
 import static oap.ws.sso.UserProvider.toAccessKey;
 
 public class IntegratedTest extends Fixtures {
-    private final KernelFixture kernelFixture;
+    protected final KernelFixture kernelFixture;
 
     public IntegratedTest() {
         kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );

@@ -49,7 +49,7 @@ public class ThrottleLoginInterceptor implements Interceptor {
     private static final Integer DEFAULT = 5;
 
     private final ConcurrentHashMap<String, Temporal> attemptCache = new ConcurrentHashMap<>();
-    private final Integer delay;
+    public Integer delay;
 
     /**
      * @param delay timeout between login attempt. In seconds

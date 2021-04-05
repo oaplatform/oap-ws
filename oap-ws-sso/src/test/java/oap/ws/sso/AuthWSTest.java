@@ -25,6 +25,7 @@
 package oap.ws.sso;
 
 
+import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
 import org.testng.annotations.Test;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
@@ -51,11 +52,12 @@ public class AuthWSTest extends IntegratedTest {
 
     @Test
     public void logout() throws Exception {
+        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
+
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         userProvider().addUser( new TestUser( "user@admin.com", "pass", USER ) );
         assertLogin( "admin@admin.com", "pass" );
         assertLogout();
-        Thread.sleep( 1000 * 6 );
         assertGet( httpUrl( "/auth/whoami" ) )
             .hasCode( HTTP_UNAUTHORIZED );
         assertLogin( "user@admin.com", "pass" );
