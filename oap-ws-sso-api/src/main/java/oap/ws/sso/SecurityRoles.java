@@ -27,6 +27,7 @@ package oap.ws.sso;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.Configuration;
 
@@ -69,6 +70,7 @@ public class SecurityRoles {
         return roles.keySet();
     }
 
+    @ToString
     public static class Config {
         public final Map<String, Set<String>> roles;
 
