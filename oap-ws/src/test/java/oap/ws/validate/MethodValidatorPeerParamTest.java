@@ -38,6 +38,7 @@ import static oap.http.ContentTypes.TEXT_PLAIN;
 import static oap.http.Request.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.io.Resources.urlOrThrow;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
 import static oap.ws.validate.ValidationErrors.empty;
@@ -46,7 +47,7 @@ import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class MethodValidatorPeerParamTest extends Fixtures {
     {
-        fixture( new KernelFixture( "/application.test.conf" ) );
+        fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test

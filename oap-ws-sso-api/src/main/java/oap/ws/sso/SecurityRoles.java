@@ -27,12 +27,15 @@ package oap.ws.sso;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import oap.application.Configuration;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 public class SecurityRoles {
     public static final Configuration<Config> CONFIGURAION = new Configuration<>( Config.class, "oap-ws-roles" );
     private final SetMultimap<String, String> roles = MultimapBuilder.SetMultimapBuilder.hashKeys().linkedHashSetValues().build();
@@ -42,7 +45,11 @@ public class SecurityRoles {
     }
 
     public SecurityRoles( List<Config> configs ) {
-        for( Config config : configs ) config.roles.forEach( roles::putAll );
+        log.info( "configs = {}", configs );
+
+        for( var configWithUrl : configs ) {
+            configWithUrl.roles.forEach( roles::putAll );
+        }
     }
 
     public SecurityRoles() {
@@ -63,6 +70,7 @@ public class SecurityRoles {
         return roles.keySet();
     }
 
+    @ToString
     public static class Config {
         public final Map<String, Set<String>> roles;
 

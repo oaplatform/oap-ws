@@ -1,7 +1,0 @@
-name: oap-ws-sso-test
-services:
-  oap-ws-sso-user-provider-server:
-    implementation: oap.ws.sso.IntegratedTest$TestUserProvider
-
-  secure-ws:
-    implementation: oap.ws.sso.SecureWS

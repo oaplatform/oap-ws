@@ -26,7 +26,6 @@ package oap.ws.api;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
-import oap.io.Resources;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
@@ -34,17 +33,14 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.io.Resources.urlOrThrow;
 import static oap.testng.Asserts.contentOfTestResource;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 @Slf4j
 public class ApiWSTest extends Fixtures {
     {
-        fixture( new KernelFixture( Resources.filePath( getClass(), "/application.test.conf" ).orElseThrow() ) );
-//        fixture( new WsFixture( getClass(), ( ws, kernel ) -> {
-//            kernel.register( "api", new ApiWS( ws ) );
-//            kernel.register( "example", new ExampleWS() );
-//        }, "oap-ws.yaml" ) );
+        fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test

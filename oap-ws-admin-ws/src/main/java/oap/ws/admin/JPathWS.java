@@ -32,6 +32,7 @@ import oap.jpath.JPath;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -47,12 +48,13 @@ public class JPathWS {
         this.kernel = kernel;
     }
 
+    @SuppressWarnings( "unchecked" )
     @WsMethod( method = GET, path = "/" )
     public HttpResponse get( @WsParam( from = QUERY ) String query ) {
         log.debug( "query = {}", query );
         try {
             AtomicReference<Object> result = new AtomicReference<>();
-            JPath.evaluate( query, kernel.services, pointer -> result.set( pointer.get() ) );
+            JPath.evaluate( query, ( Map<String, Object> ) ( Object ) kernel.services, pointer -> result.set( pointer.get() ) );
             return HttpResponse.ok( result.get() ).response();
         } catch( Exception e ) {
             log.error( e.getMessage(), e );

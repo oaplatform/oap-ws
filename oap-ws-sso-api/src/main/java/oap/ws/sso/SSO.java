@@ -27,6 +27,7 @@ package oap.ws.sso;
 import oap.http.Cookie;
 import oap.http.HttpResponse;
 import oap.http.Request;
+import oap.ws.SessionManager;
 import org.joda.time.DateTime;
 
 import java.util.Optional;
@@ -45,13 +46,14 @@ public class SSO {
     public static HttpResponse.Builder authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
         return HttpResponse.ok( authentication.view )
             .withHeader( AUTHENTICATION_KEY, authentication.id )
-            .withCookie( new Cookie( AUTHENTICATION_KEY, authentication.id )
-                .withDomain( cookieDomain )
-                .withPath( "/" )
-                .withExpires( new DateTime( UTC ).plus( cookieExpiration ) )
-                .httpOnly( true )
-                .secure( cookieSecure )
-                .toString()
+            .withCookie(
+                new Cookie( AUTHENTICATION_KEY, authentication.id )
+                    .withDomain( cookieDomain )
+                    .withPath( "/" )
+                    .withExpires( new DateTime( UTC ).plus( cookieExpiration ) )
+                    .httpOnly( true )
+                    .secure( cookieSecure )
+                    .toString()
             );
     }
 
@@ -60,10 +62,21 @@ public class SSO {
     }
 
     public static HttpResponse.Builder logoutResponse( String cookieDomain ) {
-        return HttpResponse.status( HTTP_NO_CONTENT )
-            .withCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
-                .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
-                .toString()
+        return HttpResponse
+            .status( HTTP_NO_CONTENT )
+            .withCookie(
+                new Cookie( AUTHENTICATION_KEY, "<logged out>" )
+                    .withDomain( cookieDomain )
+                    .withPath( "/" )
+                    .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
+                    .toString()
+            )
+            .withCookie(
+                new Cookie( SessionManager.COOKIE_ID, "<logged out>" )
+                    .withDomain( cookieDomain )
+                    .withPath( "/" )
+                    .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
+                    .toString()
             );
     }
 }

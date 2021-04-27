@@ -28,7 +28,6 @@ import oap.application.testng.KernelFixture;
 import oap.io.Files;
 import oap.testng.Env;
 import oap.testng.Fixtures;
-import oap.testng.TestDirectory;
 import org.testng.annotations.Test;
 
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -37,15 +36,15 @@ import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.testng.Asserts.contentOfTestResource;
-import static oap.testng.Asserts.pathOfTestResource;
+import static oap.testng.Asserts.urlOfTestResource;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileWSTest extends Fixtures {
     {
-        fixture( TestDirectory.FIXTURE );
-        fixture( new KernelFixture( pathOfTestResource( getClass(), "application.test.conf" ) ) );
+        fixture( oap.testng.TestDirectoryFixture.FIXTURE );
+        fixture( new KernelFixture( urlOfTestResource( getClass(), "application.test.conf" ) ) );
     }
 
     @Test

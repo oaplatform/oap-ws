@@ -26,6 +26,7 @@ package oap.ws;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.Kernel;
 import oap.application.KernelHelper;
+import oap.application.module.ServiceExt;
 import oap.http.HttpResponse;
 import oap.http.Protocol;
 import oap.http.cors.CorsPolicy;
@@ -36,9 +37,8 @@ import oap.util.Lists;
 import oap.ws.interceptor.Interceptor;
 import org.apache.http.entity.ContentType;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 public class WebServices {
@@ -46,24 +46,16 @@ public class WebServices {
         HttpResponse.registerProducer( ContentType.APPLICATION_JSON.getMimeType(), Binder.json::marshal );
     }
 
-    public final Map<String, Object> services = new HashMap<>();
-    private final List<WsConfig> wsConfigs;
+    public final LinkedHashMap<String, Object> services = new LinkedHashMap<>();
     private final HttpServer server;
     private final SessionManager sessionManager;
     private final CorsPolicy globalCorsPolicy;
     private final Kernel kernel;
+    private List<ServiceExt<WsConfig>> wsConfigServices;
+    private List<ServiceExt<WsConfig>> wsConfigHandlers;
 
     public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy ) {
-        this( kernel, server, sessionManager, globalCorsPolicy, WsConfig.CONFIGURATION.fromClassPath() );
-    }
-
-    public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy, WsConfig... wsConfigs ) {
-        this( kernel, server, sessionManager, globalCorsPolicy, List.of( wsConfigs ) );
-    }
-
-    public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy, List<WsConfig> wsConfigs ) {
         this.kernel = kernel;
-        this.wsConfigs = wsConfigs;
         this.server = server;
         this.sessionManager = sessionManager;
         this.globalCorsPolicy = globalCorsPolicy;
@@ -72,46 +64,60 @@ public class WebServices {
     public void start() {
         log.info( "binding web services..." );
 
+        wsConfigServices = kernel.servicesByExt( "ws-service", WsConfig.class );
+        wsConfigHandlers = kernel.servicesByExt( "ws-handler", WsConfig.class );
 
-        for( var config : wsConfigs ) {
-            log.trace( "config = {}", config );
+        log.info( "ws-service: {}", Lists.map( wsConfigServices, ws -> ws.name ) );
+        log.info( "ws-handler: {}", Lists.map( wsConfigServices, ws -> ws.name ) );
 
-            if( !KernelHelper.profileEnabled( config.profiles, kernel.profiles ) ) {
-                log.debug( "skipping " + config.name + " web configuration initialization with "
-                           + "service profiles " + config.profiles );
+        for( var config : wsConfigServices ) {
+            log.trace( "service: module = {}, config = {}", config.module.name, config.ext );
+
+            log.trace( "service = {}", config.ext );
+            var interceptors = Lists.map( config.ext.interceptors, ( String name ) -> kernel.<Interceptor>service( name )
+                .orElseThrow( () -> new RuntimeException( "interceptor " + name + " not found" ) ) );
+            if( !KernelHelper.profileEnabled( config.ext.profiles, kernel.profiles ) ) {
+                log.debug( "skipping " + config.module.name + "." + config.name + " web service initialization with "
+                    + "service profiles " + config.ext.profiles );
                 continue;
             }
 
+            var corsPolicy = config.ext.corsPolicy != null ? config.ext.corsPolicy : globalCorsPolicy;
+            for( var path : config.ext.path ) {
+                bind( path, corsPolicy, config.getInstance(),
+                    config.ext.sessionAware, sessionManager, interceptors, config.ext.protocol );
+            }
+        }
 
-            config.services.forEach( ( serviceName, serviceConfig ) -> {
-                log.trace( "service = {}", serviceConfig );
-                var interceptors = Lists.map( serviceConfig.interceptors, ( String name ) -> kernel.<Interceptor>service( name )
-                    .orElseThrow( () -> new RuntimeException( "interceptor " + name + " not found" ) ) );
-                if( !KernelHelper.profileEnabled( serviceConfig.profiles, kernel.profiles ) ) {
-                    log.debug( "skipping " + serviceName + " web service initialization with "
-                               + "service profiles " + serviceConfig.profiles );
-                    return;
-                }
-                var corsPolicy = serviceConfig.corsPolicy != null ? serviceConfig.corsPolicy : globalCorsPolicy;
-                bind( serviceName, corsPolicy, kernel.service( serviceConfig.service ).orElseThrow(),
-                    serviceConfig.sessionAware, sessionManager, interceptors, serviceConfig.protocol );
-            } );
+        for( var config : wsConfigHandlers ) {
+            log.trace( "handler = {}", config );
 
-            config.handlers.forEach( ( handlerName, handlerConfig ) -> {
-                log.trace( "handler = {}", handlerConfig );
-                var corsPolicy = handlerConfig.corsPolicy != null ? handlerConfig.corsPolicy : globalCorsPolicy;
-                Protocol protocol = handlerConfig.protocol;
-                bind( handlerName, corsPolicy, kernel.<Handler>service( handlerConfig.service ).orElseThrow(), protocol );
-            } );
+            var corsPolicy = config.ext.corsPolicy != null ? config.ext.corsPolicy : globalCorsPolicy;
+            Protocol protocol = config.ext.protocol;
+            for( var path : config.ext.path ) {
+                bind( path, corsPolicy, ( Handler ) config.getInstance(), protocol );
+            }
         }
     }
 
 
     public void stop() {
-        for( var config : wsConfigs ) {
-            config.handlers.keySet().forEach( server::unbind );
-            config.services.keySet().forEach( server::unbind );
+        if( wsConfigServices != null ) {
+
+            for( var config : wsConfigServices )
+                for( var path : config.ext.path )
+                    server.unbind( path );
+            wsConfigServices = null;
         }
+
+        if( wsConfigHandlers != null ) {
+            for( var config : wsConfigHandlers )
+                for( var path : config.ext.path )
+                    server.unbind( path );
+
+            wsConfigHandlers = null;
+        }
+
     }
 
     public void bind( String context, CorsPolicy corsPolicy, Object service, boolean sessionAware,

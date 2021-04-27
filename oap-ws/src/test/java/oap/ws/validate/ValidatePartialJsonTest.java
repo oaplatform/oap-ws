@@ -37,17 +37,18 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.Request.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.io.Resources.urlOrThrow;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class ValidatePartialJsonTest extends Fixtures {
-    {
-        fixture( new KernelFixture( "/application.test.conf" ) );
-    }
-
     //todo refactor this static madness
     private static TestBean bean;
+
+    {
+        fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
+    }
 
     @Test
     public void validation1() {

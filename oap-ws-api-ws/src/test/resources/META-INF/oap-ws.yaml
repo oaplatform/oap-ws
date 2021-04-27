@@ -1,4 +1,0 @@
-services:
-  example:
-    service: example
-    protocol: HTTP

@@ -33,6 +33,7 @@ import oap.json.Binder;
 import oap.json.JsonException;
 import oap.reflect.ReflectException;
 import oap.reflect.Reflection;
+import oap.util.Pair;
 import oap.util.Result;
 import oap.util.Throwables;
 import oap.ws.interceptor.Interceptor;
@@ -146,7 +147,7 @@ public class WebService implements Handler {
                                             produceResultResponse( method, session, wsMethod, method.invoke( instance, paramValues ) ) );
                                 } );
                         } ) );
-                var cookie = session != null
+                var cookie = session != null && !containsCookie( rb.cookies, SessionManager.COOKIE_ID )
                     ? new Cookie( SessionManager.COOKIE_ID, session.id )
                     .withPath( sessionManager.cookiePath )
                     .withExpires( DateTime.now().plusMinutes( sessionManager.cookieExpiration ) )
@@ -158,6 +159,13 @@ public class WebService implements Handler {
                     ( cookie != null ? rb.withCookie( cookie ) : rb ).response(),
                     session ) );
             } );
+    }
+
+    private boolean containsCookie( List<Pair<String, String>> cookies, String cookieId ) {
+        for( var p : cookies ) {
+            if( "Set-Cookie".equals( p._1 ) && p._2.startsWith( cookieId + "=" ) ) return true;
+        }
+        return false;
     }
 
     private HttpResponse.Builder produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {

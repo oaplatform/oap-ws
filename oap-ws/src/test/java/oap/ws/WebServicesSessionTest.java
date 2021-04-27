@@ -34,13 +34,14 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static oap.http.Request.HttpMethod.GET;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.io.Resources.urlOrThrow;
 import static oap.util.Pair.__;
 import static oap.ws.WsParam.From.SESSION;
 
 public class WebServicesSessionTest extends Fixtures {
 
     {
-        fixture( new KernelFixture( "/application.test.conf" ) );
+        fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test
