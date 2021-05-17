@@ -23,6 +23,7 @@
  */
 package oap.ws.validate;
 
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes;
 import lombok.extern.slf4j.Slf4j;
 import oap.json.Binder;
 import oap.json.JsonException;
@@ -31,6 +32,7 @@ import oap.reflect.Reflection;
 import oap.util.Strings;
 import oap.ws.WsClientException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,11 +52,13 @@ public class JsonValidatorPeer implements ValidatorPeer {
     @Override
     public ValidationErrors validate( Object value, Map<Reflection.Parameter, Object> originalValues ) {
         try {
-            var mapValue = Binder.json.unmarshal( Map.class, ( String ) value );
-
             var factory = getJsonSchema( originalValues );
-
-            return ValidationErrors.errors( factory.validate( mapValue, validate.ignoreRequired() ) );
+            var unmarshalToType =
+                JsonFormatTypes.ARRAY.value().equalsIgnoreCase( factory.schema.common.schemaType )
+                    ? List.class
+                    : Map.class;
+            var unmarshalled = Binder.json.unmarshal( unmarshalToType, ( String ) value );
+            return ValidationErrors.errors( factory.validate( unmarshalled, validate.ignoreRequired() ) );
         } catch( JsonException e ) {
             throw new WsClientException( e.getMessage(), e );
         }
