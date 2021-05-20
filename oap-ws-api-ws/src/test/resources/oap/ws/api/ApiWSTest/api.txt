@@ -1,16 +1,4 @@
 ################################################################################
-Service oap.ws.api.ApiWS
-Bound to system/api
-Methods:
-	Method api
-	[GET] /system/api/
-	Produces text/plain
-	Permissions <unsecure>
-	Returns String
-	No parameters
-
-
-################################################################################
 Service oap.ws.api.ExampleWS
 Bound to example
 Methods:
@@ -195,5 +183,17 @@ Methods:
 	Parameters
 		i: query int
 		s: query String
+
+
+################################################################################
+Service oap.ws.api.ApiWS
+Bound to system/api
+Methods:
+	Method api
+	[GET] /system/api/
+	Produces text/plain
+	Permissions <unsecure>
+	Returns String
+	No parameters
 
 

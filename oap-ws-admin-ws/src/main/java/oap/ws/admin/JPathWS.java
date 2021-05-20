@@ -54,7 +54,7 @@ public class JPathWS {
         log.debug( "query = {}", query );
         try {
             AtomicReference<Object> result = new AtomicReference<>();
-            JPath.evaluate( query, ( Map<String, Object> ) ( Object ) kernel.services, pointer -> result.set( pointer.get() ) );
+            JPath.evaluate( query, ( Map<String, Object> ) ( Object ) kernel.services.moduleMap, pointer -> result.set( pointer.get() ) );
             return HttpResponse.ok( result.get() ).response();
         } catch( Exception e ) {
             log.error( e.getMessage(), e );

@@ -29,6 +29,8 @@ import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
+import java.util.Map;
+
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
@@ -47,7 +49,7 @@ public class ApiWSTest extends Fixtures {
     public void api() {
         assertGet( httpUrl( "/system/api" ) )
             .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ),
-                contentOfTestResource( getClass(), "api.txt" ) );
+                contentOfTestResource( getClass(), "api.txt", Map.of() ) );
     }
 }
 
