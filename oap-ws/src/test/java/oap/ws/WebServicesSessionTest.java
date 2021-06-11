@@ -28,7 +28,10 @@ import oap.application.testng.KernelFixture;
 import oap.http.HttpResponse;
 import oap.testng.Fixtures;
 import oap.util.Maps;
+import org.apache.http.entity.ContentType;
 import org.testng.annotations.Test;
+
+import java.nio.charset.StandardCharsets;
 
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static oap.http.Request.HttpMethod.GET;
@@ -49,7 +52,7 @@ public class WebServicesSessionTest extends Fixtures {
         assertGet( httpUrl( "/session/put" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
             .hasCode( 204 );
         assertGet( httpUrl( "/session/get" ) )
-            .hasCode( 200 )
+            .isOk()
             .hasBody( "vvv" );
     }
 
@@ -58,8 +61,18 @@ public class WebServicesSessionTest extends Fixtures {
         assertGet( httpUrl( "/session/putDirectly" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
             .hasCode( 204 );
         assertGet( httpUrl( "/session/get" ) )
-            .hasCode( 200 )
+            .isOk()
             .hasBody( "vvv" );
+    }
+
+    @Test
+    public void respondHtmlContentType() {
+        assertGet( httpUrl( "/session/putDirectly" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
+            .hasCode( 204 );
+        assertGet( httpUrl( "/session/html" ) )
+            .isOk()
+            .hasBody( "vvv" )
+            .hasContentType( ContentType.TEXT_HTML.withCharset( StandardCharsets.UTF_8 ) );
     }
 
     @SuppressWarnings( "unused" )
@@ -79,6 +92,11 @@ public class WebServicesSessionTest extends Fixtures {
 
         @WsMethod( path = "/get", method = GET, produces = "text/plain" )
         public String get( @WsParam( from = SESSION ) String inSession ) {
+            return inSession;
+        }
+
+        @WsMethod( path = "/html", method = GET, produces = "text/html" )
+        public String getHtml( @WsParam( from = SESSION ) String inSession ) {
             return inSession;
         }
     }
