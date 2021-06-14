@@ -55,13 +55,13 @@ public class SessionManager {
         this.cookieSecure = cookieSecure;
     }
 
-    public SessionManager( int expirationTime, String cookieDomain, String cookiePath ) {
+    public SessionManager( long expirationTime, String cookieDomain, String cookiePath ) {
         this.sessions = CacheBuilder.newBuilder()
             .expireAfterAccess( expirationTime, MILLISECONDS )
             .build();
         this.cookieDomain = cookieDomain;
         this.cookiePath = cookiePath;
-        this.cookieExpirationMinutes = expirationTime;
+        this.cookieExpirationMinutes = ( int ) ( expirationTime / 1000 / 60 );
         this.cookieSecure = false;
     }
 
