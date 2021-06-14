@@ -40,18 +40,18 @@ public class SessionManager {
 
     public final String cookieDomain;
     public final String cookiePath;
-    public final int cookieExpiration;
+    public final int cookieExpirationMinutes;
     public final Boolean cookieSecure;
     private final Cache<String, Session> sessions;
     protected Cuid cuid = Cuid.UNIQUE;
 
-    public SessionManager( int expirationTime, String cookieDomain, String cookiePath, Boolean cookieSecure ) {
+    public SessionManager( long expirationTime, String cookieDomain, String cookiePath, Boolean cookieSecure ) {
         this.sessions = CacheBuilder.newBuilder()
             .expireAfterAccess( expirationTime, MILLISECONDS )
             .build();
         this.cookieDomain = cookieDomain;
         this.cookiePath = cookiePath;
-        this.cookieExpiration = expirationTime;
+        this.cookieExpirationMinutes = ( int ) ( expirationTime / 1000 / 60 );
         this.cookieSecure = cookieSecure;
     }
 
@@ -61,7 +61,7 @@ public class SessionManager {
             .build();
         this.cookieDomain = cookieDomain;
         this.cookiePath = cookiePath;
-        this.cookieExpiration = expirationTime;
+        this.cookieExpirationMinutes = expirationTime;
         this.cookieSecure = false;
     }
 

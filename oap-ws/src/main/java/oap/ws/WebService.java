@@ -150,7 +150,7 @@ public class WebService implements Handler {
                 var cookie = session != null && !containsCookie( rb.cookies, SessionManager.COOKIE_ID )
                     ? new Cookie( SessionManager.COOKIE_ID, session.id )
                     .withPath( sessionManager.cookiePath )
-                    .withExpires( DateTime.now().plusMinutes( sessionManager.cookieExpiration ) )
+                    .withExpires( DateTime.now().plusMinutes( sessionManager.cookieExpirationMinutes ) )
                     .withDomain( sessionManager.cookieDomain )
                     .secure( sessionManager.cookieSecure )
                     .httpOnly( true )
