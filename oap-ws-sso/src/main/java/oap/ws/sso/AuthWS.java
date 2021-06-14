@@ -27,6 +27,7 @@ package oap.ws.sso;
 import lombok.extern.slf4j.Slf4j;
 import oap.http.HttpResponse;
 import oap.ws.Session;
+import oap.ws.SessionManager;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.validate.ValidationErrors;
@@ -50,22 +51,11 @@ import static oap.ws.validate.ValidationErrors.error;
 public class AuthWS {
 
     private final Authenticator authenticator;
-    private final String cookieDomain;
-    private final Boolean cookieSecure;
-    private final long cookieExpiration;
+    private final SessionManager sessionManager;
 
-    public AuthWS( Authenticator authenticator, String cookieDomain, long cookieExpiration ) {
+    public AuthWS( Authenticator authenticator, SessionManager sessionManager ) {
         this.authenticator = authenticator;
-        this.cookieDomain = cookieDomain;
-        this.cookieExpiration = cookieExpiration;
-        this.cookieSecure = false;
-    }
-
-    public AuthWS( Authenticator authenticator, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
-        this.authenticator = authenticator;
-        this.cookieDomain = cookieDomain;
-        this.cookieExpiration = cookieExpiration;
-        this.cookieSecure = cookieSecure;
+        this.sessionManager = sessionManager;
     }
 
     @WsMethod( method = POST, path = "/login" )
@@ -77,7 +67,8 @@ public class AuthWS {
     public HttpResponse login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
         return authenticator.authenticate( email, password )
-            .map( authentication -> authenticatedResponse( authentication, cookieDomain, cookieExpiration, cookieSecure ) )
+            .map( authentication -> authenticatedResponse( authentication,
+                sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure ) )
             .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ) )
             .response();
     }
@@ -88,7 +79,7 @@ public class AuthWS {
         log.debug( "Invalidating token for user [{}]", loggedUser.getEmail() );
         authenticator.invalidateByEmail( loggedUser.getEmail() );
         session.invalidate();
-        return logoutResponse( cookieDomain ).response();
+        return logoutResponse( sessionManager.cookieDomain ).response();
     }
 
     protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
