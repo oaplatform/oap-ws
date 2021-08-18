@@ -29,7 +29,6 @@ import oap.reflect.Reflection;
 import oap.util.Lists;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static oap.http.Request.HttpMethod.GET;
@@ -67,24 +66,6 @@ public class WsMethodMatcherTest {
 
     }
 
-    @SuppressWarnings( "unused" )
-    public static class WS {
-        @WsMethod( path = "/" )
-        public void root() {}
-
-        @WsMethod( path = "/const" )
-        public void c() {}
-
-        @WsMethod( path = "/const/const" )
-        public void cc() {}
-
-        @WsMethod( path = "/const2/const" )
-        public void c2c() {}
-
-        @WsMethod( path = "/const/{var1}/const" )
-        public void cvc( @WsParam( from = PATH ) String var1 ) {}
-    }
-
     @Test
     public void matchOWS() {
         Reflection reflect = Reflect.reflect( OWS.class );
@@ -104,9 +85,27 @@ public class WsMethodMatcherTest {
         Reflection reflect = Reflect.reflect( OWS.class );
         Reflection.Method register = reflect.method( "register" ).orElseThrow();
         Reflection.Method store = reflect.method( "store" ).orElseThrow();
-        ArrayList<Reflection.Method> list = Lists.of( register, store );
+        var list = Lists.of( register, store );
         list.sort( WsMethodMatcher::constantFirst );
         assertThat( list ).containsExactly( register, store );
+    }
+
+    @SuppressWarnings( "unused" )
+    public static class WS {
+        @WsMethod( path = "/" )
+        public void root() {}
+
+        @WsMethod( path = "/const" )
+        public void c() {}
+
+        @WsMethod( path = "/const/const" )
+        public void cc() {}
+
+        @WsMethod( path = "/const2/const" )
+        public void c2c() {}
+
+        @WsMethod( path = "/const/{var1}/const" )
+        public void cvc( @WsParam( from = PATH ) String var1 ) {}
     }
 
     @SuppressWarnings( "unused" )
