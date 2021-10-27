@@ -57,7 +57,7 @@ public class WsMethodMatcher {
             .map( a -> __( a.path(), compile( a.path() ) ) )
             .collect( Maps.Collectors.toMap() );
     }
-
+    @SuppressWarnings( "checkstyle:UnnecessaryParentheses" )
     private boolean match( String requestLine, Request.HttpMethod httpMethod, Reflection.Method m ) {
         return m.findAnnotation( WsMethod.class )
             .map( a -> Arrays.contains( httpMethod, a.method() ) && (
