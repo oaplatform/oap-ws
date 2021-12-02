@@ -106,9 +106,15 @@ public class WebService implements HttpHandler {
             }
 
         } catch( Throwable e ) {
+            log.trace( e.getMessage(), e );
             wsError( exchange, e );
         }
     }
+
+    private void buildErrorResponse( HttpServerExchange exchange, ValidationErrors validationErrors ) {
+        exchange.responseJson( validationErrors.code, "validation failed", new ValidationErrors.ErrorResponse( validationErrors.errors ) );
+    }
+
 
     private void handleInternal( HttpServerExchange exchange, Reflection.Method method, Session session ) {
         log.trace( "{}: session: [{}]", this, session );
@@ -119,37 +125,53 @@ public class WebService implements HttpHandler {
             var parameters = method.parameters;
             var originalValues = getOriginalValues( session, parameters, exchange, wsMethod );
 
-            var rb = ValidationErrors.empty()
-                .validateParameters( originalValues, method, instance, true )
-                .ifEmpty( exchange, () -> Validators.forMethod( method, instance, true )
-                    .validate( originalValues.values().toArray( new Object[0] ), originalValues )
-                    .ifEmpty( exchange, () -> {
-                        var values = getValues( originalValues );
+            ValidationErrors validationErrors = ValidationErrors.empty().validateParameters( originalValues, method, instance, true );
 
-                        return ValidationErrors.empty()
-                            .validateParameters( values, method, instance, false )
-                            .ifEmpty( exchange, () -> {
-                                var paramValues = values.values().toArray( new Object[0] );
+            if( !validationErrors.isEmpty() ) {
+                buildErrorResponse( exchange, validationErrors );
+                return;
+            }
 
-                                return Validators
-                                    .forMethod( method, instance, false )
-                                    .validate( paramValues, values )
-                                    .ifEmpty( exchange, () -> {
-                                        if( session != null && !containsCookie( exchange.responseCookies(), SessionManager.COOKIE_ID ) ) {
-                                            var cookie = new CookieImpl( SessionManager.COOKIE_ID, session.id )
-                                                .setPath( sessionManager.cookiePath )
-                                                .setExpires( DateTime.now().plus( sessionManager.cookieExpiration ).toDate() )
-                                                .setDomain( sessionManager.cookieDomain )
-                                                .setSecure( sessionManager.cookieSecure )
-                                                .setHttpOnly( true );
+            validationErrors = Validators.forMethod( method, instance, true )
+                .validate( originalValues.values().toArray( new Object[0] ), originalValues );
 
-                                            exchange.setResponseCookie( cookie );
-                                        }
+            if( !validationErrors.isEmpty() ) {
+                buildErrorResponse( exchange, validationErrors );
+                return;
+            }
 
-                                        return produceResultResponse( exchange, method, session, wsMethod, method.invoke( instance, paramValues ) );
-                                    } );
-                            } );
-                    } ) );
+            LinkedHashMap<Reflection.Parameter, Object> values = getValues( originalValues );
+
+            validationErrors = ValidationErrors.empty()
+                .validateParameters( values, method, instance, false );
+
+            if( !validationErrors.isEmpty() ) {
+                buildErrorResponse( exchange, validationErrors );
+                return;
+            }
+
+            var paramValues = values.values().toArray( new Object[0] );
+            validationErrors = Validators
+                .forMethod( method, instance, false )
+                .validate( paramValues, values );
+
+            if( !validationErrors.isEmpty() ) {
+                buildErrorResponse( exchange, validationErrors );
+                return;
+            }
+
+            if( session != null && !containsCookie( exchange.responseCookies(), SessionManager.COOKIE_ID ) ) {
+                var cookie = new CookieImpl( SessionManager.COOKIE_ID, session.id )
+                    .setPath( sessionManager.cookiePath )
+                    .setExpires( DateTime.now().plus( sessionManager.cookieExpiration ).toDate() )
+                    .setDomain( sessionManager.cookieDomain )
+                    .setSecure( sessionManager.cookieSecure )
+                    .setHttpOnly( true );
+
+                exchange.setResponseCookie( cookie );
+            }
+
+            produceResultResponse( exchange, method, session, wsMethod, method.invoke( instance, paramValues ) );
 
             Interceptors.after( interceptors, exchange, session );
         }
@@ -169,7 +191,8 @@ public class WebService implements HttpHandler {
 
 
         if( method.isVoid() ) {
-            exchange.responseNoContent();
+            if( !exchange.exchange.isResponseStarted() )
+                exchange.responseNoContent();
         } else if( result instanceof Optional<?> ) {
             var optResult = ( Optional<?> ) result;
             if( optResult.isEmpty() ) exchange.responseNotFound();

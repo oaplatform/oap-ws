@@ -28,14 +28,19 @@ import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
 import oap.http.server.nio.HttpServerExchange;
 import oap.testng.Fixtures;
+import oap.ws.WsMethod;
+import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
+import static oap.ws.WsParam.From.BODY;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 import static oap.ws.validate.ValidationErrors.errors;
@@ -48,7 +53,7 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
     @Test
     public void validationDefault() {
         assertPost( httpUrl( "/mvpm/run/validation/default" ), "test", ContentTypes.TEXT_PLAIN )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "test" );
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"test\"" );
     }
 
     @Test
@@ -77,25 +82,30 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
 
     public static class TestWS {
 
-        public void validationDefault( String request, HttpServerExchange exchange ) {
-            exchange.responseOk( request, true, ContentTypes.TEXT_PLAIN );
+        @WsMethod( path = "/run/validation/default", method = POST )
+        public void validationDefault( @WsParam( from = BODY ) String request, HttpServerExchange exchange ) {
+            exchange.responseOk( request, false, ContentTypes.APPLICATION_JSON );
         }
 
+        @WsMethod( path = "/run/validation/ok", method = POST, produces = "text/plain" )
         @WsValidate( "validateOk" )
-        public String validationOk( String request ) {
+        public String validationOk( @WsParam( from = BODY ) String request ) {
             return request;
         }
 
+        @WsMethod( path = "/run/validation/fail", method = POST )
         @WsValidate( "validateFail" )
-        public Object validationFail( String request ) {
+        public Object validationFail( @WsParam( from = BODY ) String request ) {
             return null;
         }
 
+        @WsMethod( path = "/run/validation/fail-code", method = POST )
         @WsValidate( "validateFailCode" )
-        public Object validationFailCode( String request ) {
+        public Object validationFailCode( @WsParam( from = BODY ) String request ) {
             return null;
         }
 
+        @WsMethod( path = "/run/validation/methods", method = GET )
         @WsValidate( { "validateA", "validateAB", "validateBA" } )
         public String validationMethods( String a, int b, String c ) {
             return a + b + c;

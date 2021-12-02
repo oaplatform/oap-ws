@@ -29,10 +29,15 @@ import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
 import oap.http.testng.HttpAsserts;
 import oap.testng.Fixtures;
+import oap.ws.WsMethod;
+import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.io.Resources.urlOrThrow;
+import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.QUERY;
 
 public class ValidateJsonTest extends Fixtures {
     {
@@ -68,21 +73,27 @@ public class ValidateJsonTest extends Fixtures {
     }
 
     public static class TestWS {
+        @WsMethod( path = "/run/validation/1", method = POST )
         public TestBean validation1(
-            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/schema.conf" ) TestBean body
+            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/schema.conf" )
+            @WsParam( from = BODY ) TestBean body
         ) {
             return body;
         }
 
+        @WsMethod( path = "/run/validation/2", method = POST )
         public TestBean validation2(
-            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/schema.conf", ignoreRequired = true ) TestBean body
+            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/schema.conf", ignoreRequired = true )
+            @WsParam( from = BODY ) TestBean body
         ) {
             return body;
         }
 
+        @WsMethod( path = "/run/validation/3", method = POST )
         public TestBean validation3(
-            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/${type}-schema.conf" ) TestBean body,
-            String type
+            @WsValidateJson( schema = "/oap/ws/validate/ValidateJsonTest/${type}-schema.conf" )
+            @WsParam( from = BODY ) TestBean body,
+            @WsParam( from = QUERY ) String type
         ) {
             return body;
         }

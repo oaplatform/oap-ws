@@ -99,8 +99,10 @@ public class WebServices {
 
         if( wsConfigHandlers != null ) {
             for( var config : wsConfigHandlers )
-                for( var path : config.ext.path )
+                for( var path : config.ext.path ) {
+                    if( !path.startsWith( "/" ) ) path = "/" + path;
                     server.unbind( path );
+                }
 
             wsConfigHandlers = null;
         }

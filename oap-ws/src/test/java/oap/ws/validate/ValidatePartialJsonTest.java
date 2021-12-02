@@ -28,13 +28,18 @@ import oap.application.testng.KernelFixture;
 import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
 import oap.testng.Fixtures;
+import oap.ws.WsMethod;
+import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
+import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.PATH;
 
 public class ValidatePartialJsonTest extends Fixtures {
     //todo refactor this static madness
@@ -83,42 +88,48 @@ public class ValidatePartialJsonTest extends Fixtures {
 
     @SuppressWarnings( "unused" )
     public static class TestWS {
+        @WsMethod( path = "/run/validation/1/{id}", method = POST )
         public TestBean validation1(
-            String id,
+            @WsParam( from = PATH ) String id,
             @WsPartialValidateJson(
                 methodName = "findBean",
                 idParameterName = "id",
                 path = "a",
-                schema = "/oap/ws/validate/ValidatePartialJsonTest/partial-schema.conf" ) TestBean.TestItem body
+                schema = "/oap/ws/validate/ValidatePartialJsonTest/partial-schema.conf" )
+            @WsParam( from = BODY ) TestBean.TestItem body
         ) {
             bean.a.clear();
             bean.a.add( body );
             return bean;
         }
 
+        @WsMethod( path = "/run/validation/2/{id}", method = POST )
         public TestBean validation2(
-            String id,
+            @WsParam( from = PATH ) String id,
             @WsPartialValidateJson(
                 methodName = "findBean",
                 idParameterName = "id",
                 path = "a",
                 schema = "/oap/ws/validate/ValidatePartialJsonTest/partial-schema.conf",
-                ignoreRequired = true ) TestBean.TestItem body
+                ignoreRequired = true )
+            @WsParam( from = BODY ) TestBean.TestItem body
         ) {
             bean.a.clear();
             bean.a.add( body );
             return bean;
         }
 
+        @WsMethod( path = "/run/validation/3/{id}/{bId}", method = POST )
         public TestBean validation3(
-            String id,
-            Integer bId,
+            @WsParam( from = PATH ) String id,
+            @WsParam( from = PATH ) Integer bId,
             @WsPartialValidateJson(
                 methodName = "findBean",
                 idParameterName = "id",
                 path = "a.${bId}.b",
                 schema = "/oap/ws/validate/ValidatePartialJsonTest/partial-schema.conf",
-                ignoreRequired = true ) TestBean.TestItem.SubTestItem body
+                ignoreRequired = true )
+            @WsParam( from = BODY ) TestBean.TestItem.SubTestItem body
         ) {
             for( TestBean.TestItem t : bean.a )
                 if( t.id.equals( bId ) ) t.b.add( body );

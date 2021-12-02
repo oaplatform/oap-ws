@@ -25,7 +25,6 @@ package oap.ws.validate;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.util.Lists;
 import oap.util.Mergeable;
@@ -35,7 +34,6 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static oap.util.Lists.concat;
@@ -134,15 +132,8 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
         return this;
     }
 
-    public boolean ifEmpty( HttpServerExchange exchange, Supplier<Boolean> handle ) {
-        if( errors.isEmpty() ) return handle.get();
-
-        buildErrorResponse( exchange );
-        return false;
-    }
-
-    private void buildErrorResponse( HttpServerExchange exchange ) {
-        exchange.responseJson( code, "validation failed", new ErrorResponse( errors ) );
+    public boolean isEmpty() {
+        return errors.isEmpty();
     }
 
     @EqualsAndHashCode

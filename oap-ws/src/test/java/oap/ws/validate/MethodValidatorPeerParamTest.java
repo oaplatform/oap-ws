@@ -27,14 +27,19 @@ import oap.application.testng.KernelFixture;
 import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
 import oap.testng.Fixtures;
+import oap.ws.WsMethod;
+import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.Optional;
 
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
+import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.QUERY;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 
@@ -86,26 +91,28 @@ public class MethodValidatorPeerParamTest extends Fixtures {
     }
 
     public static class TestWS {
-
+        @WsMethod( path = "/run/validation/default", method = POST )
         public String validationDefault(
-            int i,
-            String string
+            @WsParam( from = QUERY ) int i,
+            @WsParam( from = BODY ) String string
         ) {
             return i + string;
         }
 
+        @WsMethod( path = "/run/validation/ok", method = POST )
         public String validationOk(
-            @WsValidate( "validateOkInt" ) int i,
-            @WsValidate( "validateOkOptString" ) Optional<String> optString,
-            @WsValidate( "validateOkListString" ) List<String> listString,
-            @WsValidate( "validateOkString" ) String string
+            @WsParam( from = QUERY ) @WsValidate( "validateOkInt" ) int i,
+            @WsParam( from = QUERY ) @WsValidate( "validateOkOptString" ) Optional<String> optString,
+            @WsParam( from = QUERY ) @WsValidate( "validateOkListString" ) List<String> listString,
+            @WsParam( from = BODY ) @WsValidate( "validateOkString" ) String string
         ) {
             return i + optString.orElse( "" ) + String.join( "/", listString ) + string;
         }
 
+        @WsMethod( path = "/run/validation/fail", method = POST )
         public String validationFail(
-            @WsValidate( "validateFailInt" ) int i,
-            @WsValidate( "validateFailString" ) String string
+            @WsParam( from = QUERY ) @WsValidate( "validateFailInt" ) int i,
+            @WsParam( from = BODY ) @WsValidate( "validateFailString" ) String string
         ) {
             return i + string;
         }

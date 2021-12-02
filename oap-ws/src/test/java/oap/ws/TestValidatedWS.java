@@ -27,25 +27,32 @@ package oap.ws;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.WsValidate;
 
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.ws.WsParam.From.QUERY;
+
 @SuppressWarnings( "unused" )
 public class TestValidatedWS {
 
+    @WsMethod( method = GET )
     @WsValidate( "brokenValidator" )
-    public int methodWithBrokenValidator( int requiredParameter ) {
+    public int methodWithBrokenValidator( @WsParam( from = QUERY ) int requiredParameter ) {
         return requiredParameter;
     }
 
+    @WsMethod( method = GET )
     @WsValidate( "wrongArgsValidator" )
-    public int methodWithWrongValidatorArgs( int requiredParameter ) {
+    public int methodWithWrongValidatorArgs( @WsParam( from = QUERY ) int requiredParameter ) {
         return requiredParameter;
     }
 
+    @WsMethod( method = GET )
     public int exceptionRuntimeException() {
         throw new RuntimeException( "" );
     }
 
+    @WsMethod( method = GET )
     @WsValidate( "wrongValidatorName" )
-    public int methodWithWrongValidatorName( int requiredParameter ) {
+    public int methodWithWrongValidatorName( @WsParam( from = QUERY ) int requiredParameter ) {
         return requiredParameter;
     }
 
