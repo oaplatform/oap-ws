@@ -191,8 +191,10 @@ public class WebService implements HttpHandler {
 
 
         if( method.isVoid() ) {
-            if( !exchange.exchange.isResponseStarted() )
+            if( !exchange.isResponseStarted() ) {
+                log.trace( "method.isVoid() && !exchange.exchange.isResponseStarted()" );
                 exchange.responseNoContent();
+            }
         } else if( result instanceof Optional<?> ) {
             var optResult = ( Optional<?> ) result;
             if( optResult.isEmpty() ) exchange.responseNotFound();

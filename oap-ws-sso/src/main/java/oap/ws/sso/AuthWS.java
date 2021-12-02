@@ -68,7 +68,9 @@ public class AuthWS {
         loggedUser.ifPresent( user -> logout( user, session ) );
         Authentication authentication = authenticator.authenticate( email, password ).orElse( null );
         if( authentication == null ) {
-            exchange.setStatusCodeReasonPhrase( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
+            exchange
+                .setStatusCodeReasonPhrase( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" )
+                .endExchange();
         } else {
             authenticatedResponse( exchange, authentication,
                 sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
@@ -108,7 +110,9 @@ public class AuthWS {
     public void whoami( Session session, HttpServerExchange exchange ) {
         User user = session.<User>get( SSO.SESSION_USER_KEY ).orElse( null );
         if( user == null ) {
-            exchange.setStatusCode( HttpStatusCodes.UNAUTHORIZED );
+            exchange
+                .setStatusCode( HttpStatusCodes.UNAUTHORIZED )
+                .endExchange();
         } else {
             exchange.responseOk( user.getView(), false, ContentTypes.APPLICATION_JSON );
         }

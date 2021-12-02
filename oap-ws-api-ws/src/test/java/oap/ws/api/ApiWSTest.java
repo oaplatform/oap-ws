@@ -27,12 +27,12 @@ package oap.ws.api;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
 import java.util.Map;
 
-import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
@@ -47,7 +47,7 @@ public class ApiWSTest extends Fixtures {
     @Test
     public void api() {
         assertGet( httpUrl( "/system/api" ) )
-            .responded( HTTP_OK, "OK", ContentTypes.TEXT_PLAIN,
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN,
                 contentOfTestResource( getClass(), "api.txt", Map.of() ) );
     }
 }

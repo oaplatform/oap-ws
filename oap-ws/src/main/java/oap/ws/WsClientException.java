@@ -23,9 +23,9 @@
  */
 package oap.ws;
 
-import java.util.List;
+import oap.http.HttpStatusCodes;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import java.util.List;
 
 public class WsClientException extends WsException {
     public final List<String> errors;
@@ -38,7 +38,7 @@ public class WsClientException extends WsException {
     }
 
     public WsClientException( String message, List<String> errors ) {
-        this( message, HTTP_BAD_REQUEST, errors );
+        this( message, HttpStatusCodes.BAD_REQUEST, errors );
     }
 
     public WsClientException( String message ) {
@@ -48,7 +48,7 @@ public class WsClientException extends WsException {
     public WsClientException( String message, Throwable cause ) {
         super( message, cause );
         this.errors = List.of( message );
-        this.code = HTTP_BAD_REQUEST;
+        this.code = HttpStatusCodes.BAD_REQUEST;
     }
 
     public WsClientException( Throwable cause ) {
