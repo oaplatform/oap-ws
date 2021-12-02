@@ -26,8 +26,6 @@ package oap.ws;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import oap.http.Protocol;
-import oap.http.cors.CorsPolicy;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -39,7 +37,5 @@ public class WsConfig {
     public final LinkedHashSet<String> profiles = new LinkedHashSet<>();
     public final ArrayList<String> interceptors = new ArrayList<>();
     public LinkedHashSet<String> path = new LinkedHashSet<>();
-    public CorsPolicy corsPolicy;
-    public Protocol protocol = Protocol.HTTP;
     public boolean sessionAware;
 }

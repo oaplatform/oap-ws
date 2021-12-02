@@ -26,18 +26,17 @@ package oap.ws.api;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
+import oap.http.ContentTypes;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
 import java.util.Map;
 
 import static java.net.HttpURLConnection.HTTP_OK;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
 import static oap.testng.Asserts.contentOfTestResource;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 @Slf4j
 public class ApiWSTest extends Fixtures {
@@ -48,7 +47,7 @@ public class ApiWSTest extends Fixtures {
     @Test
     public void api() {
         assertGet( httpUrl( "/system/api" ) )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ),
+            .responded( HTTP_OK, "OK", ContentTypes.TEXT_PLAIN,
                 contentOfTestResource( getClass(), "api.txt", Map.of() ) );
     }
 }

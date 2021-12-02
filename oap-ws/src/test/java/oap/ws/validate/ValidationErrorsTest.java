@@ -24,22 +24,23 @@
 
 package oap.ws.validate;
 
-import oap.http.HttpResponse;
+import oap.http.server.nio.HttpServerExchangeStub;
 import org.testng.annotations.Test;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ValidationErrorsTest {
     @Test
     public void ifEmpty() {
+        var exchange = HttpServerExchangeStub.createHttpExchange2();
+
         assertThat( ValidationErrors.empty()
-            .ifEmpty( () -> HttpResponse.ok( "ok" ) ).response().code )
-            .isEqualTo( HTTP_OK );
+            .ifEmpty( exchange, () -> true ) )
+            .isTrue();
         assertThat( ValidationErrors.error( HTTP_FORBIDDEN, "nono" )
-            .ifEmpty( () -> HttpResponse.ok( "ok" ) ).response().code )
-            .isEqualTo( HTTP_FORBIDDEN );
+            .ifEmpty( exchange, () -> true ) )
+            .isFalse();
     }
 
 }

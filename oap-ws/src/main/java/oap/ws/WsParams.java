@@ -25,11 +25,12 @@
 package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.Request;
+import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.util.Sets;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
@@ -53,26 +54,28 @@ public class WsParams {
         return result.toString();
     }
 
-    public static Object fromSesstion( Session session, Reflection.Parameter parameter ) {
-        return session == null ? null
-            : parameter.type().isOptional()
-                ? session.get( parameter.name() )
-                : session.get( parameter.name() ).orElse( null );
+    public static Object fromSession( Session session, Reflection.Parameter parameter ) {
+        if( session == null ) return null;
+        Optional<Object> ret = session.get( parameter.name() );
+        if( parameter.type().isOptional() ) return ret;
+
+        return ret.orElse( null );
     }
 
-    public static Object fromHeader( Request request, Reflection.Parameter parameter, WsParam wsParam ) {
-        log.trace( "headers: {}", request.getHeaders() );
+    public static Object fromHeader( HttpServerExchange exchange, Reflection.Parameter parameter, WsParam wsParam ) {
+        log.trace( "headers: {}", exchange.getRequestHeaders() );
 
         var names = Sets.of( wsParam.name() );
         names.add( uncamelHeaderName( parameter.name() ) );
         names.add( parameter.name() );
         log.trace( "names: {}", names );
-        Optional<String> header;
+        String value = null;
         for( String name : names ) {
-            header = request.header( name );
-            if( header.isPresent() ) return unwrapOptionalOfRequired( parameter, header );
+            value = exchange.getRequestHeader( name );
+            if( value != null ) break;
         }
-        return unwrapOptionalOfRequired( parameter, Optional.empty() );
+
+        return wrapOptional( parameter, value );
     }
 
     public static Object unwrapOptionalOfRequired( Reflection.Parameter parameter, Optional<?> opt ) {
@@ -81,52 +84,85 @@ public class WsParams {
         return opt.orElseThrow( () -> new WsClientException( parameter.name() + " is required" ) );
     }
 
-    public static Object fromCookie( Request request, Reflection.Parameter parameter, WsParam wsParam ) {
-        var names = Sets.of( wsParam.name() );
-        names.add( parameter.name() );
-        Optional<String> cookie;
-        for( String name : names ) {
-            cookie = request.cookie( name );
-            if( cookie.isPresent() )
-                return unwrapOptionalOfRequired( parameter, cookie );
-        }
-        return unwrapOptionalOfRequired( parameter, Optional.empty() );
+    public static Object wrapOptional( Reflection.Parameter parameter, Object value ) throws WsClientException {
+        if( parameter.type().isOptional() ) return Optional.ofNullable( value );
+
+        if( value == null ) throw new WsClientException( parameter.name() + " is required" );
+
+        return value;
     }
 
-    public static Optional<String> fromPath( Request request, Optional<WsMethod> wsMethod, Reflection.Parameter parameter ) {
-        return wsMethod.map( wsm -> WsMethodMatcher.pathParam( wsm.path(), request.getRequestLine(),
-            parameter.name() ) )
+    public static Object fromCookie( HttpServerExchange exchange, Reflection.Parameter parameter, WsParam wsParam ) throws WsClientException {
+        var names = Sets.of( wsParam.name() );
+        names.add( parameter.name() );
+        String cookie = null;
+        for( String name : names ) {
+            cookie = exchange.getRequestCookieValue( name );
+            if( cookie != null ) break;
+        }
+
+        return wrapOptional( parameter, cookie );
+    }
+
+    public static Optional<String> fromPath( HttpServerExchange exchange, Optional<WsMethod> wsMethod, Reflection.Parameter parameter ) {
+        return wsMethod
+            .map( wsm -> WsMethodMatcher.pathParam( wsm.path(), exchange.getRelativePath(), parameter.name() ) )
             .orElseThrow( () -> new WsException( "path parameter " + parameter.name() + " without " + WsMethod.class.getName() + " annotation" ) );
     }
 
-    public static Object fromBody( Request request, Reflection.Parameter parameter ) {
-        if( parameter.type().assignableFrom( byte[].class ) )
-            return parameter.type().isOptional()
-                ? request.readBody()
-                : request.readBody().orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) );
-        else if( parameter.type().assignableFrom( InputStream.class ) )
-            return request.body.orElseThrow( () -> new WsClientException( "no body for " + parameter.name() ) );
-        else
-            return unwrapOptionalOfRequired( parameter, request.readBody().map( String::new ) );
+    public static Object fromBody( HttpServerExchange exchange, Reflection.Parameter parameter ) throws WsClientException {
+        try {
+            if( parameter.type().assignableFrom( byte[].class ) ) {
+                if( parameter.type().isOptional() ) {
+                    var bytes = exchange.readBody();
+                    return bytes.length > 0 ? Optional.of( bytes ) : Optional.empty();
+                } else {
+                    var bytes = exchange.readBody();
+                    if( bytes.length <= 0 ) throw new WsClientException( "no body for " + parameter.name() );
+                    return bytes;
+                }
+            } else if( parameter.type().assignableFrom( InputStream.class ) ) {
+                return exchange.getInputStream();
+            } else {
+                var bytes = exchange.readBody();
+                if( parameter.type().isOptional() ) {
+                    if( bytes.length <= 0 ) return Optional.empty();
+
+                    return Optional.of( new String( bytes ) );
+                }
+                if( bytes.length <= 0 ) throw new WsClientException( "no body for " + parameter.name() );
+
+                return new String( bytes );
+            }
+        } catch( IOException e ) {
+            throw new WsClientException( e.getMessage(), e );
+        }
     }
 
-    public static Object fromQuery( Request request, Reflection.Parameter parameter, WsParam wsParam ) {
+    public static Object fromQuery( HttpServerExchange exchange, Reflection.Parameter parameter, WsParam wsParam ) throws WsClientException {
         Set<String> names = wsParam == null ? Sets.of() : Sets.of( wsParam.name() );
         names.add( parameter.name() );
-        if( parameter.type().assignableTo( List.class ) )
-            return names.stream()
-                .map( request::parameters )
-                .filter( values -> !values.isEmpty() )
-                .findAny()
-                .orElse( List.of() );
-        else return unwrapOptionalOfRequired( parameter, names.stream()
-            .map( request::parameter )
-            .filter( Optional::isPresent )
-            .map( Optional::orElseThrow )
-            .findAny() );
+        if( parameter.type().assignableTo( List.class ) ) {
+            for( var name : names ) {
+                var values = exchange.exchange.getQueryParameters().get( name );
+                if( values == null || values.isEmpty() ) continue;
+
+                return values.stream().toList();
+            }
+
+            return List.of();
+        } else {
+            String value = null;
+            for( var name : names ) {
+                value = exchange.getStringParameter( name );
+                if( value != null ) break;
+            }
+
+            return wrapOptional( parameter, value );
+        }
     }
 
-    public static Object fromQuery( Request request, Reflection.Parameter parameter ) {
-        return fromQuery( request, parameter, null );
+    public static Object fromQuery( HttpServerExchange exchange, Reflection.Parameter parameter ) throws WsClientException {
+        return fromQuery( exchange, parameter, null );
     }
 }

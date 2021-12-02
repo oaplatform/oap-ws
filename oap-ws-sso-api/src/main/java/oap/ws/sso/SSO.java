@@ -24,59 +24,54 @@
 
 package oap.ws.sso;
 
-import oap.http.Cookie;
-import oap.http.HttpResponse;
-import oap.http.Request;
+import io.undertow.server.handlers.CookieImpl;
+import oap.http.ContentTypes;
+import oap.http.server.nio.HttpServerExchange;
 import oap.ws.SessionManager;
 import org.joda.time.DateTime;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static org.joda.time.DateTimeZone.UTC;
 
 public class SSO {
     public static final String AUTHENTICATION_KEY = "Authorization";
     public static final String SESSION_USER_KEY = "loggedUser";
 
-    public static Optional<String> getAuthentication( Request request ) {
-        return request.header( AUTHENTICATION_KEY ).or( () -> request.cookie( AUTHENTICATION_KEY ) );
+    @Nullable
+    public static String getAuthentication( HttpServerExchange exchange ) {
+        String value = exchange.getRequestHeader( AUTHENTICATION_KEY );
+        if( value != null ) return value;
+        return exchange.getRequestCookieValue( AUTHENTICATION_KEY );
     }
 
-    public static HttpResponse.Builder authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
-        return HttpResponse.ok( authentication.view )
-            .withHeader( AUTHENTICATION_KEY, authentication.id )
-            .withCookie(
-                new Cookie( AUTHENTICATION_KEY, authentication.id )
-                    .withDomain( cookieDomain )
-                    .withPath( "/" )
-                    .withExpires( new DateTime( UTC ).plus( cookieExpiration ) )
-                    .httpOnly( true )
-                    .secure( cookieSecure )
-                    .toString()
-            );
+    public static void authenticatedResponse( HttpServerExchange exchange, Authentication authentication, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
+        exchange.setResponseHeader( AUTHENTICATION_KEY, authentication.id );
+        exchange.setResponseCookie( new CookieImpl( AUTHENTICATION_KEY, authentication.id )
+            .setDomain( cookieDomain )
+            .setPath( "/" )
+            .setExpires( new DateTime( UTC ).plus( cookieExpiration ).toDate() )
+            .setHttpOnly( true )
+            .setSecure( cookieSecure )
+        );
+        exchange.responseOk( authentication.view, false, ContentTypes.APPLICATION_JSON );
     }
 
-    public static HttpResponse.Builder authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
-        return authenticatedResponse( authentication, cookieDomain, cookieExpiration, false );
+    public static void authenticatedResponse( HttpServerExchange exchange, Authentication authentication, String cookieDomain, long cookieExpiration ) {
+        authenticatedResponse( exchange, authentication, cookieDomain, cookieExpiration, false );
     }
 
-    public static HttpResponse.Builder logoutResponse( String cookieDomain ) {
-        return HttpResponse
-            .status( HTTP_NO_CONTENT )
-            .withCookie(
-                new Cookie( AUTHENTICATION_KEY, "<logged out>" )
-                    .withDomain( cookieDomain )
-                    .withPath( "/" )
-                    .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
-                    .toString()
+    public static void logoutResponse( HttpServerExchange exchange, String cookieDomain ) {
+        exchange.setResponseCookie( new CookieImpl( AUTHENTICATION_KEY, "<logged out>" )
+                .setDomain( cookieDomain )
+                .setPath( "/" )
+                .setExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ).toDate() )
             )
-            .withCookie(
-                new Cookie( SessionManager.COOKIE_ID, "<logged out>" )
-                    .withDomain( cookieDomain )
-                    .withPath( "/" )
-                    .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
-                    .toString()
-            );
+            .setResponseCookie( new CookieImpl( SessionManager.COOKIE_ID, "<logged out>" )
+                .setDomain( cookieDomain )
+                .setPath( "/" )
+                .setExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ).toDate() )
+            )
+            .responseNoContent();
     }
 }

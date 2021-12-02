@@ -24,19 +24,19 @@
 
 package oap.ws;
 
-import oap.http.Request;
+import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.util.Strings;
 
 import java.util.Optional;
 
-import static oap.http.Request.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class WsMethodDescriptor {
     public final Reflection.Method method;
     public final String path;
-    public final Request.HttpMethod[] methods;
+    public final HttpServerExchange.HttpMethod[] methods;
     public final String produces;
 
     public WsMethodDescriptor( Reflection.Method method ) {
@@ -49,7 +49,7 @@ public class WsMethodDescriptor {
             this.produces = wsm.produces();
         } else {
             this.path = "/" + method.name();
-            this.methods = new Request.HttpMethod[] { GET };
+            this.methods = new HttpServerExchange.HttpMethod[] { GET };
             this.produces = APPLICATION_JSON.getMimeType();
         }
     }

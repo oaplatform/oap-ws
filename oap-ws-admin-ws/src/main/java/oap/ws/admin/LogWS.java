@@ -35,7 +35,7 @@ import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.slf4j.LoggerFactory;
 
-import static oap.http.Request.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.PATH;
 
 @Slf4j

@@ -24,25 +24,18 @@
 package oap.ws.validate;
 
 import oap.application.testng.KernelFixture;
-import oap.http.HttpResponse;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
+import oap.http.server.nio.HttpServerExchange;
 import oap.testng.Fixtures;
-import oap.ws.WsMethod;
-import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static oap.http.ContentTypes.TEXT_PLAIN;
-import static oap.http.Request.HttpMethod.GET;
-import static oap.http.Request.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
-import static oap.ws.WsParam.From.BODY;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 import static oap.ws.validate.ValidationErrors.errors;
@@ -54,60 +47,55 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
 
     @Test
     public void validationDefault() {
-        assertPost( httpUrl( "/mvpm/run/validation/default" ), "test", TEXT_PLAIN )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN, "test" );
+        assertPost( httpUrl( "/mvpm/run/validation/default" ), "test", ContentTypes.TEXT_PLAIN )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "test" );
     }
 
     @Test
     public void validationOk() {
-        assertPost( httpUrl( "/mvpm/run/validation/ok" ), "test", TEXT_PLAIN )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN, "test" );
+        assertPost( httpUrl( "/mvpm/run/validation/ok" ), "test", ContentTypes.TEXT_PLAIN )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "test" );
     }
 
     @Test
     public void validationFail() {
-        assertPost( httpUrl( "/mvpm/run/validation/fail" ), "test", TEXT_PLAIN )
-            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"error1\",\"error2\"]}" );
+        assertPost( httpUrl( "/mvpm/run/validation/fail" ), "test", ContentTypes.TEXT_PLAIN )
+            .respondedJson( HttpStatusCodes.BAD_REQUEST, "validation failed", "{\"errors\":[\"error1\",\"error2\"]}" );
     }
 
     @Test
     public void validationFailCode() {
-        assertPost( httpUrl( "/mvpm/run/validation/fail-code" ), "test", TEXT_PLAIN )
-            .respondedJson( HTTP_FORBIDDEN, "validation failed", "{\"errors\":[\"denied\"]}" );
+        assertPost( httpUrl( "/mvpm/run/validation/fail-code" ), "test", ContentTypes.TEXT_PLAIN )
+            .respondedJson( HttpStatusCodes.FORBIDDEN, "validation failed", "{\"errors\":[\"denied\"]}" );
     }
 
     @Test
     public void validationMethods() {
         assertGet( httpUrl( "/mvpm/run/validation/methods?a=a&b=5&c=c" ) )
-            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"a\",\"a5\",\"5a\"]}" );
+            .respondedJson( HttpStatusCodes.BAD_REQUEST, "validation failed", "{\"errors\":[\"a\",\"a5\",\"5a\"]}" );
     }
 
     public static class TestWS {
 
-        @WsMethod( path = "/run/validation/default", method = POST )
-        public HttpResponse validationDefault( @WsParam( from = BODY ) String request ) {
-            return HttpResponse.ok( request, true, TEXT_PLAIN ).response();
+        public void validationDefault( String request, HttpServerExchange exchange ) {
+            exchange.responseOk( request, true, ContentTypes.TEXT_PLAIN );
         }
 
-        @WsMethod( path = "/run/validation/ok", method = POST, produces = "text/plain" )
         @WsValidate( "validateOk" )
-        public String validationOk( @WsParam( from = BODY ) String request ) {
+        public String validationOk( String request ) {
             return request;
         }
 
-        @WsMethod( path = "/run/validation/fail", method = POST )
         @WsValidate( "validateFail" )
-        public Object validationFail( @WsParam( from = BODY ) String request ) {
+        public Object validationFail( String request ) {
             return null;
         }
 
-        @WsMethod( path = "/run/validation/fail-code", method = POST )
         @WsValidate( "validateFailCode" )
-        public Object validationFailCode( @WsParam( from = BODY ) String request ) {
+        public Object validationFailCode( String request ) {
             return null;
         }
 
-        @WsMethod( path = "/run/validation/methods", method = GET )
         @WsValidate( { "validateA", "validateAB", "validateBA" } )
         public String validationMethods( String a, int b, String c ) {
             return a + b + c;
@@ -134,7 +122,7 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
         }
 
         protected ValidationErrors validateFailCode( String request ) {
-            return error( HTTP_FORBIDDEN, "denied" );
+            return error( HttpStatusCodes.FORBIDDEN, "denied" );
         }
     }
 }

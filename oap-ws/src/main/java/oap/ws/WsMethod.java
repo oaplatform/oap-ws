@@ -25,7 +25,7 @@
 package oap.ws;
 
 
-import oap.http.Request;
+import oap.http.server.nio.HttpServerExchange;
 import oap.util.Strings;
 
 import java.lang.annotation.ElementType;
@@ -42,5 +42,5 @@ public @interface WsMethod {
 
     boolean raw() default false;
 
-    Request.HttpMethod[] method() default { Request.HttpMethod.GET, Request.HttpMethod.POST, Request.HttpMethod.PATCH };
+    HttpServerExchange.HttpMethod[] method() default { HttpServerExchange.HttpMethod.GET, HttpServerExchange.HttpMethod.POST, HttpServerExchange.HttpMethod.PATCH };
 }

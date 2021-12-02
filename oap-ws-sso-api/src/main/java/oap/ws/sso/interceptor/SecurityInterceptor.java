@@ -25,8 +25,8 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.HttpResponse;
-import oap.http.Request;
+import oap.http.HttpStatusCodes;
+import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.ws.Session;
 import oap.ws.interceptor.Interceptor;
@@ -40,9 +40,6 @@ import oap.ws.sso.WsSecurity;
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
-import static java.lang.String.format;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 @Slf4j
@@ -56,19 +53,23 @@ public class SecurityInterceptor implements Interceptor {
     }
 
     @Override
-    @Nonnull
-    public Optional<HttpResponse> before( @Nonnull Request request, Session session, @Nonnull Reflection.Method method ) {
+    public boolean before( @Nonnull HttpServerExchange exchange, Session session, @Nonnull Reflection.Method method ) {
 
         if( !session.containsKey( SESSION_USER_KEY ) ) {
             log.trace( "no user in session {}", session );
-            var authId = SSO.getAuthentication( request );
+            var authId = SSO.getAuthentication( exchange );
             log.trace( "auth id {}", authId );
-            Optional<Authentication> authentication = authId.flatMap( authenticator::authenticate );
-            if( authentication.isEmpty() ) log.trace( "not authenticated" );
-            else {
-                User user = authentication.get().user;
-                session.set( SESSION_USER_KEY, user );
-                log.trace( "set user {} into session {}", user, session );
+            if( authId == null ) {
+                log.trace( "not authenticated" );
+            } else {
+                Authentication authentication = authenticator.authenticate( authId ).orElse( null );
+                if( authentication != null ) {
+                    User user = authentication.user;
+                    session.set( SESSION_USER_KEY, user );
+                    log.trace( "set user {} into session {}", user, session );
+                } else {
+                    log.trace( "not authenticated" );
+                }
             }
         }
 
@@ -78,16 +79,20 @@ public class SecurityInterceptor implements Interceptor {
         if( annotation.isPresent() ) {
             log.trace( "secure method {}", method );
 
-            return session.containsKey( SESSION_USER_KEY )
-                ? session.<User>get( SESSION_USER_KEY )
-                .filter( u -> !roles.granted( u.getRole(), annotation.get().permissions() ) )
-                .map( u -> {
-                    log.trace( "denied access to method {} for {} with role {} {}: required {}", method.name(), u.getEmail(), u.getRole(), roles.permissionsOf( u.getRole() ), annotation.get().permissions() );
-                    return HttpResponse.status( HTTP_FORBIDDEN, format( "User [%s] has no access to method [%s]", u.getEmail(), method.name() ) ).response();
-                } )
-                : Optional.of( HttpResponse.status( HTTP_UNAUTHORIZED ).response() );
+            if( !session.containsKey( SESSION_USER_KEY ) ) {
+                exchange.setStatusCode( HttpStatusCodes.UNAUTHORIZED );
+                return true;
+            } else {
+                var user = session.<User>get( SESSION_USER_KEY )
+                    .filter( u -> !roles.granted( u.getRole(), annotation.get().permissions() ) )
+                    .orElse( null );
+                if( user != null ) {
+                    exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, String.format( "User [%s] has no access to method [%s]", user.getEmail(), method.name() ) );
+                    return true;
+                }
+            }
         }
-        return Optional.empty();
+        return false;
     }
 }
 

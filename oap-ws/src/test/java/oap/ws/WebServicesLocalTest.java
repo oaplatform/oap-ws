@@ -28,7 +28,7 @@ import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
-import static oap.http.Request.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;

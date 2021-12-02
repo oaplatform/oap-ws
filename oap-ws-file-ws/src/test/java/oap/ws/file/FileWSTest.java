@@ -25,20 +25,18 @@
 package oap.ws.file;
 
 import oap.application.testng.KernelFixture;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import oap.io.Files;
 import oap.testng.Env;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
-import static java.net.HttpURLConnection.HTTP_OK;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.testng.Asserts.contentOfTestResource;
 import static oap.testng.Asserts.urlOfTestResource;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileWSTest extends Fixtures {
@@ -49,12 +47,12 @@ public class FileWSTest extends Fixtures {
 
     @Test
     public void upload() {
-        assertPost( httpUrl( "/file" ), contentOfTestResource( getClass(), "data-complex.json" ), APPLICATION_JSON )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "file.txt" );
+        assertPost( httpUrl( "/file" ), contentOfTestResource( getClass(), "data-complex.json" ), ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "file.txt" );
         assertThat( Env.tmpPath( "default/file.txt" ) ).hasContent( "test" );
 
-        assertPost( httpUrl( "/file?bucket=b1" ), contentOfTestResource( getClass(), "data-single.json" ), APPLICATION_JSON )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "file.txt" );
+        assertPost( httpUrl( "/file?bucket=b1" ), contentOfTestResource( getClass(), "data-single.json" ), ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "file.txt" );
         assertThat( Env.tmpPath( "b1/file.txt" ) ).hasContent( "test" );
     }
 
@@ -62,11 +60,11 @@ public class FileWSTest extends Fixtures {
     public void download() {
         Files.writeString( Env.tmpPath( "default/test.txt" ), "test" );
         assertGet( httpUrl( "/file?path=test.txt" ) )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN, "test" );
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "test" );
 
         Files.writeString( Env.tmpPath( "b1/test.txt" ), "b1test" );
         assertGet( httpUrl( "/file?path=test.txt&bucket=b1" ) )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN, "b1test" );
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "b1test" );
     }
 
 }

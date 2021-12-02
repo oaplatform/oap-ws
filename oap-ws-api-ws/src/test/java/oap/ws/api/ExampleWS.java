@@ -24,8 +24,7 @@
 package oap.ws.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import oap.http.HttpResponse;
-import oap.http.Request;
+import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
@@ -37,7 +36,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Optional;
 
-import static oap.http.Request.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
 
@@ -85,8 +84,8 @@ class ExampleWS {
         return a;
     }
 
-    public String req( Request req ) {
-        return req.getBaseUrl() + req.context.location;
+    public String req( HttpServerExchange exchange ) {
+        return exchange.getRequestURI() + "-";
     }
 
     public List<Bean> bean( int i, String s ) {
@@ -105,8 +104,8 @@ class ExampleWS {
         throw new RuntimeException( "failed" );
     }
 
-    public HttpResponse code( int code ) {
-        return HttpResponse.status( code ).response();
+    public void code( int code, HttpServerExchange exchange ) {
+        exchange.setStatusCode( code );
     }
 
     public String bytes( @WsParam( from = BODY ) byte[] bytes ) {
@@ -136,10 +135,6 @@ class ExampleWS {
             this.s = s;
         }
 
-        public static class BeanExt extends Ext {
-            public String extension;
-        }
-
         public String getSomething() {
             return null;
         }
@@ -151,6 +146,10 @@ class ExampleWS {
 
         public String getS() {
             return s;
+        }
+
+        public static class BeanExt extends Ext {
+            public String extension;
         }
     }
 }

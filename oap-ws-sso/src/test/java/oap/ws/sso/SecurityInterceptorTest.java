@@ -24,18 +24,15 @@
 
 package oap.ws.sso;
 
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import org.testng.annotations.Test;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.Roles.ADMIN;
 import static oap.ws.sso.Roles.USER;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 public class SecurityInterceptorTest extends IntegratedTest {
     @Test
@@ -43,17 +40,17 @@ public class SecurityInterceptorTest extends IntegratedTest {
         userProvider().addUser( "admin@admin.com", "pass", ADMIN );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "admin@admin.com" );
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
         assertGet( httpUrl( "/secure" ) )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "admin@admin.com" );
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
         assertGet( httpUrl( "/secure" ) )
-            .responded( HTTP_OK, "OK", TEXT_PLAIN.withCharset( UTF_8 ), "admin@admin.com" );
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
     }
 
     @Test
     public void notLoggedIn() {
         assertGet( httpUrl( "/secure" ) )
-            .hasCode( HTTP_UNAUTHORIZED );
+            .hasCode( HttpStatusCodes.UNAUTHORIZED );
     }
 
     @Test
@@ -61,7 +58,7 @@ public class SecurityInterceptorTest extends IntegratedTest {
         userProvider().addUser( "user@user.com", "pass", USER );
         assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
-            .hasCode( HTTP_FORBIDDEN );
+            .hasCode( HttpStatusCodes.FORBIDDEN );
     }
 
 }

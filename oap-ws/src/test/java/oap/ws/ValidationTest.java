@@ -26,14 +26,14 @@ package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @Slf4j
 public class ValidationTest extends Fixtures {
@@ -45,27 +45,27 @@ public class ValidationTest extends Fixtures {
     @Test
     public void brokenValidator() {
         assertGet( httpUrl( "/vaildation/service/methodWithBrokenValidator?requiredParameter=10" ) )
-            .respondedJson( HTTP_INTERNAL_ERROR, "CausedByException", "{\"message\":\"CausedByException\"}" );
+            .respondedJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, "CausedByException", "{\"message\":\"CausedByException\"}" );
     }
 
     @Test
     public void wrongValidatorName() {
         String errorMessage = "No such method wrongValidatorName with the following parameters: [int requiredParameter]";
         assertGet( httpUrl( "/vaildation/service/methodWithWrongValidatorName?requiredParameter=10" ) )
-            .respondedJson( HTTP_INTERNAL_ERROR, errorMessage, "{\"message\":\"" + errorMessage + "\"}" );
+            .respondedJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, errorMessage, "{\"message\":\"" + errorMessage + "\"}" );
     }
 
     @Test
     public void validatorWithWrongParameters() {
         String errorMessage = "missedParam required by validator wrongArgsValidator is not supplied by web method";
         assertGet( httpUrl( "/vaildation/service/methodWithWrongValidatorArgs?requiredParameter=10" ) )
-            .responded( HTTP_INTERNAL_ERROR, errorMessage, APPLICATION_JSON, "{\"message\":\"" + errorMessage + "\"}" );
+            .responded( HttpStatusCodes.INTERNAL_SERVER_ERROR, errorMessage, ContentTypes.APPLICATION_JSON, "{\"message\":\"" + errorMessage + "\"}" );
     }
 
     @Test
     public void exception() {
         assertGet( httpUrl( "/vaildation/service/exceptionRuntimeException" ) )
-            .hasCode( HTTP_INTERNAL_ERROR );
+            .hasCode( HttpStatusCodes.INTERNAL_SERVER_ERROR );
     }
 }
 
