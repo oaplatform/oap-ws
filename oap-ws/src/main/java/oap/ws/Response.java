@@ -73,7 +73,15 @@ public class Response {
     }
 
     public static Response jsonOk() {
-        return new Response( HttpStatusCodes.OK ).withContentType( ContentTypes.APPLICATION_JSON );
+        return ok().withContentType( ContentTypes.APPLICATION_JSON );
+    }
+
+    public static Response notFound() {
+        return new Response( HttpStatusCodes.NOT_FOUND );
+    }
+
+    public static Response ok() {
+        return new Response( HttpStatusCodes.OK );
     }
 
     public Response withStatusCode( int code ) {

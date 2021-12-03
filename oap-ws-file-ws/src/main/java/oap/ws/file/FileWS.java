@@ -25,7 +25,7 @@
 package oap.ws.file;
 
 import oap.http.ContentTypes;
-import oap.http.server.nio.HttpServerExchange;
+import oap.ws.Response;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.validate.WsValidateJson;
@@ -54,16 +54,16 @@ public class FileWS {
     }
 
     @WsMethod( method = GET, path = "/" )
-    public void download( @WsParam( from = QUERY ) String path, Optional<String> bucket, HttpServerExchange exchange ) {
+    public Response download( @WsParam( from = QUERY ) String path, Optional<String> bucket ) {
         byte[] bytes = bucket.map( b -> bucketManager.get( b, path ) )
             .orElseGet( () -> bucketManager.get( path ) )
             .orElse( null );
         if( bytes == null ) {
-            exchange.responseNotFound();
+            return Response.notFound();
         } else {
             var contentType = mimetypeOf( FilenameUtils.getExtension( path ) ).orElse( ContentTypes.APPLICATION_OCTET_STREAM );
 
-            exchange.responseOk( bytes, contentType );
+            return Response.ok().withContentType( contentType ).withBody( bytes );
         }
     }
 
