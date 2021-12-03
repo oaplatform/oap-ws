@@ -31,6 +31,7 @@ import oap.http.Headers;
 import oap.http.HttpStatusCodes;
 import oap.http.server.nio.HttpServerExchange;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +83,14 @@ public class Response {
 
     public static Response ok() {
         return new Response( HttpStatusCodes.OK );
+    }
+
+    public static Response redirect( URI uri ) {
+        return redirect( uri.toString() );
+    }
+
+    public static Response redirect( String uri ) {
+        return new Response( HttpStatusCodes.FOUND ).withHeader( Headers.LOCATION, uri );
     }
 
     public Response withStatusCode( int code ) {
