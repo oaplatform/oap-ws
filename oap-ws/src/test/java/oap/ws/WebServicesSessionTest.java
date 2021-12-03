@@ -27,7 +27,6 @@ package oap.ws;
 import oap.application.testng.KernelFixture;
 import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
-import oap.http.server.nio.HttpServerExchange;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
@@ -77,9 +76,9 @@ public class WebServicesSessionTest extends Fixtures {
 
         public static final String IN_SESSION = "inSession";
 
-        public void put( String value, HttpServerExchange exchange, Session session ) {
-            exchange.setStatusCode( HttpStatusCodes.NO_CONTENT );
+        public Response put( String value, Session session ) {
             session.set( IN_SESSION, value );
+            return Response.noContent();
         }
 
         public void putDirectly( String value, Session session ) {

@@ -121,7 +121,7 @@ public class Response {
         exchange.setStatusCode( code );
         if( reasonPhrase != null ) exchange.setReasonPhrase( reasonPhrase );
         headers.forEach( exchange::setResponseHeader );
-        cookies.forEach( cookie -> exchange.setResponseCookie( cookie ) );
+        cookies.forEach( exchange::setResponseCookie );
         if( contentType != null ) exchange.setResponseHeader( Headers.CONTENT_TYPE, contentType );
         if( body != null ) {
             if( body instanceof byte[] ) exchange.send( ( byte[] ) body );
@@ -129,7 +129,7 @@ public class Response {
             else if( body instanceof String ) {
                 if( raw ) exchange.send( ( String ) body );
                 else {
-                    exchange.send( HttpServerExchange.contentToString( true, body, contentType ) );
+                    exchange.send( HttpServerExchange.contentToString( false, body, contentType ) );
                 }
             } else {
                 Preconditions.checkArgument( !raw );

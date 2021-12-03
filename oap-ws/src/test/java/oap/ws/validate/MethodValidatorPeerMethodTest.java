@@ -26,8 +26,8 @@ package oap.ws.validate;
 import oap.application.testng.KernelFixture;
 import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
-import oap.http.server.nio.HttpServerExchange;
 import oap.testng.Fixtures;
+import oap.ws.Response;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.testng.annotations.Test;
@@ -83,8 +83,10 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
     public static class TestWS {
 
         @WsMethod( path = "/run/validation/default", method = POST )
-        public void validationDefault( @WsParam( from = BODY ) String request, HttpServerExchange exchange ) {
-            exchange.responseOk( request, false, ContentTypes.APPLICATION_JSON );
+        public Response validationDefault( @WsParam( from = BODY ) String request ) {
+            return Response
+                .jsonOk()
+                .withBody( request, false );
         }
 
         @WsMethod( path = "/run/validation/ok", method = POST, produces = "text/plain" )

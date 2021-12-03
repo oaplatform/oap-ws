@@ -284,8 +284,8 @@ public class WebServicesTest extends Fixtures {
             throw new RuntimeException( "failed" );
         }
 
-        public void code( int code, HttpServerExchange exchange ) {
-            exchange.setStatusCode( code );
+        public Response code( int code ) {
+            return new Response( code );
         }
 
         public String bytes( @WsParam( from = BODY ) byte[] bytes ) {
