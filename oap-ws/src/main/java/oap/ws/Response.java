@@ -134,6 +134,26 @@ public class Response {
         return this;
     }
 
+    public String bodyToString() {
+        if( body == null ) return null;
+
+        if( body instanceof byte[] bytes ) return new String( bytes );
+        else if( body instanceof ByteBuffer byteBuffer ) {
+            byte[] bytes = new byte[byteBuffer.remaining()];
+            byteBuffer.get( bytes );
+            return new String( bytes );
+        } else if( body instanceof String str ) {
+            if( raw ) return str;
+            else {
+                return HttpServerExchange.contentToString( false, str, contentType );
+            }
+        } else {
+            Preconditions.checkArgument( !raw );
+            return HttpServerExchange.contentToString( false, body, contentType );
+        }
+
+    }
+
     public void send( HttpServerExchange exchange ) {
         exchange.setStatusCode( code );
         if( reasonPhrase != null ) exchange.setReasonPhrase( reasonPhrase );
@@ -141,12 +161,12 @@ public class Response {
         cookies.forEach( exchange::setResponseCookie );
         if( contentType != null ) exchange.setResponseHeader( Headers.CONTENT_TYPE, contentType );
         if( body != null ) {
-            if( body instanceof byte[] ) exchange.send( ( byte[] ) body );
-            else if( body instanceof ByteBuffer ) exchange.send( ( ByteBuffer ) body );
-            else if( body instanceof String ) {
-                if( raw ) exchange.send( ( String ) body );
+            if( body instanceof byte[] bytes ) exchange.send( bytes );
+            else if( body instanceof ByteBuffer byteBuffer ) exchange.send( byteBuffer );
+            else if( body instanceof String str ) {
+                if( raw ) exchange.send( str );
                 else {
-                    exchange.send( HttpServerExchange.contentToString( false, body, contentType ) );
+                    exchange.send( HttpServerExchange.contentToString( false, str, contentType ) );
                 }
             } else {
                 Preconditions.checkArgument( !raw );

@@ -69,10 +69,9 @@ public class WebService implements HttpHandler {
     private void wsError( HttpServerExchange exchange, Throwable e ) {
         if( e instanceof ReflectException && e.getCause() != null )
             wsError( exchange, e.getCause() );
-        else if( e instanceof InvocationTargetException )
-            wsError( exchange, ( ( InvocationTargetException ) e ).getTargetException() );
-        else if( e instanceof WsClientException ) {
-            var clientException = ( WsClientException ) e;
+        else if( e instanceof InvocationTargetException itException )
+            wsError( exchange, itException.getTargetException() );
+        else if( e instanceof WsClientException clientException ) {
             log.debug( this + ": " + clientException, clientException );
             exchange.setStatusCodeReasonPhrase( clientException.code, e.getMessage() );
             if( !clientException.errors.isEmpty() )
@@ -102,6 +101,7 @@ public class WebService implements HttpHandler {
             } else {
                 log.trace( "[{}] not found", requestLine );
                 exchange.responseNotFound();
+                exchange.endExchange();
             }
 
         } catch( Throwable e ) {
@@ -170,9 +170,11 @@ public class WebService implements HttpHandler {
                 exchange.setResponseCookie( cookie );
             }
 
-            produceResultResponse( exchange, method, session, wsMethod, method.invoke( instance, paramValues ) );
+            var response = produceResultResponse( method, session, wsMethod, method.invoke( instance, paramValues ) );
 
-            Interceptors.after( interceptors, exchange, session );
+            Interceptors.after( interceptors, response, session );
+
+            response.send( exchange );
         }
     }
 
@@ -183,31 +185,32 @@ public class WebService implements HttpHandler {
         return false;
     }
 
-    private void produceResultResponse( HttpServerExchange exchange, Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
+    private Response produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
         boolean isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
         var produces = wsMethod.map( WsMethod::produces )
             .orElse( ContentTypes.APPLICATION_JSON );
 
         if( method.isVoid() ) {
-            exchange.responseNoContent();
-        } else if( result instanceof Response ) {
-            ( ( Response ) result ).send( exchange );
-        } else if( result instanceof Optional<?> ) {
-            var optResult = ( Optional<?> ) result;
-            if( optResult.isEmpty() ) exchange.responseNotFound();
-            else exchange.responseOk( optResult.get(), isRaw, produces );
-        } else if( result instanceof Result<?, ?> ) {
-            var resultResult = ( Result<?, ?> ) result;
+            return Response.noContent();
+        } else if( result instanceof Response response ) {
+            return response;
+        } else if( result instanceof Optional<?> optResult ) {
+            return optResult.isEmpty()
+                ? Response.notFound()
+                : Response.ok().withBody( optResult.get(), isRaw ).withContentType( produces );
+        } else if( result instanceof Result<?, ?> resultResult ) {
             if( resultResult.isSuccess() ) {
-                exchange.responseOk( resultResult.successValue, isRaw, produces );
+                return Response.ok().withBody( resultResult.successValue, isRaw ).withContentType( produces );
             } else {
-                exchange.responseJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, "", resultResult.failureValue );
+                return new Response( HttpStatusCodes.INTERNAL_SERVER_ERROR, "" )
+                    .withBody( resultResult.failureValue, false )
+                    .withContentType( ContentTypes.APPLICATION_JSON );
             }
         } else if( result instanceof java.util.stream.Stream<?> ) {
             var stream = ( java.util.stream.Stream<?> ) result;
-            exchange.responseStream( stream, isRaw, produces );
+            return Response.ok().withBody( stream, isRaw ).withContentType( produces );
         } else {
-            exchange.responseOk( result, isRaw, produces );
+            return Response.ok().withBody( result, isRaw ).withContentType( produces );
         }
     }
 

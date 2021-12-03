@@ -69,6 +69,7 @@ public class ThrottleLoginInterceptor implements Interceptor {
             if( log.isTraceEnabled() )
                 log.trace( "Please wait {} seconds before next attempt", delay );
             exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, "Please wait " + delay + " seconds before next attempt" );
+            exchange.endExchange();
             return true;
         }
     }

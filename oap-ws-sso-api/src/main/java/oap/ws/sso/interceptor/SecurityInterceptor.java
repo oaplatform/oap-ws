@@ -81,6 +81,7 @@ public class SecurityInterceptor implements Interceptor {
 
             if( !session.containsKey( SESSION_USER_KEY ) ) {
                 exchange.setStatusCode( HttpStatusCodes.UNAUTHORIZED );
+                exchange.endExchange();
                 return true;
             } else {
                 var user = session.<User>get( SESSION_USER_KEY )
@@ -88,6 +89,7 @@ public class SecurityInterceptor implements Interceptor {
                     .orElse( null );
                 if( user != null ) {
                     exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, String.format( "User [%s] has no access to method [%s]", user.getEmail(), method.name() ) );
+                    exchange.endExchange();
                     return true;
                 }
             }

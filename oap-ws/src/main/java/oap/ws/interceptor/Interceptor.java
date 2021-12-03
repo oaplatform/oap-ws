@@ -26,6 +26,7 @@ package oap.ws.interceptor;
 
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
+import oap.ws.Response;
 import oap.ws.Session;
 
 public interface Interceptor {
@@ -33,6 +34,6 @@ public interface Interceptor {
         return false;
     }
 
-    default void after( HttpServerExchange exchange, Session session ) {
+    default void after( Response response, Session session ) {
     }
 }

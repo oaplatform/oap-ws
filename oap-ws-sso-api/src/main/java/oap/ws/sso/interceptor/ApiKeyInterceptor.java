@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import oap.http.HttpStatusCodes;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
+import oap.ws.Response;
 import oap.ws.Session;
 import oap.ws.interceptor.Interceptor;
 import oap.ws.sso.Authenticator;
@@ -53,6 +54,7 @@ public class ApiKeyInterceptor implements Interceptor {
 
         if( session.containsKey( SESSION_USER_KEY ) ) {
             exchange.setStatusCodeReasonPhrase( HttpStatusCodes.CONFLICT, "invoking service with apiKey while logged in" );
+            exchange.endExchange();
             return true;
         } else {
             var authentication = authenticator.authenticateWithApiKey( accessKey, apiKey );
@@ -65,13 +67,14 @@ public class ApiKeyInterceptor implements Interceptor {
                 return false;
             } else {
                 exchange.setStatusCode( HttpStatusCodes.UNAUTHORIZED );
+                exchange.endExchange();
                 return true;
             }
         }
     }
 
     @Override
-    public void after( HttpServerExchange exchange, Session session ) {
+    public void after( Response response, Session session ) {
         session.<Boolean>get( SESSION_API_KEY_AUTHENTICATED ).ifPresent( apiKeyAuthentication -> {
             if( apiKeyAuthentication ) {
                 log.trace( "removing temporary authentication of {}", session.get( SESSION_USER_KEY ) );

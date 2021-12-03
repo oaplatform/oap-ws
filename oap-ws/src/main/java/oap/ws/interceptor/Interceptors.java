@@ -27,6 +27,7 @@ package oap.ws.interceptor;
 import lombok.extern.slf4j.Slf4j;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
+import oap.ws.Response;
 import oap.ws.Session;
 
 import java.util.List;
@@ -42,11 +43,11 @@ public class Interceptors {
         return false;
     }
 
-    public static void after( List<Interceptor> interceptors, HttpServerExchange exchange, Session session ) {
+    public static void after( List<Interceptor> interceptors, Response response, Session session ) {
         for( var i = interceptors.size() - 1; i >= 0; i-- ) {
             var interceptor = interceptors.get( i );
             log.trace( "running after call {}", interceptor.getClass().getSimpleName() );
-            interceptor.after( exchange, session );
+            interceptor.after( response, session );
         }
     }
 }
