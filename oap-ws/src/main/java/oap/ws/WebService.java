@@ -87,6 +87,8 @@ public class WebService implements HttpHandler {
     @Override
     public void handleRequest( HttpServerExchange exchange ) {
         try {
+            exchange.responseNoContent(); // default response: NO_CONTENT
+
             var requestLine = exchange.getRelativePath();
             var method = methodMatcher.findMethod( requestLine, exchange.getRequestMethod() ).orElse( null );
             log.trace( "invoking {} for {}", method, requestLine );
@@ -191,10 +193,11 @@ public class WebService implements HttpHandler {
 
 
         if( method.isVoid() ) {
-            if( !exchange.isResponseStarted() ) {
-                log.trace( "method.isVoid() && !exchange.exchange.isResponseStarted()" );
-                exchange.responseNoContent();
-            }
+            log.trace( "VOID method(...)" );
+//            if( !exchange.isResponseStarted() ) {
+//                log.trace( "method.isVoid() && !exchange.exchange.isResponseStarted()" );
+//                exchange.responseNoContent();
+//            }
         } else if( result instanceof Optional<?> ) {
             var optResult = ( Optional<?> ) result;
             if( optResult.isEmpty() ) exchange.responseNotFound();
