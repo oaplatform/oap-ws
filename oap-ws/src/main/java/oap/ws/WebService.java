@@ -24,7 +24,6 @@
 package oap.ws;
 
 import io.undertow.server.handlers.Cookie;
-import io.undertow.server.handlers.CookieImpl;
 import lombok.extern.slf4j.Slf4j;
 import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
@@ -87,8 +86,6 @@ public class WebService implements HttpHandler {
     @Override
     public void handleRequest( HttpServerExchange exchange ) {
         try {
-            exchange.responseNoContent(); // default response: NO_CONTENT
-
             var requestLine = exchange.getRelativePath();
             var method = methodMatcher.findMethod( requestLine, exchange.getRequestMethod() ).orElse( null );
             log.trace( "invoking {} for {}", method, requestLine );
@@ -163,12 +160,12 @@ public class WebService implements HttpHandler {
             }
 
             if( session != null && !containsCookie( exchange.responseCookies(), SessionManager.COOKIE_ID ) ) {
-                var cookie = new CookieImpl( SessionManager.COOKIE_ID, session.id )
-                    .setPath( sessionManager.cookiePath )
-                    .setExpires( DateTime.now().plus( sessionManager.cookieExpiration ).toDate() )
-                    .setDomain( sessionManager.cookieDomain )
-                    .setSecure( sessionManager.cookieSecure )
-                    .setHttpOnly( true );
+                var cookie = new oap.http.Cookie( SessionManager.COOKIE_ID, session.id )
+                    .withPath( sessionManager.cookiePath )
+                    .withExpires( DateTime.now().plus( sessionManager.cookieExpiration ) )
+                    .withDomain( sessionManager.cookieDomain )
+                    .secure( sessionManager.cookieSecure )
+                    .httpOnly( true );
 
                 exchange.setResponseCookie( cookie );
             }
@@ -186,18 +183,15 @@ public class WebService implements HttpHandler {
         return false;
     }
 
-    private boolean produceResultResponse( HttpServerExchange exchange, Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
+    private void produceResultResponse( HttpServerExchange exchange, Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
         boolean isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
         var produces = wsMethod.map( WsMethod::produces )
             .orElse( ContentTypes.APPLICATION_JSON );
 
-
         if( method.isVoid() ) {
-            log.trace( "VOID method(...)" );
-//            if( !exchange.isResponseStarted() ) {
-//                log.trace( "method.isVoid() && !exchange.exchange.isResponseStarted()" );
-//                exchange.responseNoContent();
-//            }
+            exchange.responseNoContent();
+        } else if( result instanceof Response ) {
+            ( ( Response ) result ).send( exchange );
         } else if( result instanceof Optional<?> ) {
             var optResult = ( Optional<?> ) result;
             if( optResult.isEmpty() ) exchange.responseNotFound();
@@ -215,8 +209,6 @@ public class WebService implements HttpHandler {
         } else {
             exchange.responseOk( result, isRaw, produces );
         }
-
-        return true;
     }
 
     private LinkedHashMap<Reflection.Parameter, Object> getValues( LinkedHashMap<Reflection.Parameter, Object> values ) {
@@ -278,7 +270,8 @@ public class WebService implements HttpHandler {
                                       Optional<WsMethod> wsMethod,
                                       Reflection.Parameter parameter ) {
 
-        if( parameter.type().assignableFrom( HttpServerExchange.class ) ) return Optional.of( exchange );
+        if( parameter.type().assignableFrom( HttpServerExchange.class ) )
+            return Optional.of( new RoHttpServerExchange( exchange ) );
         if( parameter.type().assignableFrom( Session.class ) ) return Optional.ofNullable( session );
 
         WsParam wsParam = parameter.findAnnotation( WsParam.class ).orElse( null );

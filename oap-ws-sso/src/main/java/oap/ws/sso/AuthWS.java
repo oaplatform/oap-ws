@@ -25,9 +25,8 @@
 package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
-import oap.http.server.nio.HttpServerExchange;
+import oap.ws.Response;
 import oap.ws.Session;
 import oap.ws.SessionManager;
 import oap.ws.WsMethod;
@@ -59,35 +58,30 @@ public class AuthWS {
     }
 
     @WsMethod( method = POST, path = "/login" )
-    public void login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session, HttpServerExchange exchange ) {
-        login( credentials.email, credentials.password, loggedUser, session, exchange );
+    public Response login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+        return login( credentials.email, credentials.password, loggedUser, session );
     }
 
     @WsMethod( method = GET, path = "/login" )
-    public void login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session, HttpServerExchange exchange ) {
+    public Response login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
         Authentication authentication = authenticator.authenticate( email, password ).orElse( null );
         if( authentication == null ) {
-            exchange
-                .setStatusCodeReasonPhrase( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" )
-                .endExchange();
+            return new Response( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
         } else {
-            authenticatedResponse( exchange, authentication,
+            return authenticatedResponse( authentication,
                 sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
         }
     }
 
     @WsMethod( method = GET, path = "/logout" )
     @WsSecurity( permissions = MANAGE_SELF )
-    public void logout( @WsParam( from = SESSION ) User loggedUser, Session session, HttpServerExchange exchange ) {
-        logout( loggedUser, session );
-        logoutResponse( exchange, sessionManager.cookieDomain );
-    }
-
-    private void logout( User loggedUser, Session session ) {
+    public Response logout( @WsParam( from = SESSION ) User loggedUser, Session session ) {
         log.debug( "Invalidating token for user [{}]", loggedUser.getEmail() );
         authenticator.invalidateByEmail( loggedUser.getEmail() );
         session.invalidate();
+
+        return logoutResponse( sessionManager.cookieDomain );
     }
 
     protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
@@ -98,7 +92,7 @@ public class AuthWS {
     }
 
     /**
-     * @see #whoami(Session, HttpServerExchange)
+     * @see #whoami(Session)
      */
     @Deprecated
     @WsMethod( method = GET, path = "/current" )
@@ -107,14 +101,14 @@ public class AuthWS {
     }
 
     @WsMethod( method = GET, path = "/whoami" )
-    public void whoami( Session session, HttpServerExchange exchange ) {
+    public Response whoami( Session session ) {
         User user = session.<User>get( SSO.SESSION_USER_KEY ).orElse( null );
         if( user == null ) {
-            exchange
-                .setStatusCode( HttpStatusCodes.UNAUTHORIZED )
-                .endExchange();
+            return new Response( HttpStatusCodes.UNAUTHORIZED );
         } else {
-            exchange.responseOk( user.getView(), false, ContentTypes.APPLICATION_JSON );
+            return Response
+                .jsonOk()
+                .withBody( user.getView(), false );
         }
     }
 }

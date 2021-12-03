@@ -29,8 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 import oap.application.Kernel;
 import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
-import oap.http.server.nio.HttpServerExchange;
 import oap.jpath.JPath;
+import oap.ws.Response;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 
@@ -50,16 +50,15 @@ public class JPathWS {
 
     @SuppressWarnings( "unchecked" )
     @WsMethod( method = GET, path = "/" )
-    public void get( @WsParam( from = QUERY ) String query, HttpServerExchange exchange ) {
+    public Response get( @WsParam( from = QUERY ) String query ) {
         log.debug( "query = {}", query );
         try {
             AtomicReference<Object> result = new AtomicReference<>();
             JPath.evaluate( query, ( Map<String, Object> ) ( Object ) kernel.services.moduleMap, pointer -> result.set( pointer.get() ) );
-            exchange.responseOk( result.get(), false, ContentTypes.APPLICATION_JSON );
+            return Response.jsonOk().withBody( result.get(), false );
         } catch( Exception e ) {
             log.error( e.getMessage(), e );
-            exchange.setStatusCodeReasonPhrase( HttpStatusCodes.BAD_REQUEST, e.getMessage() );
-            exchange.responseOk( Throwables.getStackTraceAsString( e ), true, ContentTypes.TEXT_PLAIN );
+            return new Response( HttpStatusCodes.BAD_REQUEST, e.getMessage(), ContentTypes.TEXT_PLAIN ).withBody( Throwables.getStackTraceAsString( e ), true );
         }
     }
 }

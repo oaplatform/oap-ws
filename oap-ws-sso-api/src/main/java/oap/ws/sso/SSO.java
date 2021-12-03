@@ -24,9 +24,9 @@
 
 package oap.ws.sso;
 
-import io.undertow.server.handlers.CookieImpl;
-import oap.http.ContentTypes;
+import oap.http.Cookie;
 import oap.http.server.nio.HttpServerExchange;
+import oap.ws.Response;
 import oap.ws.SessionManager;
 import org.joda.time.DateTime;
 
@@ -45,33 +45,36 @@ public class SSO {
         return exchange.getRequestCookieValue( AUTHENTICATION_KEY );
     }
 
-    public static void authenticatedResponse( HttpServerExchange exchange, Authentication authentication, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
-        exchange.setResponseHeader( AUTHENTICATION_KEY, authentication.id );
-        exchange.setResponseCookie( new CookieImpl( AUTHENTICATION_KEY, authentication.id )
-            .setDomain( cookieDomain )
-            .setPath( "/" )
-            .setExpires( new DateTime( UTC ).plus( cookieExpiration ).toDate() )
-            .setHttpOnly( true )
-            .setSecure( cookieSecure )
-        );
-        exchange.responseOk( authentication.view, false, ContentTypes.APPLICATION_JSON );
+    public static Response authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
+        return Response
+            .jsonOk()
+            .withHeader( AUTHENTICATION_KEY, authentication.id )
+            .withCookie( new Cookie( AUTHENTICATION_KEY, authentication.id )
+                .withDomain( cookieDomain )
+                .withPath( "/" )
+                .withExpires( new DateTime( UTC ).plus( cookieExpiration ) )
+                .httpOnly( true )
+                .secure( cookieSecure )
+            )
+            .withBody( authentication.view, false );
     }
 
-    public static void authenticatedResponse( HttpServerExchange exchange, Authentication authentication, String cookieDomain, long cookieExpiration ) {
-        authenticatedResponse( exchange, authentication, cookieDomain, cookieExpiration, false );
+    public static Response authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
+        return authenticatedResponse( authentication, cookieDomain, cookieExpiration, false );
     }
 
-    public static void logoutResponse( HttpServerExchange exchange, String cookieDomain ) {
-        exchange.setResponseCookie( new CookieImpl( AUTHENTICATION_KEY, "<logged out>" )
-                .setDomain( cookieDomain )
-                .setPath( "/" )
-                .setExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ).toDate() )
+    public static Response logoutResponse( String cookieDomain ) {
+        return Response
+            .noContent()
+            .withCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
+                .withDomain( cookieDomain )
+                .withPath( "/" )
+                .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
             )
-            .setResponseCookie( new CookieImpl( SessionManager.COOKIE_ID, "<logged out>" )
-                .setDomain( cookieDomain )
-                .setPath( "/" )
-                .setExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ).toDate() )
-            )
-            .responseNoContent();
+            .withCookie( new Cookie( SessionManager.COOKIE_ID, "<logged out>" )
+                .withDomain( cookieDomain )
+                .withPath( "/" )
+                .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
+            );
     }
 }
