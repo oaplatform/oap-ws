@@ -31,10 +31,12 @@ import oap.http.Headers;
 import oap.http.HttpStatusCodes;
 import oap.http.server.nio.HttpServerExchange;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class Response {
     public final HashMap<String, String> headers = new HashMap<>();
@@ -147,6 +149,13 @@ public class Response {
             else {
                 return HttpServerExchange.contentToString( false, str, contentType );
             }
+        } else if( body instanceof Consumer cons ) {
+            var baos = new ByteArrayOutputStream();
+            cons.accept( baos );
+
+            body = baos.toByteArray();
+
+            return new String( ( byte[] ) body );
         } else {
             Preconditions.checkArgument( !raw );
             return HttpServerExchange.contentToString( false, body, contentType );
@@ -154,6 +163,7 @@ public class Response {
 
     }
 
+    @SuppressWarnings( "unchecked" )
     public void send( HttpServerExchange exchange ) {
         exchange.setStatusCode( code );
         if( reasonPhrase != null ) exchange.setReasonPhrase( reasonPhrase );
@@ -168,6 +178,8 @@ public class Response {
                 else {
                     exchange.send( HttpServerExchange.contentToString( false, str, contentType ) );
                 }
+            } else if( body instanceof Consumer cons ) {
+                cons.accept( exchange.getOutputStream() );
             } else {
                 Preconditions.checkArgument( !raw );
                 exchange.send( HttpServerExchange.contentToString( false, body, contentType ) );
