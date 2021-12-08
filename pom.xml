@@ -34,7 +34,7 @@
 
     <packaging>pom</packaging>
     <artifactId>oap-ws-parent</artifactId>
-    <version>${oap.ws.project.version}</version>
+    <version>${oap-ws.project.version}</version>
 
     <name>oap-ws-parent</name>
 
@@ -63,9 +63,9 @@
     </distributionManagement>
 
     <properties>
-        <oap.ws.project.version>17.10.0.0</oap.ws.project.version>
+        <oap-ws.project.version>17.10.0.0</oap-ws.project.version>
 
-        <oap.deps.oap.version>17.10.0.0-340-oap-nio</oap.deps.oap.version>
+        <oap.deps.oap.version>17.10.0.0-oap-nio-1133</oap.deps.oap.version>
         <oap.deps.assertj.version>3.12.2</oap.deps.assertj.version>
         <oap.deps.guava.version>30.1-jre</oap.deps.guava.version>
         <oap.deps.logback.version>1.2.3</oap.deps.logback.version>
