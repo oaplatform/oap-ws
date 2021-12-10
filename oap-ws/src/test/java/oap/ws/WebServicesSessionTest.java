@@ -25,32 +25,28 @@
 package oap.ws;
 
 import oap.application.testng.KernelFixture;
-import oap.http.HttpResponse;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import oap.testng.Fixtures;
-import oap.util.Maps;
-import org.apache.http.entity.ContentType;
 import org.testng.annotations.Test;
 
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
-import static oap.http.Request.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
-import static oap.util.Pair.__;
 import static oap.ws.WsParam.From.SESSION;
 
 public class WebServicesSessionTest extends Fixtures {
-
     {
         fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test
     public void sessionViaResponse() {
-        assertGet( httpUrl( "/session/put" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
-            .hasCode( 204 );
+        assertGet( httpUrl( "/session/put" ), Map.of( "value", "vvv" ), Map.of() )
+            .hasCode( HttpStatusCodes.NO_CONTENT );
         assertGet( httpUrl( "/session/get" ) )
             .isOk()
             .hasBody( "vvv" );
@@ -58,8 +54,8 @@ public class WebServicesSessionTest extends Fixtures {
 
     @Test
     public void sessionDirectly() {
-        assertGet( httpUrl( "/session/putDirectly" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
-            .hasCode( 204 );
+        assertGet( httpUrl( "/session/putDirectly" ), Map.of( "value", "vvv" ), Map.of() )
+            .hasCode( HttpStatusCodes.NO_CONTENT );
         assertGet( httpUrl( "/session/get" ) )
             .isOk()
             .hasBody( "vvv" );
@@ -67,12 +63,12 @@ public class WebServicesSessionTest extends Fixtures {
 
     @Test
     public void respondHtmlContentType() {
-        assertGet( httpUrl( "/session/putDirectly" ), Maps.of( __( "value", "vvv" ) ), Maps.empty() )
-            .hasCode( 204 );
+        assertGet( httpUrl( "/session/putDirectly" ), Map.of( "value", "vvv" ), Map.of() )
+            .hasCode( HttpStatusCodes.NO_CONTENT );
         assertGet( httpUrl( "/session/html" ) )
             .isOk()
             .hasBody( "vvv" )
-            .hasContentType( ContentType.TEXT_HTML.withCharset( StandardCharsets.UTF_8 ) );
+            .hasContentType( ContentTypes.TEXT_HTML );
     }
 
     @SuppressWarnings( "unused" )
@@ -80,10 +76,9 @@ public class WebServicesSessionTest extends Fixtures {
 
         public static final String IN_SESSION = "inSession";
 
-        public HttpResponse put( String value ) {
-            return HttpResponse.status( HTTP_NO_CONTENT )
-                .withSessionValue( IN_SESSION, value )
-                .response();
+        public Response put( String value, Session session ) {
+            session.set( IN_SESSION, value );
+            return Response.noContent();
         }
 
         public void putDirectly( String value, Session session ) {

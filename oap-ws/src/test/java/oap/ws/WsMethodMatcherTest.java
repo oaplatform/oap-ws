@@ -31,8 +31,8 @@ import org.testng.annotations.Test;
 
 import java.util.Optional;
 
-import static oap.http.Request.HttpMethod.GET;
-import static oap.http.Request.HttpMethod.POST;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;

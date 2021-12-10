@@ -25,6 +25,8 @@
 package oap.ws.validate;
 
 import oap.application.testng.KernelFixture;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import oap.testng.Fixtures;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
@@ -32,15 +34,12 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static oap.http.Request.HttpMethod.POST;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class ValidatePartialJsonTest extends Fixtures {
     //todo refactor this static madness
@@ -53,23 +52,23 @@ public class ValidatePartialJsonTest extends Fixtures {
     @Test
     public void validation1() {
         bean = new TestBean( "id1" );
-        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"id\":1}", APPLICATION_JSON )
-            .respondedJson( HTTP_OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
-        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"b\":[{\"element\":\"test\"}],\"id\":1}", APPLICATION_JSON )
-            .respondedJson( HTTP_OK, "OK", "{\"a\":[{\"id\":1,\"b\":[{\"element\":\"test\"}]}],\"id\":\"id1\"}" );
-        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{}", APPLICATION_JSON )
-            .responded( HTTP_BAD_REQUEST, "validation failed", APPLICATION_JSON, "{\"errors\":[\"/a/1/id: required property is missing\"]}" );
+        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"id\":1}", ContentTypes.APPLICATION_JSON )
+            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"b\":[{\"element\":\"test\"}],\"id\":1}", ContentTypes.APPLICATION_JSON )
+            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{\"id\":1,\"b\":[{\"element\":\"test\"}]}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{}", ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.BAD_REQUEST, "validation failed", ContentTypes.APPLICATION_JSON, "{\"errors\":[\"/a/1/id: required property is missing\"]}" );
     }
 
     @Test
     public void validation2() {
         bean = new TestBean( "id1" );
-        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"id\":1}", APPLICATION_JSON )
-            .respondedJson( HTTP_OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
-        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{}", APPLICATION_JSON )
-            .respondedJson( HTTP_OK, "OK", "{\"a\":[{}],\"id\":\"id1\"}" );
-        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"c\":1}", APPLICATION_JSON )
-            .responded( HTTP_BAD_REQUEST, "validation failed", APPLICATION_JSON, "{\"errors\":[\"/a/1: additional properties are not permitted [c]\"]}" );
+        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"id\":1}", ContentTypes.APPLICATION_JSON )
+            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{}", ContentTypes.APPLICATION_JSON )
+            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"c\":1}", ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.BAD_REQUEST, "validation failed", ContentTypes.APPLICATION_JSON, "{\"errors\":[\"/a/1: additional properties are not permitted [c]\"]}" );
     }
 
     @Test
@@ -83,8 +82,8 @@ public class ValidatePartialJsonTest extends Fixtures {
 
         bean.a.add( itemA );
         bean.a.add( itemB );
-        assertPost( httpUrl( "/vpj/run/validation/3/id1/2" ), "{\"element\":\"some text\"}", APPLICATION_JSON )
-            .respondedJson( HTTP_OK, "OK", "{\"a\":[{\"id\":1},{\"id\":2,\"b\":[{\"element\":\"some text\"}]}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/3/id1/2" ), "{\"element\":\"some text\"}", ContentTypes.APPLICATION_JSON )
+            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{\"id\":1},{\"id\":2,\"b\":[{\"element\":\"some text\"}]}],\"id\":\"id1\"}" );
     }
 
     @SuppressWarnings( "unused" )

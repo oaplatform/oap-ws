@@ -25,7 +25,8 @@
 package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.HttpResponse;
+import oap.http.HttpStatusCodes;
+import oap.ws.Response;
 import oap.ws.Session;
 import oap.ws.SessionManager;
 import oap.ws.WsMethod;
@@ -34,10 +35,8 @@ import oap.ws.validate.ValidationErrors;
 
 import java.util.Optional;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static oap.http.Request.HttpMethod.GET;
-import static oap.http.Request.HttpMethod.POST;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.Permissions.MANAGE_SELF;
@@ -59,33 +58,36 @@ public class AuthWS {
     }
 
     @WsMethod( method = POST, path = "/login" )
-    public HttpResponse login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+    public Response login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         return login( credentials.email, credentials.password, loggedUser, session );
     }
 
     @WsMethod( method = GET, path = "/login" )
-    public HttpResponse login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+    public Response login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
-        return authenticator.authenticate( email, password )
-            .map( authentication -> authenticatedResponse( authentication,
-                sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure ) )
-            .orElse( HttpResponse.status( HTTP_UNAUTHORIZED, "Username or password is invalid" ) )
-            .response();
+        Authentication authentication = authenticator.authenticate( email, password ).orElse( null );
+        if( authentication == null ) {
+            return new Response( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
+        } else {
+            return authenticatedResponse( authentication,
+                sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
+        }
     }
 
     @WsMethod( method = GET, path = "/logout" )
     @WsSecurity( permissions = MANAGE_SELF )
-    public HttpResponse logout( @WsParam( from = SESSION ) User loggedUser, Session session ) {
+    public Response logout( @WsParam( from = SESSION ) User loggedUser, Session session ) {
         log.debug( "Invalidating token for user [{}]", loggedUser.getEmail() );
         authenticator.invalidateByEmail( loggedUser.getEmail() );
         session.invalidate();
-        return logoutResponse( sessionManager.cookieDomain ).response();
+
+        return logoutResponse( sessionManager.cookieDomain );
     }
 
     protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
         return email
             .filter( e -> !loggedUser.getEmail().equalsIgnoreCase( e ) )
-            .map( e -> error( HTTP_FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
+            .map( e -> error( HttpStatusCodes.FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
             .orElse( empty() );
     }
 
@@ -95,14 +97,18 @@ public class AuthWS {
     @Deprecated
     @WsMethod( method = GET, path = "/current" )
     public Optional<User.View> current( Session session ) {
-        return session.<User>get( SSO.SESSION_USER_KEY ).map( User::getView );
+        return session.<User>get( oap.ws.sso.SSO.SESSION_USER_KEY ).map( User::getView );
     }
 
     @WsMethod( method = GET, path = "/whoami" )
-    public HttpResponse whoami( Session session ) {
-        return session.<User>get( SSO.SESSION_USER_KEY )
-            .map( user -> HttpResponse.ok( user.getView() ) )
-            .orElseGet( () -> HttpResponse.status( HTTP_UNAUTHORIZED ) )
-            .response();
+    public Response whoami( Session session ) {
+        User user = session.<User>get( SSO.SESSION_USER_KEY ).orElse( null );
+        if( user == null ) {
+            return new Response( HttpStatusCodes.UNAUTHORIZED );
+        } else {
+            return Response
+                .jsonOk()
+                .withBody( user.getView(), false );
+        }
     }
 }

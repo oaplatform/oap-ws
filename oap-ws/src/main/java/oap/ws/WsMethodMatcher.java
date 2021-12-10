@@ -24,7 +24,7 @@
 
 package oap.ws;
 
-import oap.http.Request;
+import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.util.Arrays;
@@ -57,19 +57,6 @@ public class WsMethodMatcher {
             .map( a -> __( a.path(), compile( a.path() ) ) )
             .collect( Maps.Collectors.toMap() );
     }
-    @SuppressWarnings( "checkstyle:UnnecessaryParentheses" )
-    private boolean match( String requestLine, Request.HttpMethod httpMethod, Reflection.Method m ) {
-        return m.findAnnotation( WsMethod.class )
-            .map( a -> Arrays.contains( httpMethod, a.method() ) && (
-                    ( isUndefined( a.path() ) && Objects.equals( requestLine, "/" + m.name() ) )
-                        || paths.get( a.path() ).matcher( requestLine ).find()
-                )
-            ).orElse( m.isPublic() && Objects.equals( requestLine, "/" + m.name() ) );
-    }
-
-    public Optional<Reflection.Method> findMethod( String requestLine, Request.HttpMethod httpMethod ) {
-        return reflection.method( m -> match( requestLine, httpMethod, m ), WsMethodMatcher::constantFirst );
-    }
 
     static int constantFirst( Reflection.Method o1, Reflection.Method o2 ) {
         var path1 = o1.findAnnotation( WsMethod.class ).map( WsMethod::path ).orElse( o1.name() );
@@ -77,7 +64,6 @@ public class WsMethodMatcher {
 
         return path1.compareTo( path2 );
     }
-
 
     public static Pattern compile( String mapping ) {
         var pattern = NAMED_PARAM_PATTERN.matcher( RX_PARAM_PATTERN.matcher( mapping ).replaceAll( "$2" ) )
@@ -102,5 +88,21 @@ public class WsMethodMatcher {
                     ? Optional.of( matcher1.group( group + 1 ) )
                     : Optional.empty();
             } );
+    }
+
+    @SuppressWarnings( "checkstyle:UnnecessaryParentheses" )
+    private boolean match( String requestLine, HttpServerExchange.HttpMethod httpMethod, Reflection.Method m ) {
+        WsMethod annotation = m.findAnnotation( WsMethod.class ).orElse( null );
+        if( annotation == null )
+            return m.isPublic() && Objects.equals( requestLine, "/" + m.name() );
+
+        boolean contains = Arrays.contains( httpMethod, annotation.method() );
+        boolean b = ( isUndefined( annotation.path() ) && Objects.equals( requestLine, "/" + m.name() ) )
+            || paths.get( annotation.path() ).matcher( requestLine ).find();
+        return contains && b;
+    }
+
+    public Optional<Reflection.Method> findMethod( String requestLine, HttpServerExchange.HttpMethod httpMethod ) {
+        return reflection.method( m -> match( requestLine, httpMethod, m ), WsMethodMatcher::constantFirst );
     }
 }

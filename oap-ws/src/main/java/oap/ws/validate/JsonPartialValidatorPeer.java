@@ -115,9 +115,7 @@ public class JsonPartialValidatorPeer implements ValidatorPeer {
                     child.put( pathElement, Collections.singletonList( partialValue ) );
 
                     break;
-                } else if( next instanceof List ) {
-                    List childElements = ( List<?> ) next;
-
+                } else if( next instanceof List childElements ) {
                     childElements.removeIf( elements -> {
                         final Object partialValueId = partialValue.get( "id" );
 

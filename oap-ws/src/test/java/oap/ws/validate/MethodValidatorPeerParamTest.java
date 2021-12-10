@@ -24,6 +24,8 @@
 package oap.ws.validate;
 
 import oap.application.testng.KernelFixture;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import oap.testng.Fixtures;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
@@ -32,10 +34,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static oap.http.ContentTypes.TEXT_PLAIN;
-import static oap.http.Request.HttpMethod.POST;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
@@ -43,7 +42,6 @@ import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class MethodValidatorPeerParamTest extends Fixtures {
     {
@@ -52,48 +50,47 @@ public class MethodValidatorPeerParamTest extends Fixtures {
 
     @Test
     public void validationDefault() {
-        assertPost( httpUrl( "/mvpp/run/validation/default?i=1" ), "test", TEXT_PLAIN )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1test\"" );
+        assertPost( httpUrl( "/mvpp/run/validation/default?i=1" ), "test", ContentTypes.TEXT_PLAIN )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"1test\"" );
     }
 
     @Test
     public void validationOk() {
-        assertPost( httpUrl( "/mvpp/run/validation/ok?i=1" ), "test", TEXT_PLAIN )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1test\"" );
+        assertPost( httpUrl( "/mvpp/run/validation/ok?i=1" ), "test", ContentTypes.TEXT_PLAIN )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"1test\"" );
     }
 
     @Test
     public void validationOkList() {
-        assertPost( httpUrl( "/mvpp/run/validation/ok?i=1&listString=_11&listString=_12" ), "test", TEXT_PLAIN )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"1_11/_12test\"" );
+        assertPost( httpUrl( "/mvpp/run/validation/ok?i=1&listString=_11&listString=_12" ), "test", ContentTypes.TEXT_PLAIN )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"1_11/_12test\"" );
     }
 
     @Test
     public void validationOkOptional() {
-        assertPost( httpUrl( "/mvpp/run/validation/ok?i=1&optString=2" ), "test", TEXT_PLAIN )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "\"12test\"" );
+        assertPost( httpUrl( "/mvpp/run/validation/ok?i=1&optString=2" ), "test", ContentTypes.TEXT_PLAIN )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"12test\"" );
     }
 
     @Test
     public void validationFail() {
-        assertPost( httpUrl( "/mvpp/run/validation/fail?i=1" ), "test", TEXT_PLAIN )
-            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\": [\"error:1\", \"error:test\"]}" );
+        assertPost( httpUrl( "/mvpp/run/validation/fail?i=1" ), "test", ContentTypes.TEXT_PLAIN )
+            .respondedJson( HttpStatusCodes.BAD_REQUEST, "validation failed", "{\"errors\": [\"error:1\", \"error:test\"]}" );
     }
 
     @Test
     public void validationRequiredFailed() {
-        assertPost( httpUrl( "/mvpp/run/validation/ok" ), "test", TEXT_PLAIN )
-            .respondedJson( HTTP_BAD_REQUEST, "i is required", "{\"errors\": [\"i is required\"]}" );
+        assertPost( httpUrl( "/mvpp/run/validation/ok" ), "test", ContentTypes.TEXT_PLAIN )
+            .respondedJson( HttpStatusCodes.BAD_REQUEST, "i is required", "{\"errors\": [\"i is required\"]}" );
     }
 
     @Test
     public void validationTypeFailed() {
-        assertPost( httpUrl( "/mvpp/run/validation/ok?i=test" ), "test", TEXT_PLAIN )
-            .hasCode( HTTP_BAD_REQUEST );
+        assertPost( httpUrl( "/mvpp/run/validation/ok?i=test" ), "test", ContentTypes.TEXT_PLAIN )
+            .hasCode( HttpStatusCodes.BAD_REQUEST );
     }
 
     public static class TestWS {
-
         @WsMethod( path = "/run/validation/default", method = POST )
         public String validationDefault(
             @WsParam( from = QUERY ) int i,

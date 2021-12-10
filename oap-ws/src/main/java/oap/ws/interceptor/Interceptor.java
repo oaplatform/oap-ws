@@ -24,19 +24,16 @@
 
 package oap.ws.interceptor;
 
-import oap.http.HttpResponse;
-import oap.http.Request;
+import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
+import oap.ws.Response;
 import oap.ws.Session;
 
-import java.util.Optional;
-
 public interface Interceptor {
-    default Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
-        return Optional.empty();
+    default boolean before( HttpServerExchange exchange, Session session, Reflection.Method method ) {
+        return false;
     }
 
-    default HttpResponse after( HttpResponse response, Session session ) {
-        return response;
+    default void after( Response response, Session session ) {
     }
 }

@@ -25,8 +25,8 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.HttpResponse;
-import oap.http.Request;
+import oap.http.HttpStatusCodes;
+import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.ws.Session;
 import oap.ws.interceptor.Interceptor;
@@ -35,10 +35,8 @@ import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.Temporal;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 /**
@@ -53,7 +51,7 @@ public class ThrottleLoginInterceptor implements Interceptor {
 
     /**
      * @param delay timeout between login attempt. In seconds
-     * */
+     */
     public ThrottleLoginInterceptor( Integer delay ) {
         this.delay = delay;
     }
@@ -63,15 +61,16 @@ public class ThrottleLoginInterceptor implements Interceptor {
     }
 
     @Override
-    @Nonnull
-    public Optional<HttpResponse> before( @Nonnull Request request, Session session, @Nonnull Reflection.Method method ) {
+    public boolean before( @Nonnull HttpServerExchange exchange, Session session, @Nonnull Reflection.Method method ) {
         var id = session.id;
         if( validateId( id ) || session.containsKey( SESSION_USER_KEY ) ) {
-            return Optional.empty();
+            return false;
         } else {
             if( log.isTraceEnabled() )
                 log.trace( "Please wait {} seconds before next attempt", delay );
-            return Optional.of( HttpResponse.status( HTTP_FORBIDDEN, "Please wait " + delay + " seconds before next attempt" ).response() );
+            exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, "Please wait " + delay + " seconds before next attempt" );
+            exchange.endExchange();
+            return true;
         }
     }
 

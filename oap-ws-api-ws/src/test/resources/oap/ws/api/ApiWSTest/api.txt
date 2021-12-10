@@ -37,7 +37,7 @@ Methods:
 	[GET] /example/code
 	Produces application/json
 	Permissions <unsecure>
-	Returns <http response>
+	Returns void
 	Parameters
 		code: query int
 

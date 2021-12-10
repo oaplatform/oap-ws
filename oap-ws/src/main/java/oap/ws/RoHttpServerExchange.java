@@ -22,16 +22,34 @@
  * SOFTWARE.
  */
 
-package oap.media;
+package oap.ws;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import io.undertow.util.HttpString;
+import oap.http.Cookie;
+import oap.http.server.nio.HttpServerExchange;
 
-import java.io.Serializable;
-import java.util.HashMap;
+public class RoHttpServerExchange extends HttpServerExchange {
+    public RoHttpServerExchange( HttpServerExchange exchange ) {
+        super( exchange.exchange );
+    }
 
-@ToString( callSuper = true )
-@EqualsAndHashCode( callSuper = true )
-public class MediaInfo extends HashMap<String, Object> implements Serializable {
-    private static final long serialVersionUID = 8059757500236710629L;
+    @Override
+    public HttpServerExchange setStatusCode( int statusCode ) {
+        throw new IllegalStateException( "use oap.ws.Response" );
+    }
+
+    @Override
+    public HttpServerExchange setReasonPhrase( String message ) {
+        throw new IllegalStateException( "use oap.ws.Response" );
+    }
+
+    @Override
+    public HttpServerExchange setResponseHeader( HttpString name, String value ) {
+        throw new IllegalStateException( "use oap.ws.Response" );
+    }
+
+    @Override
+    public HttpServerExchange setResponseCookie( Cookie cookie ) {
+        throw new IllegalStateException( "use oap.ws.Response" );
+    }
 }

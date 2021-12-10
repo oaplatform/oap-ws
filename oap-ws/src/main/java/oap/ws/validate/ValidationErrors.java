@@ -25,7 +25,7 @@ package oap.ws.validate;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import oap.http.HttpResponse;
+import oap.http.HttpStatusCodes;
 import oap.reflect.Reflection;
 import oap.util.Lists;
 import oap.util.Mergeable;
@@ -35,9 +35,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static oap.util.Lists.concat;
 import static oap.ws.validate.Validators.forParameter;
 
@@ -45,7 +43,7 @@ import static oap.ws.validate.Validators.forParameter;
 @EqualsAndHashCode
 @Immutable
 public final class ValidationErrors implements Mergeable<ValidationErrors> {
-    public static final int DEFAULT_CODE = HTTP_BAD_REQUEST;
+    public static final int DEFAULT_CODE = HttpStatusCodes.BAD_REQUEST;
     public final List<String> errors;
     public final int code;
 
@@ -134,12 +132,8 @@ public final class ValidationErrors implements Mergeable<ValidationErrors> {
         return this;
     }
 
-    public HttpResponse.Builder ifEmpty( Supplier<HttpResponse.Builder> handle ) {
-        return errors.isEmpty() ? handle.get() : buildErrorResponse();
-    }
-
-    private HttpResponse.Builder buildErrorResponse() {
-        return HttpResponse.status( code, "validation failed", new ErrorResponse( errors ) );
+    public boolean isEmpty() {
+        return errors.isEmpty();
     }
 
     @EqualsAndHashCode

@@ -24,10 +24,9 @@
 
 package oap.ws.sso.testng;
 
+import oap.http.HttpStatusCodes;
 import org.joda.time.DateTime;
 
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
-import static java.net.HttpURLConnection.HTTP_OK;
 import static oap.http.testng.HttpAsserts.CookieHttpAssertion.assertCookie;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
@@ -46,7 +45,7 @@ public class SecureWSFixture {
 
     public static void assertLogin( String login, String password, int port ) {
         assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
-            .hasCode( HTTP_OK )
+            .hasCode( HttpStatusCodes.OK )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasPath( "/" )
                 .isHttpOnly() );
@@ -58,7 +57,7 @@ public class SecureWSFixture {
 
     public static void assertLogout( int port ) {
         assertGet( httpUrl( port, "/auth/logout" ) )
-            .hasCode( HTTP_NO_CONTENT )
+            .hasCode( HttpStatusCodes.NO_CONTENT )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasValue( "<logged out>" )
                 .expiresAt( new DateTime( 1970, 1, 1, 1, 1, UTC ) ) );

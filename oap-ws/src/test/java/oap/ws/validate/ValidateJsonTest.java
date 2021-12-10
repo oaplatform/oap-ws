@@ -25,20 +25,19 @@
 package oap.ws.validate;
 
 import oap.application.testng.KernelFixture;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import oap.http.testng.HttpAsserts;
 import oap.testng.Fixtures;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static oap.http.Request.HttpMethod.POST;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.io.Resources.urlOrThrow;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class ValidateJsonTest extends Fixtures {
     {
@@ -47,30 +46,30 @@ public class ValidateJsonTest extends Fixtures {
 
     @Test
     public void validation1() {
-        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/1" ), "{\"a\":1}", APPLICATION_JSON )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "{\"a\":1}" );
-        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/1" ), "{}", APPLICATION_JSON )
-            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"/a: required property is missing\"]}" );
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/1" ), "{\"a\":1}", ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "{\"a\":1}" );
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/1" ), "{}", ContentTypes.APPLICATION_JSON )
+            .respondedJson( HttpStatusCodes.BAD_REQUEST, "validation failed", "{\"errors\":[\"/a: required property is missing\"]}" );
     }
 
     @Test
     public void validation2() {
-        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{\"a\":1}", APPLICATION_JSON )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "{\"a\":1}" );
-        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{}", APPLICATION_JSON )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "{}" );
-        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{\"b\":1}", APPLICATION_JSON )
-            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"additional properties are not permitted [b]\"]}" );
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{\"a\":1}", ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "{\"a\":1}" );
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{}", ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "{}" );
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/2" ), "{\"b\":1}", ContentTypes.APPLICATION_JSON )
+            .respondedJson( HttpStatusCodes.BAD_REQUEST, "validation failed", "{\"errors\":[\"additional properties are not permitted [b]\"]}" );
     }
 
     @Test
     public void validation3() {
-        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type1" ), "{\"a\":1}", APPLICATION_JSON )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "{\"a\":1}" );
-        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type2" ), "{\"b\":1}", APPLICATION_JSON )
-            .responded( HTTP_OK, "OK", APPLICATION_JSON, "{\"b\":1}" );
-        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type1" ), "{\"b\":1}", APPLICATION_JSON )
-            .respondedJson( HTTP_BAD_REQUEST, "validation failed", "{\"errors\":[\"/a: required property is missing\"]}" );
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type1" ), "{\"a\":1}", ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "{\"a\":1}" );
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type2" ), "{\"b\":1}", ContentTypes.APPLICATION_JSON )
+            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "{\"b\":1}" );
+        assertPost( HttpAsserts.httpUrl( "/vj/run/validation/3?type=type1" ), "{\"b\":1}", ContentTypes.APPLICATION_JSON )
+            .respondedJson( HttpStatusCodes.BAD_REQUEST, "validation failed", "{\"errors\":[\"/a: required property is missing\"]}" );
     }
 
     public static class TestWS {

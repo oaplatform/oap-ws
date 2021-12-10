@@ -27,18 +27,18 @@ package oap.ws.admin;
 import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.Kernel;
-import oap.http.HttpResponse;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
 import oap.jpath.JPath;
+import oap.ws.Response;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static oap.http.Request.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.QUERY;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 @Slf4j
 public class JPathWS {
@@ -50,18 +50,15 @@ public class JPathWS {
 
     @SuppressWarnings( "unchecked" )
     @WsMethod( method = GET, path = "/" )
-    public HttpResponse get( @WsParam( from = QUERY ) String query ) {
+    public Response get( @WsParam( from = QUERY ) String query ) {
         log.debug( "query = {}", query );
         try {
             AtomicReference<Object> result = new AtomicReference<>();
             JPath.evaluate( query, ( Map<String, Object> ) ( Object ) kernel.services.moduleMap, pointer -> result.set( pointer.get() ) );
-            return HttpResponse.ok( result.get() ).response();
+            return Response.jsonOk().withBody( result.get(), false );
         } catch( Exception e ) {
             log.error( e.getMessage(), e );
-            return HttpResponse.status( HTTP_BAD_REQUEST )
-                .withReason( e.getMessage() )
-                .withContent( Throwables.getStackTraceAsString( e ), TEXT_PLAIN )
-                .response();
+            return new Response( HttpStatusCodes.BAD_REQUEST, e.getMessage(), ContentTypes.TEXT_PLAIN ).withBody( Throwables.getStackTraceAsString( e ), true );
         }
     }
 }

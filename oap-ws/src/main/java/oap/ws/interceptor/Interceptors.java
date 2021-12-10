@@ -25,32 +25,29 @@
 package oap.ws.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.HttpResponse;
-import oap.http.Request;
+import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
-import oap.util.Stream;
+import oap.ws.Response;
 import oap.ws.Session;
-import org.apache.commons.collections4.iterators.ReverseListIterator;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 public class Interceptors {
-    public static Optional<HttpResponse> before( List<Interceptor> interceptors, Request request, Session session, Reflection.Method method ) {
+    public static boolean before( List<Interceptor> interceptors, HttpServerExchange exchange, Session session, Reflection.Method method ) {
         for( var interceptor : interceptors ) {
             log.trace( "running before call {}", interceptor.getClass().getSimpleName() );
-            var response = interceptor.before( request, session, method );
-            if( response.isPresent() ) return response;
+            var response = interceptor.before( exchange, session, method );
+            if( response ) return true;
         }
-        return Optional.empty();
+        return false;
     }
 
-    public static HttpResponse after( List<Interceptor> interceptors, HttpResponse response, Session session ) {
-        return Stream.of( new ReverseListIterator<>( interceptors ) )
-            .foldLeft( response, ( r, interceptor ) -> {
-                log.trace( "running after call {}", interceptor.getClass().getSimpleName() );
-                return interceptor.after( r, session );
-            } );
+    public static void after( List<Interceptor> interceptors, Response response, Session session ) {
+        for( var i = interceptors.size() - 1; i >= 0; i-- ) {
+            var interceptor = interceptors.get( i );
+            log.trace( "running after call {}", interceptor.getClass().getSimpleName() );
+            interceptor.after( response, session );
+        }
     }
 }

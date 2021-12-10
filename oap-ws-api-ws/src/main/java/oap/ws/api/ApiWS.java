@@ -27,8 +27,7 @@ package oap.ws.api;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
 import oap.dictionary.Dictionary;
-import oap.http.HttpResponse;
-import oap.http.Request;
+import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.json.ext.ExtDeserializer;
 import oap.reflect.Reflect;
@@ -53,7 +52,7 @@ import java.util.Map;
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.getPropertyName;
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.isGetter;
 import static java.util.Comparator.comparing;
-import static oap.http.Request.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.util.Strings.fill;
 import static oap.util.Strings.join;
 import static oap.ws.WsParam.From.QUERY;
@@ -64,6 +63,26 @@ public class ApiWS {
 
     public ApiWS( WebServices webServices ) {
         this.webServices = webServices;
+    }
+
+    private static boolean filterField( Reflection.Field field ) {
+        return !field.isStatic()
+            && !field.underlying.isSynthetic()
+            && field.findAnnotation( JsonIgnore.class ).isEmpty();
+    }
+
+    private static boolean filterMethod( Reflection.Method m ) {
+        return !m.underlying.getDeclaringClass().equals( Object.class )
+            && !m.underlying.isSynthetic()
+            && !Modifier.isStatic( m.underlying.getModifiers() )
+            && m.isPublic();
+    }
+
+    private static boolean filterParameter( Reflection.Parameter parameter ) {
+        return parameter.findAnnotation( WsParam.class )
+            .map( wsp -> wsp.from() != WsParam.From.SESSION )
+            .orElse( true )
+            && !parameter.type().assignableTo( HttpServerExchange.class );
     }
 
     @WsMethod( produces = "text/plain", path = "/", method = GET )
@@ -117,7 +136,6 @@ public class ApiWS {
     }
 
     private String formatType( int shift, Reflection clazz, Reflection r ) {
-        if( r.assignableTo( HttpResponse.class ) ) return "<http response>";
         if( r.isOptional() ) return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ) );
         if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
@@ -178,26 +196,6 @@ public class ApiWS {
             ? ExtDeserializer.extensionOf( r.underlying, f.name() ) : null;
         Reflection target = ext != null ? Reflect.reflect( ext ) : f.type();
         return formatType( shift + 1, r, target );
-    }
-
-    private static boolean filterField( Reflection.Field field ) {
-        return !field.isStatic()
-            && !field.underlying.isSynthetic()
-            && field.findAnnotation( JsonIgnore.class ).isEmpty();
-    }
-
-    private static boolean filterMethod( Reflection.Method m ) {
-        return !m.underlying.getDeclaringClass().equals( Object.class )
-            && !m.underlying.isSynthetic()
-            && !Modifier.isStatic( m.underlying.getModifiers() )
-            && m.isPublic();
-    }
-
-    private static boolean filterParameter( Reflection.Parameter parameter ) {
-        return parameter.findAnnotation( WsParam.class )
-            .map( wsp -> wsp.from() != WsParam.From.SESSION )
-            .orElse( true )
-            && !parameter.type().assignableTo( Request.class );
     }
 
 }

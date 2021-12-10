@@ -25,22 +25,16 @@
 package oap.ws.interceptor;
 
 import oap.application.testng.KernelFixture;
-import oap.http.HttpResponse;
-import oap.http.Request;
+import oap.http.HttpStatusCodes;
+import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.testng.Fixtures;
 import oap.ws.Session;
-import oap.ws.WsMethod;
-import oap.ws.WsParam;
 import org.testng.annotations.Test;
 
-import java.util.Optional;
-
-import static oap.http.Request.HttpMethod.GET;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class InterceptorTest extends Fixtures {
     {
@@ -48,50 +42,38 @@ public class InterceptorTest extends Fixtures {
     }
 
     @Test
-    public void shouldAllowRequestWhenEmptyInterceptor() {
-        assertGet( httpUrl( "/interceptor/text?value=empty" ) )
-            .isOk()
-            .hasReason( "modified by interceptor" )
-            .hasBody( "ok" );
-    }
-
-    @Test
     public void shouldNotAllowRequestWhenErrorInterceptor() {
         assertGet( httpUrl( "/interceptor/text?value=error" ) )
-            .hasCode( 403 )
-            .hasBody( "caused by interceptor" );
+            .hasCode( HttpStatusCodes.FORBIDDEN )
+            .hasReason( "caused by interceptor" );
     }
 
     @SuppressWarnings( "unused" )
     private static class TestWS {
 
-        @WsMethod( path = "/text", method = GET, produces = "plain/text" )
-        public String text( @WsParam( from = WsParam.From.QUERY ) String value ) {
+        public String text( String value ) {
             return "ok";
         }
     }
 
     private static class PassInterceptor implements Interceptor {
         @Override
-        public Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
-            return Optional.empty();
-        }
-
-        @Override
-        public HttpResponse after( HttpResponse response, Session session ) {
-            return response.modify().withReason( "modified by interceptor" ).response();
+        public boolean before( HttpServerExchange exchange, Session session, Reflection.Method method ) {
+            return false;
         }
     }
 
     private static class ErrorInterceptor implements Interceptor {
         @Override
-        public Optional<HttpResponse> before( Request request, Session session, Reflection.Method method ) {
-            return request.parameter( "value" ).filter( s -> s.equals( "error" ) ).isPresent()
-                ? Optional.of(
-                HttpResponse.status( 403 )
-                    .withContent( "caused by interceptor", APPLICATION_JSON )
-                    .response()
-            ) : Optional.empty();
+        public boolean before( HttpServerExchange exchange, Session session, Reflection.Method method ) {
+            var value = exchange.getStringParameter( "value" );
+
+            if( "error".equals( value ) ) {
+                exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, "caused by interceptor" );
+                return true;
+            }
+
+            return false;
         }
     }
 }

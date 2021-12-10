@@ -23,24 +23,22 @@
  */
 package oap.ws;
 
+import io.undertow.server.handlers.Cookie;
 import lombok.extern.slf4j.Slf4j;
-import oap.http.Cookie;
-import oap.http.HttpResponse;
-import oap.http.Request;
-import oap.http.Response;
-import oap.http.server.Handler;
+import oap.http.ContentTypes;
+import oap.http.HttpStatusCodes;
+import oap.http.server.nio.HttpHandler;
+import oap.http.server.nio.HttpServerExchange;
 import oap.json.Binder;
 import oap.json.JsonException;
 import oap.reflect.ReflectException;
 import oap.reflect.Reflection;
-import oap.util.Pair;
 import oap.util.Result;
 import oap.util.Throwables;
 import oap.ws.interceptor.Interceptor;
 import oap.ws.interceptor.Interceptors;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.Validators;
-import org.apache.http.entity.ContentType;
 import org.joda.time.DateTime;
 
 import java.io.Serial;
@@ -51,15 +49,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static oap.http.HttpResponse.NOT_FOUND;
-import static oap.util.Collectors.toLinkedHashMap;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
-
 @Slf4j
-public class WebService implements Handler {
+public class WebService implements HttpHandler {
     private final boolean sessionAware;
     private final SessionManager sessionManager;
     private final List<Interceptor> interceptors;
@@ -75,126 +66,152 @@ public class WebService implements Handler {
         this.interceptors = interceptors;
     }
 
-    private void wsError( Response response, Throwable e ) {
+    private void wsError( HttpServerExchange exchange, Throwable e ) {
         if( e instanceof ReflectException && e.getCause() != null )
-            wsError( response, e.getCause() );
-        else if( e instanceof InvocationTargetException )
-            wsError( response, ( ( InvocationTargetException ) e ).getTargetException() );
-        else if( e instanceof WsClientException ) {
-            var clientException = ( WsClientException ) e;
-            log.debug( this + ": " + e.toString(), e );
-            response.respond( clientException.errors.isEmpty()
-                ? HttpResponse.status( clientException.code, e.getMessage() ).response()
-                : HttpResponse.status( clientException.code, e.getMessage(),
-                    new ValidationErrors.ErrorResponse( clientException.errors ) ).response() );
+            wsError( exchange, e.getCause() );
+        else if( e instanceof InvocationTargetException itException )
+            wsError( exchange, itException.getTargetException() );
+        else if( e instanceof WsClientException clientException ) {
+            log.debug( this + ": " + clientException, clientException );
+            exchange.setStatusCodeReasonPhrase( clientException.code, e.getMessage() );
+            if( !clientException.errors.isEmpty() )
+                exchange.responseJson( new ValidationErrors.ErrorResponse( clientException.errors ) );
         } else {
             log.error( this + ": " + e.toString(), e );
-            response.respond( HttpResponse.status( HTTP_INTERNAL_ERROR, e.getMessage(), new JsonStackTraceResponse( e ) ).response() );
+            exchange.responseJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, e.getMessage(), new JsonStackTraceResponse( e ) );
         }
     }
 
     @Override
-    public void handle( Request request, Response response ) {
+    public void handleRequest( HttpServerExchange exchange ) {
         try {
-            var requestLine = request.getRequestLine();
-            var method = methodMatcher.findMethod( requestLine, request.getHttpMethod() );
+            var requestLine = exchange.getRelativePath();
+            var method = methodMatcher.findMethod( requestLine, exchange.getRequestMethod() ).orElse( null );
             log.trace( "invoking {} for {}", method, requestLine );
-            method.ifPresentOrElse( m -> {
+            if( method != null ) {
                 Session session = null;
                 if( sessionAware ) {
-                    String cookie = request.cookie( SessionManager.COOKIE_ID ).orElse( null );
+                    String cookie = exchange.getRequestCookieValue( SessionManager.COOKIE_ID );
                     log.trace( "session cookie {}", cookie );
                     session = sessionManager.getOrInit( cookie );
                     log.trace( "session for {} is {}", this, session );
                 }
 
-                handleInternal( request, response, m, session );
-            }, () -> {
+                handleInternal( exchange, method, session );
+            } else {
                 log.trace( "[{}] not found", requestLine );
-                response.respond( NOT_FOUND );
-            } );
+                exchange.responseNotFound();
+                exchange.endExchange();
+            }
 
         } catch( Throwable e ) {
-            wsError( response, e );
+            log.trace( e.getMessage(), e );
+            wsError( exchange, e );
         }
     }
 
-    private void handleInternal( Request request, Response response, Reflection.Method method, Session session ) {
+    private void buildErrorResponse( HttpServerExchange exchange, ValidationErrors validationErrors ) {
+        exchange.responseJson( validationErrors.code, "validation failed", new ValidationErrors.ErrorResponse( validationErrors.errors ) );
+    }
+
+
+    private void handleInternal( HttpServerExchange exchange, Reflection.Method method, Session session ) {
         log.trace( "{}: session: [{}]", this, session );
 
         var wsMethod = method.findAnnotation( WsMethod.class );
 
-        Interceptors.before( interceptors, request, session, method )
-            .ifPresentOrElse( response::respond, () -> {
-                var parameters = method.parameters;
-                var originalValues = getOriginalValues( session, parameters, request, wsMethod );
+        if( !Interceptors.before( interceptors, exchange, session, method ) ) {
+            var parameters = method.parameters;
+            var originalValues = getOriginalValues( session, parameters, exchange, wsMethod );
 
-                var rb = ValidationErrors.empty()
-                    .validateParameters( originalValues, method, instance, true )
-                    .ifEmpty( () -> Validators.forMethod( method, instance, true )
-                        .validate( originalValues.values().toArray( new Object[0] ), originalValues )
-                        .ifEmpty( () -> {
-                            var values = getValues( originalValues );
+            ValidationErrors validationErrors = ValidationErrors.empty().validateParameters( originalValues, method, instance, true );
 
-                            return ValidationErrors.empty()
-                                .validateParameters( values, method, instance, false )
-                                .ifEmpty( () -> {
-                                    var paramValues = values.values().toArray( new Object[0] );
+            if( !validationErrors.isEmpty() ) {
+                buildErrorResponse( exchange, validationErrors );
+                return;
+            }
 
-                                    return Validators.forMethod( method, instance, false )
-                                        .validate( paramValues, values )
-                                        .ifEmpty( () ->
-                                            produceResultResponse( method, session, wsMethod, method.invoke( instance, paramValues ) ) );
-                                } );
-                        } ) );
-                var cookie = session != null && !containsCookie( rb.cookies, SessionManager.COOKIE_ID )
-                    ? new Cookie( SessionManager.COOKIE_ID, session.id )
+            validationErrors = Validators.forMethod( method, instance, true )
+                .validate( originalValues.values().toArray( new Object[0] ), originalValues );
+
+            if( !validationErrors.isEmpty() ) {
+                buildErrorResponse( exchange, validationErrors );
+                return;
+            }
+
+            LinkedHashMap<Reflection.Parameter, Object> values = getValues( originalValues );
+
+            validationErrors = ValidationErrors.empty()
+                .validateParameters( values, method, instance, false );
+
+            if( !validationErrors.isEmpty() ) {
+                buildErrorResponse( exchange, validationErrors );
+                return;
+            }
+
+            var paramValues = values.values().toArray( new Object[0] );
+            validationErrors = Validators
+                .forMethod( method, instance, false )
+                .validate( paramValues, values );
+
+            if( !validationErrors.isEmpty() ) {
+                buildErrorResponse( exchange, validationErrors );
+                return;
+            }
+
+            if( session != null && !containsCookie( exchange.responseCookies(), SessionManager.COOKIE_ID ) ) {
+                var cookie = new oap.http.Cookie( SessionManager.COOKIE_ID, session.id )
                     .withPath( sessionManager.cookiePath )
                     .withExpires( DateTime.now().plus( sessionManager.cookieExpiration ) )
                     .withDomain( sessionManager.cookieDomain )
                     .secure( sessionManager.cookieSecure )
-                    .httpOnly( true )
-                    : null;
-                response.respond( Interceptors.after( interceptors,
-                    ( cookie != null ? rb.withCookie( cookie ) : rb ).response(),
-                    session ) );
-            } );
+                    .httpOnly( true );
+
+                exchange.setResponseCookie( cookie );
+            }
+
+            var response = produceResultResponse( method, session, wsMethod, method.invoke( instance, paramValues ) );
+
+            Interceptors.after( interceptors, response, session );
+
+            response.send( exchange );
+        }
     }
 
-    private boolean containsCookie( List<Pair<String, String>> cookies, String cookieId ) {
+    private boolean containsCookie( Iterable<Cookie> cookies, String cookieId ) {
         for( var p : cookies ) {
-            if( "Set-Cookie".equals( p._1 ) && p._2.startsWith( cookieId + "=" ) ) return true;
+            if( cookieId.equals( p.getName() ) ) return true;
         }
         return false;
     }
 
-    private HttpResponse.Builder produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
+    private Response produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
         boolean isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
-        var produces = wsMethod.map( wsm -> ContentType.create( wsm.produces() )
-            .withCharset( UTF_8 ) )
-            .orElse( APPLICATION_JSON );
+        var produces = wsMethod.map( WsMethod::produces )
+            .orElse( ContentTypes.APPLICATION_JSON );
 
-
-        HttpResponse.Builder responseBuilder;
-        if( method.isVoid() )
-            responseBuilder = HttpResponse.status( HTTP_NO_CONTENT );
-        else if( result instanceof HttpResponse ) {
-            HttpResponse r = ( HttpResponse ) result;
-            if( session != null && !r.session.isEmpty() )
-                session.setAll( r.session );
-            responseBuilder = r.modify();
-        } else if( result instanceof Optional<?> )
-            responseBuilder = ( ( Optional<?> ) result )
-                .map( r -> HttpResponse.ok( r, isRaw, produces ) )
-                .orElse( NOT_FOUND.modify() );
-        else if( result instanceof Result<?, ?> )
-            responseBuilder = ( ( Result<?, ?> ) result ).isSuccess()
-                ? ( ( Result<?, ?> ) result ).mapSuccess( r -> HttpResponse.ok( r, isRaw, produces ) ).successValue
-                : ( ( Result<?, ?> ) result ).mapFailure( r -> HttpResponse.status( HTTP_INTERNAL_ERROR, "", r ) ).failureValue;
-        else if( result instanceof java.util.stream.Stream<?> )
-            responseBuilder = HttpResponse.stream( ( java.util.stream.Stream<?> ) result, isRaw, produces );
-        else responseBuilder = HttpResponse.ok( result, isRaw, produces );
-        return responseBuilder;
+        if( method.isVoid() ) {
+            return Response.noContent();
+        } else if( result instanceof Response response ) {
+            return response;
+        } else if( result instanceof Optional<?> optResult ) {
+            return optResult.isEmpty()
+                ? Response.notFound()
+                : Response.ok().withBody( optResult.get(), isRaw ).withContentType( produces );
+        } else if( result instanceof Result<?, ?> resultResult ) {
+            if( resultResult.isSuccess() ) {
+                return Response.ok().withBody( resultResult.successValue, isRaw ).withContentType( produces );
+            } else {
+                return new Response( HttpStatusCodes.INTERNAL_SERVER_ERROR, "" )
+                    .withBody( resultResult.failureValue, false )
+                    .withContentType( ContentTypes.APPLICATION_JSON );
+            }
+        } else if( result instanceof java.util.stream.Stream<?> ) {
+            var stream = ( java.util.stream.Stream<?> ) result;
+            return Response.ok().withBody( stream, isRaw ).withContentType( produces );
+        } else {
+            return Response.ok().withBody( result, isRaw ).withContentType( produces );
+        }
     }
 
     private LinkedHashMap<Reflection.Parameter, Object> getValues( LinkedHashMap<Reflection.Parameter, Object> values ) {
@@ -239,34 +256,38 @@ public class WebService implements Handler {
 
     public LinkedHashMap<Reflection.Parameter, Object> getOriginalValues( Session session,
                                                                           List<Reflection.Parameter> parameters,
-                                                                          Request request,
+                                                                          HttpServerExchange exchange,
                                                                           Optional<WsMethod> wsMethod ) {
+        var ret = new LinkedHashMap<Reflection.Parameter, Object>();
 
-
-        return parameters.stream().collect( toLinkedHashMap(
-            parameter -> parameter,
-            parameter -> getValue( session, request, wsMethod, parameter )
-                .orElseGet( () -> WsParams.fromQuery( request, parameter ) ) ) );
+        for( var parameter : parameters ) {
+            Object value = getValue( session, exchange, wsMethod, parameter )
+                .orElseGet( () -> WsParams.fromQuery( exchange, parameter ) );
+            ret.put( parameter, value );
+        }
+        return ret;
     }
 
     public Optional<Object> getValue( Session session,
-                                      Request request,
+                                      HttpServerExchange exchange,
                                       Optional<WsMethod> wsMethod,
                                       Reflection.Parameter parameter ) {
 
-        return parameter.type().assignableFrom( Request.class )
-            ? Optional.of( request )
-            : parameter.type().assignableFrom( Session.class )
-                ? Optional.ofNullable( session )
-                : parameter.findAnnotation( WsParam.class )
-                    .map( wsParam -> switch( wsParam.from() ) {
-                        case SESSION -> WsParams.fromSesstion( session, parameter );
-                        case HEADER -> WsParams.fromHeader( request, parameter, wsParam );
-                        case COOKIE -> WsParams.fromCookie( request, parameter, wsParam );
-                        case PATH -> WsParams.fromPath( request, wsMethod, parameter );
-                        case BODY -> WsParams.fromBody( request, parameter );
-                        case QUERY -> WsParams.fromQuery( request, parameter, wsParam );
-                    } );
+        if( parameter.type().assignableFrom( HttpServerExchange.class ) )
+            return Optional.of( new RoHttpServerExchange( exchange ) );
+        if( parameter.type().assignableFrom( Session.class ) ) return Optional.ofNullable( session );
+
+        WsParam wsParam = parameter.findAnnotation( WsParam.class ).orElse( null );
+        if( wsParam == null ) return Optional.empty();
+
+        return Optional.ofNullable( switch( wsParam.from() ) {
+            case SESSION -> WsParams.fromSession( session, parameter );
+            case HEADER -> WsParams.fromHeader( exchange, parameter, wsParam );
+            case COOKIE -> WsParams.fromCookie( exchange, parameter, wsParam );
+            case PATH -> WsParams.fromPath( exchange, wsMethod, parameter );
+            case BODY -> WsParams.fromBody( exchange, parameter );
+            case QUERY -> WsParams.fromQuery( exchange, parameter, wsParam );
+        } );
     }
 
 

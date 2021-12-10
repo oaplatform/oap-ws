@@ -27,7 +27,7 @@ package oap.ws;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.WsValidate;
 
-import static oap.http.Request.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.QUERY;
 
 @SuppressWarnings( "unused" )

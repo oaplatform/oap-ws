@@ -21,44 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.application.Kernel;
 import oap.application.KernelHelper;
 import oap.application.module.ServiceExt;
-import oap.http.HttpResponse;
-import oap.http.Protocol;
-import oap.http.cors.CorsPolicy;
-import oap.http.server.Handler;
-import oap.http.server.HttpServer;
-import oap.json.Binder;
+import oap.http.server.nio.HttpHandler;
+import oap.http.server.nio.NioHttpServer;
 import oap.util.Lists;
 import oap.ws.interceptor.Interceptor;
-import org.apache.http.entity.ContentType;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 
 @Slf4j
 public class WebServices {
-    static {
-        HttpResponse.registerProducer( ContentType.APPLICATION_JSON.getMimeType(), Binder.json::marshal );
-    }
-
     public final LinkedHashMap<String, Object> services = new LinkedHashMap<>();
-    private final HttpServer server;
+    private final NioHttpServer server;
     private final SessionManager sessionManager;
-    private final CorsPolicy globalCorsPolicy;
     private final Kernel kernel;
     private List<ServiceExt<WsConfig>> wsConfigServices;
     private List<ServiceExt<WsConfig>> wsConfigHandlers;
 
-    public WebServices( Kernel kernel, HttpServer server, SessionManager sessionManager, CorsPolicy globalCorsPolicy ) {
+    public WebServices( Kernel kernel, NioHttpServer server, SessionManager sessionManager ) {
         this.kernel = kernel;
         this.server = server;
         this.sessionManager = sessionManager;
-        this.globalCorsPolicy = globalCorsPolicy;
     }
 
     public void start() {
@@ -82,20 +72,17 @@ public class WebServices {
                 continue;
             }
 
-            var corsPolicy = config.ext.corsPolicy != null ? config.ext.corsPolicy : globalCorsPolicy;
             for( var path : config.ext.path ) {
-                bind( path, corsPolicy, config.getInstance(),
-                    config.ext.sessionAware, sessionManager, interceptors, config.ext.protocol );
+                bind( path, config.getInstance(),
+                    config.ext.sessionAware, sessionManager, interceptors );
             }
         }
 
         for( var config : wsConfigHandlers ) {
             log.trace( "handler = {}", config );
 
-            var corsPolicy = config.ext.corsPolicy != null ? config.ext.corsPolicy : globalCorsPolicy;
-            Protocol protocol = config.ext.protocol;
             for( var path : config.ext.path ) {
-                bind( path, corsPolicy, ( Handler ) config.getInstance(), protocol );
+                bind( path, ( HttpHandler ) config.getInstance() );
             }
         }
     }
@@ -112,21 +99,27 @@ public class WebServices {
 
         if( wsConfigHandlers != null ) {
             for( var config : wsConfigHandlers )
-                for( var path : config.ext.path )
+                for( var path : config.ext.path ) {
+                    if( !path.startsWith( "/" ) ) path = "/" + path;
                     server.unbind( path );
+                }
 
             wsConfigHandlers = null;
         }
 
     }
 
-    public void bind( String context, CorsPolicy corsPolicy, Object service, boolean sessionAware,
-                      SessionManager sessionManager, List<Interceptor> interceptors, Protocol protocol ) {
+    public void bind( String context, Object service, boolean sessionAware,
+                      SessionManager sessionManager, List<Interceptor> interceptors ) {
+
         services.put( context, service );
-        bind( context, corsPolicy, new WebService( service, sessionAware, sessionManager, interceptors ), protocol );
+        bind( context, new WebService( service, sessionAware, sessionManager, interceptors ) );
     }
 
-    public void bind( String context, CorsPolicy corsPolicy, Handler handler, Protocol protocol ) {
-        server.bind( context, corsPolicy, handler, protocol );
+    @SuppressWarnings( "checkstyle:ParameterAssignment" )
+    public void bind( String context, HttpHandler handler ) {
+        if( context.isEmpty() ) context = "/";
+
+        server.bind( context, handler );
     }
 }

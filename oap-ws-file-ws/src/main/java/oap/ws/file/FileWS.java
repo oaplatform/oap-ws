@@ -24,24 +24,20 @@
 
 package oap.ws.file;
 
-import oap.http.HttpResponse;
+import oap.http.ContentTypes;
+import oap.ws.Response;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.validate.WsValidateJson;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.http.entity.ContentType;
 
 import java.util.Optional;
 
-import static java.net.HttpURLConnection.HTTP_OK;
-import static oap.http.HttpResponse.NOT_FOUND;
-import static oap.http.HttpResponse.status;
-import static oap.http.Request.HttpMethod.GET;
-import static oap.http.Request.HttpMethod.POST;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.io.MimeTypes.mimetypeOf;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
-import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
 
 public class FileWS {
     public static final String DATA_SCHEMA = "/oap/ws/file/schema/data.conf";
@@ -58,16 +54,17 @@ public class FileWS {
     }
 
     @WsMethod( method = GET, path = "/" )
-    public HttpResponse download( @WsParam( from = QUERY ) String path, Optional<String> bucket ) {
-        return bucket.map( b -> bucketManager.get( b, path ) )
+    public Response download( @WsParam( from = QUERY ) String path, Optional<String> bucket ) {
+        byte[] bytes = bucket.map( b -> bucketManager.get( b, path ) )
             .orElseGet( () -> bucketManager.get( path ) )
-            .map( content -> status( HTTP_OK )
-                .withContent( content, mimetypeOf( FilenameUtils.getExtension( path ) )
-                    .map( ContentType::getByMimeType )
-                    .orElse( APPLICATION_OCTET_STREAM ) )
-                .response()
-            )
-            .orElse( NOT_FOUND );
+            .orElse( null );
+        if( bytes == null ) {
+            return Response.notFound();
+        } else {
+            var contentType = mimetypeOf( FilenameUtils.getExtension( path ) ).orElse( ContentTypes.APPLICATION_OCTET_STREAM );
+
+            return Response.ok().withContentType( contentType ).withBody( bytes );
+        }
     }
 
 }
