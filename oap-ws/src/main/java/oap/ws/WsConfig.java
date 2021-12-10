@@ -38,4 +38,5 @@ public class WsConfig {
     public final ArrayList<String> interceptors = new ArrayList<>();
     public LinkedHashSet<String> path = new LinkedHashSet<>();
     public boolean sessionAware;
+    public boolean compression = true;
 }

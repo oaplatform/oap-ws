@@ -74,7 +74,7 @@ public class WebServices {
 
             for( var path : config.ext.path ) {
                 bind( path, config.getInstance(),
-                    config.ext.sessionAware, sessionManager, interceptors );
+                    config.ext.sessionAware, sessionManager, interceptors, config.ext.compression );
             }
         }
 
@@ -82,7 +82,7 @@ public class WebServices {
             log.trace( "handler = {}", config );
 
             for( var path : config.ext.path ) {
-                bind( path, ( HttpHandler ) config.getInstance() );
+                bind( path, ( HttpHandler ) config.getInstance(), config.ext.compression );
             }
         }
     }
@@ -110,16 +110,16 @@ public class WebServices {
     }
 
     public void bind( String context, Object service, boolean sessionAware,
-                      SessionManager sessionManager, List<Interceptor> interceptors ) {
+                      SessionManager sessionManager, List<Interceptor> interceptors, boolean compressionSupport ) {
 
         services.put( context, service );
-        bind( context, new WebService( service, sessionAware, sessionManager, interceptors ) );
+        bind( context, new WebService( service, sessionAware, sessionManager, interceptors, compressionSupport ), compressionSupport );
     }
 
     @SuppressWarnings( "checkstyle:ParameterAssignment" )
-    public void bind( String context, HttpHandler handler ) {
+    public void bind( String context, HttpHandler handler, boolean compressionSupport ) {
         if( context.isEmpty() ) context = "/";
 
-        server.bind( context, handler );
+        server.bind( context, handler, compressionSupport );
     }
 }
