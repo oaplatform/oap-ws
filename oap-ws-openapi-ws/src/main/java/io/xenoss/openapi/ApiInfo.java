@@ -24,6 +24,10 @@
 
 package io.xenoss.openapi;
 
+/**
+ * Representation of some OpenApi Info object fields
+ * @link {https://swagger.io/specification/#info-object}
+ */
 public class ApiInfo {
     public String title;
     public String description;
