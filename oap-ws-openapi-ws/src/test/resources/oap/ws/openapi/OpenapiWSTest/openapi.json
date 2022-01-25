@@ -1,20 +1,20 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "openapi module",
-    "description": "Awesome module",
-    "version": "0.0.1"
+    "title": "Test title",
+    "description": "Test description",
+    "version": "0.1.1"
   },
   "tags": [
     {
-      "name": "api"
+      "name": "Test"
     }
   ],
   "paths": {
     "/api/bean": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "bean",
         "parameters": [
@@ -59,7 +59,7 @@
     "/api/bytes": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "bytes",
         "requestBody": {
@@ -97,7 +97,7 @@
     "/api/code": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "code",
         "parameters": [
@@ -130,7 +130,7 @@
     "/api/en": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "en",
         "parameters": [
@@ -182,7 +182,7 @@
     "/api/id": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "id",
         "parameters": [
@@ -214,7 +214,7 @@
     "/api/json": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "json",
         "requestBody": {
@@ -247,7 +247,7 @@
     "/api/list": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "list",
         "requestBody": {
@@ -285,10 +285,40 @@
         }
       }
     },
+    "/apigeneric": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "getParametrizedMap",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "exampleSetFlag": false,
+                    "items": {
+                      "$ref": "#/components/schemas/Bean",
+                      "exampleSetFlag": false
+                    }
+                  },
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/req": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "req",
         "responses": {
@@ -310,7 +340,7 @@
     "/api/string": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "string",
         "requestBody": {
@@ -343,7 +373,7 @@
     "/api/sumab": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "sumab",
         "parameters": [
@@ -386,7 +416,7 @@
     "/api/sumabopt": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "sumabopt",
         "parameters": [
@@ -429,9 +459,9 @@
     "/api/": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
-        "operationId": "test",
+        "operationId": "returnTwo",
         "responses": {
           "200": {
             "description": "",
@@ -452,7 +482,7 @@
     "/api/test/sort/{id}": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "test1",
         "parameters": [
@@ -485,7 +515,7 @@
     "/api/test/sort/default": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "test2",
         "responses": {
@@ -507,7 +537,7 @@
     "/api/test/sort={id}/test": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "testEqual",
         "parameters": [
@@ -540,7 +570,7 @@
     "/api/x": {
       "get": {
         "tags": [
-          "api"
+          "Test"
         ],
         "operationId": "x",
         "parameters": [

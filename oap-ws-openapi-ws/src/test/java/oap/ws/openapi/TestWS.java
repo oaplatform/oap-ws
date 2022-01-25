@@ -24,6 +24,7 @@
 package oap.ws.openapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.xenoss.openapi.WsOpenapi;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.ws.WsMethod;
@@ -32,16 +33,17 @@ import org.joda.time.LocalDateTime;
 
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
 
-@SuppressWarnings( "unused" )
+@WsOpenapi( tag = "Test" )
 class TestWS {
 
-    @WsMethod( method = GET, path = "/" )
+    @WsMethod( method = GET, id = "returnTwo", path = "/" )
     public int test() {
         return 2;
     }
@@ -59,6 +61,11 @@ class TestWS {
     @WsMethod( method = GET, path = "/test/sort/default" )
     public String test2() {
         return "__default__";
+    }
+
+    @WsMethod( method = GET, path = "generic", id = "getParametrizedMap" )
+    public Map<String, List<Bean>> mapbean() {
+        return Map.of();
     }
 
     public int sumab( int a, int b ) {

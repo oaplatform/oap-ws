@@ -24,18 +24,13 @@
 
 package io.xenoss.openapi;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.v3.core.converter.ModelConverters;
-import io.swagger.v3.core.converter.ResolvedSchema;
-import io.swagger.v3.core.util.RefUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -43,6 +38,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.tags.Tag;
+import io.xenoss.openapi.util.WsApiReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflect;
@@ -52,26 +48,27 @@ import oap.ws.WebServices;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.http.entity.ContentType;
 
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.xenoss.openapi.util.SchemaUtils.createSchemaRef;
+import static io.xenoss.openapi.util.SchemaUtils.prepareSchema;
+import static io.xenoss.openapi.util.SchemaUtils.prepareType;
+import static io.xenoss.openapi.util.WsApiReflectionUtils.filterMethod;
+import static io.xenoss.openapi.util.WsApiReflectionUtils.filterType;
+import static io.xenoss.openapi.util.WsApiReflectionUtils.from;
+import static io.xenoss.openapi.util.WsApiReflectionUtils.tag;
 import static java.util.Comparator.comparing;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
-import static oap.ws.WsParam.From.QUERY;
 
-
+/**
+ * Web service for openapi documentation
+ */
 @Slf4j
 public class OpenapiWS {
-    private static final Map<String, Class<?>> namePrimitiveMap = new HashMap<>();
-
     private final WebServices webServices;
     private final ModelConverters converters;
     public ApiInfo info;
@@ -86,31 +83,22 @@ public class OpenapiWS {
         this.info = info;
     }
 
-    private static boolean filterMethod( Reflection.Method m ) {
-        return !m.underlying.getDeclaringClass().equals( Object.class )
-            && !m.underlying.isSynthetic()
-            && !Modifier.isStatic( m.underlying.getModifiers() )
-            && m.isPublic();
-    }
-
-    private static boolean filterParameter( Reflection.Parameter parameter ) {
-        return parameter.findAnnotation( WsParam.class )
-            .map( wsp -> wsp.from() != WsParam.From.SESSION )
-            .orElse( true )
-            && !parameter.type().assignableTo( HttpServerExchange.class );
-    }
-
+    /**
+     * Generates openapi documentation for all annotated and enabled web services
+     *
+     * @return openapi documentation
+     * @see WsOpenapi
+     */
     @WsMethod( path = "/", method = GET )
     public OpenAPI openapi() {
         OpenAPI api = new OpenAPI();
         api.info( createInfo() );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             var r = Reflect.reflect( ws.getValue().getClass() );
-            if( r.assignableTo( this.getClass() ) )
-                continue;
+            if( !filterType( r ) ) continue;
 
             var context = ws.getKey();
-            var tag = createTag( context );
+            var tag = createTag( tag( r, context ) );
             api.addTagsItem( tag );
 
             List<Reflection.Method> methods = r.methods;
@@ -134,12 +122,12 @@ public class OpenapiWS {
     }
 
     private Operation prepareOperation( Reflection.Method method, WsMethodDescriptor wsDescriptor, OpenAPI api, Tag tag ) {
-        var params = Lists.filter( method.parameters, OpenapiWS::filterParameter );
+        var params = Lists.filter( method.parameters, WsApiReflectionUtils::filterParameter );
         var returnType = prepareType( method.returnType() );
 
         Operation operation = new Operation();
         operation.addTagsItem( tag.getName() );
-        operation.setOperationId( method.name() );
+        operation.setOperationId( wsDescriptor.id );
         operation.setParameters( prepareParameters( params ) );
         operation.setRequestBody( prepareRequestBody( params, api ) );
         operation.setResponses( prepareResponse( returnType, wsDescriptor.produces, api ) );
@@ -202,49 +190,6 @@ public class OpenapiWS {
         return result;
     }
 
-    private Schema createSchemaRef( Schema schema, Map<String, Schema> map ) {
-        if( schema != null && map.containsKey( schema.getName() ) ) {
-            var result = new Schema<>();
-            result.$ref( RefUtils.constructRef( schema.getName() ) );
-            return result;
-        }
-        return schema;
-    }
-
-    private ResolvedSchema prepareSchema( Type type, OpenAPI api ) {
-        var resolvedSchema = resolvedSchema( type, api );
-
-        resolvedSchema.referencedSchemas.forEach( api::schema );
-
-        return resolvedSchema;
-    }
-
-    private ResolvedSchema resolvedSchema( Type type, OpenAPI api ) {
-        var resolvedSchema = this.converters.readAllAsResolvedSchema( type );
-        if( resolvedSchema != null && resolvedSchema.schema == null ) {
-            if( type instanceof ParameterizedType paramType ) {
-                var rawClass = TypeFactory.rawClass( type );
-                if( Collection.class.isAssignableFrom( rawClass ) ) {
-                    resolvedSchema.schema = prepareArraySchema( paramType, api );
-                } else if( Map.class.isAssignableFrom( rawClass ) ) {
-                    resolvedSchema.schema = new MapSchema();
-                }
-            }
-        }
-        return resolvedSchema;
-    }
-
-    private ArraySchema prepareArraySchema( ParameterizedType type, OpenAPI api ) {
-        var schema = new ArraySchema();
-        if( type.getActualTypeArguments().length > 0 ) {
-            var resolvedSchema = this.converters.readAllAsResolvedSchema( type.getActualTypeArguments()[0] );
-            var itemSchema = resolvedSchema.schema;
-            resolvedSchema.referencedSchemas.forEach( api::schema );
-            schema.setItems( createSchemaRef( itemSchema, api.getComponents().getSchemas() ) );
-        }
-        return schema;
-    }
-
     private PathItem.HttpMethod convertMethod( HttpServerExchange.HttpMethod method ) {
         return PathItem.HttpMethod.valueOf( method.toString() );
     }
@@ -291,34 +236,5 @@ public class OpenapiWS {
             api.setPaths( paths );
         }
         return paths;
-    }
-
-    private String from( Reflection.Parameter p ) {
-        return p.findAnnotation( WsParam.class ).map( WsParam::from ).orElse( QUERY ).name().toLowerCase();
-    }
-
-    private Type prepareType( Reflection type ) {
-        if( type.isPrimitive() ) {
-            return namePrimitiveMap.get( type.name() );
-        } else if( type.isArray() ) {
-            var componentType = type.underlying.componentType();
-            if( componentType.isPrimitive() ) {
-                componentType = namePrimitiveMap.get( componentType.getName() );
-            }
-            return TypeUtils.parameterize( List.class, componentType );
-        }
-        return type.getType();
-    }
-
-    static {
-        namePrimitiveMap.put( "boolean", Boolean.class );
-        namePrimitiveMap.put( "byte", Byte.class );
-        namePrimitiveMap.put( "char", Character.class );
-        namePrimitiveMap.put( "short", Short.class );
-        namePrimitiveMap.put( "int", Integer.class );
-        namePrimitiveMap.put( "long", Long.class );
-        namePrimitiveMap.put( "double", Double.class );
-        namePrimitiveMap.put( "float", Float.class );
-        namePrimitiveMap.put( "void", Void.class );
     }
 }
