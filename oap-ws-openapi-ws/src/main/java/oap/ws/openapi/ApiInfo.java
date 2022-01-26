@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.xenoss.openapi;
+package oap.ws.openapi;
 
 /**
  * Representation of some OpenApi Info object fields

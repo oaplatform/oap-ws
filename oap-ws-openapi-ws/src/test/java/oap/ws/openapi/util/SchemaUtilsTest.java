@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.xenoss.openapi.util;
+package oap.ws.openapi.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.swagger.v3.core.converter.ModelConverters;
@@ -33,7 +33,7 @@ import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
-import io.xenoss.openapi.ApiInfo;
+import oap.ws.openapi.ApiInfo;
 import junit.framework.TestCase;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;

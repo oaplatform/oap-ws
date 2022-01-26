@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.xenoss.openapi.util;
+package oap.ws.openapi.util;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.v3.core.converter.ModelConverters;

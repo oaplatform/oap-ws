@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.xenoss.openapi;
+package oap.ws.openapi;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

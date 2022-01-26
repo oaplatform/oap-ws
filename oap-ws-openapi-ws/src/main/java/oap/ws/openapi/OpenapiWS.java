@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.xenoss.openapi;
+package oap.ws.openapi;
 
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -38,7 +38,6 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.tags.Tag;
-import io.xenoss.openapi.util.WsApiReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflect;
@@ -48,21 +47,22 @@ import oap.ws.WebServices;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
+import oap.ws.openapi.util.WsApiReflectionUtils;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import static io.xenoss.openapi.util.SchemaUtils.createSchemaRef;
-import static io.xenoss.openapi.util.SchemaUtils.prepareSchema;
-import static io.xenoss.openapi.util.SchemaUtils.prepareType;
-import static io.xenoss.openapi.util.WsApiReflectionUtils.filterMethod;
-import static io.xenoss.openapi.util.WsApiReflectionUtils.filterType;
-import static io.xenoss.openapi.util.WsApiReflectionUtils.from;
-import static io.xenoss.openapi.util.WsApiReflectionUtils.tag;
 import static java.util.Comparator.comparing;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.ws.openapi.util.SchemaUtils.createSchemaRef;
+import static oap.ws.openapi.util.SchemaUtils.prepareSchema;
+import static oap.ws.openapi.util.SchemaUtils.prepareType;
+import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
+import static oap.ws.openapi.util.WsApiReflectionUtils.filterType;
+import static oap.ws.openapi.util.WsApiReflectionUtils.from;
+import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
 
 /**
  * Web service for openapi documentation

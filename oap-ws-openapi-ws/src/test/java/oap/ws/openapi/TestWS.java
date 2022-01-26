@@ -24,7 +24,6 @@
 package oap.ws.openapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.xenoss.openapi.WsOpenapi;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.ws.WsMethod;

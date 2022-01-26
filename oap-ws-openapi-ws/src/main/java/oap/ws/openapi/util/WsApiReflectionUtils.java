@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-package io.xenoss.openapi.util;
+package oap.ws.openapi.util;
 
-import io.xenoss.openapi.WsOpenapi;
+import oap.ws.openapi.WsOpenapi;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.ws.WsParam;
