@@ -1,5 +1,5 @@
 # OAP-WS Openapi module
-Generating OpenApi documentation for OAP web services
+Generating [OpenApi](https://www.openapis.org) documentation for OAP web services
 
 
 ## General Information 
@@ -8,8 +8,37 @@ Generating OpenApi documentation for OAP web services
 
 
 ## Documentation
-- All necessary information about OpenApi specification could be found [_here_](https://swagger.io/resources/open-api/).
+- All necessary information about OpenApi specification could be found in Swagger [docs](https://swagger.io/resources/open-api/) or in original [OAS](https://spec.openapis.org/oas/latest.html).
 
+
+## OAP-WS-API Comparison
+OAP-WS-Openapi provides functionality similar to OAP-WS-API module.
+
+### Difference: 
+
+##### Schema
+- OpenApi module uses [OAS](https://spec.openapis.org/oas/latest.html) for describing web services.
+- Api module uses its own format for web services description.
+
+##### Web services
+
+- OpenApi module only describes services which marked as included.
+- Api module describes all web services within module.
+
+### Pros & Cons of using OAP-WS-Openapi module:
+
+#### Pros
+
+- Uses [OAS](https://spec.openapis.org/oas/latest.html) for describing web services.
+- OpenApi is well known and widespread format.
+- Response schema can be used for code generation tools like [Swagger Codegen](https://swagger.io/tools/swagger-codegen/) or others.
+- Web services can be manually included/excluded to/from resulting document.
+
+#### Cons
+
+- Requires OAS versions support and update.
+- Requires dependency on OAS implementation.
+- Web services which added to module as a dependency can't be easily added to description.
 
 ## Usage
 Steps to use this module within other oap module
@@ -49,7 +78,7 @@ class TestWS {
 }
 ```
 
-- for disabling generation for specific class can be used enabled field within @WsOpenapi annotation
+- use `enabled = false` property to disable OpenAPI output for the specific class
 
 ```
 @WsOpenapi( enabled = false )
