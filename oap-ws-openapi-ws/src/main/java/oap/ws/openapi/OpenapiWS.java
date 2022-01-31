@@ -69,6 +69,8 @@ import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
  */
 @Slf4j
 public class OpenapiWS {
+    public static final String VERSION = "3.0.3";
+
     private final WebServices webServices;
     private final ModelConverters converters;
     public ApiInfo info;
@@ -92,6 +94,7 @@ public class OpenapiWS {
     @WsMethod( path = "/", method = GET )
     public OpenAPI openapi() {
         OpenAPI api = new OpenAPI();
+        api.openapi( VERSION );
         api.info( createInfo() );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             var r = Reflect.reflect( ws.getValue().getClass() );
