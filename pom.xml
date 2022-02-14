@@ -46,6 +46,7 @@
         <module>oap-ws-api-ws</module>
         <module>oap-ws-file-ws</module>
         <module>oap-ws-admin-ws</module>
+        <module>oap-ws-openapi-ws</module>
     </modules>
 
     <repositories>

@@ -1,0 +1,677 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Test title",
+    "description": "Test description",
+    "version": "0.1.1"
+  },
+  "tags": [
+    {
+      "name": "Test"
+    }
+  ],
+  "paths": {
+    "/api/bean": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "bean",
+        "parameters": [
+          {
+            "name": "i",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "exampleSetFlag": false
+            }
+          },
+          {
+            "name": "s",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "exampleSetFlag": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "exampleSetFlag": false,
+                  "items": {
+                    "$ref": "#/components/schemas/Bean",
+                    "exampleSetFlag": false
+                  }
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bytes": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "bytes",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "exampleSetFlag": false,
+                "items": {
+                  "type": "string",
+                  "format": "byte",
+                  "exampleSetFlag": false
+                }
+              },
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/code": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "code",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "exampleSetFlag": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/en": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "en",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "_enum": [
+                "SOURCE",
+                "CLASS",
+                "RUNTIME"
+              ],
+              "exampleSetFlag": false,
+              "enum": [
+                "SOURCE",
+                "CLASS",
+                "RUNTIME"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "_enum": [
+                    "SOURCE",
+                    "CLASS",
+                    "RUNTIME"
+                  ],
+                  "exampleSetFlag": false,
+                  "enum": [
+                    "SOURCE",
+                    "CLASS",
+                    "RUNTIME"
+                  ]
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/id": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "id",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "exampleSetFlag": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/json": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "json",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bean",
+                "exampleSetFlag": false
+              },
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bean",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/list": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "list",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "exampleSetFlag": false,
+                "items": {
+                  "type": "string",
+                  "exampleSetFlag": false
+                }
+              },
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "exampleSetFlag": false,
+                  "items": {
+                    "type": "string",
+                    "exampleSetFlag": false
+                  }
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apigeneric": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "getParametrizedMap",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "exampleSetFlag": false,
+                    "items": {
+                      "$ref": "#/components/schemas/Bean",
+                      "exampleSetFlag": false
+                    }
+                  },
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/req": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "req",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/string": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "string",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "exampleSetFlag": false
+              },
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sumab": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "sumab",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "exampleSetFlag": false
+            }
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "exampleSetFlag": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sumabopt": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "sumabopt",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "exampleSetFlag": false
+            }
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "exampleSetFlag": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "returnTwo",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/sort/{id}": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "test1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "exampleSetFlag": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/sort/default": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "test2",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/sort={id}/test": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "testEqual",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "exampleSetFlag": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/x": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "x",
+        "parameters": [
+          {
+            "name": "i",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "exampleSetFlag": false
+            }
+          },
+          {
+            "name": "s",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "exampleSetFlag": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32",
+                  "exampleSetFlag": false
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Bean": {
+        "type": "object",
+        "properties": {
+          "i": {
+            "type": "integer",
+            "format": "int32",
+            "exampleSetFlag": false
+          },
+          "s": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "dt": {
+            "type": "string",
+            "format": "date-time",
+            "exampleSetFlag": false
+          },
+          "b2": {
+            "$ref": "#/components/schemas/Bean2",
+            "exampleSetFlag": false
+          },
+          "ext": {
+            "$ref": "#/components/schemas/Ext",
+            "exampleSetFlag": false
+          },
+          "something": {
+            "type": "string",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "Bean2": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "format": "int32",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "Ext": {
+        "type": "object",
+        "exampleSetFlag": false
+      }
+    },
+    "requestBodies": {
+      "Bean": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Bean",
+              "exampleSetFlag": false
+            },
+            "exampleSetFlag": false
+          }
+        }
+      }
+    }
+  }
+}
