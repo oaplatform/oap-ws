@@ -31,10 +31,12 @@ import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static oap.io.Resources.urlOrThrow;
 import static oap.ws.sso.UserProvider.toAccessKey;
@@ -74,13 +76,27 @@ public class IntegratedTest extends Fixtures {
             log.trace( "users {}", users );
             return users.stream()
                 .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
-                .findAny();
+                .findAny().map( u -> {
+                    if( u.tfaEnabled ) {
+                        u.tfaToken = UUID.randomUUID().toString();
+                    }
+                    return u;
+                } );
         }
 
         @Override
         public Optional<TestUser> getAuthenticatedByApiKey( String accessKey, String apiKey ) {
             return users.stream()
                 .filter( u -> u.getAccessKey().equals( accessKey ) && u.apiKey.equals( apiKey ) )
+                .findAny();
+        }
+
+        @Override
+        public Optional<? extends User> verifyTfa( String tfaCode, String tfaKey ) {
+            return users.stream()
+                .filter( u -> StringUtils.isNotEmpty( u.tfaToken ) )
+                .filter( u -> u.tfaToken.equals( tfaKey ) )
+                .filter( u -> "proper_temp_code".equals( tfaCode ) )
                 .findAny();
         }
     }
@@ -94,11 +110,19 @@ public class IntegratedTest extends Fixtures {
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
         public final View view = new View();
+        public Boolean tfaEnabled = false;
+        public String tfaToken;
 
         public TestUser( String email, String password, String role ) {
             this.email = email;
             this.password = password;
             this.role = role;
+        }
+
+        public TestUser( String email, String password, String role, Boolean tfaEnabled, String tfaToken ) {
+            this( email, password, role );
+            this.tfaEnabled = tfaEnabled;
+            this.tfaToken = tfaToken;
         }
 
         @Override
@@ -116,6 +140,16 @@ public class IntegratedTest extends Fixtures {
             return view;
         }
 
+        @Override
+        public Boolean isTfaEnabled() {
+            return tfaEnabled;
+        }
+
+        @Override
+        public String getTfaToken() {
+            return tfaToken;
+        }
+
         public String getAccessKey() {
             return toAccessKey( email );
         }
@@ -129,6 +163,11 @@ public class IntegratedTest extends Fixtures {
             @Override
             public String getRole() {
                 return TestUser.this.getRole();
+            }
+
+            @Override
+            public Boolean isTfaEnabled() {
+                return TestUser.this.isTfaEnabled();
             }
         }
 

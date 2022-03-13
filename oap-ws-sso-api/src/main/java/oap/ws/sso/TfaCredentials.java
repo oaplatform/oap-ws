@@ -24,19 +24,20 @@
 
 package oap.ws.sso;
 
-import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-public interface Authenticator {
+import java.io.Serializable;
 
-    Optional<Authentication> authenticate( String authId );
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+public class TfaCredentials implements Serializable {
 
-    Optional<Authentication> authenticate( String email, String password );
+    public String tfaCode;
 
-    Optional<Authentication> verifyTfaCode( String tfaCode, String tfaKey );
-
-    Optional<Authentication> authenticateTrusted( String email );
-
-    Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey );
-
-    void invalidateByEmail( String email );
+    public TfaCredentials( String tfaCode ) {
+        this.tfaCode = tfaCode;
+    }
 }

@@ -30,12 +30,20 @@ import oap.http.HttpStatusCodes;
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
 import org.testng.annotations.Test;
 
+import java.util.Map;
+
 import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.assertPost;
+import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.Roles.ADMIN;
 import static oap.ws.sso.Roles.USER;
+import static oap.ws.sso.SSO.TFA_KEY;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
+import static oap.ws.sso.testng.SecureWSFixture.assertTfaLogin;
+import static oap.ws.sso.testng.SecureWSFixture.assertTfaVerify;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuthWSTest extends IntegratedTest {
 
@@ -44,7 +52,44 @@ public class AuthWSTest extends IntegratedTest {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
-            .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
+            .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\", \"tfaEnabled\":false}" );
+    }
+
+    @Test
+    public void tfaLogin() throws InterruptedException {
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true, null ) );
+        assertTfaLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
+        String token = userProvider().getUser( "admin@admin.com" ).map( User::getTfaToken ).orElse( null );
+        assertThat( token ).isNotEmpty();
+        Thread.sleep( 1000 * 6 );
+        assertTfaVerify( "proper_temp_code", token, getTestHttpPort().orElse( 80 ) );
+        Thread.sleep( 1000 * 6 );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\", \"tfaEnabled\":true}" );
+    }
+
+    @Test
+    public void tfaLoginUnauthorizedAfterFirstStep() throws InterruptedException {
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true, null ) );
+        assertTfaLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
+        Thread.sleep( 1000 * 6 );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .hasCode( HttpStatusCodes.UNAUTHORIZED );
+    }
+
+    @Test
+    public void tfaLoginUnauthorizedForWrongCode() throws InterruptedException {
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true, null ) );
+        assertTfaLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
+        String token = userProvider().getUser( "admin@admin.com" ).map( User::getTfaToken ).orElse( null );
+        assertThat( token ).isNotEmpty();
+        Thread.sleep( 1000 * 6 );
+        assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/tfaCode" ),
+            "{  \"tfaCode\": \"wrong_code\" }", Map.of( TFA_KEY, token ) )
+            .hasCode( HttpStatusCodes.UNAUTHORIZED );
+        Thread.sleep( 1000 * 6 );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .hasCode( HttpStatusCodes.UNAUTHORIZED );
     }
 
     @Test
@@ -59,7 +104,7 @@ public class AuthWSTest extends IntegratedTest {
             .hasCode( HttpStatusCodes.UNAUTHORIZED );
         assertLogin( "user@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
-            .respondedJson( "{\"email\":\"user@admin.com\", \"role\":\"USER\"}" );
+            .respondedJson( "{\"email\":\"user@admin.com\", \"role\":\"USER\", \"tfaEnabled\":false}" );
     }
 
     @Test
