@@ -38,13 +38,17 @@ public class Authentication implements Serializable {
     public final String id;
     public final User user;
     public DateTime created;
-    public boolean tfaEnabled;
+    public boolean tfaEnabled = false;
 
-    public Authentication( String id, User user, boolean tfaEnabled ) {
+    public Authentication( String id, User user ) {
         this.id = id;
         this.user = user;
-        this.tfaEnabled = tfaEnabled;
         this.created = new DateTime();
+    }
+
+    public Authentication( String id, User user, boolean tfaEnabled ) {
+        this( id, user );
+        this.tfaEnabled = tfaEnabled;
     }
 
     @JsonIgnore
