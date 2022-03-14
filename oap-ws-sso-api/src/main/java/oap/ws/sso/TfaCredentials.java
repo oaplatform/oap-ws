@@ -24,51 +24,20 @@
 
 package oap.ws.sso;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
 @ToString
 @EqualsAndHashCode
-public class Authentication implements Serializable {
-    private static final long serialVersionUID = -2221117654361445000L;
-    public final String id;
-    public final User user;
-    public DateTime created;
-    public boolean tfaEnabled = false;
+@NoArgsConstructor
+public class TfaCredentials implements Serializable {
 
-    public Authentication( String id, User user ) {
-        this.id = id;
-        this.user = user;
-        this.created = new DateTime();
-    }
+    public String tfaCode;
 
-    public Authentication( String id, User user, boolean tfaEnabled ) {
-        this( id, user );
-        this.tfaEnabled = tfaEnabled;
-    }
-
-    @JsonIgnore
-    public View view = new View();
-
-    public class View implements Serializable {
-        public String getId() {
-            return id;
-        }
-
-        public DateTime getCreated() {
-            return created;
-        }
-
-        public User.View getUser() {
-            return user != null ? user.getView() : null;
-        }
-
-        public boolean isTfaEnabled() {
-            return tfaEnabled;
-        }
+    public TfaCredentials( String tfaCode ) {
+        this.tfaCode = tfaCode;
     }
 }

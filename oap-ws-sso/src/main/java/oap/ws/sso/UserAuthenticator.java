@@ -61,9 +61,26 @@ public class UserAuthenticator implements Authenticator {
     public Optional<Authentication> authenticate( String email, String password ) {
         return userProvider.getAuthenticated( email, password )
             .map( user -> {
+                if( !user.isTfaEnabled() ) {
+                    var id = cuid.next();
+                    log.trace( "generating new authentication for user {} -> {}", user.getEmail(), id );
+                    Authentication authentication = new Authentication( id, user, false );
+                    authentications.put( authentication.id, authentication );
+                    return authentication;
+                } else {
+                    log.trace( "two factor authorization is enabled for user {} ", user.getEmail() );
+                    return new Authentication( user.getTfaToken(), null, user.isTfaEnabled() );
+                }
+            } );
+    }
+
+    @Override
+    public Optional<Authentication> verifyTfaCode( String tfaCode, String tfaKey ) {
+        return userProvider.verifyTfa( tfaCode, tfaKey )
+            .map( user -> {
                 var id = cuid.next();
                 log.trace( "generating new authentication for user {} -> {}", user.getEmail(), id );
-                Authentication authentication = new Authentication( id, user );
+                Authentication authentication = new Authentication( id, user, false );
                 authentications.put( authentication.id, authentication );
                 return authentication;
             } );
@@ -75,7 +92,7 @@ public class UserAuthenticator implements Authenticator {
             .map( user -> {
                 var id = cuid.next();
                 log.trace( "generating new authentication for user {} -> {}", user.getEmail(), id );
-                Authentication authentication = new Authentication( id, user );
+                Authentication authentication = new Authentication( id, user, false );
                 authentications.put( authentication.id, authentication );
                 return authentication;
             } );
@@ -99,7 +116,7 @@ public class UserAuthenticator implements Authenticator {
             .map( user -> {
                 var id = cuid.next();
                 log.trace( "generating temporaty authentication for user {} -> {}", user.getEmail(), id );
-                return new Authentication( id, user );
+                return new Authentication( id, user, user.isTfaEnabled() );
             } );
     }
 
