@@ -51,12 +51,12 @@ import java.util.Optional;
 
 @Slf4j
 public class WebService implements HttpHandler {
+    public final boolean compressionSupport;
     private final boolean sessionAware;
     private final SessionManager sessionManager;
     private final List<Interceptor> interceptors;
     private final Object instance;
     private final WsMethodMatcher methodMatcher;
-    public final boolean compressionSupport;
 
     public WebService( Object instance, boolean sessionAware,
                        SessionManager sessionManager, List<Interceptor> interceptors, boolean compressionSupport ) {
@@ -75,12 +75,15 @@ public class WebService implements HttpHandler {
             wsError( exchange, itException.getTargetException() );
         else if( e instanceof WsClientException clientException ) {
             log.debug( this + ": " + clientException, clientException );
-            exchange.setStatusCodeReasonPhrase( clientException.code, e.getMessage() );
-            if( !clientException.errors.isEmpty() )
-                exchange.responseJson( new ValidationErrors.ErrorResponse( clientException.errors ) );
+            if( !exchange.isResponseStarted() ) {
+                exchange.setStatusCodeReasonPhrase( clientException.code, e.getMessage() );
+                if( !clientException.errors.isEmpty() )
+                    exchange.responseJson( new ValidationErrors.ErrorResponse( clientException.errors ) );
+            }
         } else {
             log.error( this + ": " + e.toString(), e );
-            exchange.responseJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, e.getMessage(), new JsonStackTraceResponse( e ) );
+            if( !exchange.isResponseStarted() )
+                exchange.responseJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, e.getMessage(), new JsonStackTraceResponse( e ) );
         }
     }
 
