@@ -36,8 +36,14 @@ import java.io.Serializable;
 public class TfaCredentials implements Serializable {
 
     public String tfaCode;
+    public String tfaKey;
 
     public TfaCredentials( String tfaCode ) {
         this.tfaCode = tfaCode;
+    }
+
+    public TfaCredentials( String tfaCode, String tfaKey ) {
+        this.tfaCode = tfaCode;
+        this.tfaKey = tfaKey;
     }
 }

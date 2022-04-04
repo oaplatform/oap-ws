@@ -38,7 +38,6 @@ import java.util.Optional;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
-import static oap.ws.WsParam.From.HEADER;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.Permissions.MANAGE_SELF;
 import static oap.ws.sso.SSO.authenticatedResponse;
@@ -80,11 +79,10 @@ public class AuthWS {
 
     @WsMethod( method = POST, path = "/tfaCode" )
     public Response tfaCode( @WsParam( from = BODY ) TfaCredentials credentials,
-                             @WsParam( from = HEADER ) String tfaKey,
                              @WsParam( from = SESSION ) Optional<User> loggedUser,
                              Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
-        Authentication authentication = authenticator.verifyTfaCode( credentials.tfaCode, tfaKey ).orElse( null );
+        Authentication authentication = authenticator.verifyTfaCode( credentials.tfaCode, credentials.tfaKey ).orElse( null );
         if( authentication == null ) {
             return new Response( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
         } else {
