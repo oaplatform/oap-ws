@@ -65,7 +65,7 @@ public class SecureWSFixture {
     }
 
     public static void assertTfaVerify( String code, String key, int port ) {
-        assertPost( httpUrl( port, "/auth/tfaCode" ), "{  \"tfaCode\": \"" + code + "\" }", Map.of( TFA_KEY, key ) )
+        assertPost( httpUrl( port, "/auth/tfaCode" ), "{  \"tfaCode\": \"" + code + "\", \"tfaKey\": \"" + key + "\" }" )
             .hasCode( HttpStatusCodes.OK )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasPath( "/" )
