@@ -27,8 +27,6 @@ package oap.ws.sso.testng;
 import oap.http.HttpStatusCodes;
 import org.joda.time.DateTime;
 
-import java.util.Map;
-
 import static oap.http.testng.HttpAsserts.CookieHttpAssertion.assertCookie;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
