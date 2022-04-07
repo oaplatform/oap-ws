@@ -33,8 +33,6 @@ import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
-import static oap.ws.sso.SSO.TFA_KEY;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.joda.time.DateTimeZone.UTC;
 
 /**
@@ -47,23 +45,6 @@ public class SecureWSFixture {
 
     public static void assertLogin( String login, String password, int port ) {
         assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
-            .hasCode( HttpStatusCodes.OK )
-            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
-                .hasPath( "/" )
-                .isHttpOnly() );
-    }
-
-    public static void assertTfaLogin( String login, String password, int port ) {
-        assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
-            .isOk()
-            .satisfies( response -> {
-                assertThat( response.contentString() ).isNotEmpty();
-                assertThat( response.header( TFA_KEY ) ).isNotEmpty();
-            } );
-    }
-
-    public static void assertTfaVerify( String code, String key, int port ) {
-        assertPost( httpUrl( port, "/auth/tfaCode" ), "{  \"tfaCode\": \"" + code + "\", \"tfaKey\": \"" + key + "\" }" )
             .hasCode( HttpStatusCodes.OK )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasPath( "/" )

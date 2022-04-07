@@ -37,7 +37,6 @@ import static org.joda.time.DateTimeZone.UTC;
 public class SSO {
     public static final String AUTHENTICATION_KEY = "Authorization";
     public static final String SESSION_USER_KEY = "loggedUser";
-    public static final String TFA_KEY = "tfaKey";
 
     @Nullable
     public static String getAuthentication( HttpServerExchange exchange ) {
@@ -62,13 +61,6 @@ public class SSO {
 
     public static Response authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
         return authenticatedResponse( authentication, cookieDomain, cookieExpiration, false );
-    }
-
-    public static Response tfaNeededResponse( Authentication authentication ) {
-        return Response
-            .jsonOk()
-            .withHeader( TFA_KEY, authentication.id )
-            .withBody( authentication.view, false );
     }
 
     public static Response logoutResponse( String cookieDomain ) {

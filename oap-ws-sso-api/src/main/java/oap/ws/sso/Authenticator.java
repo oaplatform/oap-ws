@@ -32,8 +32,6 @@ public interface Authenticator {
 
     Optional<Authentication> authenticate( String email, String password );
 
-    Optional<Authentication> verifyTfaCode( String tfaCode, String tfaKey );
-
     Optional<Authentication> authenticateTrusted( String email );
 
     Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey );

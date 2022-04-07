@@ -29,26 +29,22 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.joda.time.DateTime;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @ToString
 @EqualsAndHashCode
 public class Authentication implements Serializable {
+    @Serial
     private static final long serialVersionUID = -2221117654361445000L;
     public final String id;
     public final User user;
     public DateTime created;
-    public boolean tfaEnabled = false;
 
     public Authentication( String id, User user ) {
         this.id = id;
         this.user = user;
         this.created = new DateTime();
-    }
-
-    public Authentication( String id, User user, boolean tfaEnabled ) {
-        this( id, user );
-        this.tfaEnabled = tfaEnabled;
     }
 
     @JsonIgnore
@@ -65,10 +61,6 @@ public class Authentication implements Serializable {
 
         public User.View getUser() {
             return user != null ? user.getView() : null;
-        }
-
-        public boolean isTfaEnabled() {
-            return tfaEnabled;
         }
     }
 }

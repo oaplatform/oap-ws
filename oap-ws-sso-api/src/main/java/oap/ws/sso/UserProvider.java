@@ -34,8 +34,6 @@ public interface UserProvider {
 
     Optional<? extends User> getAuthenticatedByApiKey( String accessKey, String apiKey );
 
-    Optional<? extends User> verifyTfa( String tfaCode, String tfaKey );
-
     //eiminating most used letters in english from source
     static String toAccessKey( String email ) {
         int[] transitions = { 6, 11, 3, 10, 4, 1, 5, 0, 7, 2, 9, 8 };
