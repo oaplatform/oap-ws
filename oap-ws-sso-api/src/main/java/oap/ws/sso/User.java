@@ -36,15 +36,9 @@ public interface User extends Serializable {
     @JsonIgnore
     View getView();
 
-    Boolean isTfaEnabled();
-
-    String getTfaToken();
-
     interface View extends Serializable {
         String getEmail();
 
         String getRole();
-
-        Boolean isTfaEnabled();
     }
 }
