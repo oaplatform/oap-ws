@@ -21,20 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package oap.ws.sso.utils;
 
-package oap.ws.sso;
+import de.taimos.totp.TOTP;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Hex;
 
-import java.util.Optional;
+import java.security.SecureRandom;
 
-public interface Authenticator {
+public class TOTPUtils {
 
-    Optional<Authentication> authenticate( String authId );
+    public static String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes( bytes );
+        return new Base32().encodeToString( bytes );
+    }
 
-    AuthenticationResult authenticate( String email, String password, String tfaCode );
+    public static String getTOTPCode( String secretKey ) {
+        Base32 base32 = new Base32();
+        byte[] bytes = base32.decode( secretKey );
+        String hexKey = Hex.encodeHexString( bytes );
+        return TOTP.getOTP( hexKey );
+    }
 
-    Optional<Authentication> authenticateTrusted( String email );
-
-    Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey );
-
-    void invalidateByEmail( String email );
+    public static boolean verifyTOTPCode( String code, String secretKey ) {
+        return getTOTPCode( secretKey ).equals( code );
+    }
 }

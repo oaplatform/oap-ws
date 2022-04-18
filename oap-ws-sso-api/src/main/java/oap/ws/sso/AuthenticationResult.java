@@ -24,17 +24,13 @@
 
 package oap.ws.sso;
 
-import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-public interface Authenticator {
-
-    Optional<Authentication> authenticate( String authId );
-
-    AuthenticationResult authenticate( String email, String password, String tfaCode );
-
-    Optional<Authentication> authenticateTrusted( String email );
-
-    Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey );
-
-    void invalidateByEmail( String email );
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuthenticationResult {
+    public Boolean success;
+    public Boolean requireTfa;
+    public Authentication authentication;
 }

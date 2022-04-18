@@ -59,18 +59,20 @@ public class AuthWS {
 
     @WsMethod( method = POST, path = "/login" )
     public Response login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
-        return login( credentials.email, credentials.password, loggedUser, session );
+        return login( credentials.email, credentials.password, credentials.tfaCode, loggedUser, session );
     }
 
     @WsMethod( method = GET, path = "/login" )
-    public Response login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+    public Response login( String email, String password, String tfaCode, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
-        Authentication authentication = authenticator.authenticate( email, password ).orElse( null );
-        if( authentication == null ) {
-            return new Response( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
-        } else {
-            return authenticatedResponse( authentication,
+        AuthenticationResult result = authenticator.authenticate( email, password, tfaCode );
+        if( result.success ) {
+            return authenticatedResponse( result.authentication,
                 sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
+        } else if( result.requireTfa ) {
+            return new Response( HttpStatusCodes.BAD_REQUEST, "TFA code is incorrect or required" );
+        } else {
+            return new Response( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
         }
     }
 

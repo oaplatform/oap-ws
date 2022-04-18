@@ -29,6 +29,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import oap.util.Cuid;
+import oap.ws.sso.utils.TOTPUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.Optional;
@@ -58,15 +60,21 @@ public class UserAuthenticator implements Authenticator {
     }
 
     @Override
-    public Optional<Authentication> authenticate( String email, String password ) {
+    public AuthenticationResult authenticate( String email, String password, String tfaCode ) {
         return userProvider.getAuthenticated( email, password )
             .map( user -> {
+                if( user.getTfaEnabled() ) {
+                    if( !checkTFA( user, tfaCode ) ) {
+                        return new AuthenticationResult( false, true, null );
+                    }
+                    userProvider.updateLoginDate( email );
+                }
                 var id = cuid.next();
                 log.trace( "generating new authentication for user {} -> {}", user.getEmail(), id );
                 Authentication authentication = new Authentication( id, user );
                 authentications.put( authentication.id, authentication );
-                return authentication;
-            } );
+                return new AuthenticationResult( true, false, authentication );
+            } ).orElse( new AuthenticationResult( false, false, null ) );
     }
 
     @Override
@@ -101,6 +109,13 @@ public class UserAuthenticator implements Authenticator {
                 log.trace( "generating temporaty authentication for user {} -> {}", user.getEmail(), id );
                 return new Authentication( id, user );
             } );
+    }
+
+    protected boolean checkTFA( User user, String code ) {
+        if( StringUtils.isEmpty( code ) )
+            return false;
+
+        return TOTPUtils.verifyTOTPCode( code, user.getTfaSecret() );
     }
 
 }

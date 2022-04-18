@@ -32,6 +32,7 @@ import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -83,6 +84,12 @@ public class IntegratedTest extends Fixtures {
                 .filter( u -> u.getAccessKey().equals( accessKey ) && u.apiKey.equals( apiKey ) )
                 .findAny();
         }
+
+        @Override
+        public void updateLoginDate( String email ) {
+            users.stream().filter( u -> u.getEmail().equalsIgnoreCase( email ) )
+                .map( u -> u.loginDate = LocalDate.now() ).findAny();
+        }
     }
 
     @ToString
@@ -91,6 +98,9 @@ public class IntegratedTest extends Fixtures {
         public final String email;
         public final String password;
         public final String role;
+        public Boolean tfaEnabled = false;
+        public String tfaSecret;
+        public LocalDate loginDate;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
         public final View view = new View();
@@ -101,6 +111,12 @@ public class IntegratedTest extends Fixtures {
             this.role = role;
         }
 
+        public TestUser( String email, String password, String role, Boolean tfaEnabled, String tfaSecret ) {
+            this( email, password, role );
+            this.tfaEnabled = tfaEnabled;
+            this.tfaSecret = tfaSecret;
+        }
+
         @Override
         public String getEmail() {
             return email;
@@ -109,6 +125,16 @@ public class IntegratedTest extends Fixtures {
         @Override
         public String getRole() {
             return role;
+        }
+
+        @Override
+        public Boolean getTfaEnabled() {
+            return tfaEnabled;
+        }
+
+        @Override
+        public String getTfaSecret() {
+            return tfaSecret;
         }
 
         @Override
