@@ -30,11 +30,9 @@ import java.util.function.Function;
 public interface UserProvider {
     Optional<? extends User> getUser( String email );
 
-    Optional<? extends User> getAuthenticated( String email, String password );
+    UserAuth getAuthenticated( String email, String password, Optional<String> tfaCode );
 
     Optional<? extends User> getAuthenticatedByApiKey( String accessKey, String apiKey );
-
-    void updateLoginDate( String email );
 
     //eiminating most used letters in english from source
     static String toAccessKey( String email ) {

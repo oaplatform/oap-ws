@@ -32,7 +32,6 @@ import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -70,12 +69,19 @@ public class IntegratedTest extends Fixtures {
         }
 
         @Override
-        public Optional<TestUser> getAuthenticated( String email, String password ) {
+        public UserAuth getAuthenticated( String email, String password, Optional<String> tfaCode ) {
             log.trace( "authenticating {} with {}", email, password );
             log.trace( "users {}", users );
             return users.stream()
                 .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
-                .findAny();
+                .map( user -> {
+                    if( user.tfaEnabled ) {
+                        var tfaCheck = tfaCode.map( "proper_code"::equals ).orElse( false );
+                        return new UserAuth( user, tfaCheck, true );
+                    }
+                    return new UserAuth( user, true, false );
+                } )
+                .findAny().orElse( new UserAuth( null, false, false ) );
         }
 
         @Override
@@ -83,12 +89,6 @@ public class IntegratedTest extends Fixtures {
             return users.stream()
                 .filter( u -> u.getAccessKey().equals( accessKey ) && u.apiKey.equals( apiKey ) )
                 .findAny();
-        }
-
-        @Override
-        public void updateLoginDate( String email ) {
-            users.stream().filter( u -> u.getEmail().equalsIgnoreCase( email ) )
-                .map( u -> u.loginDate = LocalDate.now() ).findAny();
         }
     }
 
@@ -98,23 +98,20 @@ public class IntegratedTest extends Fixtures {
         public final String email;
         public final String password;
         public final String role;
-        public Boolean tfaEnabled = false;
-        public String tfaSecret;
-        public LocalDate loginDate;
+        public final boolean tfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
         public final View view = new View();
 
         public TestUser( String email, String password, String role ) {
+            this( email, password, role, false );
+        }
+
+        public TestUser( String email, String password, String role, boolean tfaEnabled ) {
             this.email = email;
             this.password = password;
             this.role = role;
-        }
-
-        public TestUser( String email, String password, String role, Boolean tfaEnabled, String tfaSecret ) {
-            this( email, password, role );
             this.tfaEnabled = tfaEnabled;
-            this.tfaSecret = tfaSecret;
         }
 
         @Override
@@ -125,16 +122,6 @@ public class IntegratedTest extends Fixtures {
         @Override
         public String getRole() {
             return role;
-        }
-
-        @Override
-        public Boolean getTfaEnabled() {
-            return tfaEnabled;
-        }
-
-        @Override
-        public String getTfaSecret() {
-            return tfaSecret;
         }
 
         @Override

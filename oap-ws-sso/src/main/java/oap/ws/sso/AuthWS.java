@@ -59,11 +59,11 @@ public class AuthWS {
 
     @WsMethod( method = POST, path = "/login" )
     public Response login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
-        return login( credentials.email, credentials.password, credentials.tfaCode, loggedUser, session );
+        return login( credentials.email, credentials.password, Optional.ofNullable( credentials.tfaCode ), loggedUser, session );
     }
 
     @WsMethod( method = GET, path = "/login" )
-    public Response login( String email, String password, String tfaCode, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+    public Response login( String email, String password, Optional<String> tfaCode, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
         AuthenticationResult result = authenticator.authenticate( email, password, tfaCode );
         if( result.success ) {

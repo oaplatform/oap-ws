@@ -30,7 +30,7 @@ public interface Authenticator {
 
     Optional<Authentication> authenticate( String authId );
 
-    AuthenticationResult authenticate( String email, String password, String tfaCode );
+    AuthenticationResult authenticate( String email, String password, Optional<String> tfaCode );
 
     Optional<Authentication> authenticateTrusted( String email );
 

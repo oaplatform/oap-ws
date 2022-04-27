@@ -21,31 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package oap.ws.sso.utils;
 
-import de.taimos.totp.TOTP;
-import org.apache.commons.codec.binary.Base32;
-import org.apache.commons.codec.binary.Hex;
+package oap.ws.sso;
 
-import java.security.SecureRandom;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-public class TOTPUtils {
+import java.io.Serializable;
 
-    public static String generateSecretKey() {
-        SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[20];
-        random.nextBytes( bytes );
-        return new Base32().encodeToString( bytes );
-    }
-
-    public static String getTOTPCode( String secretKey ) {
-        Base32 base32 = new Base32();
-        byte[] bytes = base32.decode( secretKey );
-        String hexKey = Hex.encodeHexString( bytes );
-        return TOTP.getOTP( hexKey );
-    }
-
-    public static boolean verifyTOTPCode( String code, String secretKey ) {
-        return getTOTPCode( secretKey ).equals( code );
-    }
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserAuth implements Serializable {
+    public User user;
+    public boolean success;
+    public boolean requireTfa;
 }

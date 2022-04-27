@@ -28,11 +28,10 @@ package oap.ws.sso;
 import oap.http.ContentTypes;
 import oap.http.HttpStatusCodes;
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
-import oap.ws.sso.utils.TOTPUtils;
-import org.assertj.core.api.Condition;
 import org.testng.annotations.Test;
 
 import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.Roles.ADMIN;
@@ -40,7 +39,6 @@ import static oap.ws.sso.Roles.USER;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 import static oap.ws.sso.testng.SecureWSFixture.assertTfaRequiredLogin;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuthWSTest extends IntegratedTest {
 
@@ -55,8 +53,7 @@ public class AuthWSTest extends IntegratedTest {
     @Test
     public void loginTfaRequired() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        String secretKey = TOTPUtils.generateSecretKey();
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true, secretKey ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true ) );
         assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
             .hasCode( HttpStatusCodes.UNAUTHORIZED );
@@ -65,29 +62,21 @@ public class AuthWSTest extends IntegratedTest {
     @Test
     public void loginTfa() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        String secretKey = TOTPUtils.generateSecretKey();
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true, secretKey ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true ) );
         assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
-        assertLogin( "admin@admin.com", "pass",
-            TOTPUtils.getTOTPCode( secretKey ), getTestHttpPort().orElse( 80 ) );
+        assertLogin( "admin@admin.com", "pass", "proper_code", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
     }
 
     @Test
-    public void loginTfaUpdatesLoginDate() {
+    public void loginTfaWrongCode() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        String secretKey = TOTPUtils.generateSecretKey();
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true, secretKey ) );
-        assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
-        assertThat( userProvider().getUser( "admin@admin.com" ).get() )
-            .is( new Condition<>( testUser -> testUser.loginDate == null, "Should not have loginDate" ) );
-        assertLogin( "admin@admin.com", "pass",
-            TOTPUtils.getTOTPCode( secretKey ), getTestHttpPort().orElse( 80 ) );
-        assertThat( userProvider().getUser( "admin@admin.com" ).get() )
-            .is( new Condition<>( testUser -> testUser.loginDate != null, "Should have loginDate" ) );
-        assertGet( httpUrl( "/auth/whoami" ) )
-            .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true ) );
+        assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/login" ),
+            "{  \"email\": \"admin@admin.com\",  \"password\": \"pass\", \"tfaCode\": \"wrong_code\"}" )
+            .hasCode( HttpStatusCodes.BAD_REQUEST )
+            .hasReason( "TFA code is incorrect or required" );
     }
 
     @Test

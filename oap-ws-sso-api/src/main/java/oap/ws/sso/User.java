@@ -33,10 +33,6 @@ public interface User extends Serializable {
 
     String getRole();
 
-    Boolean getTfaEnabled();
-
-    String getTfaSecret();
-
     @JsonIgnore
     View getView();
 

@@ -34,7 +34,7 @@ import java.io.Serializable;
 public class Credentials implements Serializable {
     public final String email;
     public final String password;
-    public String tfaCode;
+    public final String tfaCode;
 
     public Credentials( String email, String password, String tfaCode ) {
         this.email = email;

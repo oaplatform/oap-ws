@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResult {
-    public Boolean success;
-    public Boolean requireTfa;
+    public boolean success;
+    public boolean requireTfa;
     public Authentication authentication;
 }
