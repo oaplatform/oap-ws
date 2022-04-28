@@ -24,19 +24,6 @@
 
 package oap.ws.sso;
 
-import oap.util.Result;
-
-import java.util.Optional;
-
-public interface Authenticator {
-
-    Optional<Authentication> authenticate( String authId );
-
-    Result<Authentication, AuthenticationFailure> authenticate( String email, String password, Optional<String> tfaCode );
-
-    Optional<Authentication> authenticateTrusted( String email );
-
-    Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey );
-
-    void invalidateByEmail( String email );
+public enum AuthenticationFailure {
+    MFA_REQUIRED, UNAUTHENTICATED
 }

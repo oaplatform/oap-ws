@@ -24,13 +24,15 @@
 
 package oap.ws.sso;
 
+import oap.util.Result;
+
 import java.util.Optional;
 import java.util.function.Function;
 
 public interface UserProvider {
     Optional<? extends User> getUser( String email );
 
-    Optional<? extends User> getAuthenticated( String email, String password );
+    Result<? extends User, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode );
 
     Optional<? extends User> getAuthenticatedByApiKey( String accessKey, String apiKey );
 
@@ -56,5 +58,4 @@ public interface UserProvider {
         }
         return result.toString();
     }
-
 }

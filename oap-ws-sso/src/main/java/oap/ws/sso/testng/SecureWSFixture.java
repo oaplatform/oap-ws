@@ -51,6 +51,21 @@ public class SecureWSFixture {
                 .isHttpOnly() );
     }
 
+    public static void assertLogin( String login, String password, String tfaCode, int port ) {
+        assertPost( httpUrl( port, "/auth/login" ),
+            String.format( "{  \"email\": \"%s\",  \"password\": \"%s\", \"tfaCode\": \"%s\"}", login, password, tfaCode ) )
+            .hasCode( HttpStatusCodes.OK )
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() );
+    }
+
+    public static void assertTfaRequiredLogin( String login, String password, int port ) {
+        assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
+            .hasCode( HttpStatusCodes.BAD_REQUEST )
+            .hasReason( "TFA code is incorrect or required" );
+    }
+
     public static void assertLogout() {
         assertLogout( getTestHttpPort().orElse( 80 ) );
     }

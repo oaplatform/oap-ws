@@ -39,6 +39,7 @@ import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.SESSION;
+import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
 import static oap.ws.sso.Permissions.MANAGE_SELF;
 import static oap.ws.sso.SSO.authenticatedResponse;
 import static oap.ws.sso.SSO.logoutResponse;
@@ -59,18 +60,20 @@ public class AuthWS {
 
     @WsMethod( method = POST, path = "/login" )
     public Response login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
-        return login( credentials.email, credentials.password, loggedUser, session );
+        return login( credentials.email, credentials.password, Optional.ofNullable( credentials.tfaCode ), loggedUser, session );
     }
 
     @WsMethod( method = GET, path = "/login" )
-    public Response login( String email, String password, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+    public Response login( String email, String password, Optional<String> tfaCode, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
         loggedUser.ifPresent( user -> logout( user, session ) );
-        Authentication authentication = authenticator.authenticate( email, password ).orElse( null );
-        if( authentication == null ) {
-            return new Response( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
-        } else {
-            return authenticatedResponse( authentication,
+        var result = authenticator.authenticate( email, password, tfaCode );
+        if( result.isSuccess() ) {
+            return authenticatedResponse( result.getSuccessValue(),
                 sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
+        } else if( MFA_REQUIRED.equals( result.getFailureValue() ) ) {
+            return new Response( HttpStatusCodes.BAD_REQUEST, "TFA code is incorrect or required" );
+        } else {
+            return new Response( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
         }
     }
 

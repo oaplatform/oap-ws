@@ -30,6 +30,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
+import oap.util.Result;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static oap.io.Resources.urlOrThrow;
+import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
+import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
 import static oap.ws.sso.UserProvider.toAccessKey;
 
 public class IntegratedTest extends Fixtures {
@@ -69,12 +72,20 @@ public class IntegratedTest extends Fixtures {
         }
 
         @Override
-        public Optional<TestUser> getAuthenticated( String email, String password ) {
+        public Result<TestUser, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode ) {
             log.trace( "authenticating {} with {}", email, password );
             log.trace( "users {}", users );
             return users.stream()
                 .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
-                .findAny();
+                .map( user -> {
+                    if( user.tfaEnabled ) {
+                        var tfaCheck = tfaCode.map( "proper_code"::equals ).orElse( false );
+                        return tfaCheck ? Result.<TestUser, AuthenticationFailure>success( user )
+                            : Result.<TestUser, AuthenticationFailure>failure( MFA_REQUIRED );
+                    }
+                    return Result.<TestUser, AuthenticationFailure>success( user );
+                } )
+                .findAny().orElse( Result.failure( UNAUTHENTICATED ) );
         }
 
         @Override
@@ -91,14 +102,20 @@ public class IntegratedTest extends Fixtures {
         public final String email;
         public final String password;
         public final String role;
+        public final boolean tfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
         public final View view = new View();
 
         public TestUser( String email, String password, String role ) {
+            this( email, password, role, false );
+        }
+
+        public TestUser( String email, String password, String role, boolean tfaEnabled ) {
             this.email = email;
             this.password = password;
             this.role = role;
+            this.tfaEnabled = tfaEnabled;
         }
 
         @Override
