@@ -29,6 +29,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import oap.util.Cuid;
+import oap.util.Result;
 
 import java.util.Map;
 import java.util.Optional;
@@ -58,17 +59,17 @@ public class UserAuthenticator implements Authenticator {
     }
 
     @Override
-    public AuthenticationResult authenticate( String email, String password, Optional<String> tfaCode ) {
-        var userAuth = userProvider.getAuthenticated( email, password, tfaCode );
-        if( !userAuth.success ) {
-            return new AuthenticationResult( false, userAuth.requireTfa, null );
+    public Result<Authentication, AuthenticationFailure> authenticate( String email, String password, Optional<String> tfaCode ) {
+        var authResult = userProvider.getAuthenticated( email, password, tfaCode );
+        if( !authResult.isSuccess() ) {
+            return Result.failure( authResult.getFailureValue() );
         }
-        var user = userAuth.user;
+        var user = authResult.getSuccessValue();
         var id = cuid.next();
         log.trace( "generating new authentication for user {} -> {}", user.getEmail(), id );
         Authentication authentication = new Authentication( id, user );
         authentications.put( authentication.id, authentication );
-        return new AuthenticationResult( true, false, authentication );
+        return Result.success( authentication );
     }
 
     @Override

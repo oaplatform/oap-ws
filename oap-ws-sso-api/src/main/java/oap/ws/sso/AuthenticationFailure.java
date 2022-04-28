@@ -24,15 +24,6 @@
 
 package oap.ws.sso;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserAuth implements Serializable {
-    public User user;
-    public boolean success;
-    public boolean requireTfa;
+public enum AuthenticationFailure {
+    MFA_REQUIRED, UNAUTHENTICATED
 }
