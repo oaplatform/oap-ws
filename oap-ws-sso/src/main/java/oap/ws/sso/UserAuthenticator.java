@@ -39,8 +39,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 @Slf4j
 public class UserAuthenticator implements Authenticator {
 
-    private final Cache<String, Authentication> authentications;
-    private final UserProvider userProvider;
+    protected final Cache<String, Authentication> authentications;
+    protected final UserProvider userProvider;
     protected Cuid cuid = Cuid.UNIQUE;
 
     public UserAuthenticator( UserProvider userProvider, long expirationTime ) {

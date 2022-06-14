@@ -102,6 +102,7 @@ public class IntegratedTest extends Fixtures {
         public final String email;
         public final String password;
         public final String role;
+        public final String organisationId;
         public final boolean tfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
@@ -116,6 +117,15 @@ public class IntegratedTest extends Fixtures {
             this.password = password;
             this.role = role;
             this.tfaEnabled = tfaEnabled;
+            this.organisationId = null;
+        }
+
+        public TestUser( String email, String password, String role, String organisationId ) {
+            this.email = email;
+            this.password = password;
+            this.role = role;
+            this.organisationId = organisationId;
+            this.tfaEnabled = false;
         }
 
         @Override
@@ -126,6 +136,11 @@ public class IntegratedTest extends Fixtures {
         @Override
         public String getRole() {
             return role;
+        }
+
+        @Override
+        public String getOrganisationId() {
+            return organisationId;
         }
 
         @Override
@@ -146,6 +161,11 @@ public class IntegratedTest extends Fixtures {
             @Override
             public String getRole() {
                 return TestUser.this.getRole();
+            }
+
+            @Override
+            public String getOrganisationId() {
+                return TestUser.this.getOrganisationId();
             }
         }
 

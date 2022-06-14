@@ -33,6 +33,8 @@ public interface User extends Serializable {
 
     String getRole();
 
+    String getOrganisationId();
+
     @JsonIgnore
     View getView();
 
@@ -40,5 +42,7 @@ public interface User extends Serializable {
         String getEmail();
 
         String getRole();
+
+        String getOrganisationId();
     }
 }
