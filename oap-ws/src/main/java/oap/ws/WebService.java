@@ -25,8 +25,7 @@ package oap.ws;
 
 import io.undertow.server.handlers.Cookie;
 import lombok.extern.slf4j.Slf4j;
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.http.server.nio.HttpHandler;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.Binder;
@@ -83,7 +82,7 @@ public class WebService implements HttpHandler {
         } else {
             log.error( this + ": " + e.toString(), e );
             if( !exchange.isResponseStarted() )
-                exchange.responseJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, e.getMessage(), new JsonStackTraceResponse( e ) );
+                exchange.responseJson( Http.StatusCode.INTERNAL_SERVER_ERROR, e.getMessage(), new JsonStackTraceResponse( e ) );
         }
     }
 
@@ -193,30 +192,21 @@ public class WebService implements HttpHandler {
     private Response produceResultResponse( Reflection.Method method, Session session, Optional<WsMethod> wsMethod, Object result ) {
         boolean isRaw = wsMethod.map( WsMethod::raw ).orElse( false );
         var produces = wsMethod.map( WsMethod::produces )
-            .orElse( ContentTypes.APPLICATION_JSON );
+            .orElse( Http.ContentType.APPLICATION_JSON );
 
-        if( method.isVoid() ) {
-            return Response.noContent();
-        } else if( result instanceof Response response ) {
-            return response;
-        } else if( result instanceof Optional<?> optResult ) {
-            return optResult.isEmpty()
-                ? Response.notFound()
-                : Response.ok().withBody( optResult.get(), isRaw ).withContentType( produces );
-        } else if( result instanceof Result<?, ?> resultResult ) {
-            if( resultResult.isSuccess() ) {
-                return Response.ok().withBody( resultResult.successValue, isRaw ).withContentType( produces );
-            } else {
-                return new Response( HttpStatusCodes.INTERNAL_SERVER_ERROR, "" )
-                    .withBody( resultResult.failureValue, false )
-                    .withContentType( ContentTypes.APPLICATION_JSON );
-            }
-        } else if( result instanceof java.util.stream.Stream<?> ) {
-            var stream = ( java.util.stream.Stream<?> ) result;
+        if( method.isVoid() ) return Response.noContent();
+        else if( result instanceof Response response ) return response;
+        else if( result instanceof Optional<?> optResult ) return optResult.isEmpty()
+            ? Response.notFound()
+            : Response.ok().withBody( optResult.get(), isRaw ).withContentType( produces );
+        else if( result instanceof Result<?, ?> resultResult ) if( resultResult.isSuccess() )
+            return Response.ok().withBody( resultResult.successValue, isRaw ).withContentType( produces );
+        else return new Response( Http.StatusCode.INTERNAL_SERVER_ERROR, "" )
+                .withBody( resultResult.failureValue, false )
+                .withContentType( Http.ContentType.APPLICATION_JSON );
+        else if( result instanceof java.util.stream.Stream<?> stream )
             return Response.ok().withBody( stream, isRaw ).withContentType( produces );
-        } else {
-            return Response.ok().withBody( result, isRaw ).withContentType( produces );
-        }
+        else return Response.ok().withBody( result, isRaw ).withContentType( produces );
     }
 
     private LinkedHashMap<Reflection.Parameter, Object> getValues( LinkedHashMap<Reflection.Parameter, Object> values ) {

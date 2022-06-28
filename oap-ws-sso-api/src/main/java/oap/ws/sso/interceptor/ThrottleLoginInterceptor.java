@@ -25,7 +25,7 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.ws.Session;
@@ -68,7 +68,7 @@ public class ThrottleLoginInterceptor implements Interceptor {
         } else {
             if( log.isTraceEnabled() )
                 log.trace( "Please wait {} seconds before next attempt", delay );
-            exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, "Please wait " + delay + " seconds before next attempt" );
+            exchange.setStatusCodeReasonPhrase( Http.StatusCode.FORBIDDEN, "Please wait " + delay + " seconds before next attempt" );
             exchange.endExchange();
             return true;
         }

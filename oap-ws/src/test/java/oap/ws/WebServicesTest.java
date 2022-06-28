@@ -26,8 +26,7 @@ package oap.ws;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.http.Client;
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.http.server.nio.HttpHandler;
 import oap.http.server.nio.HttpServerExchange;
 import oap.testng.Fixtures;
@@ -66,127 +65,127 @@ public class WebServicesTest extends Fixtures {
     @Test
     public void path() {
         assertGet( httpUrl( "/x/v/math" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "2" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "2" );
     }
 
     @Test
     public void sort() {
         assertGet( httpUrl( "/x/v/math/test/sort/default" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"__default__\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"__default__\"" );
         assertGet( httpUrl( "/x/v/math/test/sort/45" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"45\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"45\"" );
     }
 
     @Test
     public void equal() {
         assertGet( httpUrl( "/x/v/math/test/sort=3/test" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"3\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"3\"" );
     }
 
     @Test
     public void header() {
         assertGet( httpUrl( "/x/v/math/header" ), Map.of(), Map.of( "X-Custom-Header", "header" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"headerheader\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"headerheader\"" );
     }
 
     @Test
     public void cookie() {
         assertGet( httpUrl( "/x/v/math/cookie" ), Map.of(), Map.of( "Cookie", "cookie=theCookie;Really-Cool-Cookie=ohoh" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"theCookieohoh\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"theCookieohoh\"" );
     }
 
     @Test
     public void renamed() {
         assertGet( httpUrl( "/x/v/math/renamed?renamed=aaa" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"aaa\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"aaa\"" );
     }
 
 
     @Test
     public void invocations() {
         assertGet( httpUrl( "/x/v/math/x?i=1&s=2" ) )
-            .respondedJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, "failed", "{\"message\":\"failed\"}" );
+            .respondedJson( Http.StatusCode.INTERNAL_SERVER_ERROR, "failed", "{\"message\":\"failed\"}" );
         assertGet( httpUrl( "/x/v/math/x?i=1&s=2" ) )
-            .respondedJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, "failed", "{\"message\":\"failed\"}" );
+            .respondedJson( Http.StatusCode.INTERNAL_SERVER_ERROR, "failed", "{\"message\":\"failed\"}" );
         assertGet( httpUrl( "/x/v/math/sumab?a=1&b=2" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "3" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "3" );
         assertGet( httpUrl( "/x/v/math/x?i=1&s=2" ) )
-            .respondedJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, "failed", "{\"message\":\"failed\"}" );
+            .respondedJson( Http.StatusCode.INTERNAL_SERVER_ERROR, "failed", "{\"message\":\"failed\"}" );
         assertGet( httpUrl( "/x/v/math/sumabopt?a=1" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "1" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "1" );
         assertGet( httpUrl( "/x/v/math/bean?i=1&s=sss" ) )
-            .respondedJson( HttpStatusCodes.OK, "OK", "{\"i\":1,\"s\":\"sss\"}" );
+            .respondedJson( Http.StatusCode.OK, "OK", "{\"i\":1,\"s\":\"sss\"}" );
         assertGet( httpUrl( "/x/v/math/code?code=204" ) )
-            .hasCode( HttpStatusCodes.NO_CONTENT );
-        assertGet( httpUrl( "/x/h/" ) ).hasCode( HttpStatusCodes.NO_CONTENT );
-        assertGet( httpUrl( "" ) ).hasCode( HttpStatusCodes.NO_CONTENT ); //for default domain mapping
-        assertGet( httpUrl( "/" ) ).hasCode( HttpStatusCodes.NO_CONTENT ); //for default domain mapping
+            .hasCode( Http.StatusCode.NO_CONTENT );
+        assertGet( httpUrl( "/x/h/" ) ).hasCode( Http.StatusCode.NO_CONTENT );
+        assertGet( httpUrl( "" ) ).hasCode( Http.StatusCode.NO_CONTENT ); //for default domain mapping
+        assertGet( httpUrl( "/" ) ).hasCode( Http.StatusCode.NO_CONTENT ); //for default domain mapping
         assertGet( httpUrl( "/x/v/math/x?i=1&s=2" ) )
-            .respondedJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, "failed", "{\"message\":\"failed\"}" );
+            .respondedJson( Http.StatusCode.INTERNAL_SERVER_ERROR, "failed", "{\"message\":\"failed\"}" );
 
     }
 
     @Test
     public void invocationBytes() {
-        assertPost( httpUrl( "/x/v/math/bytes" ), "1234", ContentTypes.APPLICATION_OCTET_STREAM )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"1234\"" );
+        assertPost( httpUrl( "/x/v/math/bytes" ), "1234", Http.ContentType.APPLICATION_OCTET_STREAM )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"1234\"" );
     }
 
     @Test
     public void invocationString() {
-        assertPost( httpUrl( "/x/v/math/string" ), "1234", ContentTypes.APPLICATION_OCTET_STREAM )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"1234\"" );
-        assertPost( httpUrl( "/x/v/math/string" ), "1234", ContentTypes.APPLICATION_OCTET_STREAM )
+        assertPost( httpUrl( "/x/v/math/string" ), "1234", Http.ContentType.APPLICATION_OCTET_STREAM )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"1234\"" );
+        assertPost( httpUrl( "/x/v/math/string" ), "1234", Http.ContentType.APPLICATION_OCTET_STREAM )
             .satisfies( response -> assertThat( response.headers )
                 .contains( __( "Content-Type", "application/json" ) ) );
     }
 
     @Test
     public void invocationInputStream() {
-        assertPost( httpUrl( "/x/v/math/inputStream" ), "1234", ContentTypes.APPLICATION_OCTET_STREAM )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"1234\"" );
+        assertPost( httpUrl( "/x/v/math/inputStream" ), "1234", Http.ContentType.APPLICATION_OCTET_STREAM )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"1234\"" );
     }
 
     @Test
     public void enumValue() {
         assertGet( httpUrl( "/x/v/math/en?a=CLASS" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"CLASS\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"CLASS\"" );
     }
 
     @Test
     public void optional() {
         assertGet( httpUrl( "/x/v/math/sumabopt?a=1&b=2" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "3" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "3" );
     }
 
     @Test
     public void parameterList() {
         assertGet( httpUrl( "/x/v/math/sum?a=1&b=2&b=3" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "6" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "6" );
     }
 
     @Test
     public void string() {
         assertGet( httpUrl( "/x/v/math/id?a=aaa" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"aaa\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"aaa\"" );
     }
 
     @Test
     public void request() {
         assertGet( httpUrl( "/x/v/math/req" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"/x/v/math/req-\"" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"/x/v/math/req-\"" );
     }
 
     @Test
     public void bean() {
-        assertPost( httpUrl( "/x/v/math/json" ), "{\"i\":1,\"s\":\"sss\"}", ContentTypes.APPLICATION_JSON )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "{\"i\":1,\"s\":\"sss\"}" );
+        assertPost( httpUrl( "/x/v/math/json" ), "{\"i\":1,\"s\":\"sss\"}", Http.ContentType.APPLICATION_JSON )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "{\"i\":1,\"s\":\"sss\"}" );
     }
 
     @Test
     public void list() {
-        assertPost( httpUrl( "/x/v/math/list" ), "[\"1str\", \"2str\"]", ContentTypes.APPLICATION_JSON )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "[\"1str\",\"2str\"]" );
+        assertPost( httpUrl( "/x/v/math/list" ), "[\"1str\", \"2str\"]", Http.ContentType.APPLICATION_JSON )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "[\"1str\",\"2str\"]" );
     }
 
     @Test
@@ -201,9 +200,9 @@ public class WebServicesTest extends Fixtures {
             .build()
             .post( httpUrl( "/x/v/math/json" ),
                 new ByteArrayInputStream( byteArrayOutputStream.toByteArray() ),
-                ContentTypes.APPLICATION_JSON, Map.of( "Content-Encoding", "gzip" ) );
+                Http.ContentType.APPLICATION_JSON, Map.of( "Content-Encoding", "gzip" ) );
 
-        assertThat( response.code ).isEqualTo( HttpStatusCodes.OK );
+        assertThat( response.code ).isEqualTo( Http.StatusCode.OK );
         assertThat( response.contentString() ).isEqualTo( "{\"i\":1,\"s\":\"sss\"}" );
     }
 

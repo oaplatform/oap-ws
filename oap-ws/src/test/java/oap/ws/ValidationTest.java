@@ -26,8 +26,7 @@ package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
@@ -45,27 +44,27 @@ public class ValidationTest extends Fixtures {
     @Test
     public void brokenValidator() {
         assertGet( httpUrl( "/vaildation/service/methodWithBrokenValidator?requiredParameter=10" ) )
-            .respondedJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, "CausedByException", "{\"message\":\"CausedByException\"}" );
+            .respondedJson( Http.StatusCode.INTERNAL_SERVER_ERROR, "CausedByException", "{\"message\":\"CausedByException\"}" );
     }
 
     @Test
     public void wrongValidatorName() {
         String errorMessage = "No such method wrongValidatorName with the following parameters: [int requiredParameter]";
         assertGet( httpUrl( "/vaildation/service/methodWithWrongValidatorName?requiredParameter=10" ) )
-            .respondedJson( HttpStatusCodes.INTERNAL_SERVER_ERROR, errorMessage, "{\"message\":\"" + errorMessage + "\"}" );
+            .respondedJson( Http.StatusCode.INTERNAL_SERVER_ERROR, errorMessage, "{\"message\":\"" + errorMessage + "\"}" );
     }
 
     @Test
     public void validatorWithWrongParameters() {
         String errorMessage = "missedParam required by validator wrongArgsValidator is not supplied by web method";
         assertGet( httpUrl( "/vaildation/service/methodWithWrongValidatorArgs?requiredParameter=10" ) )
-            .responded( HttpStatusCodes.INTERNAL_SERVER_ERROR, errorMessage, ContentTypes.APPLICATION_JSON, "{\"message\":\"" + errorMessage + "\"}" );
+            .responded( Http.StatusCode.INTERNAL_SERVER_ERROR, errorMessage, Http.ContentType.APPLICATION_JSON, "{\"message\":\"" + errorMessage + "\"}" );
     }
 
     @Test
     public void exception() {
         assertGet( httpUrl( "/vaildation/service/exceptionRuntimeException" ) )
-            .hasCode( HttpStatusCodes.INTERNAL_SERVER_ERROR );
+            .hasCode( Http.StatusCode.INTERNAL_SERVER_ERROR );
     }
 }
 

@@ -27,8 +27,7 @@ package oap.ws.admin;
 import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.Kernel;
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.jpath.JPath;
 import oap.ws.Response;
 import oap.ws.WsMethod;
@@ -58,7 +57,7 @@ public class JPathWS {
             return Response.jsonOk().withBody( result.get(), false );
         } catch( Exception e ) {
             log.error( e.getMessage(), e );
-            return new Response( HttpStatusCodes.BAD_REQUEST, e.getMessage(), ContentTypes.TEXT_PLAIN ).withBody( Throwables.getStackTraceAsString( e ), true );
+            return new Response( Http.StatusCode.BAD_REQUEST, e.getMessage(), Http.ContentType.TEXT_PLAIN ).withBody( Throwables.getStackTraceAsString( e ), true );
         }
     }
 }

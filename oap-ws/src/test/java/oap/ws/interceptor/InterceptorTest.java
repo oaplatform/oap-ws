@@ -25,7 +25,7 @@
 package oap.ws.interceptor;
 
 import oap.application.testng.KernelFixture;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.testng.Fixtures;
@@ -44,7 +44,7 @@ public class InterceptorTest extends Fixtures {
     @Test
     public void shouldNotAllowRequestWhenErrorInterceptor() {
         assertGet( httpUrl( "/interceptor/text?value=error" ) )
-            .hasCode( HttpStatusCodes.FORBIDDEN )
+            .hasCode( Http.StatusCode.FORBIDDEN )
             .hasReason( "caused by interceptor" );
     }
 
@@ -69,7 +69,7 @@ public class InterceptorTest extends Fixtures {
             var value = exchange.getStringParameter( "value" );
 
             if( "error".equals( value ) ) {
-                exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, "caused by interceptor" );
+                exchange.setStatusCodeReasonPhrase( Http.StatusCode.FORBIDDEN, "caused by interceptor" );
                 return true;
             }
 

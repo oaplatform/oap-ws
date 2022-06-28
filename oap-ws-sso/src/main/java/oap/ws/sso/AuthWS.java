@@ -25,6 +25,7 @@
 package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
+import oap.http.Http;
 import oap.http.HttpStatusCodes;
 import oap.ws.Response;
 import oap.ws.Session;
@@ -90,7 +91,7 @@ public class AuthWS {
     protected ValidationErrors validateUserAccess( Optional<String> email, User loggedUser ) {
         return email
             .filter( e -> !loggedUser.getEmail().equalsIgnoreCase( e ) )
-            .map( e -> error( HttpStatusCodes.FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
+            .map( e -> error( Http.StatusCode.FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
             .orElse( empty() );
     }
 
@@ -107,7 +108,7 @@ public class AuthWS {
     public Response whoami( Session session ) {
         User user = session.<User>get( SSO.SESSION_USER_KEY ).orElse( null );
         if( user == null ) {
-            return new Response( HttpStatusCodes.UNAUTHORIZED );
+            return new Response( Http.StatusCode.UNAUTHORIZED );
         } else {
             return Response
                 .jsonOk()

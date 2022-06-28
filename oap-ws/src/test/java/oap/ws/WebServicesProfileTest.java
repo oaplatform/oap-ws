@@ -25,7 +25,7 @@
 package oap.ws;
 
 import oap.application.testng.KernelFixture;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.http.testng.HttpAsserts;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
@@ -47,7 +47,7 @@ public class WebServicesProfileTest extends Fixtures {
 
     @Test
     public void shouldNotStartWebServiceIfProfileIsConfiguredForServiceAndNotWS() {
-        assertGet( HttpAsserts.httpUrl( "/new-profile/text?value=empty" ) ).hasCode( HttpStatusCodes.NO_CONTENT );
+        assertGet( HttpAsserts.httpUrl( "/new-profile/text?value=empty" ) ).hasCode( Http.StatusCode.NO_CONTENT );
     }
 
 

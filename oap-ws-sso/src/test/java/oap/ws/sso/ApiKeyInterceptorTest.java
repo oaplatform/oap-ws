@@ -24,8 +24,7 @@
 
 package oap.ws.sso;
 
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -49,35 +48,35 @@ public class ApiKeyInterceptorTest extends IntegratedTest {
         assertGet( httpUrl( "/secure" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", user.apiKey )
-        ).responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
+        ).responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
 
         assertGet( httpUrl( "/secure" ),
             __( "accessKey", "bla-bla" ),
             __( "apiKey", user.apiKey )
-        ).hasCode( HttpStatusCodes.UNAUTHORIZED );
+        ).hasCode( Http.StatusCode.UNAUTHORIZED );
 
         assertGet( httpUrl( "/secure" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", "bla" )
-        ).hasCode( HttpStatusCodes.UNAUTHORIZED );
+        ).hasCode( Http.StatusCode.UNAUTHORIZED );
 
         assertGet( httpUrl( "/secure" ) )
-            .hasCode( HttpStatusCodes.UNAUTHORIZED );
+            .hasCode( Http.StatusCode.UNAUTHORIZED );
 
         assertGet( httpUrl( "/secure" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", user.apiKey )
-        ).responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
+        ).responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
     }
 
     @Test
     public void testConflict() {
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
-            .hasCode( HttpStatusCodes.OK );
+            .hasCode( Http.StatusCode.OK );
         assertGet( httpUrl( "/secure" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", user.apiKey )
-        ).hasCode( HttpStatusCodes.CONFLICT );
+        ).hasCode( Http.StatusCode.CONFLICT );
     }
 }

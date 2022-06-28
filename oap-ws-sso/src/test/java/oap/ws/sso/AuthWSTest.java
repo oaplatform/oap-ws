@@ -25,7 +25,7 @@
 package oap.ws.sso;
 
 
-import oap.http.ContentTypes;
+import oap.http.Http;
 import oap.http.HttpStatusCodes;
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
 import org.testng.annotations.Test;
@@ -88,7 +88,7 @@ public class AuthWSTest extends IntegratedTest {
         assertLogin( "admin@admin.com", "pass" );
         assertLogout();
         assertGet( httpUrl( "/auth/whoami" ) )
-            .hasCode( HttpStatusCodes.UNAUTHORIZED );
+            .hasCode( Http.StatusCode.UNAUTHORIZED );
         assertLogin( "user@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"user@admin.com\", \"role\":\"USER\"}" );
@@ -100,9 +100,9 @@ public class AuthWSTest extends IntegratedTest {
         userProvider().addUser( new TestUser( "user@user.com", "pass", USER ) );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
         assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
-            .hasCode( HttpStatusCodes.FORBIDDEN );
+            .hasCode( Http.StatusCode.FORBIDDEN );
     }
 }

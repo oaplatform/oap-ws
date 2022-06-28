@@ -25,7 +25,7 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.ws.Response;
@@ -53,7 +53,7 @@ public class ApiKeyInterceptor implements Interceptor {
         if( apiKey == null ) return false;
 
         if( session.containsKey( SESSION_USER_KEY ) ) {
-            exchange.setStatusCodeReasonPhrase( HttpStatusCodes.CONFLICT, "invoking service with apiKey while logged in" );
+            exchange.setStatusCodeReasonPhrase( Http.StatusCode.CONFLICT, "invoking service with apiKey while logged in" );
             exchange.endExchange();
             return true;
         } else {
@@ -66,7 +66,7 @@ public class ApiKeyInterceptor implements Interceptor {
                 log.trace( "set user {} into session {}", user, session );
                 return false;
             } else {
-                exchange.setStatusCode( HttpStatusCodes.UNAUTHORIZED );
+                exchange.setStatusCode( Http.StatusCode.UNAUTHORIZED );
                 exchange.endExchange();
                 return true;
             }

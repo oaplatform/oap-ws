@@ -24,8 +24,7 @@
 
 package oap.ws.sso;
 
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import org.testng.annotations.Test;
 
 import static oap.http.testng.HttpAsserts.assertGet;
@@ -40,17 +39,17 @@ public class SecurityInterceptorTest extends IntegratedTest {
         userProvider().addUser( "admin@admin.com", "pass", ADMIN );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
         assertGet( httpUrl( "/secure" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
         assertGet( httpUrl( "/secure" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "admin@admin.com" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
     }
 
     @Test
     public void notLoggedIn() {
         assertGet( httpUrl( "/secure" ) )
-            .hasCode( HttpStatusCodes.UNAUTHORIZED );
+            .hasCode( Http.StatusCode.UNAUTHORIZED );
     }
 
     @Test
@@ -58,7 +57,7 @@ public class SecurityInterceptorTest extends IntegratedTest {
         userProvider().addUser( "user@user.com", "pass", USER );
         assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure" ) )
-            .hasCode( HttpStatusCodes.FORBIDDEN );
+            .hasCode( Http.StatusCode.FORBIDDEN );
     }
 
 }

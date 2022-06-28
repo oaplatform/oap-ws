@@ -25,7 +25,7 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.ws.Session;
@@ -80,7 +80,7 @@ public class SecurityInterceptor implements Interceptor {
             log.trace( "secure method {}", method );
 
             if( !session.containsKey( SESSION_USER_KEY ) ) {
-                exchange.setStatusCode( HttpStatusCodes.UNAUTHORIZED );
+                exchange.setStatusCode( Http.StatusCode.UNAUTHORIZED );
                 exchange.endExchange();
                 return true;
             } else {
@@ -88,7 +88,7 @@ public class SecurityInterceptor implements Interceptor {
                     .filter( u -> !roles.granted( u.getRole(), annotation.get().permissions() ) )
                     .orElse( null );
                 if( user != null ) {
-                    exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, String.format( "User [%s] has no access to method [%s]", user.getEmail(), method.name() ) );
+                    exchange.setStatusCodeReasonPhrase( Http.StatusCode.FORBIDDEN, String.format( "User [%s] has no access to method [%s]", user.getEmail(), method.name() ) );
                     exchange.endExchange();
                     return true;
                 }

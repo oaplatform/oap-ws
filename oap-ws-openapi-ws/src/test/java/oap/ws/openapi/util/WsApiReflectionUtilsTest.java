@@ -24,12 +24,12 @@
 
 package oap.ws.openapi.util;
 
-import oap.ws.openapi.WsOpenapi;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import oap.ws.openapi.WsOpenapi;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 

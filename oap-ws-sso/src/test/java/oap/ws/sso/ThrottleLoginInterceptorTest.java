@@ -24,7 +24,7 @@
 
 package oap.ws.sso;
 
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.http.testng.HttpAsserts;
 import org.testng.annotations.Test;
 
@@ -37,8 +37,8 @@ public class ThrottleLoginInterceptorTest extends IntegratedTest {
     public void deniedAccept() throws Exception {
         userProvider().addUser( "test1@user.com", "pass1", ADMIN );
 
-        login( "test1@user.com", "pass" ).hasCode( HttpStatusCodes.UNAUTHORIZED );
-        login( "test1@user.com", "pass1" ).hasCode( HttpStatusCodes.FORBIDDEN ).hasReason( "Please wait 5 seconds before next attempt" );
+        login( "test1@user.com", "pass" ).hasCode( Http.StatusCode.UNAUTHORIZED );
+        login( "test1@user.com", "pass1" ).hasCode( Http.StatusCode.FORBIDDEN ).hasReason( "Please wait 5 seconds before next attempt" );
         Thread.sleep( 1000 * 7 );
         login( "test1@user.com", "pass1" ).isOk();
     }
