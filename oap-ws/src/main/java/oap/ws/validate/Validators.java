@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static oap.ws.validate.ValidatorPeer.Type.METHOD;
+import static oap.ws.validate.ValidatorPeer.Type.PARAMETER;
+
 public class Validators {
     private static final ConcurrentHashMap<Key<Reflection.Parameter>, Validator> forParams = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<Key<Reflection.Method>, Validator> forMethods = new ConcurrentHashMap<>();
@@ -44,16 +47,14 @@ public class Validators {
                                           Object instance,
                                           boolean beforeUnmarshaling ) {
         return forParams.computeIfAbsent( new Key<>( parameter, instance, beforeUnmarshaling ),
-            p -> getValidator( method, instance, parameter.annotations(),
-                ValidatorPeer.Type.PARAMETER, beforeUnmarshaling ) );
+            p -> getValidator( method, instance, parameter.annotations(), PARAMETER, beforeUnmarshaling ) );
     }
 
     public static Validator forMethod( Reflection.Method method,
                                        Object instance,
                                        boolean beforeUnmarshaling ) {
         return forMethods.computeIfAbsent( new Key<>( method, instance, beforeUnmarshaling ),
-            p -> getValidator( method, instance, method.annotations(),
-                ValidatorPeer.Type.METHOD, beforeUnmarshaling ) );
+            p -> getValidator( method, instance, method.annotations(), METHOD, beforeUnmarshaling ) );
 
     }
 

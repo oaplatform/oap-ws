@@ -26,7 +26,6 @@ package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.http.Http;
-import oap.http.HttpStatusCodes;
 import oap.ws.Response;
 import oap.ws.Session;
 import oap.ws.SessionManager;
@@ -36,12 +35,14 @@ import oap.ws.validate.ValidationErrors;
 
 import java.util.Optional;
 
+import static oap.http.Http.StatusCode.BAD_REQUEST;
+import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
-import static oap.ws.sso.Permissions.MANAGE_SELF;
+import static oap.ws.sso.SSO.SESSION_USER_KEY;
 import static oap.ws.sso.SSO.authenticatedResponse;
 import static oap.ws.sso.SSO.logoutResponse;
 import static oap.ws.validate.ValidationErrors.empty;
@@ -66,25 +67,23 @@ public class AuthWS {
 
     @WsMethod( method = GET, path = "/login" )
     public Response login( String email, String password, Optional<String> tfaCode, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
-        loggedUser.ifPresent( user -> logout( user, session ) );
+        loggedUser.ifPresent( user -> logout( session ) );
         var result = authenticator.authenticate( email, password, tfaCode );
-        if( result.isSuccess() ) {
-            return authenticatedResponse( result.getSuccessValue(),
-                sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
-        } else if( MFA_REQUIRED.equals( result.getFailureValue() ) ) {
-            return new Response( HttpStatusCodes.BAD_REQUEST, "TFA code is incorrect or required" );
-        } else {
-            return new Response( HttpStatusCodes.UNAUTHORIZED, "Username or password is invalid" );
-        }
+        if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
+            sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
+        else if( MFA_REQUIRED.equals( result.getFailureValue() ) )
+            return new Response( BAD_REQUEST, "TFA code is incorrect or required" );
+        else return new Response( UNAUTHORIZED, "Username or password is invalid" );
     }
 
     @WsMethod( method = GET, path = "/logout" )
-    @WsSecurity( permissions = MANAGE_SELF )
-    public Response logout( @WsParam( from = SESSION ) User loggedUser, Session session ) {
-        log.debug( "Invalidating token for user [{}]", loggedUser.getEmail() );
-        authenticator.invalidateByEmail( loggedUser.getEmail() );
-        session.invalidate();
+    public Response logout( Session session ) {
+        session.<User>get( SESSION_USER_KEY ).ifPresent( user -> {
+            log.debug( "Invalidating token for user [{}]", user.getEmail() );
+            authenticator.invalidateByEmail( user.getEmail() );
+            session.invalidate();
 
+        } );
         return logoutResponse( sessionManager.cookieDomain );
     }
 
@@ -101,15 +100,14 @@ public class AuthWS {
     @Deprecated
     @WsMethod( method = GET, path = "/current" )
     public Optional<User.View> current( Session session ) {
-        return session.<User>get( oap.ws.sso.SSO.SESSION_USER_KEY ).map( User::getView );
+        return session.<User>get( SESSION_USER_KEY ).map( User::getView );
     }
 
     @WsMethod( method = GET, path = "/whoami" )
     public Response whoami( Session session ) {
-        User user = session.<User>get( SSO.SESSION_USER_KEY ).orElse( null );
-        if( user == null ) {
-            return new Response( Http.StatusCode.UNAUTHORIZED );
-        } else {
+        User user = session.<User>get( SESSION_USER_KEY ).orElse( null );
+        if( user == null ) return new Response( UNAUTHORIZED );
+        else {
             return Response
                 .jsonOk()
                 .withBody( user.getView(), false );

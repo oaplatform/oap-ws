@@ -24,40 +24,57 @@
 
 package oap.ws.sso;
 
-import oap.http.Http;
 import org.testng.annotations.Test;
 
+import static oap.http.Http.ContentType.TEXT_PLAIN;
+import static oap.http.Http.StatusCode.FORBIDDEN;
+import static oap.http.Http.StatusCode.OK;
+import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.util.Pair.__;
 import static oap.ws.sso.Roles.ADMIN;
 import static oap.ws.sso.Roles.USER;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
+import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 
 public class SecurityInterceptorTest extends IntegratedTest {
     @Test
     public void allowed() {
-        userProvider().addUser( "admin@admin.com", "pass", ADMIN );
+        userProvider().addUser( "admin@admin.com", "pass", __( "r1", ADMIN ) );
         assertLogin( "admin@admin.com", "pass" );
-        assertGet( httpUrl( "/secure" ) )
-            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
-        assertGet( httpUrl( "/secure" ) )
-            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
-        assertGet( httpUrl( "/secure" ) )
-            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
+        assertGet( httpUrl( "/secure/r1" ) )
+            .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
+        assertGet( httpUrl( "/secure/r1" ) )
+            .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
+        assertGet( httpUrl( "/secure/r1" ) )
+            .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
+        assertLogout();
+    }
+
+    @Test
+    public void wrongRealm() {
+        userProvider().addUser( "admin@admin.com", "pass", __( "r1", ADMIN ) );
+        assertLogin( "admin@admin.com", "pass" );
+        assertGet( httpUrl( "/secure/r2" ) )
+            .hasCode( FORBIDDEN );
+        assertLogout();
+
     }
 
     @Test
     public void notLoggedIn() {
-        assertGet( httpUrl( "/secure" ) )
-            .hasCode( Http.StatusCode.UNAUTHORIZED );
+        assertGet( httpUrl( "/secure/r1" ) )
+            .hasCode( UNAUTHORIZED );
     }
 
     @Test
     public void denied() {
-        userProvider().addUser( "user@user.com", "pass", USER );
+        userProvider().addUser( "user@user.com", "pass", __( "r1", USER ) );
         assertLogin( "user@user.com", "pass" );
-        assertGet( httpUrl( "/secure" ) )
-            .hasCode( Http.StatusCode.FORBIDDEN );
+        assertGet( httpUrl( "/secure/r1" ) )
+            .hasCode( FORBIDDEN );
+        assertLogout();
     }
 
 }

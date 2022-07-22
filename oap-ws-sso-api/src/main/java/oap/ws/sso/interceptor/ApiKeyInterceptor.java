@@ -25,15 +25,16 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.Http;
-import oap.http.server.nio.HttpServerExchange;
-import oap.reflect.Reflection;
+import oap.ws.InvocationContext;
 import oap.ws.Response;
-import oap.ws.Session;
 import oap.ws.interceptor.Interceptor;
 import oap.ws.sso.Authenticator;
 import oap.ws.sso.User;
 
+import java.util.Optional;
+
+import static oap.http.Http.StatusCode.CONFLICT;
+import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 @Slf4j
@@ -46,40 +47,33 @@ public class ApiKeyInterceptor implements Interceptor {
     }
 
     @Override
-    public boolean before( HttpServerExchange exchange, Session session, Reflection.Method method ) {
-        var accessKey = exchange.getStringParameter( "accessKey" );
-        if( accessKey == null ) return false;
-        var apiKey = exchange.getStringParameter( "apiKey" );
-        if( apiKey == null ) return false;
+    public Optional<Response> before( InvocationContext context ) {
+        var accessKey = context.exchange.getStringParameter( "accessKey" );
+        if( accessKey == null ) return Optional.empty();
+        var apiKey = context.exchange.getStringParameter( "apiKey" );
+        if( apiKey == null ) return Optional.empty();
 
-        if( session.containsKey( SESSION_USER_KEY ) ) {
-            exchange.setStatusCodeReasonPhrase( Http.StatusCode.CONFLICT, "invoking service with apiKey while logged in" );
-            exchange.endExchange();
-            return true;
-        } else {
+        if( context.session.containsKey( SESSION_USER_KEY ) )
+            return Optional.of( new Response( CONFLICT, "invoking service with apiKey while logged in" ) );
+        else {
             var authentication = authenticator.authenticateWithApiKey( accessKey, apiKey );
-
             if( authentication.isPresent() ) {
                 User user = authentication.get().user;
-                session.set( SESSION_USER_KEY, user );
-                session.set( SESSION_API_KEY_AUTHENTICATED, true );
-                log.trace( "set user {} into session {}", user, session );
-                return false;
-            } else {
-                exchange.setStatusCode( Http.StatusCode.UNAUTHORIZED );
-                exchange.endExchange();
-                return true;
-            }
+                context.session.set( SESSION_USER_KEY, user );
+                context.session.set( SESSION_API_KEY_AUTHENTICATED, true );
+                log.trace( "set user {} into session {}", user, context.session );
+                return Optional.empty();
+            } else return Optional.of( new Response( UNAUTHORIZED ) );
         }
     }
 
     @Override
-    public void after( Response response, Session session ) {
-        session.<Boolean>get( SESSION_API_KEY_AUTHENTICATED ).ifPresent( apiKeyAuthentication -> {
+    public void after( Response response, InvocationContext context ) {
+        context.session.<Boolean>get( SESSION_API_KEY_AUTHENTICATED ).ifPresent( apiKeyAuthentication -> {
             if( apiKeyAuthentication ) {
-                log.trace( "removing temporary authentication of {}", session.get( SESSION_USER_KEY ) );
-                session.remove( SESSION_USER_KEY );
-                session.remove( SESSION_API_KEY_AUTHENTICATED );
+                log.trace( "removing temporary authentication of {}", context.session.get( SESSION_USER_KEY ) );
+                context.session.remove( SESSION_USER_KEY );
+                context.session.remove( SESSION_API_KEY_AUTHENTICATED );
             }
         } );
     }

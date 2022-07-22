@@ -25,15 +25,19 @@
 package oap.ws.sso;
 
 
-import oap.http.Http;
-import oap.http.HttpStatusCodes;
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
 import org.testng.annotations.Test;
 
+import static oap.http.Http.ContentType.TEXT_PLAIN;
+import static oap.http.Http.StatusCode.BAD_REQUEST;
+import static oap.http.Http.StatusCode.FORBIDDEN;
+import static oap.http.Http.StatusCode.OK;
+import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.util.Pair.__;
 import static oap.ws.sso.Roles.ADMIN;
 import static oap.ws.sso.Roles.USER;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
@@ -44,38 +48,38 @@ public class AuthWSTest extends IntegratedTest {
 
     @Test
     public void login() {
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ) ) );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
-            .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
+            .respondedJson( "{\"email\":\"admin@admin.com\"}" );
     }
 
     @Test
     public void loginTfaRequired() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ), true ) );
         assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
-            .hasCode( HttpStatusCodes.UNAUTHORIZED );
+            .hasCode( UNAUTHORIZED );
     }
 
     @Test
     public void loginTfa() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ), true ) );
         assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertLogin( "admin@admin.com", "pass", "proper_code", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
-            .respondedJson( "{\"email\":\"admin@admin.com\", \"role\":\"ADMIN\"}" );
+            .respondedJson( "{\"email\":\"admin@admin.com\"}" );
     }
 
     @Test
     public void loginTfaWrongCode() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN, true ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ), true ) );
         assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/login" ),
             "{  \"email\": \"admin@admin.com\",  \"password\": \"pass\", \"tfaCode\": \"wrong_code\"}" )
-            .hasCode( HttpStatusCodes.BAD_REQUEST )
+            .hasCode( BAD_REQUEST )
             .hasReason( "TFA code is incorrect or required" );
     }
 
@@ -83,26 +87,27 @@ public class AuthWSTest extends IntegratedTest {
     public void logout() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
 
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
-        userProvider().addUser( new TestUser( "user@admin.com", "pass", USER ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ) ) );
+        userProvider().addUser( new TestUser( "user@admin.com", "pass", __( "r1", USER ) ) );
         assertLogin( "admin@admin.com", "pass" );
         assertLogout();
         assertGet( httpUrl( "/auth/whoami" ) )
-            .hasCode( Http.StatusCode.UNAUTHORIZED );
+            .hasCode( UNAUTHORIZED );
         assertLogin( "user@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
-            .respondedJson( "{\"email\":\"user@admin.com\", \"role\":\"USER\"}" );
+            .respondedJson( "{\"email\":\"user@admin.com\"}" );
     }
 
     @Test
     public void relogin() {
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", ADMIN ) );
-        userProvider().addUser( new TestUser( "user@user.com", "pass", USER ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ) ) );
+        userProvider().addUser( new TestUser( "user@user.com", "pass", __( "r1", USER ) ) );
         assertLogin( "admin@admin.com", "pass" );
-        assertGet( httpUrl( "/secure" ) )
-            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
+        assertGet( httpUrl( "/secure/r1" ) )
+            .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
         assertLogin( "user@user.com", "pass" );
-        assertGet( httpUrl( "/secure" ) )
-            .hasCode( Http.StatusCode.FORBIDDEN );
+        assertGet( httpUrl( "/secure/r1" ) )
+            .hasCode( FORBIDDEN );
+        assertLogout();
     }
 }

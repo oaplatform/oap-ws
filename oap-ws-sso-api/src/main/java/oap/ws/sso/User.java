@@ -27,18 +27,17 @@ package oap.ws.sso;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 public interface User extends Serializable {
     String getEmail();
 
-    String getRole();
+    Optional<String> getRole( String realm );
 
     @JsonIgnore
     View getView();
 
     interface View extends Serializable {
         String getEmail();
-
-        String getRole();
     }
 }

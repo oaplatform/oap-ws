@@ -151,15 +151,11 @@ public class Response {
             return new String( bytes );
         } else if( body instanceof String str ) {
             if( raw ) return str;
-            else {
-                return HttpServerExchange.contentToString( false, str, contentType );
-            }
+            else return HttpServerExchange.contentToString( false, str, contentType );
         } else if( body instanceof Consumer cons ) {
             var baos = new ByteArrayOutputStream();
             cons.accept( baos );
-
             body = baos.toByteArray();
-
             return new String( ( byte[] ) body );
         } else {
             Preconditions.checkArgument( !raw );
@@ -178,13 +174,14 @@ public class Response {
         if( body != null )
             if( body instanceof byte[] bytes ) exchange.send( bytes );
             else if( body instanceof ByteBuffer byteBuffer ) exchange.send( byteBuffer );
-            else if( body instanceof String str )
-                if( raw ) exchange.send( str );
-                else exchange.send( HttpServerExchange.contentToString( false, str, contentType ) );
+            else if( body instanceof String string )
+                if( raw ) exchange.send( string );
+                else exchange.send( HttpServerExchange.contentToString( false, string, contentType ) );
             else if( body instanceof Consumer cons ) cons.accept( exchange.getOutputStream() );
             else {
                 Preconditions.checkArgument( !raw );
                 exchange.send( HttpServerExchange.contentToString( false, body, contentType ) );
             }
+        else exchange.endExchange();
     }
 }

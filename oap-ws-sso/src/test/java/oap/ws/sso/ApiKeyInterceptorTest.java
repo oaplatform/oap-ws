@@ -24,10 +24,13 @@
 
 package oap.ws.sso;
 
-import oap.http.Http;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static oap.http.Http.ContentType.TEXT_PLAIN;
+import static oap.http.Http.StatusCode.CONFLICT;
+import static oap.http.Http.StatusCode.OK;
+import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
@@ -40,43 +43,43 @@ public class ApiKeyInterceptorTest extends IntegratedTest {
 
     @BeforeMethod
     public void beforeMethod() {
-        user = userProvider().addUser( "admin@admin.com", "pass", ADMIN );
+        user = userProvider().addUser( "admin@admin.com", "pass", __( "r1", ADMIN ) );
     }
 
     @Test
     public void allowed() {
-        assertGet( httpUrl( "/secure" ),
+        assertGet( httpUrl( "/secure/r1" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", user.apiKey )
-        ).responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
+        ).responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
 
-        assertGet( httpUrl( "/secure" ),
+        assertGet( httpUrl( "/secure/r1" ),
             __( "accessKey", "bla-bla" ),
             __( "apiKey", user.apiKey )
-        ).hasCode( Http.StatusCode.UNAUTHORIZED );
+        ).hasCode( UNAUTHORIZED );
 
-        assertGet( httpUrl( "/secure" ),
+        assertGet( httpUrl( "/secure/r1" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", "bla" )
-        ).hasCode( Http.StatusCode.UNAUTHORIZED );
+        ).hasCode( UNAUTHORIZED );
 
-        assertGet( httpUrl( "/secure" ) )
-            .hasCode( Http.StatusCode.UNAUTHORIZED );
+        assertGet( httpUrl( "/secure/r1" ) )
+            .hasCode( UNAUTHORIZED );
 
-        assertGet( httpUrl( "/secure" ),
+        assertGet( httpUrl( "/secure/r1" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", user.apiKey )
-        ).responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "admin@admin.com" );
+        ).responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
     }
 
     @Test
-    public void testConflict() {
+    public void conflict() {
         assertLogin( "admin@admin.com", "pass" );
-        assertGet( httpUrl( "/secure" ) )
-            .hasCode( Http.StatusCode.OK );
-        assertGet( httpUrl( "/secure" ),
+        assertGet( httpUrl( "/secure/r1" ) )
+            .hasCode( OK );
+        assertGet( httpUrl( "/secure/r1" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", user.apiKey )
-        ).hasCode( Http.StatusCode.CONFLICT );
+        ).hasCode( CONFLICT );
     }
 }

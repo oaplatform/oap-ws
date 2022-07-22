@@ -28,7 +28,6 @@ import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
-import oap.ws.sso.Permissions;
 import oap.ws.sso.WsSecurity;
 import org.joda.time.LocalDateTime;
 
@@ -39,12 +38,13 @@ import java.util.Optional;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
+import static oap.ws.sso.Permissions.MANAGE_SELF;
 
 @SuppressWarnings( "unused" )
 class ExampleWS {
 
-    @WsSecurity( permissions = { Permissions.MANAGE_SELF } )
-    public int sum( int a, List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
+    @WsSecurity( realm = "realm", permissions = { MANAGE_SELF } )
+    public int sum( String realm, int a, List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
         return 0;
     }
 

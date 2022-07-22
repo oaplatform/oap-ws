@@ -5,6 +5,7 @@ Methods:
 	Method bean
 	[GET] /example/bean
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns Bean
 			{
@@ -28,6 +29,7 @@ Methods:
 	Method bytes
 	[GET] /example/bytes
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String
 	Parameters
@@ -36,6 +38,7 @@ Methods:
 	Method code
 	[GET] /example/code
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns void
 	Parameters
@@ -44,6 +47,7 @@ Methods:
 	Method en
 	[GET] /example/en
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns ["SOURCE","CLASS","RUNTIME"]
 	Parameters
@@ -52,6 +56,7 @@ Methods:
 	Method id
 	[GET] /example/id
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String
 	Parameters
@@ -60,6 +65,7 @@ Methods:
 	Method json
 	[GET] /example/json
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns Bean
 			{
@@ -96,6 +102,7 @@ Methods:
 	Method list
 	[GET] /example/list
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String[]
 	Parameters
@@ -104,6 +111,7 @@ Methods:
 	Method req
 	[GET] /example/req
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String
 	No parameters
@@ -111,6 +119,7 @@ Methods:
 	Method string
 	[GET] /example/string
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String
 	Parameters
@@ -119,9 +128,11 @@ Methods:
 	Method sum
 	[GET] /example/sum
 	Produces application/json
+	Realm param realm
 	Permissions [MANAGE_SELF]
 	Returns int
 	Parameters
+		realm: query String
 		a: query int
 		b: query int[]
 		c: query optional int
@@ -130,6 +141,7 @@ Methods:
 	Method sumab
 	[GET] /example/sumab
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns int
 	Parameters
@@ -139,6 +151,7 @@ Methods:
 	Method sumabopt
 	[GET] /example/sumabopt
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns int
 	Parameters
@@ -148,6 +161,7 @@ Methods:
 	Method test
 	[GET] /example/
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns int
 	No parameters
@@ -155,6 +169,7 @@ Methods:
 	Method test1
 	[GET] /example/test/sort/{id}
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String
 	Parameters
@@ -163,6 +178,7 @@ Methods:
 	Method test2
 	[GET] /example/test/sort/default
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String
 	No parameters
@@ -170,6 +186,7 @@ Methods:
 	Method testEqual
 	[GET] /example/test/sort={id}/test
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String
 	Parameters
@@ -178,6 +195,7 @@ Methods:
 	Method x
 	[GET] /example/x
 	Produces application/json
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns int
 	Parameters
@@ -192,6 +210,7 @@ Methods:
 	Method api
 	[GET] /system/api/
 	Produces text/plain
+	Realm param <unsecure>
 	Permissions <unsecure>
 	Returns String
 	No parameters

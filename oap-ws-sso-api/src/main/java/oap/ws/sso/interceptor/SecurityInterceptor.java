@@ -25,10 +25,8 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.Http;
-import oap.http.server.nio.HttpServerExchange;
-import oap.reflect.Reflection;
-import oap.ws.Session;
+import oap.ws.InvocationContext;
+import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
 import oap.ws.sso.Authentication;
 import oap.ws.sso.Authenticator;
@@ -37,9 +35,10 @@ import oap.ws.sso.SecurityRoles;
 import oap.ws.sso.User;
 import oap.ws.sso.WsSecurity;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
 
+import static oap.http.Http.StatusCode.FORBIDDEN;
+import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 @Slf4j
@@ -53,48 +52,42 @@ public class SecurityInterceptor implements Interceptor {
     }
 
     @Override
-    public boolean before( @Nonnull HttpServerExchange exchange, Session session, @Nonnull Reflection.Method method ) {
-
-        if( !session.containsKey( SESSION_USER_KEY ) ) {
-            log.trace( "no user in session {}", session );
-            var authId = SSO.getAuthentication( exchange );
+    public Optional<Response> before( InvocationContext context ) {
+        if( !context.session.containsKey( SESSION_USER_KEY ) ) {
+            log.trace( "no user in session {}", context.session );
+            var authId = SSO.getAuthentication( context.exchange );
             log.trace( "auth id {}", authId );
-            if( authId == null ) {
-                log.trace( "not authenticated" );
-            } else {
+            if( authId == null ) log.trace( "not authenticated" );
+            else {
                 Authentication authentication = authenticator.authenticate( authId ).orElse( null );
                 if( authentication != null ) {
                     User user = authentication.user;
-                    session.set( SESSION_USER_KEY, user );
-                    log.trace( "set user {} into session {}", user, session );
-                } else {
-                    log.trace( "not authenticated" );
-                }
+                    context.session.set( SESSION_USER_KEY, user );
+                    log.trace( "set user {} into session {}", user, context.session );
+                } else log.trace( "not authenticated" );
             }
         }
 
-        log.trace( "session state {}", session );
+        log.trace( "session state {}", context.session );
 
-        Optional<WsSecurity> annotation = method.findAnnotation( WsSecurity.class );
-        if( annotation.isPresent() ) {
-            log.trace( "secure method {}", method );
+        Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
+        if( wss.isEmpty() ) return Optional.empty();
 
-            if( !session.containsKey( SESSION_USER_KEY ) ) {
-                exchange.setStatusCode( Http.StatusCode.UNAUTHORIZED );
-                exchange.endExchange();
-                return true;
-            } else {
-                var user = session.<User>get( SESSION_USER_KEY )
-                    .filter( u -> !roles.granted( u.getRole(), annotation.get().permissions() ) )
-                    .orElse( null );
-                if( user != null ) {
-                    exchange.setStatusCodeReasonPhrase( Http.StatusCode.FORBIDDEN, String.format( "User [%s] has no access to method [%s]", user.getEmail(), method.name() ) );
-                    exchange.endExchange();
-                    return true;
-                }
-            }
-        }
-        return false;
+        log.trace( "secure method {}", context.method );
+        Optional<User> u = context.session.get( SESSION_USER_KEY );
+        if( u.isEmpty() ) return Optional.of( new Response( UNAUTHORIZED ) );
+
+        Optional<String> realm = context.getParameter( wss.get().realm() );
+        if( realm.isEmpty() ) return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
+
+        Optional<String> role = u.flatMap( user -> user.getRole( realm.get() ) );
+        if( role.isEmpty() )
+            return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm " + realm.get() ) );
+
+        if( roles.granted( role.get(), wss.get().permissions() ) ) return Optional.empty();
+
+        return Optional.of( new Response( FORBIDDEN, "user " + u.get().getEmail() + " has no access to method "
+            + context.method.name() + " under realm " + realm.get() ) );
     }
 }
 
