@@ -25,10 +25,7 @@
 package oap.ws;
 
 import com.google.common.base.Preconditions;
-import oap.http.ContentTypes;
 import oap.http.Cookie;
-import oap.http.Headers;
-import oap.http.HttpStatusCodes;
 import oap.http.server.nio.HttpServerExchange;
 
 import java.io.ByteArrayOutputStream;
@@ -37,6 +34,14 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
+
+import static oap.http.Http.ContentType.APPLICATION_JSON;
+import static oap.http.Http.Headers.CONTENT_TYPE;
+import static oap.http.Http.Headers.LOCATION;
+import static oap.http.Http.StatusCode.FOUND;
+import static oap.http.Http.StatusCode.NOT_FOUND;
+import static oap.http.Http.StatusCode.NO_CONTENT;
+import static oap.http.Http.StatusCode.OK;
 
 public class Response {
     public final HashMap<String, String> headers = new HashMap<>();
@@ -72,19 +77,19 @@ public class Response {
     }
 
     public static Response noContent() {
-        return new Response( HttpStatusCodes.NO_CONTENT );
+        return new Response( NO_CONTENT );
     }
 
     public static Response jsonOk() {
-        return ok().withContentType( ContentTypes.APPLICATION_JSON );
+        return ok().withContentType( APPLICATION_JSON );
     }
 
     public static Response notFound() {
-        return new Response( HttpStatusCodes.NOT_FOUND );
+        return new Response( NOT_FOUND );
     }
 
     public static Response ok() {
-        return new Response( HttpStatusCodes.OK );
+        return new Response( OK );
     }
 
     public static Response redirect( URI uri ) {
@@ -92,7 +97,7 @@ public class Response {
     }
 
     public static Response redirect( String uri ) {
-        return new Response( HttpStatusCodes.FOUND ).withHeader( Headers.LOCATION, uri );
+        return new Response( FOUND ).withHeader( LOCATION, uri );
     }
 
     public Response withStatusCode( int code ) {
@@ -146,15 +151,11 @@ public class Response {
             return new String( bytes );
         } else if( body instanceof String str ) {
             if( raw ) return str;
-            else {
-                return HttpServerExchange.contentToString( false, str, contentType );
-            }
+            else return HttpServerExchange.contentToString( false, str, contentType );
         } else if( body instanceof Consumer cons ) {
             var baos = new ByteArrayOutputStream();
             cons.accept( baos );
-
             body = baos.toByteArray();
-
             return new String( ( byte[] ) body );
         } else {
             Preconditions.checkArgument( !raw );
@@ -169,21 +170,18 @@ public class Response {
         if( reasonPhrase != null ) exchange.setReasonPhrase( reasonPhrase );
         headers.forEach( exchange::setResponseHeader );
         cookies.forEach( exchange::setResponseCookie );
-        if( contentType != null ) exchange.setResponseHeader( Headers.CONTENT_TYPE, contentType );
-        if( body != null ) {
+        if( contentType != null ) exchange.setResponseHeader( CONTENT_TYPE, contentType );
+        if( body != null )
             if( body instanceof byte[] bytes ) exchange.send( bytes );
             else if( body instanceof ByteBuffer byteBuffer ) exchange.send( byteBuffer );
-            else if( body instanceof String str ) {
-                if( raw ) exchange.send( str );
-                else {
-                    exchange.send( HttpServerExchange.contentToString( false, str, contentType ) );
-                }
-            } else if( body instanceof Consumer cons ) {
-                cons.accept( exchange.getOutputStream() );
-            } else {
+            else if( body instanceof String string )
+                if( raw ) exchange.send( string );
+                else exchange.send( HttpServerExchange.contentToString( false, string, contentType ) );
+            else if( body instanceof Consumer cons ) cons.accept( exchange.getOutputStream() );
+            else {
                 Preconditions.checkArgument( !raw );
                 exchange.send( HttpServerExchange.contentToString( false, body, contentType ) );
             }
-        }
+        else exchange.endExchange();
     }
 }

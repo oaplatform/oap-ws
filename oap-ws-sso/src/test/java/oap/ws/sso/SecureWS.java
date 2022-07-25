@@ -27,12 +27,13 @@ package oap.ws.sso;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 
+import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
 
 public class SecureWS {
-    @WsSecurity( permissions = "ALLOWED" )
-    @WsMethod( path = "/", produces = "text/plain" )
-    public String secure( @WsParam( from = SESSION ) User loggedUser ) {
+    @WsMethod( path = "/{realm}", produces = "text/plain" )
+    @WsSecurity( realm = "realm", permissions = "ALLOWED" )
+    public String secure( @WsParam( from = PATH ) String realm, @WsParam( from = SESSION ) User loggedUser ) {
         return loggedUser.getEmail();
     }
 }

@@ -33,10 +33,10 @@ import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
-import oap.ws.openapi.ApiInfo;
 import junit.framework.TestCase;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
+import oap.ws.openapi.ApiInfo;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 

@@ -64,7 +64,7 @@ public class WebServices {
             log.trace( "service: module = {}, config = {}", config.module.name, config.ext );
 
             log.trace( "service = {}", config.ext );
-            var interceptors = Lists.map( config.ext.interceptors, ( String name ) -> kernel.<Interceptor>service( name )
+            var interceptors = Lists.map( config.ext.interceptors, name -> kernel.<Interceptor>service( name )
                 .orElseThrow( () -> new RuntimeException( "interceptor " + name + " not found" ) ) );
             if( !KernelHelper.profileEnabled( config.ext.profiles, kernel.profiles ) ) {
                 log.debug( "skipping " + config.module.name + "." + config.name + " web service initialization with "

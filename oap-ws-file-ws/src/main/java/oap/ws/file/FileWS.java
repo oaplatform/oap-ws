@@ -24,7 +24,7 @@
 
 package oap.ws.file;
 
-import oap.http.ContentTypes;
+import oap.http.Http;
 import oap.ws.Response;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
@@ -61,7 +61,7 @@ public class FileWS {
         if( bytes == null ) {
             return Response.notFound();
         } else {
-            var contentType = mimetypeOf( FilenameUtils.getExtension( path ) ).orElse( ContentTypes.APPLICATION_OCTET_STREAM );
+            var contentType = mimetypeOf( FilenameUtils.getExtension( path ) ).orElse( Http.ContentType.APPLICATION_OCTET_STREAM );
 
             return Response.ok().withContentType( contentType ).withBody( bytes );
         }

@@ -25,29 +25,28 @@
 package oap.ws.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.server.nio.HttpServerExchange;
-import oap.reflect.Reflection;
+import oap.ws.InvocationContext;
 import oap.ws.Response;
-import oap.ws.Session;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class Interceptors {
-    public static boolean before( List<Interceptor> interceptors, HttpServerExchange exchange, Session session, Reflection.Method method ) {
+    public static Optional<Response> before( List<Interceptor> interceptors, InvocationContext context ) {
         for( var interceptor : interceptors ) {
             log.trace( "running before call {}", interceptor.getClass().getSimpleName() );
-            var response = interceptor.before( exchange, session, method );
-            if( response ) return true;
+            var response = interceptor.before( context );
+            if( response.isPresent() ) return response;
         }
-        return false;
+        return Optional.empty();
     }
 
-    public static void after( List<Interceptor> interceptors, Response response, Session session ) {
+    public static void after( List<Interceptor> interceptors, Response response, InvocationContext context ) {
         for( var i = interceptors.size() - 1; i >= 0; i-- ) {
             var interceptor = interceptors.get( i );
             log.trace( "running after call {}", interceptor.getClass().getSimpleName() );
-            interceptor.after( response, session );
+            interceptor.after( response, context );
         }
     }
 }

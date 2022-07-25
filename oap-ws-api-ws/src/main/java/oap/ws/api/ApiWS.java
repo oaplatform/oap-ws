@@ -106,6 +106,7 @@ public class ApiWS {
                 result += "\tMethod " + m.name() + "\n";
                 result += "\t" + Arrays.toString( d.methods ) + " /" + context + d.path + "\n";
                 result += "\tProduces " + d.produces + "\n";
+                result += "\tRealm param " + formatRealm( m ) + "\n";
                 result += "\tPermissions " + formatPermissions( m ) + "\n";
                 result += "\tReturns " + formatType( 3, r, m.returnType() ) + "\n";
                 List<Reflection.Parameter> params = Lists.filter( m.parameters, ApiWS::filterParameter );
@@ -122,6 +123,12 @@ public class ApiWS {
             result += "\n";
         }
         return result;
+    }
+
+    private String formatRealm( Reflection.Method method ) {
+        return method.findAnnotation( WsSecurity.class )
+            .map( WsSecurity::realm )
+            .orElse( "<unsecure>" );
     }
 
     private String formatPermissions( Reflection.Method method ) {

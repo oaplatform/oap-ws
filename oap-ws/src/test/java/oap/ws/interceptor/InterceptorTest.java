@@ -25,13 +25,14 @@
 package oap.ws.interceptor;
 
 import oap.application.testng.KernelFixture;
-import oap.http.HttpStatusCodes;
-import oap.http.server.nio.HttpServerExchange;
-import oap.reflect.Reflection;
 import oap.testng.Fixtures;
-import oap.ws.Session;
+import oap.ws.InvocationContext;
+import oap.ws.Response;
 import org.testng.annotations.Test;
 
+import java.util.Optional;
+
+import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
@@ -44,7 +45,7 @@ public class InterceptorTest extends Fixtures {
     @Test
     public void shouldNotAllowRequestWhenErrorInterceptor() {
         assertGet( httpUrl( "/interceptor/text?value=error" ) )
-            .hasCode( HttpStatusCodes.FORBIDDEN )
+            .hasCode( FORBIDDEN )
             .hasReason( "caused by interceptor" );
     }
 
@@ -58,22 +59,17 @@ public class InterceptorTest extends Fixtures {
 
     private static class PassInterceptor implements Interceptor {
         @Override
-        public boolean before( HttpServerExchange exchange, Session session, Reflection.Method method ) {
-            return false;
+        public Optional<Response> before( InvocationContext context ) {
+            return Optional.empty();
         }
     }
 
     private static class ErrorInterceptor implements Interceptor {
         @Override
-        public boolean before( HttpServerExchange exchange, Session session, Reflection.Method method ) {
-            var value = exchange.getStringParameter( "value" );
-
-            if( "error".equals( value ) ) {
-                exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, "caused by interceptor" );
-                return true;
-            }
-
-            return false;
+        public Optional<Response> before( InvocationContext context ) {
+            return "error".equals( context.exchange.getStringParameter( "value" ) )
+                ? Optional.of( new Response( FORBIDDEN, "caused by interceptor" ) )
+                : Optional.empty();
         }
     }
 }

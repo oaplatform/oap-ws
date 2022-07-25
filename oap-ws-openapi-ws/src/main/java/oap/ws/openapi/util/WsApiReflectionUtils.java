@@ -24,10 +24,10 @@
 
 package oap.ws.openapi.util;
 
-import oap.ws.openapi.WsOpenapi;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.ws.WsParam;
+import oap.ws.openapi.WsOpenapi;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Modifier;

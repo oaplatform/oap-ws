@@ -25,8 +25,7 @@
 package oap.ws;
 
 import oap.application.testng.KernelFixture;
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
@@ -46,7 +45,7 @@ public class WebServicesSessionTest extends Fixtures {
     @Test
     public void sessionViaResponse() {
         assertGet( httpUrl( "/session/put" ), Map.of( "value", "vvv" ), Map.of() )
-            .hasCode( HttpStatusCodes.NO_CONTENT );
+            .hasCode( Http.StatusCode.NO_CONTENT );
         assertGet( httpUrl( "/session/get" ) )
             .isOk()
             .hasBody( "vvv" );
@@ -55,7 +54,7 @@ public class WebServicesSessionTest extends Fixtures {
     @Test
     public void sessionDirectly() {
         assertGet( httpUrl( "/session/putDirectly" ), Map.of( "value", "vvv" ), Map.of() )
-            .hasCode( HttpStatusCodes.NO_CONTENT );
+            .hasCode( Http.StatusCode.NO_CONTENT );
         assertGet( httpUrl( "/session/get" ) )
             .isOk()
             .hasBody( "vvv" );
@@ -64,11 +63,11 @@ public class WebServicesSessionTest extends Fixtures {
     @Test
     public void respondHtmlContentType() {
         assertGet( httpUrl( "/session/putDirectly" ), Map.of( "value", "vvv" ), Map.of() )
-            .hasCode( HttpStatusCodes.NO_CONTENT );
+            .hasCode( Http.StatusCode.NO_CONTENT );
         assertGet( httpUrl( "/session/html" ) )
             .isOk()
             .hasBody( "vvv" )
-            .hasContentType( ContentTypes.TEXT_HTML );
+            .hasContentType( Http.ContentType.TEXT_HTML );
     }
 
     @SuppressWarnings( "unused" )

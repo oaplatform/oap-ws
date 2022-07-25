@@ -24,8 +24,7 @@
 package oap.ws.validate;
 
 import oap.application.testng.KernelFixture;
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.testng.Fixtures;
 import oap.ws.Response;
 import oap.ws.WsMethod;
@@ -52,32 +51,32 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
 
     @Test
     public void validationDefault() {
-        assertPost( httpUrl( "/mvpm/run/validation/default" ), "test", ContentTypes.TEXT_PLAIN )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "\"test\"" );
+        assertPost( httpUrl( "/mvpm/run/validation/default" ), "test", Http.ContentType.TEXT_PLAIN )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.APPLICATION_JSON, "\"test\"" );
     }
 
     @Test
     public void validationOk() {
-        assertPost( httpUrl( "/mvpm/run/validation/ok" ), "test", ContentTypes.TEXT_PLAIN )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "test" );
+        assertPost( httpUrl( "/mvpm/run/validation/ok" ), "test", Http.ContentType.TEXT_PLAIN )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "test" );
     }
 
     @Test
     public void validationFail() {
-        assertPost( httpUrl( "/mvpm/run/validation/fail" ), "test", ContentTypes.TEXT_PLAIN )
-            .respondedJson( HttpStatusCodes.BAD_REQUEST, "validation failed", "{\"errors\":[\"error1\",\"error2\"]}" );
+        assertPost( httpUrl( "/mvpm/run/validation/fail" ), "test", Http.ContentType.TEXT_PLAIN )
+            .respondedJson( Http.StatusCode.BAD_REQUEST, "validation failed", "{\"errors\":[\"error1\",\"error2\"]}" );
     }
 
     @Test
     public void validationFailCode() {
-        assertPost( httpUrl( "/mvpm/run/validation/fail-code" ), "test", ContentTypes.TEXT_PLAIN )
-            .respondedJson( HttpStatusCodes.FORBIDDEN, "validation failed", "{\"errors\":[\"denied\"]}" );
+        assertPost( httpUrl( "/mvpm/run/validation/fail-code" ), "test", Http.ContentType.TEXT_PLAIN )
+            .respondedJson( Http.StatusCode.FORBIDDEN, "validation failed", "{\"errors\":[\"denied\"]}" );
     }
 
     @Test
     public void validationMethods() {
         assertGet( httpUrl( "/mvpm/run/validation/methods?a=a&b=5&c=c" ) )
-            .respondedJson( HttpStatusCodes.BAD_REQUEST, "validation failed", "{\"errors\":[\"a\",\"a5\",\"5a\"]}" );
+            .respondedJson( Http.StatusCode.BAD_REQUEST, "validation failed", "{\"errors\":[\"a\",\"a5\",\"5a\"]}" );
     }
 
     public static class TestWS {
@@ -134,7 +133,7 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
         }
 
         protected ValidationErrors validateFailCode( String request ) {
-            return error( HttpStatusCodes.FORBIDDEN, "denied" );
+            return error( Http.StatusCode.FORBIDDEN, "denied" );
         }
     }
 }

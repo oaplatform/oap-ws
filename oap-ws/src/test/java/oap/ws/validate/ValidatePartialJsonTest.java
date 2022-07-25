@@ -25,8 +25,7 @@
 package oap.ws.validate;
 
 import oap.application.testng.KernelFixture;
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.testng.Fixtures;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
@@ -52,23 +51,23 @@ public class ValidatePartialJsonTest extends Fixtures {
     @Test
     public void validation1() {
         bean = new TestBean( "id1" );
-        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"id\":1}", ContentTypes.APPLICATION_JSON )
-            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
-        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"b\":[{\"element\":\"test\"}],\"id\":1}", ContentTypes.APPLICATION_JSON )
-            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{\"id\":1,\"b\":[{\"element\":\"test\"}]}],\"id\":\"id1\"}" );
-        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{}", ContentTypes.APPLICATION_JSON )
-            .responded( HttpStatusCodes.BAD_REQUEST, "validation failed", ContentTypes.APPLICATION_JSON, "{\"errors\":[\"/a/1/id: required property is missing\"]}" );
+        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"id\":1}", Http.ContentType.APPLICATION_JSON )
+            .respondedJson( Http.StatusCode.OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"b\":[{\"element\":\"test\"}],\"id\":1}", Http.ContentType.APPLICATION_JSON )
+            .respondedJson( Http.StatusCode.OK, "OK", "{\"a\":[{\"id\":1,\"b\":[{\"element\":\"test\"}]}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{}", Http.ContentType.APPLICATION_JSON )
+            .responded( Http.StatusCode.BAD_REQUEST, "validation failed", Http.ContentType.APPLICATION_JSON, "{\"errors\":[\"/a/1/id: required property is missing\"]}" );
     }
 
     @Test
     public void validation2() {
         bean = new TestBean( "id1" );
-        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"id\":1}", ContentTypes.APPLICATION_JSON )
-            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
-        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{}", ContentTypes.APPLICATION_JSON )
-            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{}],\"id\":\"id1\"}" );
-        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"c\":1}", ContentTypes.APPLICATION_JSON )
-            .responded( HttpStatusCodes.BAD_REQUEST, "validation failed", ContentTypes.APPLICATION_JSON, "{\"errors\":[\"/a/1: additional properties are not permitted [c]\"]}" );
+        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"id\":1}", Http.ContentType.APPLICATION_JSON )
+            .respondedJson( Http.StatusCode.OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{}", Http.ContentType.APPLICATION_JSON )
+            .respondedJson( Http.StatusCode.OK, "OK", "{\"a\":[{}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"c\":1}", Http.ContentType.APPLICATION_JSON )
+            .responded( Http.StatusCode.BAD_REQUEST, "validation failed", Http.ContentType.APPLICATION_JSON, "{\"errors\":[\"/a/1: additional properties are not permitted [c]\"]}" );
     }
 
     @Test
@@ -82,8 +81,8 @@ public class ValidatePartialJsonTest extends Fixtures {
 
         bean.a.add( itemA );
         bean.a.add( itemB );
-        assertPost( httpUrl( "/vpj/run/validation/3/id1/2" ), "{\"element\":\"some text\"}", ContentTypes.APPLICATION_JSON )
-            .respondedJson( HttpStatusCodes.OK, "OK", "{\"a\":[{\"id\":1},{\"id\":2,\"b\":[{\"element\":\"some text\"}]}],\"id\":\"id1\"}" );
+        assertPost( httpUrl( "/vpj/run/validation/3/id1/2" ), "{\"element\":\"some text\"}", Http.ContentType.APPLICATION_JSON )
+            .respondedJson( Http.StatusCode.OK, "OK", "{\"a\":[{\"id\":1},{\"id\":2,\"b\":[{\"element\":\"some text\"}]}],\"id\":\"id1\"}" );
     }
 
     @SuppressWarnings( "unused" )

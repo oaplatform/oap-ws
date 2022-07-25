@@ -24,7 +24,7 @@
 
 package oap.ws.sso.testng;
 
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import org.joda.time.DateTime;
 
 import static oap.http.testng.HttpAsserts.CookieHttpAssertion.assertCookie;
@@ -45,7 +45,7 @@ public class SecureWSFixture {
 
     public static void assertLogin( String login, String password, int port ) {
         assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
-            .hasCode( HttpStatusCodes.OK )
+            .hasCode( Http.StatusCode.OK )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasPath( "/" )
                 .isHttpOnly() );
@@ -54,7 +54,7 @@ public class SecureWSFixture {
     public static void assertLogin( String login, String password, String tfaCode, int port ) {
         assertPost( httpUrl( port, "/auth/login" ),
             String.format( "{  \"email\": \"%s\",  \"password\": \"%s\", \"tfaCode\": \"%s\"}", login, password, tfaCode ) )
-            .hasCode( HttpStatusCodes.OK )
+            .hasCode( Http.StatusCode.OK )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasPath( "/" )
                 .isHttpOnly() );
@@ -62,7 +62,7 @@ public class SecureWSFixture {
 
     public static void assertTfaRequiredLogin( String login, String password, int port ) {
         assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
-            .hasCode( HttpStatusCodes.BAD_REQUEST )
+            .hasCode( Http.StatusCode.BAD_REQUEST )
             .hasReason( "TFA code is incorrect or required" );
     }
 
@@ -72,7 +72,7 @@ public class SecureWSFixture {
 
     public static void assertLogout( int port ) {
         assertGet( httpUrl( port, "/auth/logout" ) )
-            .hasCode( HttpStatusCodes.NO_CONTENT )
+            .hasCode( Http.StatusCode.NO_CONTENT )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasValue( "<logged out>" )
                 .expiresAt( new DateTime( 1970, 1, 1, 1, 1, UTC ) ) );

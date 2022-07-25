@@ -25,8 +25,7 @@
 package oap.ws.file;
 
 import oap.application.testng.KernelFixture;
-import oap.http.ContentTypes;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.io.Files;
 import oap.testng.Env;
 import oap.testng.Fixtures;
@@ -47,12 +46,12 @@ public class FileWSTest extends Fixtures {
 
     @Test
     public void upload() {
-        assertPost( httpUrl( "/file" ), contentOfTestResource( getClass(), "data-complex.json" ), ContentTypes.APPLICATION_JSON )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "file.txt" );
+        assertPost( httpUrl( "/file" ), contentOfTestResource( getClass(), "data-complex.json" ), Http.ContentType.APPLICATION_JSON )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "file.txt" );
         assertThat( Env.tmpPath( "default/file.txt" ) ).hasContent( "test" );
 
-        assertPost( httpUrl( "/file?bucket=b1" ), contentOfTestResource( getClass(), "data-single.json" ), ContentTypes.APPLICATION_JSON )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "file.txt" );
+        assertPost( httpUrl( "/file?bucket=b1" ), contentOfTestResource( getClass(), "data-single.json" ), Http.ContentType.APPLICATION_JSON )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "file.txt" );
         assertThat( Env.tmpPath( "b1/file.txt" ) ).hasContent( "test" );
     }
 
@@ -60,11 +59,11 @@ public class FileWSTest extends Fixtures {
     public void download() {
         Files.writeString( Env.tmpPath( "default/test.txt" ), "test" );
         assertGet( httpUrl( "/file?path=test.txt" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "test" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "test" );
 
         Files.writeString( Env.tmpPath( "b1/test.txt" ), "b1test" );
         assertGet( httpUrl( "/file?path=test.txt&bucket=b1" ) )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.TEXT_PLAIN, "b1test" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "b1test" );
     }
 
 }

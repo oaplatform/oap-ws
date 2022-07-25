@@ -25,18 +25,17 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.http.HttpStatusCodes;
-import oap.http.server.nio.HttpServerExchange;
-import oap.reflect.Reflection;
-import oap.ws.Session;
+import oap.ws.InvocationContext;
+import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
 
-import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.Temporal;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 /**
@@ -61,16 +60,12 @@ public class ThrottleLoginInterceptor implements Interceptor {
     }
 
     @Override
-    public boolean before( @Nonnull HttpServerExchange exchange, Session session, @Nonnull Reflection.Method method ) {
-        var id = session.id;
-        if( validateId( id ) || session.containsKey( SESSION_USER_KEY ) ) {
-            return false;
-        } else {
-            if( log.isTraceEnabled() )
-                log.trace( "Please wait {} seconds before next attempt", delay );
-            exchange.setStatusCodeReasonPhrase( HttpStatusCodes.FORBIDDEN, "Please wait " + delay + " seconds before next attempt" );
-            exchange.endExchange();
-            return true;
+    public Optional<Response> before( InvocationContext context ) {
+        var id = context.session.id;
+        if( validateId( id ) || context.session.containsKey( SESSION_USER_KEY ) ) return Optional.empty();
+        else {
+            log.trace( "Please wait {} seconds before next attempt", delay );
+            return Optional.of( new Response( FORBIDDEN, "Please wait " + delay + " seconds before next attempt" ) );
         }
     }
 
@@ -85,12 +80,11 @@ public class ThrottleLoginInterceptor implements Interceptor {
         if( ts != null ) {
             var duration = Duration.between( ts, now );
             if( duration.getSeconds() <= this.delay ) {
-                if( log.isTraceEnabled() )
-                    log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
+                log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
                 attemptCache.computeIfPresent( id, ( k, v ) -> now );
                 return false;
             } else {
-                if( log.isTraceEnabled() ) log.trace( "{} key has expired {}", id, duration.getSeconds() );
+                log.trace( "{} key has expired {}", id, duration.getSeconds() );
                 attemptCache.remove( id );
                 return true;
             }

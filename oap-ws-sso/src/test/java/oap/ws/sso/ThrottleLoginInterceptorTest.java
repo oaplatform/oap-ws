@@ -24,25 +24,27 @@
 
 package oap.ws.sso;
 
-import oap.http.HttpStatusCodes;
+import oap.concurrent.Threads;
 import oap.http.testng.HttpAsserts;
 import org.testng.annotations.Test;
 
+import static oap.http.Http.StatusCode.FORBIDDEN;
+import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.util.Pair.__;
 import static oap.ws.sso.Roles.ADMIN;
 
 public class ThrottleLoginInterceptorTest extends IntegratedTest {
     @Test
-    public void deniedAccept() throws Exception {
-        userProvider().addUser( "test1@user.com", "pass1", ADMIN );
+    public void deniedAccept() {
+        userProvider().addUser( "test1@user.com", "pass1", __( "realm", ADMIN ) );
 
-        login( "test1@user.com", "pass" ).hasCode( HttpStatusCodes.UNAUTHORIZED );
-        login( "test1@user.com", "pass1" ).hasCode( HttpStatusCodes.FORBIDDEN ).hasReason( "Please wait 5 seconds before next attempt" );
-        Thread.sleep( 1000 * 7 );
+        login( "test1@user.com", "pass" ).hasCode( UNAUTHORIZED );
+        login( "test1@user.com", "pass1" ).hasCode( FORBIDDEN ).hasReason( "Please wait 5 seconds before next attempt" );
+        Threads.sleepSafely( 1000 * 7 );
         login( "test1@user.com", "pass1" ).isOk();
     }
-
 
     public HttpAsserts.HttpAssertion login( String login, String password ) {
         return assertPost( httpUrl( "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" );

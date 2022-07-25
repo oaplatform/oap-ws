@@ -26,7 +26,7 @@ package oap.ws.openapi;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
-import oap.http.HttpStatusCodes;
+import oap.http.Http;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
@@ -46,7 +46,7 @@ public class OpenapiWSTest extends Fixtures {
     @Test
     public void api() {
         assertGet( httpUrl( "/system/openapi" ) )
-            .respondedJson( HttpStatusCodes.OK, "OK",
+            .respondedJson( Http.StatusCode.OK, "OK",
                 contentOfTestResource( getClass(), "openapi.json", Map.of() ) );
     }
 }

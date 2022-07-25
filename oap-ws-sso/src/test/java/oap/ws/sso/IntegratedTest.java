@@ -30,11 +30,14 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
+import oap.util.Pair;
 import oap.util.Result;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static oap.io.Resources.urlOrThrow;
@@ -57,7 +60,7 @@ public class IntegratedTest extends Fixtures {
     public static class TestUserProvider implements UserProvider {
         public final List<TestUser> users = new ArrayList<>();
 
-        public TestUser addUser( String email, String password, String role ) {
+        public TestUser addUser( String email, String password, Pair<String, String> role ) {
             return addUser( new TestUser( email, password, role ) );
         }
 
@@ -101,20 +104,20 @@ public class IntegratedTest extends Fixtures {
     public static class TestUser implements User {
         public final String email;
         public final String password;
-        public final String role;
+        public final Map<String, String> roles = new HashMap<>();
         public final boolean tfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
         public final View view = new View();
 
-        public TestUser( String email, String password, String role ) {
+        public TestUser( String email, String password, Pair<String, String> role ) {
             this( email, password, role, false );
         }
 
-        public TestUser( String email, String password, String role, boolean tfaEnabled ) {
+        public TestUser( String email, String password, Pair<String, String> role, boolean tfaEnabled ) {
             this.email = email;
             this.password = password;
-            this.role = role;
+            this.roles.put( role._1, role._2 );
             this.tfaEnabled = tfaEnabled;
         }
 
@@ -124,8 +127,8 @@ public class IntegratedTest extends Fixtures {
         }
 
         @Override
-        public String getRole() {
-            return role;
+        public Optional<String> getRole( String realm ) {
+            return Optional.ofNullable( roles.get( realm ) );
         }
 
         @Override
@@ -141,11 +144,6 @@ public class IntegratedTest extends Fixtures {
             @Override
             public String getEmail() {
                 return TestUser.this.getEmail();
-            }
-
-            @Override
-            public String getRole() {
-                return TestUser.this.getRole();
             }
         }
 

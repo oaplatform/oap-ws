@@ -56,10 +56,8 @@ public class WsParams {
 
     public static Object fromSession( Session session, Reflection.Parameter parameter ) {
         if( session == null ) return null;
-        Optional<Object> ret = session.get( parameter.name() );
-        if( parameter.type().isOptional() ) return ret;
-
-        return ret.orElse( null );
+        Optional<Object> value = session.get( parameter.name() );
+        return wrapOptional( parameter, value.orElse( null ) );
     }
 
     public static Object fromHeader( HttpServerExchange exchange, Reflection.Parameter parameter, WsParam wsParam ) {
@@ -74,14 +72,7 @@ public class WsParams {
             value = exchange.getRequestHeader( name );
             if( value != null ) break;
         }
-
         return wrapOptional( parameter, value );
-    }
-
-    public static Object unwrapOptionalOfRequired( Reflection.Parameter parameter, Optional<?> opt ) {
-        if( parameter.type().isOptional() ) return opt;
-
-        return opt.orElseThrow( () -> new WsClientException( parameter.name() + " is required" ) );
     }
 
     public static Object wrapOptional( Reflection.Parameter parameter, Object value ) throws WsClientException {
