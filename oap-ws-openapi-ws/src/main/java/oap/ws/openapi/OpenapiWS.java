@@ -189,6 +189,8 @@ public class OpenapiWS {
         result.setIn( from );
         if( WsParam.From.PATH.name().toLowerCase().equals( from ) ) {
             result.setRequired( true );
+        } else if( WsParam.From.QUERY.name().toLowerCase().equals( from ) && !parameter.type().isOptional() ) {
+            result.setRequired( true );
         }
         var resolvedSchema = this.converters.readAllAsResolvedSchema( prepareType( parameter.type() ) );
         if( resolvedSchema != null ) {

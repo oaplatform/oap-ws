@@ -13,8 +13,12 @@ import static oap.ws.WsParam.From.QUERY;
 @WsOpenapi( tag = "Test" )
 public class ExtTestWS {
 
-    @WsMethod( method = GET, path = "/test/empty/{id}", description = "This method returns nothing (Void)")
+    @WsMethod( method = GET, path = "/test/empty_optional_param/{id}", description = "This method returns nothing (Void)" )
     public void testVoid( @WsParam( from = PATH ) String id,
                           @WsParam( from = QUERY ) Optional<Integer> limit ) {
+    }
+
+    @WsMethod( method = GET, path = "/test/empty_required_param/", description = "This method returns nothing (Void)" )
+    public void testVoid( @WsParam( from = QUERY ) Integer limit ) {
     }
 }

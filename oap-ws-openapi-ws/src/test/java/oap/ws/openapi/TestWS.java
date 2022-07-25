@@ -42,7 +42,7 @@ import static oap.ws.WsParam.From.PATH;
 @WsOpenapi( tag = "Test" )
 class TestWS {
 
-    @WsMethod( method = GET, id = "returnTwo", path = "/", description = "Returns a simple word Two as a result.")
+    @WsMethod( method = GET, id = "returnTwo", path = "/", description = "Returns a simple word Two as a result." )
     public int test() {
         return 2;
     }

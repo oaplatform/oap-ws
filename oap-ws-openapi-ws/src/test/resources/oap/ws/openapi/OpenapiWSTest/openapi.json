@@ -1,756 +1,674 @@
 {
-  "components": {
-    "requestBodies": {
-      "Bean": {
-        "content": {
-          "application/json": {
-            "exampleSetFlag": false,
-            "schema": {
-              "$ref": "#/components/schemas/Bean",
-              "exampleSetFlag": false
+  "components" : {
+    "requestBodies" : {
+      "Bean" : {
+        "content" : {
+          "application/json" : {
+            "exampleSetFlag" : false,
+            "schema" : {
+              "$ref" : "#/components/schemas/Bean",
+              "exampleSetFlag" : false
             }
           }
         }
       }
     },
-    "schemas": {
-      "Bean": {
-        "exampleSetFlag": false,
-        "properties": {
-          "b2": {
-            "$ref": "#/components/schemas/Bean2",
-            "exampleSetFlag": false
+    "schemas" : {
+      "Bean" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "b2" : {
+            "$ref" : "#/components/schemas/Bean2",
+            "exampleSetFlag" : false
           },
-          "dt": {
-            "exampleSetFlag": false,
-            "format": "date-time",
-            "type": "string"
+          "dt" : {
+            "exampleSetFlag" : false,
+            "format" : "date-time",
+            "type" : "string"
           },
-          "ext": {
-            "$ref": "#/components/schemas/Ext",
-            "exampleSetFlag": false
+          "ext" : {
+            "$ref" : "#/components/schemas/Ext",
+            "exampleSetFlag" : false
           },
-          "i": {
-            "exampleSetFlag": false,
-            "format": "int32",
-            "type": "integer"
+          "i" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
           },
-          "s": {
-            "exampleSetFlag": false,
-            "type": "string"
+          "s" : {
+            "exampleSetFlag" : false,
+            "type" : "string"
           },
-          "something": {
-            "exampleSetFlag": false,
-            "type": "string"
+          "something" : {
+            "exampleSetFlag" : false,
+            "type" : "string"
           }
         },
-        "type": "object"
+        "type" : "object"
       },
-      "Bean2": {
-        "exampleSetFlag": false,
-        "properties": {
-          "x": {
-            "exampleSetFlag": false,
-            "format": "int32",
-            "type": "integer"
+      "Bean2" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "x" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
           }
         },
-        "type": "object"
+        "type" : "object"
       },
-      "Ext": {
-        "exampleSetFlag": false,
-        "type": "object"
+      "Ext" : {
+        "exampleSetFlag" : false,
+        "type" : "object"
       }
     }
   },
-  "info": {
-    "description": "Test description",
-    "title": "Test title",
-    "version": "0.1.1"
+  "info" : {
+    "description" : "Test description",
+    "title" : "Test title",
+    "version" : "0.1.1"
   },
-  "openapi": "3.0.3",
-  "paths": {
-    "/api/": {
-      "get": {
-        "description": "Returns a simple word Two as a result.",
-        "operationId": "returnTwo",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "format": "int32",
-                  "type": "integer"
+  "openapi" : "3.0.3",
+  "paths" : {
+    "/api/" : {
+      "get" : {
+        "description" : "Returns a simple word Two as a result.",
+        "operationId" : "returnTwo",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/bean": {
-      "get": {
-        "description": "",
-        "operationId": "bean",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "i",
-            "schema": {
-              "exampleSetFlag": false,
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "s",
-            "schema": {
-              "exampleSetFlag": false,
-              "type": "string"
-            }
+    "/api/bean" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "bean",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "i",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "items": {
-                    "$ref": "#/components/schemas/Bean",
-                    "exampleSetFlag": false
+        }, {
+          "in" : "query",
+          "name" : "s",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "items" : {
+                    "$ref" : "#/components/schemas/Bean",
+                    "exampleSetFlag" : false
                   },
-                  "type": "array"
+                  "type" : "array"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/bytes": {
-      "get": {
-        "description": "",
-        "operationId": "bytes",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "exampleSetFlag": false,
-              "schema": {
-                "exampleSetFlag": false,
-                "items": {
-                  "exampleSetFlag": false,
-                  "format": "byte",
-                  "type": "string"
+    "/api/bytes" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "bytes",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "items" : {
+                  "exampleSetFlag" : false,
+                  "format" : "byte",
+                  "type" : "string"
                 },
-                "type": "array"
+                "type" : "array"
               }
             }
           }
         },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/code": {
-      "get": {
-        "description": "",
-        "operationId": "code",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "code",
-            "schema": {
-              "exampleSetFlag": false,
-              "format": "int32",
-              "type": "integer"
-            }
+    "/api/code" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "code",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "code",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/en": {
-      "get": {
-        "description": "",
-        "operationId": "en",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "a",
-            "schema": {
-              "_enum": [
-                "SOURCE",
-                "CLASS",
-                "RUNTIME"
-              ],
-              "enum": [
-                "SOURCE",
-                "CLASS",
-                "RUNTIME"
-              ],
-              "exampleSetFlag": false,
-              "type": "string"
-            }
+    "/api/en" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "en",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "_enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+            "enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+            "exampleSetFlag" : false,
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "_enum": [
-                    "SOURCE",
-                    "CLASS",
-                    "RUNTIME"
-                  ],
-                  "enum": [
-                    "SOURCE",
-                    "CLASS",
-                    "RUNTIME"
-                  ],
-                  "exampleSetFlag": false,
-                  "type": "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "_enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+                  "enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/id": {
-      "get": {
-        "description": "",
-        "operationId": "id",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "a",
-            "schema": {
-              "exampleSetFlag": false,
-              "type": "string"
-            }
+    "/api/id" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "id",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/json": {
-      "get": {
-        "description": "",
-        "operationId": "json",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "exampleSetFlag": false,
-              "schema": {
-                "$ref": "#/components/schemas/Bean",
-                "exampleSetFlag": false
+    "/api/json" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "json",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "$ref" : "#/components/schemas/Bean",
+                "exampleSetFlag" : false
               }
             }
           }
         },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "$ref": "#/components/schemas/Bean",
-                  "exampleSetFlag": false
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "$ref" : "#/components/schemas/Bean",
+                  "exampleSetFlag" : false
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/list": {
-      "get": {
-        "description": "",
-        "operationId": "list",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "exampleSetFlag": false,
-              "schema": {
-                "exampleSetFlag": false,
-                "items": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+    "/api/list" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "list",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "items" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 },
-                "type": "array"
+                "type" : "array"
               }
             }
           }
         },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "items": {
-                    "exampleSetFlag": false,
-                    "type": "string"
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "items" : {
+                    "exampleSetFlag" : false,
+                    "type" : "string"
                   },
-                  "type": "array"
+                  "type" : "array"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/req": {
-      "get": {
-        "description": "",
-        "operationId": "req",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+    "/api/req" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "req",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/string": {
-      "get": {
-        "description": "",
-        "operationId": "string",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "exampleSetFlag": false,
-              "schema": {
-                "exampleSetFlag": false,
-                "type": "string"
+    "/api/string" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "string",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "type" : "string"
               }
             }
           }
         },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/sumab": {
-      "get": {
-        "description": "",
-        "operationId": "sumab",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "a",
-            "schema": {
-              "exampleSetFlag": false,
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "b",
-            "schema": {
-              "exampleSetFlag": false,
-              "format": "int32",
-              "type": "integer"
-            }
+    "/api/sumab" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "sumab",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "format": "int32",
-                  "type": "integer"
+        }, {
+          "in" : "query",
+          "name" : "b",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/sumabopt": {
-      "get": {
-        "description": "",
-        "operationId": "sumabopt",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "a",
-            "schema": {
-              "exampleSetFlag": false,
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "b",
-            "schema": {
-              "exampleSetFlag": false,
-              "format": "int32",
-              "type": "integer"
-            }
+    "/api/sumabopt" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "sumabopt",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "format": "int32",
-                  "type": "integer"
+        }, {
+          "in" : "query",
+          "name" : "b",
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/test/sort/default": {
-      "get": {
-        "description": "",
-        "operationId": "test2",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+    "/api/test/sort/default" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "test2",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/test/sort/{id}": {
-      "get": {
-        "description": "",
-        "operationId": "test1",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "exampleSetFlag": false,
-              "type": "string"
-            }
+    "/api/test/sort/{id}" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "test1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/test/sort={id}/test": {
-      "get": {
-        "description": "",
-        "operationId": "testEqual",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "exampleSetFlag": false,
-              "type": "string"
-            }
+    "/api/test/sort={id}/test" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "testEqual",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/test/sort={id}/test": {
-      "get": {
-        "description": "",
-        "operationId": "testEqual",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "exampleSetFlag": false,
-              "type": "string"
-            }
+    "/api/x" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "x",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "i",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "type": "string"
+        }, {
+          "in" : "query",
+          "name" : "s",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/api/x": {
-      "get": {
-        "description": "",
-        "operationId": "x",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "i",
-            "schema": {
-              "exampleSetFlag": false,
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "s",
-            "schema": {
-              "exampleSetFlag": false,
-              "type": "string"
-            }
+    "/apiExt/test/empty_optional_param/{id}" : {
+      "get" : {
+        "description" : "This method returns nothing (Void)",
+        "operationId" : "testVoid",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "exampleSetFlag": false,
-                  "format": "int32",
-                  "type": "integer"
-                }
-              }
-            },
-            "description": ""
+        }, {
+          "in" : "query",
+          "name" : "limit",
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/apiExt/test/empty/{id}": {
-      "get": {
-        "description": "This method returns nothing (Void)",
-        "operationId": "testVoid",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "exampleSetFlag": false,
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "schema": {
-              "exampleSetFlag": false,
-              "format": "int32",
-              "type": "integer"
-            }
+    "/apiExt/test/empty_required_param/" : {
+      "get" : {
+        "description" : "This method returns nothing (Void)",
+        "operationId" : "testVoid",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "limit",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     },
-    "/apigeneric": {
-      "get": {
-        "description": "",
-        "operationId": "getParametrizedMap",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "exampleSetFlag": false,
-                "schema": {
-                  "additionalProperties": {
-                    "exampleSetFlag": false,
-                    "items": {
-                      "$ref": "#/components/schemas/Bean",
-                      "exampleSetFlag": false
+    "/apigeneric" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "getParametrizedMap",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "additionalProperties" : {
+                    "exampleSetFlag" : false,
+                    "items" : {
+                      "$ref" : "#/components/schemas/Bean",
+                      "exampleSetFlag" : false
                     },
-                    "type": "array"
+                    "type" : "array"
                   },
-                  "exampleSetFlag": false,
-                  "type": "object"
+                  "exampleSetFlag" : false,
+                  "type" : "object"
                 }
               }
             },
-            "description": ""
+            "description" : ""
           }
         },
-        "tags": [
-          "Test"
-        ]
+        "tags" : [ "Test" ]
       }
     }
   },
-  "tags": [
-    {
-      "name": "Test"
-    },
-    {
-      "name": "Test"
-    }
-  ]
+  "tags" : [ {
+    "name" : "Test"
+  }, {
+    "name" : "Test"
+  } ]
 }
