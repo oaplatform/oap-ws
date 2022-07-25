@@ -39,6 +39,7 @@ public class WsMethodDescriptor {
     public final HttpServerExchange.HttpMethod[] methods;
     public final String produces;
     public final String id;
+    public final String description;
 
     public WsMethodDescriptor( Reflection.Method method ) {
         this.method = method;
@@ -49,11 +50,13 @@ public class WsMethodDescriptor {
             this.methods = wsm.method();
             this.produces = wsm.produces();
             this.id = Strings.isUndefined( wsm.id() ) ? method.name() : wsm.id();
+            this.description = Strings.isUndefined( wsm.description() ) ? "" : wsm.description();
         } else {
             this.path = "/" + method.name();
             this.methods = new HttpServerExchange.HttpMethod[] { GET };
             this.produces = APPLICATION_JSON.getMimeType();
             this.id = method.name();
+            this.description = "";
         }
     }
 }
