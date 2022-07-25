@@ -91,12 +91,6 @@ public class WebServicesTest extends Fixtures {
     }
 
     @Test
-    public void voidMethod() {
-        assertGet( httpUrl( "/test/empty/4" ), Map.of(), Map.of() )
-            .responded( HttpStatusCodes.OK, "OK", ContentTypes.APPLICATION_JSON, "" );
-    }
-
-    @Test
     public void cookie() {
         assertGet( httpUrl( "/x/v/math/cookie" ), Map.of(), Map.of( "Cookie", "cookie=theCookie;Really-Cool-Cookie=ohoh" ) )
             .responded( OK, "OK", APPLICATION_JSON, "\"theCookieohoh\"" );
