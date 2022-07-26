@@ -15,10 +15,10 @@ public class ExtTestWS {
 
     @WsMethod( method = GET, path = "/test/empty_optional_param/{id}", description = "This method returns nothing (Void)" )
     public void testVoid( @WsParam( from = PATH ) String id,
-                          @WsParam( from = QUERY ) Optional<Integer> limit ) {
+                          @WsParam( from = QUERY, description = "Non obligatory limit, MIGHT be skipped" ) Optional<Integer> limit ) {
     }
 
     @WsMethod( method = GET, path = "/test/empty_required_param/", description = "This method returns nothing (Void)" )
-    public void testVoid( @WsParam( from = QUERY ) Integer limit ) {
+    public void testVoid( @WsParam( from = QUERY, description = "Required parameter, MUST be specified" ) Integer limit ) {
     }
 }

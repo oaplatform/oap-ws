@@ -85,6 +85,16 @@ public class WsApiReflectionUtils {
     }
 
     /**
+     * Retrieves a description from request parameter
+     * @see WsParam.description
+     * @param p - reflection method parameter data
+     * @return - string description for parameter
+     */
+    public static String description( Reflection.Parameter p ) {
+        return p.findAnnotation( WsParam.class ).map( WsParam::description ).orElse( "" );
+    }
+
+    /**
      * Retrieves tag name for service
      * @param reflection - reflection class data
      * @param context - http context path value

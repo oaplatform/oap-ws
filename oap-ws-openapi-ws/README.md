@@ -3,9 +3,9 @@ Generating [OpenApi](https://www.openapis.org) documentation for OAP web service
 
 
 ## General Information 
-- Generates OpenApi (version 3.0+) documentation for all classes which are used as web services in an easy way.
+- Generates OpenApi (version 3.0+) documentation for all classes annotated with @WsOpenapi which are used as web services in an easy way.
 - No need to use swagger annotation for api documentation. Module uses data from reflection to form proper and appropriate document.
-
+- Only methods annotated with @WsMethod are subject to be documented
 
 ## Documentation
 - All necessary information about OpenApi specification could be found in Swagger [docs](https://swagger.io/resources/open-api/) or in original [OAS](https://spec.openapis.org/oas/latest.html).
@@ -38,7 +38,7 @@ OAP-WS-Openapi provides functionality similar to OAP-WS-API module.
 
 - Requires OAS versions support and update.
 - Requires dependency on OAS implementation.
-- Web services which added to module as a dependency can't be easily added to description.
+- Web services which are added to module as a dependency can't be easily added to description.
 
 ## Usage
 Steps to use this module within other oap module
@@ -56,7 +56,7 @@ Steps to use this module within other oap module
     <version>17.3.0.8</version>
 </dependency>
 ```
-- add module as dependency to _oap.module.conf_
+- add 'oap-ws-openapi-ws' module as dependency to _oap.module.conf_
 
 ```
 name: some-module
@@ -65,7 +65,7 @@ services {
 ...
 ```
 
-- mark with @WsOpenapi annotation all services which should be included to OpenApi documentation
+- mark with @WsOpenapi annotation all web-services (classes) which should be included to OpenApi documentation
 
 ```
 @WsOpenapi
@@ -110,3 +110,41 @@ oap-ws-openapi-ws.openapi-info.parameters.title = "Title"
 oap-ws-openapi-ws.openapi-info.parameters.description = "Description"
 oap-ws-openapi-ws.openapi-info.parameters.version = "0.1.1"
 ```
+
+- description field may be used in @WsMethod annotation to explain what method really does 
+```
+@WsOpenapi( tag = "Test" )
+class TestWS {
+
+    @WsMethod( method = GET, id = "returnTwo", path = "/", description = "Returns constantly (int32) number 2" )
+    public int test() {
+        return 2;
+    }
+}
+```
+
+- @WSParam annotation also may have description for a parameter
+```
+@WsOpenapi( tag = "Test" )
+class TestWS {
+
+    @WsMethod( method = GET, id = "returnTwo", path = "/?name=" )
+    public int test( @WsParam( from = QUERY, description = "An integer argument to be used as a result" ) String name ) {
+        return Integer.parseInt( name );
+    }
+}
+```
+
+- Optional parameter automatically marked as not required ( all other parameters treated as obligatory)
+```
+@WsOpenapi( tag = "Test" )
+class TestWS {
+
+    @WsMethod( method = GET, id = "returnTwo", path = "/?name=" )
+    public int test( @WsParam( from = QUERY ) Optional<String> name ) {
+        return name == null ? 2 : Integer.parseInt( name );
+    }
+}
+```
+
+

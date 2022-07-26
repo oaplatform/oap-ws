@@ -600,6 +600,7 @@
         }, {
           "in" : "query",
           "name" : "limit",
+          "description" : "Non obligatory limit, MIGHT be skipped",
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
@@ -621,6 +622,7 @@
         "parameters" : [ {
           "in" : "query",
           "name" : "limit",
+          "description" : "Required parameter, MUST be specified",
           "required" : true,
           "schema" : {
             "exampleSetFlag" : false,
