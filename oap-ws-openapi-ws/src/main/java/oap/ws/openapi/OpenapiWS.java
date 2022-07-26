@@ -194,7 +194,7 @@ public class OpenapiWS {
             result.setRequired( true );
         }
         String description = description( parameter );
-        if( description.trim().length() > 0) result.description( description );
+        if( description.trim().length() > 0 ) result.description( description );
         var resolvedSchema = this.converters.readAllAsResolvedSchema( prepareType( parameter.type() ) );
         if( resolvedSchema != null ) {
             result.setSchema( resolvedSchema.schema );
