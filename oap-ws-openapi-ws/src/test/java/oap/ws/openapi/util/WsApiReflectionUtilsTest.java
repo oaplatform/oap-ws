@@ -58,9 +58,17 @@ public class WsApiReflectionUtilsTest {
 
     @Test
     public void filterMethodShouldFilterPrivateMethod() {
-        var result = WsApiReflectionUtils.filterMethod( wsAnnotatedReflect.method( "tst" ).get() );
+        Reflection.Method tst = wsAnnotatedReflect.method( "tst" ).get();
+        var result = WsApiReflectionUtils.filterMethod( tst );
 
         assertThat( result ).isFalse();
+        assertThat( tst.isAnnotatedWith( WsMethod.class ) ).isTrue();
+
+        WsMethod wsMethod = tst.findAnnotation( WsMethod.class ).get();
+
+        assertThat( wsMethod.method() ).isEqualTo( new HttpServerExchange.HttpMethod[] { GET } );
+        assertThat( wsMethod.description() ).isEqualTo( "described" );
+        assertThat( wsMethod.path() ).isEqualTo( "/tst" );
     }
 
     @Test
@@ -175,7 +183,7 @@ public class WsApiReflectionUtilsTest {
             return 2;
         }
 
-        @WsMethod( method = GET, path = "/tst" )
+        @WsMethod( method = GET, path = "/tst", description = "described" )
         private int tst() {
             return 2;
         }

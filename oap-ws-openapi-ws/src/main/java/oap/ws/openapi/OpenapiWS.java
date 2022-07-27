@@ -51,6 +51,7 @@ import oap.ws.openapi.util.WsApiReflectionUtils;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,7 @@ import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.openapi.util.SchemaUtils.createSchemaRef;
 import static oap.ws.openapi.util.SchemaUtils.prepareSchema;
 import static oap.ws.openapi.util.SchemaUtils.prepareType;
+import static oap.ws.openapi.util.WsApiReflectionUtils.description;
 import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
 import static oap.ws.openapi.util.WsApiReflectionUtils.filterType;
 import static oap.ws.openapi.util.WsApiReflectionUtils.from;
@@ -132,6 +134,7 @@ public class OpenapiWS {
         operation.addTagsItem( tag.getName() );
         operation.setOperationId( wsDescriptor.id );
         operation.setParameters( prepareParameters( params ) );
+        operation.description( wsDescriptor.description );
         operation.setRequestBody( prepareRequestBody( params, api ) );
         operation.setResponses( prepareResponse( returnType, wsDescriptor.produces, api ) );
         return operation;
@@ -144,9 +147,11 @@ public class OpenapiWS {
 
         var resolvedSchema = prepareSchema( type, api );
         response.description( "" );
-        response.content( createContent( produces,
-            createSchemaRef( resolvedSchema.schema, api.getComponents().getSchemas() ) ) );
-
+        if ( type.equals( Void.class ) ) {
+            return responses;
+        }
+        Map<String, Schema> schemas = api.getComponents() == null ? Collections.emptyMap() : api.getComponents().getSchemas();
+        response.content( createContent( produces, createSchemaRef( resolvedSchema.schema, schemas ) ) );
         return responses;
     }
 
@@ -185,7 +190,11 @@ public class OpenapiWS {
         result.setIn( from );
         if( WsParam.From.PATH.name().toLowerCase().equals( from ) ) {
             result.setRequired( true );
+        } else if( WsParam.From.QUERY.name().toLowerCase().equals( from ) && !parameter.type().isOptional() ) {
+            result.setRequired( true );
         }
+        String description = description( parameter );
+        if( description.trim().length() > 0 ) result.description( description );
         var resolvedSchema = this.converters.readAllAsResolvedSchema( prepareType( parameter.type() ) );
         if( resolvedSchema != null ) {
             result.setSchema( resolvedSchema.schema );
