@@ -53,7 +53,7 @@ Steps to use this module within other oap module
 <dependency>
     <groupId>oap</groupId>
     <artifactId>oap-ws-openapi-ws</artifactId>
-    <version>17.3.0.8</version>
+    <version>17.11.0.2</version>
 </dependency>
 ```
 - add 'oap-ws-openapi-ws' module as dependency to _oap.module.conf_
@@ -75,10 +75,9 @@ oap-ws-openapi-ws.openapi-info.parameters.version = "0.1.1"
 
 - description field may be used in @WsMethod annotation to explain what method really does 
 ```
-@WsOpenapi( tag = "Test" )
 class TestWS {
 
-    @WsMethod( method = GET, id = "returnTwo", path = "/", description = "Returns constantly (int32) number 2" )
+    @WsMethod( method = GET, path = "/", description = "Returns constantly (int32) number 2" )
     public int test() {
         return 2;
     }
@@ -87,10 +86,9 @@ class TestWS {
 
 - @WSParam annotation also may have description for a parameter
 ```
-@WsOpenapi( tag = "Test" )
 class TestWS {
 
-    @WsMethod( method = GET, id = "returnTwo", path = "/?name=" )
+    @WsMethod( method = GET, path = "/?name=" )
     public int test( @WsParam( from = QUERY, description = "An integer argument to be used as a result" ) String name ) {
         return Integer.parseInt( name );
     }
@@ -99,10 +97,9 @@ class TestWS {
 
 - Optional parameter automatically marked as not required ( all other parameters treated as obligatory)
 ```
-@WsOpenapi( tag = "Test" )
 class TestWS {
 
-    @WsMethod( method = GET, id = "returnTwo", path = "/?name=" )
+    @WsMethod( method = GET, path = "/?name=" )
     public int test( @WsParam( from = QUERY ) Optional<String> name ) {
         return name == null ? 2 : Integer.parseInt( name );
     }

@@ -148,7 +148,7 @@ public class WsApiReflectionUtilsTest {
     }
 
     static class WsAnnotatedType {
-        @WsMethod( method = GET, id = "returnTwo", path = "/test" )
+        @WsMethod( method = GET, path = "/test" )
         public int test() {
             return 2;
         }
@@ -163,7 +163,7 @@ public class WsApiReflectionUtilsTest {
             return 2;
         }
 
-        @WsMethod( method = GET, id = "returnTwo", path = "/{pathId}" )
+        @WsMethod( method = GET, path = "/{pathId}" )
         public String paramsMethod( @WsParam( from = BODY ) String body,
                                     @WsParam( from = SESSION ) String ses,
                                     @WsParam( from = PATH ) String pathId,

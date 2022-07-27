@@ -41,7 +41,7 @@ import static oap.ws.WsParam.From.PATH;
 
 public class TestWS {
 
-    @WsMethod( method = GET, id = "returnTwo", path = "/", description = "Returns a simple word Two as a result." )
+    @WsMethod( method = GET, path = "/", description = "Returns a simple word Two as a result." )
     public int test() {
         return 2;
     }
@@ -61,7 +61,7 @@ public class TestWS {
         return "__default__";
     }
 
-    @WsMethod( method = GET, path = "generic", id = "getParametrizedMap" )
+    @WsMethod( method = GET, path = "generic" )
     public Map<String, List<Bean>> mapbean() {
         return Map.of();
     }

@@ -73,7 +73,7 @@
     "/api/" : {
       "get" : {
         "description" : "Returns a simple word Two as a result.",
-        "operationId" : "returnTwo",
+        "operationId" : "test",
         "responses" : {
           "200" : {
             "content" : {
@@ -641,7 +641,7 @@
     "/apigeneric" : {
       "get" : {
         "description" : "",
-        "operationId" : "getParametrizedMap",
+        "operationId" : "mapbean",
         "responses" : {
           "200" : {
             "content" : {
