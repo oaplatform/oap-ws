@@ -64,7 +64,7 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>17.11.0.1</oap-ws.project.version>
+        <oap-ws.project.version>17.11.0.2</oap-ws.project.version>
 
         <oap.deps.oap.version>17.10.20.0</oap.deps.oap.version>
 

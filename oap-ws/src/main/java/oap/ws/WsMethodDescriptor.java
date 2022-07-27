@@ -49,7 +49,7 @@ public class WsMethodDescriptor {
             this.path = Strings.isUndefined( wsm.path() ) ? method.name() : wsm.path();
             this.methods = wsm.method();
             this.produces = wsm.produces();
-            this.id = Strings.isUndefined( wsm.id() ) ? method.name() : wsm.id();
+            this.id = method.name();
             this.description = Strings.isUndefined( wsm.description() ) ? "" : wsm.description();
         } else {
             this.path = "/" + method.name();

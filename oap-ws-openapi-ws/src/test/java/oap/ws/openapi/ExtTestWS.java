@@ -10,7 +10,6 @@ import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.QUERY;
 
-@WsOpenapi( tag = "Test" )
 public class ExtTestWS {
 
     @WsMethod( method = GET, path = "/test/empty_optional_param/{id}", description = "This method returns nothing (Void)" )

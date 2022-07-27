@@ -24,6 +24,9 @@
 
 package oap.ws.openapi;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -51,6 +54,7 @@ import oap.ws.openapi.util.WsApiReflectionUtils;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +66,6 @@ import static oap.ws.openapi.util.SchemaUtils.prepareSchema;
 import static oap.ws.openapi.util.SchemaUtils.prepareType;
 import static oap.ws.openapi.util.WsApiReflectionUtils.description;
 import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
-import static oap.ws.openapi.util.WsApiReflectionUtils.filterType;
 import static oap.ws.openapi.util.WsApiReflectionUtils.from;
 import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
 
@@ -71,7 +74,7 @@ import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
  */
 @Slf4j
 public class OpenapiWS {
-    public static final String VERSION = "3.0.3";
+    public static final String OPEN_API_VERSION = "3.0.3";
 
     private final WebServices webServices;
     private final ModelConverters converters;
@@ -88,23 +91,22 @@ public class OpenapiWS {
     }
 
     /**
-     * Generates openapi documentation for all annotated and enabled web services
+     * Generates openapi documentation for all web services
      *
      * @return openapi documentation
-     * @see WsOpenapi
      */
     @WsMethod( path = "/", method = GET )
     public OpenAPI openapi() {
         OpenAPI api = new OpenAPI();
-        api.openapi( VERSION );
-        api.info( createInfo() );
+        api.openapi( OPEN_API_VERSION );
+        ArrayListMultimap<String, String> versions = ArrayListMultimap.create();
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             var r = Reflect.reflect( ws.getValue().getClass() );
-            if( !filterType( r ) ) continue;
-
             var context = ws.getKey();
-            var tag = createTag( tag( r, context ) );
+            var tag = createTag( tag( r ) );
+            if ( tag.getName().equals( OpenapiWS.class.getCanonicalName() ) ) continue;
             api.addTagsItem( tag );
+            versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
 
             List<Reflection.Method> methods = r.methods;
             methods.sort( comparing( Reflection.Method::name ) );
@@ -120,9 +122,9 @@ public class OpenapiWS {
                 for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
                     pathItem.operation( convertMethod( httpMethod ), operation );
                 }
-
             }
         }
+        api.info( createInfo( versions ) );
         return api;
     }
 
@@ -218,11 +220,15 @@ public class OpenapiWS {
         return content;
     }
 
-    private Info createInfo() {
+    private Info createInfo( Multimap<String, String> versions ) {
         Info info = new Info();
         info.setTitle( this.info.title );
-        info.setVersion( this.info.version );
         info.setDescription( this.info.description );
+        List<String> webServiceVersions = new ArrayList<>();
+        versions.asMap().forEach( ( key, value ) -> {
+            webServiceVersions.add( key + " (" + Joiner.on( ", " ).skipNulls().join( value ) + ")" );
+        } );
+        info.setVersion( Joiner.on( ", " ).join( webServiceVersions ) );
         return info;
     }
 
