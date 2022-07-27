@@ -62,7 +62,6 @@ import static oap.ws.openapi.util.SchemaUtils.prepareSchema;
 import static oap.ws.openapi.util.SchemaUtils.prepareType;
 import static oap.ws.openapi.util.WsApiReflectionUtils.description;
 import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
-import static oap.ws.openapi.util.WsApiReflectionUtils.filterType;
 import static oap.ws.openapi.util.WsApiReflectionUtils.from;
 import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
 
@@ -88,10 +87,9 @@ public class OpenapiWS {
     }
 
     /**
-     * Generates openapi documentation for all annotated and enabled web services
+     * Generates openapi documentation for all web services
      *
      * @return openapi documentation
-     * @see WsOpenapi
      */
     @WsMethod( path = "/", method = GET )
     public OpenAPI openapi() {
@@ -100,10 +98,10 @@ public class OpenapiWS {
         api.info( createInfo() );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             var r = Reflect.reflect( ws.getValue().getClass() );
-            if( !filterType( r ) ) continue;
 
             var context = ws.getKey();
-            var tag = createTag( tag( r, context ) );
+            var tag = createTag( tag( r ) );
+            if ( tag.getName().equals( OpenapiWS.class.getCanonicalName() ) ) continue;
             api.addTagsItem( tag );
 
             List<Reflection.Method> methods = r.methods;
@@ -120,7 +118,6 @@ public class OpenapiWS {
                 for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
                     pathItem.operation( convertMethod( httpMethod ), operation );
                 }
-
             }
         }
         return api;

@@ -89,7 +89,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/bean" : {
@@ -132,7 +132,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/bytes" : {
@@ -169,7 +169,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/code" : {
@@ -191,7 +191,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/en" : {
@@ -225,7 +225,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/id" : {
@@ -255,7 +255,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/json" : {
@@ -287,7 +287,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/list" : {
@@ -327,7 +327,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/req" : {
@@ -348,7 +348,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/string" : {
@@ -380,7 +380,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/sumab" : {
@@ -421,7 +421,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/sumabopt" : {
@@ -461,7 +461,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/test/sort/default" : {
@@ -482,7 +482,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/test/sort/{id}" : {
@@ -512,7 +512,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/test/sort={id}/test" : {
@@ -542,7 +542,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/api/x" : {
@@ -582,7 +582,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
     "/apiExt/test/empty_optional_param/{id}" : {
@@ -598,9 +598,9 @@
             "type" : "string"
           }
         }, {
+          "description" : "Non obligatory limit, MIGHT be skipped",
           "in" : "query",
           "name" : "limit",
-          "description" : "Non obligatory limit, MIGHT be skipped",
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
@@ -612,7 +612,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.ExtTestWS" ]
       }
     },
     "/apiExt/test/empty_required_param/" : {
@@ -620,9 +620,9 @@
         "description" : "This method returns nothing (Void)",
         "operationId" : "testVoid",
         "parameters" : [ {
+          "description" : "Required parameter, MUST be specified",
           "in" : "query",
           "name" : "limit",
-          "description" : "Required parameter, MUST be specified",
           "required" : true,
           "schema" : {
             "exampleSetFlag" : false,
@@ -635,7 +635,7 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.ExtTestWS" ]
       }
     },
     "/apigeneric" : {
@@ -664,13 +664,13 @@
             "description" : ""
           }
         },
-        "tags" : [ "Test" ]
+        "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     }
   },
   "tags" : [ {
-    "name" : "Test"
+    "name" : "oap.ws.openapi.ExtTestWS"
   }, {
-    "name" : "Test"
+    "name" : "oap.ws.openapi.TestWS"
   } ]
 }

@@ -29,7 +29,6 @@ import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
-import oap.ws.openapi.WsOpenapi;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -103,27 +102,6 @@ public class WsApiReflectionUtilsTest {
     }
 
     @Test
-    public void filterTypeShouldReturnTrue() {
-        var result = WsApiReflectionUtils.filterType( wsAnnotatedReflect );
-
-        assertThat( result ).isTrue();
-    }
-
-    @Test
-    public void filterTypeShouldReturnFalseForNotAnnotated() {
-        var result = WsApiReflectionUtils.filterType( Reflect.reflect( NotAnnotated.class ) );
-
-        assertThat( result ).isFalse();
-    }
-
-    @Test
-    public void filterTypeShouldReturnFalseForDisabled() {
-        var result = WsApiReflectionUtils.filterType( Reflect.reflect( AnnotatedDisabled.class ) );
-
-        assertThat( result ).isFalse();
-    }
-
-    @Test
     public void fromShouldReturnBody() {
         var paramsMethod = wsAnnotatedReflect.method( "paramsMethod" ).get();
         var result = WsApiReflectionUtils.from( paramsMethod.getParameter( "body" ) );
@@ -157,26 +135,18 @@ public class WsApiReflectionUtilsTest {
 
     @Test
     public void tagShouldReturnValueFromTag() {
-        var result = WsApiReflectionUtils.tag( wsAnnotatedReflect, "context" );
+        var result = WsApiReflectionUtils.tag( wsAnnotatedReflect );
 
-        assertThat( result ).isEqualTo( "TagValue" );
+        assertThat( result ).isEqualTo( "oap.ws.openapi.util.WsApiReflectionUtilsTest$WsAnnotatedType" );
     }
 
     @Test
-    public void tagShouldReturnValueFromContextIfNotAnnotated() {
-        var result = WsApiReflectionUtils.tag( Reflect.reflect( NotAnnotated.class ), "context" );
+    public void tagShouldReturnClassName() {
+        var result = WsApiReflectionUtils.tag( Reflect.reflect( NotAnnotated.class ) );
 
-        assertThat( result ).isEqualTo( "context" );
+        assertThat( result ).isEqualTo( "oap.ws.openapi.util.WsApiReflectionUtilsTest$NotAnnotated" );
     }
 
-    @Test
-    public void tagShouldReturnValueFromContextIfTagValueIsEmpty() {
-        var result = WsApiReflectionUtils.tag( Reflect.reflect( AnnotatedDisabled.class ), "context" );
-
-        assertThat( result ).isEqualTo( "context" );
-    }
-
-    @WsOpenapi( tag = "TagValue" )
     static class WsAnnotatedType {
         @WsMethod( method = GET, id = "returnTwo", path = "/test" )
         public int test() {
@@ -206,8 +176,4 @@ public class WsApiReflectionUtilsTest {
     static class NotAnnotated {
     }
 
-    @WsOpenapi( enabled = false )
-    static class AnnotatedDisabled {
-
-    }
 }

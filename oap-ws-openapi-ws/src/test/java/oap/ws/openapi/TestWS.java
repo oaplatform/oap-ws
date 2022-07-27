@@ -39,8 +39,7 @@ import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
 
-@WsOpenapi( tag = "Test" )
-class TestWS {
+public class TestWS {
 
     @WsMethod( method = GET, id = "returnTwo", path = "/", description = "Returns a simple word Two as a result." )
     public int test() {

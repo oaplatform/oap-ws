@@ -3,9 +3,9 @@ Generating [OpenApi](https://www.openapis.org) documentation for OAP web service
 
 
 ## General Information 
-- Generates OpenApi (version 3.0+) documentation for all classes annotated with @WsOpenapi which are used as web services in an easy way.
+- Generates OpenApi (version 3.0+) documentation for all classes which are used as web services in an easy way.
 - No need to use swagger annotation for api documentation. Module uses data from reflection to form proper and appropriate document.
-- Only methods annotated with @WsMethod are subject to be documented
+- Only public methods annotated with @WsMethod are subject to be documented
 
 ## Documentation
 - All necessary information about OpenApi specification could be found in Swagger [docs](https://swagger.io/resources/open-api/) or in original [OAS](https://spec.openapis.org/oas/latest.html).
@@ -63,44 +63,6 @@ name: some-module
 dependsOn: oap-ws-openapi-ws
 services {
 ...
-```
-
-- mark with @WsOpenapi annotation all web-services (classes) which should be included to OpenApi documentation
-
-```
-@WsOpenapi
-class TestWS {
-
-    @WsMethod( method = GET, id = "returnTwo", path = "/" )
-    public int test() {
-        return 2;
-    }
-}
-```
-
-- use `enabled = false` property to disable OpenAPI output for the specific class
-
-```
-@WsOpenapi( enabled = false )
-class TestWS {
-
-    @WsMethod( method = GET, id = "returnTwo", path = "/" )
-    public int test() {
-        return 2;
-    }
-}
-```
-
-- [Tag parameter](https://swagger.io/specification/#tag-object) can be specified by tag field within @WsOpenapi annotation
-```
-@WsOpenapi( tag = "Test" )
-class TestWS {
-
-    @WsMethod( method = GET, id = "returnTwo", path = "/" )
-    public int test() {
-        return 2;
-    }
-}
 ```
 
 - [OpenApi Info](https://swagger.io/specification/#info-object) can be specified within application.conf

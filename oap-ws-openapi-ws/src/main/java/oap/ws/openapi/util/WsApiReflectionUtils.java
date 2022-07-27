@@ -27,8 +27,6 @@ package oap.ws.openapi.util;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
 import oap.ws.WsParam;
-import oap.ws.openapi.WsOpenapi;
-import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Modifier;
 
@@ -69,8 +67,7 @@ public class WsApiReflectionUtils {
      * @return true if class is annotated with WsOpenapi and marked as enabled
      */
     public static boolean filterType( Reflection reflection ) {
-        return reflection.findAnnotation( WsOpenapi.class ).map( WsOpenapi::enabled )
-            .orElse( false );
+        return true;
     }
 
     /**
@@ -96,14 +93,11 @@ public class WsApiReflectionUtils {
 
     /**
      * Retrieves tag name for service
+     *
      * @param reflection - reflection class data
-     * @param context - http context path value
      * @return tag name from annotate class or context path if empty
      */
-    public static String tag( Reflection reflection, String context ) {
-        return reflection.findAnnotation( WsOpenapi.class )
-            .map( WsOpenapi::tag )
-            .filter( StringUtils::isNotEmpty )
-            .orElse( context );
+    public static String tag( Reflection reflection ) {
+        return reflection.getType().getTypeName();
     }
 }
