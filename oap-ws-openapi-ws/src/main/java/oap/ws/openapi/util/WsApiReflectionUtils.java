@@ -62,15 +62,6 @@ public class WsApiReflectionUtils {
     }
 
     /**
-     * Filter classes which are not annotated with WsOpenapi annotation and marked as disabled
-     * @param reflection - reflection class data
-     * @return true if class is annotated with WsOpenapi and marked as enabled
-     */
-    public static boolean filterType( Reflection reflection ) {
-        return true;
-    }
-
-    /**
      * Retrieves from type of request parameter
      * @see WsParam.From
      * @param p - reflection method parameter data
