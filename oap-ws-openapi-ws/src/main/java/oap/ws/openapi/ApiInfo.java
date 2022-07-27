@@ -31,14 +31,12 @@ package oap.ws.openapi;
 public class ApiInfo {
     public String title;
     public String description;
-    public String version;
 
     public ApiInfo() {
     }
 
-    public ApiInfo( String title, String description, String version ) {
+    public ApiInfo( String title, String description ) {
         this.title = title;
         this.description = description;
-        this.version = version;
     }
 }

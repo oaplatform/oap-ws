@@ -34,9 +34,9 @@ import java.util.jar.Manifest;
 public class ManifestUtils {
 
     public Manifest getManifest() throws IOException {
-        URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
-        URL url = cl.findResource("META-INF/MANIFEST.MF");
-        return new Manifest(url.openStream());
+        URLClassLoader cl = ( URLClassLoader ) getClass().getClassLoader();
+        URL url = cl.findResource( "META-INF/MANIFEST.MF" );
+        return new Manifest( url.openStream() );
     }
 
     public Map<String, String> readVersions() throws IOException {
