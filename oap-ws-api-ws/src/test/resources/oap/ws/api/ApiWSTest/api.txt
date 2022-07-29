@@ -129,7 +129,7 @@ Methods:
 	[GET] /example/sum
 	Produces application/json
 	Realm param realm
-	Permissions [SUPERUSER]
+	Permissions [generic:superuser]
 	Returns int
 	Parameters
 		realm: query String
