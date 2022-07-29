@@ -3,9 +3,9 @@ Generating [OpenApi](https://www.openapis.org) documentation for OAP web service
 
 
 ## General Information 
-- Generates OpenApi (version 3.0+) documentation for all classes annotated with @WsOpenapi which are used as web services in an easy way.
+- Generates OpenApi (version 3.0+) documentation for all classes which are used as web services in an easy way.
 - No need to use swagger annotation for api documentation. Module uses data from reflection to form proper and appropriate document.
-- Only methods annotated with @WsMethod are subject to be documented
+- Only public methods annotated with @WsMethod are subject to be documented
 
 ## Documentation
 - All necessary information about OpenApi specification could be found in Swagger [docs](https://swagger.io/resources/open-api/) or in original [OAS](https://spec.openapis.org/oas/latest.html).
@@ -53,7 +53,7 @@ Steps to use this module within other oap module
 <dependency>
     <groupId>oap</groupId>
     <artifactId>oap-ws-openapi-ws</artifactId>
-    <version>17.3.0.8</version>
+    <version>17.11.0.2</version>
 </dependency>
 ```
 - add 'oap-ws-openapi-ws' module as dependency to _oap.module.conf_
@@ -63,44 +63,6 @@ name: some-module
 dependsOn: oap-ws-openapi-ws
 services {
 ...
-```
-
-- mark with @WsOpenapi annotation all web-services (classes) which should be included to OpenApi documentation
-
-```
-@WsOpenapi
-class TestWS {
-
-    @WsMethod( method = GET, id = "returnTwo", path = "/" )
-    public int test() {
-        return 2;
-    }
-}
-```
-
-- use `enabled = false` property to disable OpenAPI output for the specific class
-
-```
-@WsOpenapi( enabled = false )
-class TestWS {
-
-    @WsMethod( method = GET, id = "returnTwo", path = "/" )
-    public int test() {
-        return 2;
-    }
-}
-```
-
-- [Tag parameter](https://swagger.io/specification/#tag-object) can be specified by tag field within @WsOpenapi annotation
-```
-@WsOpenapi( tag = "Test" )
-class TestWS {
-
-    @WsMethod( method = GET, id = "returnTwo", path = "/" )
-    public int test() {
-        return 2;
-    }
-}
 ```
 
 - [OpenApi Info](https://swagger.io/specification/#info-object) can be specified within application.conf
@@ -113,10 +75,9 @@ oap-ws-openapi-ws.openapi-info.parameters.version = "0.1.1"
 
 - description field may be used in @WsMethod annotation to explain what method really does 
 ```
-@WsOpenapi( tag = "Test" )
 class TestWS {
 
-    @WsMethod( method = GET, id = "returnTwo", path = "/", description = "Returns constantly (int32) number 2" )
+    @WsMethod( method = GET, path = "/", description = "Returns constantly (int32) number 2" )
     public int test() {
         return 2;
     }
@@ -125,10 +86,9 @@ class TestWS {
 
 - @WSParam annotation also may have description for a parameter
 ```
-@WsOpenapi( tag = "Test" )
 class TestWS {
 
-    @WsMethod( method = GET, id = "returnTwo", path = "/?name=" )
+    @WsMethod( method = GET, path = "/?name=" )
     public int test( @WsParam( from = QUERY, description = "An integer argument to be used as a result" ) String name ) {
         return Integer.parseInt( name );
     }
@@ -137,10 +97,9 @@ class TestWS {
 
 - Optional parameter automatically marked as not required ( all other parameters treated as obligatory)
 ```
-@WsOpenapi( tag = "Test" )
 class TestWS {
 
-    @WsMethod( method = GET, id = "returnTwo", path = "/?name=" )
+    @WsMethod( method = GET, path = "/?name=" )
     public int test( @WsParam( from = QUERY ) Optional<String> name ) {
         return name == null ? 2 : Integer.parseInt( name );
     }

@@ -45,6 +45,4 @@ public @interface WsMethod {
     String description() default Strings.UNDEFINED;
 
     HttpServerExchange.HttpMethod[] method() default { HttpServerExchange.HttpMethod.GET, HttpServerExchange.HttpMethod.POST, HttpServerExchange.HttpMethod.PATCH };
-
-    String id() default Strings.UNDEFINED;
 }
