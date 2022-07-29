@@ -38,5 +38,5 @@ public interface Authenticator {
 
     Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey );
 
-    void invalidateByEmail( String email );
+    void invalidate( String email );
 }

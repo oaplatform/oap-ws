@@ -85,7 +85,7 @@ public class UserAuthenticator implements Authenticator {
     }
 
     @Override
-    public void invalidateByEmail( String email ) {
+    public void invalidate( String email ) {
         for( Map.Entry<String, Authentication> entry : authentications.asMap().entrySet() ) {
             if( entry.getValue().user.getEmail().equalsIgnoreCase( email ) ) {
                 log.debug( "Deleting token [{}]...", entry.getKey() );

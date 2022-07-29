@@ -24,29 +24,23 @@
 
 package oap.ws.sso;
 
-import lombok.extern.slf4j.Slf4j;
+import oap.http.Http;
+import oap.ws.validate.ValidationErrors;
 
-import java.util.Set;
+import java.util.Optional;
 
-@Slf4j
-public class SecurityRoles {
-    private final SecurityRolesProvider provider;
+import static oap.ws.validate.ValidationErrors.empty;
+import static oap.ws.validate.ValidationErrors.error;
 
-    public SecurityRoles( SecurityRolesProvider provider ) {
-        this.provider = provider;
+public abstract class AbstractSecureWS {
+    protected SecurityRoles roles;
+
+    protected AbstractSecureWS( SecurityRoles roles ) {
+        this.roles = roles;
     }
 
-
-    public Set<String> permissionsOf( String role ) {
-        return provider.permissionsOf( role );
+    protected ValidationErrors validateUserLoggedIn( Optional<User> loggedUser ) {
+        return loggedUser.isPresent() ? empty()
+            : error( Http.StatusCode.UNAUTHORIZED, "not logged in" );
     }
-
-    public boolean granted( String role, String... permissions ) {
-        return provider.granted( role, permissions );
-    }
-
-    public Set<String> roles() {
-        return provider.roles();
-    }
-
 }

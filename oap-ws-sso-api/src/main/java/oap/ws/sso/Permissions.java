@@ -26,6 +26,5 @@ package oap.ws.sso;
 
 @SuppressWarnings( "checkstyle:InterfaceIsType" )
 public interface Permissions {
-    String SUPERUSER = "SUPERUSER";
-    String MANAGE_SELF = "MANAGE_SELF";
+    String SUPERUSER = "generic:superuser";
 }

@@ -29,41 +29,34 @@ import org.testng.annotations.Test;
 import java.util.Map;
 import java.util.Set;
 
-import static oap.ws.sso.Permissions.MANAGE_SELF;
+import static oap.ws.sso.ConfigSecurityRolesProviderTest.Permissions.MANAGE;
+import static oap.ws.sso.ConfigSecurityRolesProviderTest.Permissions.MEGATEST;
 import static oap.ws.sso.Permissions.SUPERUSER;
-import static oap.ws.sso.Roles.ADMIN;
-import static oap.ws.sso.Roles.USER;
-import static oap.ws.sso.SecurityRolesTest.Permissions.MEGATEST;
-import static oap.ws.sso.SecurityRolesTest.Roles.MEGADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SecurityRolesTest {
+public class ConfigSecurityRolesProviderTest {
     @Test
     public void merge() {
-        SecurityRoles roles = new SecurityRoles();
-        assertThat( roles.registeredRoles() ).containsOnly( ADMIN, MEGADMIN, USER );
-        assertThat( roles.permissionsOf( ADMIN ) ).containsOnly( MEGATEST, SUPERUSER, MANAGE_SELF );
-        assertThat( roles.permissionsOf( USER ) ).containsOnly( MANAGE_SELF );
-        assertThat( roles.permissionsOf( MEGADMIN ) ).containsOnly( MEGATEST, MANAGE_SELF );
+        ConfigSecurityRolesProvider provider = new ConfigSecurityRolesProvider();
+        assertThat( provider.roles() ).containsOnly( "ADMIN", "MEGADMIN", "USER" );
+        assertThat( provider.permissionsOf( "ADMIN" ) ).containsOnly( MEGATEST, SUPERUSER, MANAGE );
+        assertThat( provider.permissionsOf( "USER" ) ).containsOnly( MANAGE );
+        assertThat( provider.permissionsOf( "MEGADMIN" ) ).containsOnly( MEGATEST, MANAGE );
     }
 
     @Test
     public void granted() {
-        SecurityRoles securityRoles = new SecurityRoles( new SecurityRoles.Config( Map.of( "USER", Set.of( "A", "B" ) ) ) );
-        assertThat( securityRoles.granted( "VISITOR", "A" ) ).isFalse();
-        assertThat( securityRoles.granted( "USER", "A" ) ).isTrue();
-        assertThat( securityRoles.granted( "USER", "C" ) ).isFalse();
-        assertThat( securityRoles.granted( "USER", "A", "C" ) ).isTrue();
-        assertThat( securityRoles.granted( "USER", "A", "B" ) ).isTrue();
-    }
-
-    @SuppressWarnings( "checkstyle:InterfaceIsType" )
-    public interface Roles extends oap.ws.sso.Roles {
-        String MEGADMIN = "MEGADMIN";
+        ConfigSecurityRolesProvider provider = new ConfigSecurityRolesProvider( new ConfigSecurityRolesProvider.Config( Map.of( "USER", Set.of( "A", "B" ) ) ) );
+        assertThat( provider.granted( "VISITOR", "A" ) ).isFalse();
+        assertThat( provider.granted( "USER", "A" ) ).isTrue();
+        assertThat( provider.granted( "USER", "C" ) ).isFalse();
+        assertThat( provider.granted( "USER", "A", "C" ) ).isTrue();
+        assertThat( provider.granted( "USER", "A", "B" ) ).isTrue();
     }
 
     @SuppressWarnings( "checkstyle:InterfaceIsType" )
     public interface Permissions extends oap.ws.sso.Permissions {
-        String MEGATEST = "MEGATEST";
+        String MEGATEST = "generic:megatest";
+        String MANAGE = "generic:manage";
     }
 }

@@ -24,29 +24,27 @@
 
 package oap.ws.sso;
 
-import oap.concurrent.Threads;
-import oap.http.testng.HttpAsserts;
-import org.testng.annotations.Test;
+import java.util.Map;
+import java.util.Set;
 
-import static oap.http.Http.StatusCode.FORBIDDEN;
-import static oap.http.Http.StatusCode.UNAUTHORIZED;
-import static oap.http.testng.HttpAsserts.assertPost;
-import static oap.http.testng.HttpAsserts.httpUrl;
-import static oap.util.Pair.__;
-import static oap.ws.sso.Roles.ADMIN;
+public class AbstractSecurityRolesProvider implements SecurityRolesProvider {
+    private final Map<String, Set<String>> roles;
 
-public class ThrottleLoginInterceptorTest extends IntegratedTest {
-    @Test
-    public void deniedAccept() {
-        userProvider().addUser( "test1@user.com", "pass1", __( "realm", ADMIN ) );
-
-        login( "test1@user.com", "pass" ).hasCode( UNAUTHORIZED );
-        login( "test1@user.com", "pass1" ).hasCode( FORBIDDEN ).hasReason( "Please wait 5 seconds before next attempt" );
-        Threads.sleepSafely( 1000 * 7 );
-        login( "test1@user.com", "pass1" ).isOk();
+    protected AbstractSecurityRolesProvider( Map<String, Set<String>> roles ) {
+        this.roles = roles;
     }
 
-    public HttpAsserts.HttpAssertion login( String login, String password ) {
-        return assertPost( httpUrl( "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" );
+    public Set<String> permissionsOf( String role ) {
+        return roles.getOrDefault( role, Set.of() );
+    }
+
+    public boolean granted( String role, String... permissions ) {
+        Set<String> granted = permissionsOf( role );
+        for( String permission : permissions ) if( granted.contains( permission ) ) return true;
+        return false;
+    }
+
+    public Set<String> roles() {
+        return roles.keySet();
     }
 }

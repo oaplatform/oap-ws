@@ -38,17 +38,14 @@ import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
-import static oap.ws.sso.Roles.ADMIN;
-import static oap.ws.sso.Roles.USER;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 import static oap.ws.sso.testng.SecureWSFixture.assertTfaRequiredLogin;
 
 public class AuthWSTest extends IntegratedTest {
-
     @Test
-    public void login() {
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ) ) );
+    public void loginWhoami() {
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"admin@admin.com\"}" );
@@ -57,7 +54,7 @@ public class AuthWSTest extends IntegratedTest {
     @Test
     public void loginTfaRequired() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ), true ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
         assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
             .hasCode( UNAUTHORIZED );
@@ -66,7 +63,7 @@ public class AuthWSTest extends IntegratedTest {
     @Test
     public void loginTfa() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ), true ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
         assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertLogin( "admin@admin.com", "pass", "proper_code", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
@@ -76,7 +73,7 @@ public class AuthWSTest extends IntegratedTest {
     @Test
     public void loginTfaWrongCode() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ), true ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
         assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/login" ),
             "{  \"email\": \"admin@admin.com\",  \"password\": \"pass\", \"tfaCode\": \"wrong_code\"}" )
             .hasCode( BAD_REQUEST )
@@ -87,8 +84,8 @@ public class AuthWSTest extends IntegratedTest {
     public void logout() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
 
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ) ) );
-        userProvider().addUser( new TestUser( "user@admin.com", "pass", __( "r1", USER ) ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
+        userProvider().addUser( new TestUser( "user@admin.com", "pass", __( "r1", "USER" ) ) );
         assertLogin( "admin@admin.com", "pass" );
         assertLogout();
         assertGet( httpUrl( "/auth/whoami" ) )
@@ -100,8 +97,8 @@ public class AuthWSTest extends IntegratedTest {
 
     @Test
     public void relogin() {
-        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", ADMIN ) ) );
-        userProvider().addUser( new TestUser( "user@user.com", "pass", __( "r1", USER ) ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
+        userProvider().addUser( new TestUser( "user@user.com", "pass", __( "r1", "USER" ) ) );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure/r1" ) )
             .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );

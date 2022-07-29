@@ -32,6 +32,7 @@ import oap.ws.SessionManager;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.validate.ValidationErrors;
+import oap.ws.validate.WsValidate;
 
 import java.util.Optional;
 
@@ -40,6 +41,7 @@ import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
@@ -50,12 +52,13 @@ import static oap.ws.validate.ValidationErrors.error;
 
 @Slf4j
 @SuppressWarnings( "unused" )
-public class AuthWS {
+public class AuthWS extends AbstractSecureWS {
 
     private final Authenticator authenticator;
     private final SessionManager sessionManager;
 
-    public AuthWS( Authenticator authenticator, SessionManager sessionManager ) {
+    public AuthWS( SecurityRoles roles, Authenticator authenticator, SessionManager sessionManager ) {
+        super( roles );
         this.authenticator = authenticator;
         this.sessionManager = sessionManager;
     }
@@ -67,7 +70,7 @@ public class AuthWS {
 
     @WsMethod( method = GET, path = "/login" )
     public Response login( String email, String password, Optional<String> tfaCode, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
-        loggedUser.ifPresent( user -> logout( session ) );
+        loggedUser.ifPresent( user -> logout( loggedUser, session ) );
         var result = authenticator.authenticate( email, password, tfaCode );
         if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
             sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
@@ -77,10 +80,10 @@ public class AuthWS {
     }
 
     @WsMethod( method = GET, path = "/logout" )
-    public Response logout( Session session ) {
-        session.<User>get( SESSION_USER_KEY ).ifPresent( user -> {
+    public Response logout( @WsParam( from = PATH ) Optional<User> loggedUser, Session session ) {
+        loggedUser.ifPresent( user -> {
             log.debug( "Invalidating token for user [{}]", user.getEmail() );
-            authenticator.invalidateByEmail( user.getEmail() );
+            authenticator.invalidate( user.getEmail() );
             session.invalidate();
 
         } );
@@ -95,7 +98,7 @@ public class AuthWS {
     }
 
     /**
-     * @see #whoami(Session)
+     * @see #whoami(Optional)
      */
     @Deprecated
     @WsMethod( method = GET, path = "/current" )
@@ -104,13 +107,8 @@ public class AuthWS {
     }
 
     @WsMethod( method = GET, path = "/whoami" )
-    public Response whoami( Session session ) {
-        User user = session.<User>get( SESSION_USER_KEY ).orElse( null );
-        if( user == null ) return new Response( UNAUTHORIZED );
-        else {
-            return Response
-                .jsonOk()
-                .withBody( user.getView(), false );
-        }
+    @WsValidate( "validateUserLoggedIn" )
+    public Optional<User.View> whoami( @WsParam( from = SESSION ) Optional<User> loggedUser ) {
+        return loggedUser.map( User::getView );
     }
 }

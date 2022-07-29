@@ -24,57 +24,61 @@
 
 package oap.ws.sso;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static oap.http.Http.ContentType.TEXT_PLAIN;
-import static oap.http.Http.StatusCode.FORBIDDEN;
+import static oap.http.Http.StatusCode.CONFLICT;
 import static oap.http.Http.StatusCode.OK;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
-import static oap.ws.sso.Roles.ADMIN;
-import static oap.ws.sso.Roles.USER;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
-import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 
-public class SecurityInterceptorTest extends IntegratedTest {
+public class ApiKeyInterceptorTest extends IntegratedTest {
+
+    private TestUser user;
+
+    @BeforeMethod
+    public void beforeMethod() {
+        user = userProvider().addUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) );
+    }
+
     @Test
     public void allowed() {
-        userProvider().addUser( "admin@admin.com", "pass", __( "r1", ADMIN ) );
-        assertLogin( "admin@admin.com", "pass" );
-        assertGet( httpUrl( "/secure/r1" ) )
-            .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
-        assertGet( httpUrl( "/secure/r1" ) )
-            .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
-        assertGet( httpUrl( "/secure/r1" ) )
-            .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
-        assertLogout();
-    }
+        assertGet( httpUrl( "/secure/r1" ),
+            __( "accessKey", user.getAccessKey() ),
+            __( "apiKey", user.apiKey )
+        ).responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
 
-    @Test
-    public void wrongRealm() {
-        userProvider().addUser( "admin@admin.com", "pass", __( "r1", ADMIN ) );
-        assertLogin( "admin@admin.com", "pass" );
-        assertGet( httpUrl( "/secure/r2" ) )
-            .hasCode( FORBIDDEN );
-        assertLogout();
+        assertGet( httpUrl( "/secure/r1" ),
+            __( "accessKey", "bla-bla" ),
+            __( "apiKey", user.apiKey )
+        ).hasCode( UNAUTHORIZED );
 
-    }
+        assertGet( httpUrl( "/secure/r1" ),
+            __( "accessKey", user.getAccessKey() ),
+            __( "apiKey", "bla" )
+        ).hasCode( UNAUTHORIZED );
 
-    @Test
-    public void notLoggedIn() {
         assertGet( httpUrl( "/secure/r1" ) )
             .hasCode( UNAUTHORIZED );
+
+        assertGet( httpUrl( "/secure/r1" ),
+            __( "accessKey", user.getAccessKey() ),
+            __( "apiKey", user.apiKey )
+        ).responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
     }
 
     @Test
-    public void denied() {
-        userProvider().addUser( "user@user.com", "pass", __( "r1", USER ) );
-        assertLogin( "user@user.com", "pass" );
+    public void conflict() {
+        assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure/r1" ) )
-            .hasCode( FORBIDDEN );
-        assertLogout();
+            .hasCode( OK );
+        assertGet( httpUrl( "/secure/r1" ),
+            __( "accessKey", user.getAccessKey() ),
+            __( "apiKey", user.apiKey )
+        ).hasCode( CONFLICT );
     }
-
 }

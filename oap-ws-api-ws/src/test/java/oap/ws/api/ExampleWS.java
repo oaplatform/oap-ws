@@ -38,12 +38,12 @@ import java.util.Optional;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
-import static oap.ws.sso.Permissions.MANAGE_SELF;
+import static oap.ws.sso.Permissions.SUPERUSER;
 
 @SuppressWarnings( "unused" )
 class ExampleWS {
 
-    @WsSecurity( realm = "realm", permissions = { MANAGE_SELF } )
+    @WsSecurity( realm = "realm", permissions = { SUPERUSER } )
     public int sum( String realm, int a, List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
         return 0;
     }

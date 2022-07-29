@@ -24,29 +24,13 @@
 
 package oap.ws.sso;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Set;
 
-@Slf4j
-public class SecurityRoles {
-    private final SecurityRolesProvider provider;
+public interface SecurityRolesProvider {
 
-    public SecurityRoles( SecurityRolesProvider provider ) {
-        this.provider = provider;
-    }
+    Set<String> permissionsOf( String role );
 
+    boolean granted( String role, String... permissions );
 
-    public Set<String> permissionsOf( String role ) {
-        return provider.permissionsOf( role );
-    }
-
-    public boolean granted( String role, String... permissions ) {
-        return provider.granted( role, permissions );
-    }
-
-    public Set<String> roles() {
-        return provider.roles();
-    }
-
+    Set<String> roles();
 }
