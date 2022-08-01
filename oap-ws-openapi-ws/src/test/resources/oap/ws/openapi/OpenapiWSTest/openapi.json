@@ -66,7 +66,7 @@
   "info" : {
     "description" : "Test description",
     "title" : "Test title",
-    "version" : "17.10.20.0 (oap.ws.openapi.ExtTestWS, oap.ws.openapi.TestWS)"
+    "version" : "17.10.21.0 (oap.ws.openapi.ExtTestWS, oap.ws.openapi.TestWS)"
   },
   "openapi" : "3.0.3",
   "paths" : {
