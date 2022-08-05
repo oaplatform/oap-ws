@@ -24,65 +24,26 @@
 
 package oap.ws.openapi;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
-import io.swagger.v3.oas.models.responses.ApiResponse;
-import io.swagger.v3.oas.models.responses.ApiResponses;
-import io.swagger.v3.oas.models.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import oap.http.server.nio.HttpServerExchange;
-import oap.reflect.Reflect;
-import oap.reflect.Reflection;
-import oap.util.Lists;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
-import oap.ws.WsMethodDescriptor;
-import oap.ws.WsParam;
-import oap.ws.openapi.util.WsApiReflectionUtils;
-import org.apache.http.entity.ContentType;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static java.util.Comparator.comparing;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
-import static oap.ws.openapi.util.SchemaUtils.createSchemaRef;
-import static oap.ws.openapi.util.SchemaUtils.prepareSchema;
-import static oap.ws.openapi.util.SchemaUtils.prepareType;
-import static oap.ws.openapi.util.WsApiReflectionUtils.description;
-import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
-import static oap.ws.openapi.util.WsApiReflectionUtils.from;
-import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
 
 /**
  * Web service for openapi documentation
  */
 @Slf4j
 public class OpenapiWS {
-    public static final String OPEN_API_VERSION = "3.0.3";
 
     private final WebServices webServices;
-    private final ModelConverters converters;
     public ApiInfo info;
 
     public OpenapiWS( WebServices webServices ) {
         this.webServices = webServices;
-        this.converters = new ModelConverters();
     }
 
     public OpenapiWS( WebServices webServices, ApiInfo info ) {
@@ -95,164 +56,21 @@ public class OpenapiWS {
      *
      * @return openapi documentation
      */
-    @WsMethod( path = "/", method = GET )
+    @WsMethod( path = "/", method = GET, description = "Generates OpenAPI json spec")
     public OpenAPI openapi() {
-        OpenAPI api = new OpenAPI();
-        api.openapi( OPEN_API_VERSION );
-        ArrayListMultimap<String, String> versions = ArrayListMultimap.create();
-        for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
-            var r = Reflect.reflect( ws.getValue().getClass() );
-            var context = ws.getKey();
-            var tag = createTag( tag( r ) );
-            if ( tag.getName().equals( OpenapiWS.class.getCanonicalName() ) ) continue;
-            api.addTagsItem( tag );
-            versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
+        OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description );
 
-            List<Reflection.Method> methods = r.methods;
-            methods.sort( comparing( Reflection.Method::name ) );
-            for( Reflection.Method method : methods ) {
-                if( !filterMethod( method ) ) continue;
-                var wsDescriptor = new WsMethodDescriptor( method );
-                var paths = getPaths( api );
-                var pathString = path( context, wsDescriptor.path );
-                var pathItem = getPathItem( pathString, paths );
-
-                var operation = prepareOperation( method, wsDescriptor, api, tag );
-
-                for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
-                    pathItem.operation( convertMethod( httpMethod ), operation );
-                }
-            }
-        }
-        api.info( createInfo( versions ) );
-        return api;
-    }
-
-    private Operation prepareOperation( Reflection.Method method, WsMethodDescriptor wsDescriptor, OpenAPI api, Tag tag ) {
-        var params = Lists.filter( method.parameters, WsApiReflectionUtils::filterParameter );
-        var returnType = prepareType( method.returnType() );
-
-        Operation operation = new Operation();
-        operation.addTagsItem( tag.getName() );
-        operation.setOperationId( wsDescriptor.id );
-        operation.setParameters( prepareParameters( params ) );
-        operation.description( wsDescriptor.description );
-        operation.setRequestBody( prepareRequestBody( params, api ) );
-        operation.setResponses( prepareResponse( returnType, wsDescriptor.produces, api ) );
-        return operation;
-    }
-
-    private ApiResponses prepareResponse( Type type, String produces, OpenAPI api ) {
-        var responses = new ApiResponses();
-        ApiResponse response = new ApiResponse();
-        responses.addApiResponse( "200", response );
-
-        var resolvedSchema = prepareSchema( type, api );
-        response.description( "" );
-        if ( type.equals( Void.class ) ) {
-            return responses;
-        }
-        Map<String, Schema> schemas = api.getComponents() == null ? Collections.emptyMap() : api.getComponents().getSchemas();
-        response.content( createContent( produces, createSchemaRef( resolvedSchema.schema, schemas ) ) );
-        return responses;
-    }
-
-    private RequestBody prepareRequestBody( List<Reflection.Parameter> parameters, OpenAPI api ) {
-        return parameters.stream()
-            .filter( item -> from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
-            .map( item -> createBody( item, api ) )
-            .findFirst().orElse( null );
-    }
-
-    private List<Parameter> prepareParameters( List<Reflection.Parameter> parameters ) {
-        return parameters.stream()
-            .filter( item -> !from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
-            .map( this::createParameter )
-            .toList();
-    }
-
-    private RequestBody createBody( Reflection.Parameter parameter, OpenAPI api ) {
-        var resolvedSchema = prepareSchema( prepareType( parameter.type() ), api );
-        var schemas = api.getComponents().getSchemas();
-
-        var result = new RequestBody();
-        result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(),
-            createSchemaRef( resolvedSchema.schema, schemas ) ) );
-        if( schemas.containsKey( resolvedSchema.schema.getName() ) ) {
-            api.getComponents().addRequestBodies( resolvedSchema.schema.getName(), result );
+        for( Map.Entry<String, Object> ws : getServices().entrySet() ) {
+            Class clazz = ws.getValue().getClass();
+            String context = ws.getKey();
+            openapiGenerator.processWebservice( clazz, context );
         }
 
-        return result;
+        return openapiGenerator.build();
     }
 
-    private Parameter createParameter( Reflection.Parameter parameter ) {
-        var result = new Parameter();
-        result.setName( parameter.name() );
-        var from = from( parameter );
-        result.setIn( from );
-        if( WsParam.From.PATH.name().toLowerCase().equals( from ) ) {
-            result.setRequired( true );
-        } else if( WsParam.From.QUERY.name().toLowerCase().equals( from ) && !parameter.type().isOptional() ) {
-            result.setRequired( true );
-        }
-        String description = description( parameter );
-        if( description.trim().length() > 0 ) result.description( description );
-        var resolvedSchema = this.converters.readAllAsResolvedSchema( prepareType( parameter.type() ) );
-        if( resolvedSchema != null ) {
-            result.setSchema( resolvedSchema.schema );
-        }
-        return result;
+    public LinkedHashMap<String, Object> getServices() {
+        return webServices.services;
     }
 
-    private PathItem.HttpMethod convertMethod( HttpServerExchange.HttpMethod method ) {
-        return PathItem.HttpMethod.valueOf( method.toString() );
-    }
-
-    private String path( String context, String path ) {
-        return "/" + context + path;
-    }
-
-    private Content createContent( String mimeType, Schema schema ) {
-        var content = new Content();
-        var mediaType = new MediaType();
-        mediaType.schema( schema );
-        content.addMediaType( mimeType, mediaType );
-        return content;
-    }
-
-    private Info createInfo( Multimap<String, String> versions ) {
-        Info info = new Info();
-        info.setTitle( this.info.title );
-        info.setDescription( this.info.description );
-        List<String> webServiceVersions = new ArrayList<>();
-        versions.asMap().forEach( ( key, value ) -> {
-            webServiceVersions.add( key + " (" + Joiner.on( ", " ).skipNulls().join( value ) + ")" );
-        } );
-        info.setVersion( Joiner.on( ", " ).join( webServiceVersions ) );
-        return info;
-    }
-
-    private Tag createTag( String name ) {
-        var tag = new Tag();
-        tag.setName( name );
-        return tag;
-    }
-
-    private PathItem getPathItem( String pathString, Paths paths ) {
-        var pathItem = paths.get( pathString );
-        if( pathItem == null ) {
-            pathItem = new PathItem();
-            paths.put( pathString, pathItem );
-        }
-        return pathItem;
-    }
-
-    private Paths getPaths( OpenAPI api ) {
-        var paths = api.getPaths();
-        if( paths == null ) {
-            paths = new Paths();
-            api.setPaths( paths );
-        }
-        return paths;
-    }
 }

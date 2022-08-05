@@ -22,35 +22,25 @@
  * SOFTWARE.
  */
 
-package oap.ws.openapi;
+package oap.openapi.maven;
 
-import lombok.extern.slf4j.Slf4j;
-import oap.application.testng.AbstractKernelFixture;
-import oap.application.testng.KernelFixture;
-import oap.http.Http;
-import oap.testng.Fixture;
 import oap.testng.Fixtures;
+import oap.testng.TestDirectoryFixture;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.testng.annotations.Test;
 
-import java.util.Map;
-
-import static oap.http.testng.HttpAsserts.assertGet;
-import static oap.http.testng.HttpAsserts.httpUrl;
-import static oap.io.Resources.urlOrThrow;
-import static oap.testng.Asserts.contentOfTestResource;
-
-@Slf4j
-public class OpenapiWSTest extends Fixtures {
-    private AbstractKernelFixture fixture;
+public class OpenApiGeneratorTest extends Fixtures {
     {
-        fixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
+        fixture( TestDirectoryFixture.FIXTURE );
     }
 
     @Test
-    public void api() {
-        assertGet( httpUrl( "/system/openapi" ) )
-            .respondedJson( Http.StatusCode.OK, "OK",
-                contentOfTestResource( getClass(), "openapi.json", Map.of() ) );
-    }
-}
+    public void execute() throws MojoExecutionException, MojoFailureException {
 
+        OpenApiGenerator mojo = new OpenApiGenerator();
+
+        mojo.execute();
+    }
+
+}

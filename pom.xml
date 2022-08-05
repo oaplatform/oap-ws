@@ -49,6 +49,7 @@
         <module>oap-ws-openapi-ws</module>
         <module>oap-ws-sso-testing</module>
         <module>oap-ws-sso-api-roles-config</module>
+        <module>openapi-maven-plugin</module>
     </modules>
 
     <repositories>
