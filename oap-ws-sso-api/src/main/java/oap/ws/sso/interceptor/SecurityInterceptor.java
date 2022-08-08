@@ -88,5 +88,6 @@ public class SecurityInterceptor implements Interceptor {
 
         return Optional.of( new Response( FORBIDDEN, "user " + u.get().getEmail() + " has no access to method "
             + context.method.name() + " under realm " + realm.get() ) );
+    }
 }
 
