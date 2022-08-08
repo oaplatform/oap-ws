@@ -1,13 +1,10 @@
 package oap.openapi.maven;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.converter.ModelConverters;
 
-import oap.application.ApplicationConfiguration;
 import oap.application.ApplicationException;
 import oap.application.module.Module;
-import oap.io.content.Resource;
+import oap.json.Binder;
 import oap.ws.WsConfig;
 import oap.ws.openapi.OpenapiGenerator;
 import oap.ws.openapi.OpenapiGeneratorSettings;
@@ -20,15 +17,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * mvn oap:openapi-maven-plugin:0.0.1-SNAPSHOT:openapi
@@ -36,7 +29,6 @@ import java.util.Map;
 
 @Mojo( name = "openapi", defaultPhase = LifecyclePhase.PREPARE_PACKAGE )
 public class OpenApiGenerator extends AbstractMojo {
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Parameter( defaultValue = "${project}", required = true, readonly = true )
     private MavenProject project;
@@ -45,10 +37,6 @@ public class OpenApiGenerator extends AbstractMojo {
     private String jsonOutputPath = "/Users/mac/IdeaProjects/oap-ws/oap-ws-openapi-ws/target/swagger.json";
 
     private final ModelConverters converters = new ModelConverters();
-
-    static {
-        mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL);
-    }
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -77,7 +65,7 @@ public class OpenApiGenerator extends AbstractMojo {
                     }
                 } );
             } );
-            String json = mapper.writeValueAsString( openapiGenerator.build() );
+            String json = Binder.json.marshal( openapiGenerator.build() );
             getLog().info( "OpenAPI JSON generated" );
             IOUtils.write( json.getBytes( StandardCharsets.UTF_8 ), new FileOutputStream( jsonOutputPath ) );
             getLog().info( "OpenAPI JSON is written to " + jsonOutputPath );
