@@ -35,6 +35,4 @@ import lombok.ToString;
 public class OpenapiGeneratorSettings {
     @Getter
     private boolean ignoreOpenapiWS = true;
-    @Getter
-    private boolean ignoreMethodsWithoutWsMethodAnnotation = true;
 }

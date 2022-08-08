@@ -24,14 +24,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.StringJoiner;
+import java.util.Objects;
 
 /**
  * mvn oap:openapi-maven-plugin:0.0.1-SNAPSHOT:openapi
  */
 
 @Mojo( name = "openapi", defaultPhase = LifecyclePhase.PREPARE_PACKAGE )
-public class OpenApiGenerator extends AbstractMojo {
+public class OpenApiGeneratorPlugin extends AbstractMojo {
 
     @Parameter( defaultValue = "${project}", required = true, readonly = true )
     private MavenProject project;
@@ -43,9 +43,9 @@ public class OpenApiGenerator extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-
         getLog().info( "OpenAPI generation..." );
         try {
+            Objects.requireNonNull( jsonOutputPath );
             List<URL> moduleConfigurations = Module.CONFIGURATION.urlsFromClassPath();
             getLog().info( "Configurations loaded" );
 
@@ -55,9 +55,10 @@ public class OpenApiGenerator extends AbstractMojo {
 
             moduleConfigurations.forEach( url -> {
                 Module config = Module.CONFIGURATION.fromFile( url, new HashMap<>() );
-                config.services.forEach( (name, service) -> {
+                config.services.forEach( ( name, service ) -> {
                     WsConfig wsService = ( WsConfig ) service.ext.get( "ws-service" );
-                    if ( wsService == null) {
+                    if ( wsService == null ) {
+                        getLog().debug( "Skipping non-WS module: " + name );
                         return;
                     }
                     try {
@@ -66,11 +67,13 @@ public class OpenApiGenerator extends AbstractMojo {
                         getLog().info( "WebService class " + clazz.getCanonicalName() + " processed" );
                         description.add( clazz.getCanonicalName() );
                     } catch( ReflectiveOperationException e ) {
+                        getLog().error( "Could not deal with module: " + name + " due to the implementation class '"
+                            + service.implementation + "' is unavailable" );
                         throw new RuntimeException( e );
                     }
                 } );
             } );
-            openapiGenerator.setDescription( "WS services: " + Joiner.on(", ").join( description ) );
+            openapiGenerator.setDescription( "WS services: " + Joiner.on( ", " ).join( description ) );
             String json = Binder.json.marshal( openapiGenerator.build() );
             getLog().info( "OpenAPI JSON generated" );
             IOUtils.write( json.getBytes( StandardCharsets.UTF_8 ), new FileOutputStream( jsonOutputPath ) );

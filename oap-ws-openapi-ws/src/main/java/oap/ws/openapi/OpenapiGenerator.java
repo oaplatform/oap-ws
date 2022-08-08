@@ -96,7 +96,7 @@ public class OpenapiGenerator {
     public void processWebservice( Class clazz, String context ) {
         var r = Reflect.reflect( clazz );
         var tag = createTag( tag( r ) );
-        if ( settings.isIgnoreOpenapiWS() && tag.getName().equals( OpenapiWS.class.getCanonicalName() ) ) {
+        if ( settings.isIgnoreOpenapiWS() && clazz.getCanonicalName().equals( OpenapiWS.class.getCanonicalName() ) ) {
             return;
         }
         api.addTagsItem( tag );

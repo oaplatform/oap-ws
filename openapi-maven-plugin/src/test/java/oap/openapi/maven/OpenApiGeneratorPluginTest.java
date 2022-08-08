@@ -30,7 +30,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.testng.annotations.Test;
 
-public class OpenApiGeneratorTest extends Fixtures {
+public class OpenApiGeneratorPluginTest extends Fixtures {
     {
         fixture( TestDirectoryFixture.FIXTURE );
     }
@@ -38,7 +38,7 @@ public class OpenApiGeneratorTest extends Fixtures {
     @Test
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        OpenApiGenerator mojo = new OpenApiGenerator();
+        OpenApiGeneratorPlugin mojo = new OpenApiGeneratorPlugin();
 
         mojo.execute();
     }

@@ -53,11 +53,11 @@ public class OpenapiWS {
     }
 
     /**
-     * Generates openapi documentation for all web services
+     * Generates openapi documentation for all web services in cl
      *
      * @return openapi documentation
      */
-    @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document")
+    @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
     public OpenAPI openapi() {
         OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description );
 
