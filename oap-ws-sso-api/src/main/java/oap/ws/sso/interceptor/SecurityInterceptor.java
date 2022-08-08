@@ -40,6 +40,7 @@ import java.util.Optional;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
+import static oap.ws.sso.WsSecurity.SYSTEM;
 
 @Slf4j
 public class SecurityInterceptor implements Interceptor {
@@ -77,7 +78,8 @@ public class SecurityInterceptor implements Interceptor {
         Optional<User> u = context.session.get( SESSION_USER_KEY );
         if( u.isEmpty() ) return Optional.of( new Response( UNAUTHORIZED ) );
 
-        Optional<String> realm = context.getParameter( wss.get().realm() );
+        Optional<String> realm =
+            SYSTEM.equals( wss.get().realm() ) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
         if( realm.isEmpty() ) return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
 
         Optional<String> role = u.flatMap( user -> user.getRole( realm.get() ) );
