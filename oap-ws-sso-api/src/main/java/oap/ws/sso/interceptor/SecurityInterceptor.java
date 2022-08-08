@@ -46,47 +46,48 @@ public class SecurityInterceptor implements Interceptor {
     private final Authenticator authenticator;
     private final SecurityRoles roles;
 
-    public SecurityInterceptor( Authenticator authenticator, SecurityRoles roles ) {
+    public SecurityInterceptor(Authenticator authenticator, SecurityRoles roles) {
         this.authenticator = authenticator;
         this.roles = roles;
     }
 
     @Override
-    public Optional<Response> before( InvocationContext context ) {
-        if( !context.session.containsKey( SESSION_USER_KEY ) ) {
-            log.trace( "no user in session {}", context.session );
-            var authId = SSO.getAuthentication( context.exchange );
-            log.trace( "auth id {}", authId );
-            if( authId == null ) log.trace( "not authenticated" );
+    public Optional<Response> before(InvocationContext context) {
+        if (!context.session.containsKey(SESSION_USER_KEY)) {
+            log.trace("no user in session {}", context.session);
+            var authId = SSO.getAuthentication(context.exchange);
+            log.trace("auth id {}", authId);
+            if (authId == null) log.trace("not authenticated");
             else {
-                Authentication authentication = authenticator.authenticate( authId ).orElse( null );
-                if( authentication != null ) {
+                Authentication authentication = authenticator.authenticate(authId).orElse(null);
+                if (authentication != null) {
                     User user = authentication.user;
-                    context.session.set( SESSION_USER_KEY, user );
-                    log.trace( "set user {} into session {}", user, context.session );
-                } else log.trace( "not authenticated" );
+                    context.session.set(SESSION_USER_KEY, user);
+                    log.trace("set user {} into session {}", user, context.session);
+                } else log.trace("not authenticated");
             }
         }
 
-        log.trace( "session state {}", context.session );
+        log.trace("session state {}", context.session);
 
-        Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
-        if( wss.isEmpty() ) return Optional.empty();
+        Optional<WsSecurity> wss = context.method.findAnnotation(WsSecurity.class);
+        if (wss.isEmpty()) return Optional.empty();
 
-        log.trace( "secure method {}", context.method );
-        Optional<User> u = context.session.get( SESSION_USER_KEY );
-        if( u.isEmpty() ) return Optional.of( new Response( UNAUTHORIZED ) );
+        log.trace("secure method {}", context.method);
+        Optional<User> u = context.session.get(SESSION_USER_KEY);
+        if (u.isEmpty()) return Optional.of(new Response(UNAUTHORIZED));
 
-        Optional<String> realm = context.getParameter( wss.get().realm() );
-        if( realm.isEmpty() ) return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
+        Optional<String> realm = context.getParameter(wss.get().realm());
+        if (realm.isEmpty()) return Optional.of(new Response(FORBIDDEN, "realm is not passed"));
 
-        Optional<String> role = u.flatMap( user -> user.getRole( realm.get() ) );
-        if( role.isEmpty() )
-            return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm " + realm.get() ) );
+        Optional<String> role = u.flatMap(user -> user.getRole(realm.get()));
+        if (role.isEmpty())
+            return Optional.of(new Response(FORBIDDEN, "user doesn't have access to realm " + realm.get()));
 
-        if( roles.granted( role.get(), wss.get().permissions() ) ) return Optional.empty();
+        if (roles.granted(role.get(), wss.get().permissions())) return Optional.empty();
 
-        return Optional.of( new Response( FORBIDDEN, "user " + u.get().getEmail() + " has no access to method "
-            + context.method.name() + " under realm " + realm.get() ) );
+        return Optional.of(new Response(FORBIDDEN, "user " + u.get().getEmail() + " has no access to method "
+                + context.method.name() + " under realm " + realm.get()));
+    }
 }
 
