@@ -31,7 +31,6 @@ import java.util.Set;
 
 import static oap.ws.sso.ConfigSecurityRolesProviderTest.Permissions.MANAGE;
 import static oap.ws.sso.ConfigSecurityRolesProviderTest.Permissions.MEGATEST;
-import static oap.ws.sso.Permissions.SUPERUSER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigSecurityRolesProviderTest {
@@ -39,7 +38,7 @@ public class ConfigSecurityRolesProviderTest {
     public void merge() {
         ConfigSecurityRolesProvider provider = new ConfigSecurityRolesProvider();
         assertThat( provider.roles() ).containsOnly( "ADMIN", "MEGADMIN", "USER" );
-        assertThat( provider.permissionsOf( "ADMIN" ) ).containsOnly( MEGATEST, SUPERUSER, MANAGE );
+        assertThat( provider.permissionsOf( "ADMIN" ) ).containsOnly( MEGATEST, MANAGE );
         assertThat( provider.permissionsOf( "USER" ) ).containsOnly( MANAGE );
         assertThat( provider.permissionsOf( "MEGADMIN" ) ).containsOnly( MEGATEST, MANAGE );
     }
@@ -55,7 +54,7 @@ public class ConfigSecurityRolesProviderTest {
     }
 
     @SuppressWarnings( "checkstyle:InterfaceIsType" )
-    public interface Permissions extends oap.ws.sso.Permissions {
+    public interface Permissions {
         String MEGATEST = "generic:megatest";
         String MANAGE = "generic:manage";
     }
