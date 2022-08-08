@@ -25,7 +25,6 @@
 package oap.ws.openapi;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.application.testng.AbstractKernelFixture;
 import oap.application.testng.KernelFixture;
 import oap.http.Http;
 import oap.testng.Fixtures;
@@ -40,9 +39,8 @@ import static oap.testng.Asserts.contentOfTestResource;
 
 @Slf4j
 public class OpenapiWSTest extends Fixtures {
-    private AbstractKernelFixture fixture;
     {
-        fixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
+        fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test

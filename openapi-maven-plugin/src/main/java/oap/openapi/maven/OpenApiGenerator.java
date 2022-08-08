@@ -7,6 +7,7 @@ import io.swagger.v3.core.converter.ModelConverters;
 import oap.application.ApplicationConfiguration;
 import oap.application.ApplicationException;
 import oap.application.module.Module;
+import oap.io.content.Resource;
 import oap.ws.openapi.OpenapiGenerator;
 import oap.ws.openapi.OpenapiGeneratorSettings;
 import org.apache.commons.io.IOUtils;
@@ -23,6 +24,7 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ public class OpenApiGenerator extends AbstractMojo {
     private MavenProject project;
 
     @Parameter( required = true, readonly = true )
-    private String appConfigPath = "/Users/mac/IdeaProjects/oap-ws/oap-ws-openapi-ws/target/test-classes/application.test.conf";
+    private String appConfigPath = "/Users/mac/IdeaProjects/oap-ws/oap-ws-openapi-ws/src/test/resources/application.test.conf";
     @Parameter( required = true, readonly = true )
     private String jsonOutputPath = "/Users/mac/IdeaProjects/oap-ws/oap-ws-openapi-ws/target/swagger.json";
 
@@ -53,10 +55,8 @@ public class OpenApiGenerator extends AbstractMojo {
 
         getLog().info( "OpenAPI generation..." );
         try {
-            URL configURL = appConfigPath.startsWith( "classpath:" )
-                ? Thread.currentThread().getContextClassLoader().getResource( appConfigPath.substring( "classpath:".length() ) )
-                : new File( appConfigPath ).toURI().toURL();
-            Path confdPath = new File( configURL.toURI() ).toPath().getParent().resolve( "conf.d" );
+            URL configURL = new File( appConfigPath ).toURI().toURL();
+            Path confdPath = Paths.get( configURL.toURI() ).getParent().resolve( "conf.d" );
 
             List<URL> moduleConfigurations = Module.CONFIGURATION.urlsFromClassPath();
 
