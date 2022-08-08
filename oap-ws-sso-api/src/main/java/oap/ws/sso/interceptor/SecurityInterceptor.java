@@ -40,12 +40,13 @@ import java.util.Optional;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
+import static oap.ws.sso.WsSecurity.SYSTEM;
 
 @Slf4j
 public class SecurityInterceptor implements Interceptor {
     private final Authenticator authenticator;
     private final SecurityRoles roles;
-    private final String SYSTEM = "SYSTEM";
+
 
     public SecurityInterceptor( Authenticator authenticator, SecurityRoles roles ) {
         this.authenticator = authenticator;
@@ -79,14 +80,14 @@ public class SecurityInterceptor implements Interceptor {
         if( u.isEmpty() ) return Optional.of( new Response( UNAUTHORIZED ) );
 
         Optional<String> realm =
-            wss.get().realm().equals( SYSTEM ) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
+            wss.get().realm().equals( SYSTEM) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
         if( realm.isEmpty() ) return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
 
         Optional<String> role = u.flatMap( user -> user.getRole( realm.get() ) );
-        if( role.isEmpty() && !realm.get().equals( SYSTEM ) )
-            return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm " + realm.get() ) );
+        if( role.isEmpty() && u.map( usr -> usr.getRole( SYSTEM ) ).isEmpty() ) return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm " + realm.get() ) );
 
-        if( realm.get().equals( SYSTEM ) || roles.granted( role.get(), wss.get().permissions() ) )
+        if( ( !realm.get().equals( SYSTEM ) && u.map( usr -> usr.getRole( SYSTEM ) ).isPresent() )
+            || roles.granted( role.get(), wss.get().permissions() ) )
             return Optional.empty();
 
         return Optional.of( new Response( FORBIDDEN, "user " + u.get().getEmail() + " has no access to method "
