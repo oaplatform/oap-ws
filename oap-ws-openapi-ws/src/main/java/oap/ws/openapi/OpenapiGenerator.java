@@ -40,6 +40,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.tags.Tag;
+import lombok.Setter;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
@@ -69,10 +70,12 @@ public class OpenapiGenerator {
     public static final String OPEN_API_VERSION = "3.0.3";
     private final ArrayListMultimap<String, String> versions = ArrayListMultimap.create();
     private final ModelConverters converters = new ModelConverters();
-    private OpenAPI api = new OpenAPI();
+    private final OpenAPI api = new OpenAPI();
+    @Setter
     private String title;
+    @Setter
     private String description;
-    private OpenapiGeneratorSettings settings;
+    private final OpenapiGeneratorSettings settings;
 
     public OpenapiGenerator( String title, String description, OpenapiGeneratorSettings settings ) {
         this.title = title;

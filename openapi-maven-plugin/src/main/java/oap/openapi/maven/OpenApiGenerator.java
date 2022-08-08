@@ -1,5 +1,6 @@
 package oap.openapi.maven;
 
+import com.google.common.base.Joiner;
 import io.swagger.v3.core.converter.ModelConverters;
 
 import oap.application.ApplicationException;
@@ -20,8 +21,10 @@ import org.apache.maven.project.MavenProject;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * mvn oap:openapi-maven-plugin:0.0.1-SNAPSHOT:openapi
@@ -47,7 +50,8 @@ public class OpenApiGenerator extends AbstractMojo {
             getLog().info( "Configurations loaded" );
 
             OpenapiGeneratorSettings settings = OpenapiGeneratorSettings.builder().ignoreOpenapiWS( false ).build();
-            OpenapiGenerator openapiGenerator = new OpenapiGenerator( "title", "description", settings );
+            OpenapiGenerator openapiGenerator = new OpenapiGenerator( "title", "", settings );
+            List<String> description = new ArrayList<>();
 
             moduleConfigurations.forEach( url -> {
                 Module config = Module.CONFIGURATION.fromFile( url, new HashMap<>() );
@@ -60,11 +64,13 @@ public class OpenApiGenerator extends AbstractMojo {
                         Class clazz = Class.forName( service.implementation );
                         openapiGenerator.processWebservice( clazz, wsService.path.stream().findFirst().orElse( "" ) );
                         getLog().info( "WebService class " + clazz.getCanonicalName() + " processed" );
+                        description.add( clazz.getCanonicalName() );
                     } catch( ReflectiveOperationException e ) {
                         throw new RuntimeException( e );
                     }
                 } );
             } );
+            openapiGenerator.setDescription( "WS services: " + Joiner.on(", ").join( description ) );
             String json = Binder.json.marshal( openapiGenerator.build() );
             getLog().info( "OpenAPI JSON generated" );
             IOUtils.write( json.getBytes( StandardCharsets.UTF_8 ), new FileOutputStream( jsonOutputPath ) );
