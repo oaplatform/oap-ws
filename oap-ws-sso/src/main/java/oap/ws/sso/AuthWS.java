@@ -44,7 +44,6 @@ import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
-import static oap.ws.sso.SSO.SESSION_USER_KEY;
 import static oap.ws.sso.SSO.authenticatedResponse;
 import static oap.ws.sso.SSO.logoutResponse;
 import static oap.ws.validate.ValidationErrors.empty;
@@ -95,15 +94,6 @@ public class AuthWS extends AbstractSecureWS {
             .filter( e -> !loggedUser.getEmail().equalsIgnoreCase( e ) )
             .map( e -> error( Http.StatusCode.FORBIDDEN, "User [%s] doesn't have enough permissions", loggedUser.getEmail() ) )
             .orElse( empty() );
-    }
-
-    /**
-     * @see #whoami(Optional)
-     */
-    @Deprecated
-    @WsMethod( method = GET, path = "/current" )
-    public Optional<User.View> current( Session session ) {
-        return session.<User>get( SESSION_USER_KEY ).map( User::getView );
     }
 
     @WsMethod( method = GET, path = "/whoami" )
