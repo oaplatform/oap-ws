@@ -28,6 +28,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public class OpenapiWS {
      *
      * @return openapi documentation
      */
-    @WsMethod( path = "/", method = GET, description = "Generates OpenAPI json spec")
+    @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document")
     public OpenAPI openapi() {
         OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description );
 

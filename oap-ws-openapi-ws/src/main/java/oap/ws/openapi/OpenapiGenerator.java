@@ -72,11 +72,17 @@ public class OpenapiGenerator {
     private OpenAPI api = new OpenAPI();
     private String title;
     private String description;
+    private OpenapiGeneratorSettings settings;
 
-    public OpenapiGenerator( String title, String description ) {
+    public OpenapiGenerator( String title, String description, OpenapiGeneratorSettings settings ) {
         this.title = title;
         this.description = description;
+        this.settings = settings;
         api.openapi( OPEN_API_VERSION );
+    }
+
+    public OpenapiGenerator( String title, String description ) {
+        this( title, description, OpenapiGeneratorSettings.builder().ignoreOpenapiWS( true ).build() );
     }
 
     public OpenAPI build() {
@@ -87,15 +93,21 @@ public class OpenapiGenerator {
     public void processWebservice( Class clazz, String context ) {
         var r = Reflect.reflect( clazz );
         var tag = createTag( tag( r ) );
-        if ( tag.getName().equals( OpenapiWS.class.getCanonicalName() ) ) return;
+        if ( settings.isIgnoreOpenapiWS() && tag.getName().equals( OpenapiWS.class.getCanonicalName() ) ) {
+            return;
+        }
         api.addTagsItem( tag );
         versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
 
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
         for( Reflection.Method method : methods ) {
-            if( !filterMethod( method ) ) continue;
-            if( method.findAnnotation( WsMethod.class ).isEmpty() ) continue;
+            if( !filterMethod( method ) ) {
+                continue;
+            }
+            if( method.findAnnotation( WsMethod.class ).isEmpty() ) {
+                continue;
+            }
             var wsDescriptor = new WsMethodDescriptor( method );
             var paths = getPaths( api );
             var pathString = path( context, wsDescriptor.path );

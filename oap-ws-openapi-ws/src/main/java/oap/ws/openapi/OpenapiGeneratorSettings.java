@@ -24,32 +24,17 @@
 
 package oap.ws.openapi;
 
-import lombok.extern.slf4j.Slf4j;
-import oap.application.testng.AbstractKernelFixture;
-import oap.application.testng.KernelFixture;
-import oap.http.Http;
-import oap.testng.Fixtures;
-import org.testng.annotations.Test;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
-import java.util.Map;
-
-import static oap.http.testng.HttpAsserts.assertGet;
-import static oap.http.testng.HttpAsserts.httpUrl;
-import static oap.io.Resources.urlOrThrow;
-import static oap.testng.Asserts.contentOfTestResource;
-
-@Slf4j
-public class OpenapiWSTest extends Fixtures {
-    private AbstractKernelFixture fixture;
-    {
-        fixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
-    }
-
-    @Test
-    public void api() {
-        assertGet( httpUrl( "/system/openapi" ) )
-            .respondedJson( Http.StatusCode.OK, "OK",
-                contentOfTestResource( getClass(), "openapi.json", Map.of() ) );
-    }
+@Builder
+@EqualsAndHashCode
+@ToString
+public class OpenapiGeneratorSettings {
+    @Getter
+    private boolean ignoreOpenapiWS = true;
+    @Getter
+    private boolean ignoreMethodsWithoutWsMethodAnnotation = true;
 }
-
