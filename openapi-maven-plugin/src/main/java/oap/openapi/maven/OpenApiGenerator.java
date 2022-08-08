@@ -8,6 +8,7 @@ import oap.application.ApplicationConfiguration;
 import oap.application.ApplicationException;
 import oap.application.module.Module;
 import oap.io.content.Resource;
+import oap.ws.WsConfig;
 import oap.ws.openapi.OpenapiGenerator;
 import oap.ws.openapi.OpenapiGeneratorSettings;
 import org.apache.commons.io.IOUtils;
@@ -25,6 +26,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +42,6 @@ public class OpenApiGenerator extends AbstractMojo {
     private MavenProject project;
 
     @Parameter( required = true, readonly = true )
-    private String appConfigPath = "/Users/mac/IdeaProjects/oap-ws/oap-ws-openapi-ws/src/test/resources/application.test.conf";
-    @Parameter( required = true, readonly = true )
     private String jsonOutputPath = "/Users/mac/IdeaProjects/oap-ws/oap-ws-openapi-ws/target/swagger.json";
 
     private final ModelConverters converters = new ModelConverters();
@@ -55,26 +55,22 @@ public class OpenApiGenerator extends AbstractMojo {
 
         getLog().info( "OpenAPI generation..." );
         try {
-            URL configURL = new File( appConfigPath ).toURI().toURL();
-            Path confdPath = Paths.get( configURL.toURI() ).getParent().resolve( "conf.d" );
-
             List<URL> moduleConfigurations = Module.CONFIGURATION.urlsFromClassPath();
-
             getLog().info( "Configurations loaded" );
 
             OpenapiGeneratorSettings settings = OpenapiGeneratorSettings.builder().ignoreOpenapiWS( false ).build();
             OpenapiGenerator openapiGenerator = new OpenapiGenerator( "title", "description", settings );
 
             moduleConfigurations.forEach( url -> {
-                ApplicationConfiguration config = ApplicationConfiguration.load( url, confdPath.toString() );
+                Module config = Module.CONFIGURATION.fromFile( url, new HashMap<>() );
                 config.services.forEach( (name, service) -> {
-                    Map<String, String> wsService = ( Map<String, String> ) service.get( "ws-service" );
+                    WsConfig wsService = ( WsConfig ) service.ext.get( "ws-service" );
                     if ( wsService == null) {
                         return;
                     }
                     try {
-                        Class clazz = Class.forName( (String) service.get( "implementation" ) );
-                        openapiGenerator.processWebservice( clazz, wsService.get( "path" ) );
+                        Class clazz = Class.forName( service.implementation );
+                        openapiGenerator.processWebservice( clazz, wsService.path.stream().findFirst().orElse( "" ) );
                         getLog().info( "WebService class " + clazz.getCanonicalName() + " processed" );
                     } catch( ReflectiveOperationException e ) {
                         throw new RuntimeException( e );
