@@ -54,8 +54,10 @@ import org.apache.http.entity.ContentType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Comparator.comparing;
 import static oap.ws.openapi.util.SchemaUtils.createSchemaRef;
@@ -93,41 +95,41 @@ public class OpenapiGenerator {
         return api;
     }
 
+    private Set<String> uniqueTags = new HashSet<>();
+    private Set<String> uniqueVersions = new HashSet<>();
+
     public void processWebservice( Class clazz, String context ) {
-        try {
-
-
-            var r = Reflect.reflect( clazz );
-            var tag = createTag( tag( r ) );
-            if( settings.isIgnoreOpenapiWS() && clazz.getCanonicalName().equals( OpenapiWS.class.getCanonicalName() ) ) {
-                return;
-            }
+        var r = Reflect.reflect( clazz );
+        var tag = createTag( tag( r ) );
+        if( settings.isIgnoreOpenapiWS() && clazz.getCanonicalName().equals( OpenapiWS.class.getCanonicalName() ) ) {
+            return;
+        }
+        if ( uniqueTags.add( tag.getName() ) ) {
             api.addTagsItem( tag );
+        }
+        if ( uniqueVersions.add( r.getType().getTypeName() ) ) {
             versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
+        }
 
-            List<Reflection.Method> methods = r.methods;
-            methods.sort( comparing( Reflection.Method::name ) );
-            for( Reflection.Method method : methods ) {
-                if( !filterMethod( method ) ) {
-                    continue;
-                }
-                if( method.findAnnotation( WsMethod.class ).isEmpty() ) {
-                    continue;
-                }
-                var wsDescriptor = new WsMethodDescriptor( method );
-                var paths = getPaths( api );
-                var pathString = path( context, wsDescriptor.path );
-                var pathItem = getPathItem( pathString, paths );
-
-                var operation = prepareOperation( method, wsDescriptor, api, tag );
-
-                for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
-                    pathItem.operation( convertMethod( httpMethod ), operation );
-                }
+        List<Reflection.Method> methods = r.methods;
+        methods.sort( comparing( Reflection.Method::name ) );
+        for( Reflection.Method method : methods ) {
+            if( !filterMethod( method ) ) {
+                continue;
             }
-        } catch( Exception ex ) {
-            System.err.println( "Bad:" + clazz.getCanonicalName() );
-            ex.printStackTrace( System.err );
+            if( method.findAnnotation( WsMethod.class ).isEmpty() ) {
+                continue;
+            }
+            var wsDescriptor = new WsMethodDescriptor( method );
+            var paths = getPaths( api );
+            var pathString = path( context, wsDescriptor.path );
+            var pathItem = getPathItem( pathString, paths );
+
+            var operation = prepareOperation( method, wsDescriptor, api, tag );
+
+            for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
+                pathItem.operation( convertMethod( httpMethod ), operation );
+            }
         }
     }
 
