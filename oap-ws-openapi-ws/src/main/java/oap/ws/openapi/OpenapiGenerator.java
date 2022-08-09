@@ -94,33 +94,40 @@ public class OpenapiGenerator {
     }
 
     public void processWebservice( Class clazz, String context ) {
-        var r = Reflect.reflect( clazz );
-        var tag = createTag( tag( r ) );
-        if ( settings.isIgnoreOpenapiWS() && clazz.getCanonicalName().equals( OpenapiWS.class.getCanonicalName() ) ) {
-            return;
-        }
-        api.addTagsItem( tag );
-        versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
+        try {
 
-        List<Reflection.Method> methods = r.methods;
-        methods.sort( comparing( Reflection.Method::name ) );
-        for( Reflection.Method method : methods ) {
-            if( !filterMethod( method ) ) {
-                continue;
-            }
-            if( method.findAnnotation( WsMethod.class ).isEmpty() ) {
-                continue;
-            }
-            var wsDescriptor = new WsMethodDescriptor( method );
-            var paths = getPaths( api );
-            var pathString = path( context, wsDescriptor.path );
-            var pathItem = getPathItem( pathString, paths );
 
-            var operation = prepareOperation( method, wsDescriptor, api, tag );
-
-            for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
-                pathItem.operation( convertMethod( httpMethod ), operation );
+            var r = Reflect.reflect( clazz );
+            var tag = createTag( tag( r ) );
+            if( settings.isIgnoreOpenapiWS() && clazz.getCanonicalName().equals( OpenapiWS.class.getCanonicalName() ) ) {
+                return;
             }
+            api.addTagsItem( tag );
+            versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
+
+            List<Reflection.Method> methods = r.methods;
+            methods.sort( comparing( Reflection.Method::name ) );
+            for( Reflection.Method method : methods ) {
+                if( !filterMethod( method ) ) {
+                    continue;
+                }
+                if( method.findAnnotation( WsMethod.class ).isEmpty() ) {
+                    continue;
+                }
+                var wsDescriptor = new WsMethodDescriptor( method );
+                var paths = getPaths( api );
+                var pathString = path( context, wsDescriptor.path );
+                var pathItem = getPathItem( pathString, paths );
+
+                var operation = prepareOperation( method, wsDescriptor, api, tag );
+
+                for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
+                    pathItem.operation( convertMethod( httpMethod ), operation );
+                }
+            }
+        } catch( Exception ex ) {
+            System.err.println( "Bad:" + clazz.getCanonicalName() );
+            ex.printStackTrace( System.err );
         }
     }
 
