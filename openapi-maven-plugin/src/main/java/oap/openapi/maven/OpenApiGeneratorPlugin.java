@@ -18,17 +18,17 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-
 /**
  *
  * mvn oap:openapi-maven-plugin:0.0.1-SNAPSHOT:openapi
@@ -56,12 +56,20 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
         getLog().info( "OpenAPI generation..." );
         try {
             Objects.requireNonNull( outputPath );
-            List<URL> moduleConfigurations = Module.CONFIGURATION.urlsFromClassPath();
+            LinkedHashSet<String> moduleConfigurations = new LinkedHashSet<>(  );
+
+            List<URL> urls = new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath()
+                .stream()
+                .filter( url -> moduleConfigurations.add( url.toString() ) )
+                .toList() );
             if ( classpath != null && !classpath.isEmpty() ) {
                 outputPath = classpath.get( 0 ) + "/swagger";
-                moduleConfigurations.add( new File( classpath.get( 0 ) + "/META-INF/oap-module.conf" ).toURI().toURL() );
+                URL currentModuleUrl = new File( classpath.get( 0 ) + "/META-INF/oap-module.conf" ).toURI().toURL();
+                if ( moduleConfigurations.add( currentModuleUrl.toString() ) ) {
+                    urls.add( currentModuleUrl );
+                }
             }
-            getLog().debug( "Configurations loaded: " + moduleConfigurations );
+            getLog().debug( "Configurations (from oap-module.conf files) loaded: " + moduleConfigurations );
 
             OpenapiGeneratorSettings settings = OpenapiGeneratorSettings
                 .builder()
@@ -71,9 +79,9 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             OpenapiGenerator openapiGenerator = new OpenapiGenerator( "title", "", settings );
             LinkedHashSet<String> description = new LinkedHashSet<>();
 
-            moduleConfigurations.forEach( url -> {
+            urls.forEach( url -> {
                 getLog().info( "Reading config from " + url.getPath() );
-                Module config = Module.CONFIGURATION.fromFile( url, new HashMap<>() );
+                Module config = Module.CONFIGURATION.fromUrl( url );
                 config.services.forEach( ( name, service ) -> {
                     WsConfig wsService = ( WsConfig ) service.ext.get( "ws-service" );
                     if ( wsService == null ) {
@@ -85,7 +93,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                         ClassRealm realm = pluginDescriptor.getClassRealm();
                         Class clazz = realm.loadClass( service.implementation );
                         OpenapiGenerator.Result result = openapiGenerator.processWebservice( clazz, wsService.path.stream().findFirst().orElse( "" ) );
-                        getLog().info( "WebService class " + clazz.getCanonicalName() + result );
+                        getLog().info( "WebService class " + clazz.getCanonicalName() + " " + result );
                         description.add( clazz.getCanonicalName() );
                     } catch( Exception e ) {
                         getLog().warn( "Could not deal with module: " + name + " due to the implementation class '"
@@ -95,9 +103,6 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             } );
             openapiGenerator.setDescription( "WS services: " + Joiner.on( ", " ).join( description ) );
             if ( settings.getOutputType() == OpenapiGeneratorSettings.Type.JSON ) {
-//                ObjectMapper mapper = new ObjectMapper();
-//                mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
-//                String json = mapper.writeValueAsString( openapiGenerator.build() );
                 String json = Binder.json.marshal( openapiGenerator.build() );
                 outputPath += ".json";
                 getLog().info( "OpenAPI JSON generated -> " + outputPath );

@@ -38,7 +38,7 @@
     <groupId>oap</groupId>
     <artifactId>openapi-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.7-SNAPSHOT</version>
 
     <name>openapi-maven-plugin Maven Mojo</name>
     <url>http://maven.apache.org</url>
@@ -46,7 +46,7 @@
     <properties>
 
         <oap-ws.project.version>17.11.2.1</oap-ws.project.version>
-        <oap.deps.oap.version>17.10.21.0</oap.deps.oap.version>
+        <oap.deps.oap.version>17.10.21.1</oap.deps.oap.version>
         <oap.deps.jackson.version>2.13.3</oap.deps.jackson.version>
         <oap.deps.maven.plugin-build-helper.version>1.10</oap.deps.maven.plugin-build-helper.version>
         <oap.deps.maven.plugin-api.version>3.8.1</oap.deps.maven.plugin-api.version>
