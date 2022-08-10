@@ -1,12 +1,10 @@
 package oap.openapi.maven;
 
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import io.swagger.v3.core.util.Yaml;
 import oap.application.ApplicationException;
 import oap.application.module.Module;
+import oap.json.Binder;
 import oap.ws.WsConfig;
 import oap.ws.openapi.OpenapiGenerator;
 import oap.ws.openapi.OpenapiGeneratorSettings;
@@ -97,10 +95,10 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             } );
             openapiGenerator.setDescription( "WS services: " + Joiner.on( ", " ).join( description ) );
             if ( settings.getOutputType() == OpenapiGeneratorSettings.Type.JSON ) {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
-                String json = mapper.writeValueAsString( openapiGenerator.build() );
-//                String json = Binder.json.marshal( openapiGenerator.build() );
+//                ObjectMapper mapper = new ObjectMapper();
+//                mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
+//                String json = mapper.writeValueAsString( openapiGenerator.build() );
+                String json = Binder.json.marshal( openapiGenerator.build() );
                 outputPath += ".json";
                 getLog().info( "OpenAPI JSON generated -> " + outputPath );
                 IOUtils.write( json.getBytes( StandardCharsets.UTF_8 ), new FileOutputStream( outputPath ) );
