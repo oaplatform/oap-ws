@@ -38,35 +38,32 @@
     <groupId>oap</groupId>
     <artifactId>openapi-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.6-SNAPSHOT</version>
 
     <name>openapi-maven-plugin Maven Mojo</name>
     <url>http://maven.apache.org</url>
 
     <properties>
-<!--        <maven.compiler.target>17</maven.compiler.target>-->
-<!--        <maven.compiler.source>17</maven.compiler.source>-->
 
+        <oap-ws.project.version>17.11.2.1</oap-ws.project.version>
+        <oap.deps.oap.version>17.10.21.0</oap.deps.oap.version>
         <oap.deps.jackson.version>2.13.3</oap.deps.jackson.version>
         <oap.deps.maven.plugin-build-helper.version>1.10</oap.deps.maven.plugin-build-helper.version>
         <oap.deps.maven.plugin-api.version>3.8.1</oap.deps.maven.plugin-api.version>
         <oap.deps.maven.version>3.0-alpha-2</oap.deps.maven.version>
         <oap.deps.maven.plugin-annotations.version>3.6.1</oap.deps.maven.plugin-annotations.version>
         <oap.deps.maven.plugin-plugin.version>3.6.4</oap.deps.maven.plugin-plugin.version>
+
+        <oap.deps.maven-core.version>3.6.3</oap.deps.maven-core.version>
+        <oap.deps.maven-plugin-api.version>3.6.0</oap.deps.maven-plugin-api.version>
+        <oap.deps.maven-plugin-annotations.version>3.4</oap.deps.maven-plugin-annotations.version>
+        <oap.deps.versions-maven-plugin.version>2.11.0</oap.deps.versions-maven-plugin.version>
+        <oap.deps.plexus-component-metadata.version>2.1.1</oap.deps.plexus-component-metadata.version>
+
+        <oap.deps.commons-lang3.version>3.4</oap.deps.commons-lang3.version>
     </properties>
 
-
     <dependencies>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-ws</artifactId>
-            <version>${oap-ws.project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-ws-openapi-ws</artifactId>
-            <version>${oap-ws.project.version}</version>
-        </dependency>
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-stdlib</artifactId>
@@ -74,42 +71,32 @@
         </dependency>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-ws-sso-api</artifactId>
+            <artifactId>oap-ws-openapi-ws</artifactId>
             <version>${oap-ws.project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-core</artifactId>
             <version>2.1.12</version>
         </dependency>
 
+
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>${oap.deps.maven-core.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.8.6</version>
-            <scope>provided</scope>
+            <version>${oap.deps.maven-plugin-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.6.4</version>
-            <scope>provided</scope>
+            <version>${oap.deps.maven-plugin-annotations.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>2.2.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-plugin-plugin</artifactId>
-            <version>3.6.4</version>
-            <type>maven-plugin</type>
-            <scope>provided</scope>
-        </dependency>
-
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -191,29 +178,29 @@
             <artifactId>jackson-dataformat-xml</artifactId>
             <version>${oap.deps.jackson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${oap.deps.commons-lang3.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-component-metadata</artifactId>
+            <version>${oap.deps.plexus-component-metadata.version}</version>
+            <type>maven-plugin</type>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-component-annotations</artifactId>
+            <version>${oap.deps.plexus-component-metadata.version}</version>
+        </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <!-- add all dependencies to plugin jar -->
-<!--            <plugin>-->
-<!--                <artifactId>maven-assembly-plugin</artifactId>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>single</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <descriptorRefs>-->
-<!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
-<!--                    </descriptorRefs>-->
-<!--                    <appendAssemblyId>false</appendAssemblyId>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
 
+
+    <build>
+
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
@@ -221,17 +208,41 @@
                 <configuration>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                        <version>9.2</version>
-                    </dependency>
-                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>${oap.deps.versions-maven-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>18</source>
+                    <target>18</target>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-component-metadata</artifactId>
+                <version>${oap.deps.plexus-component-metadata.version}</version>
                 <executions>
                     <execution>
-                        <id>default-descriptor</id>
-                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>generate-metadata</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

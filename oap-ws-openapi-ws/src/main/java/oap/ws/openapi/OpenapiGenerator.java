@@ -95,15 +95,26 @@ public class OpenapiGenerator {
         return api;
     }
 
+    private Set<String> processedClasses = new HashSet<>();
     private Set<String> uniqueTags = new HashSet<>();
     private Set<String> uniqueVersions = new HashSet<>();
 
-    public void processWebservice( Class clazz, String context ) {
+    public enum Result {
+        PROCESSED_OK,
+        SKIPPED_DUE_TO_OPENAPI_WS,
+        SKIPPED_DUE_TO_ALREADY_PROCESSED,
+        SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE
+    }
+
+    public Result processWebservice( Class clazz, String context ) {
+        if( settings.isIgnoreOpenapiWS() && clazz.getCanonicalName().equals( OpenapiWS.class.getCanonicalName() ) ) {
+            return Result.SKIPPED_DUE_TO_OPENAPI_WS;
+        }
+        if ( !processedClasses.add( clazz.getCanonicalName() ) ) {
+            return Result.SKIPPED_DUE_TO_ALREADY_PROCESSED;
+        }
         var r = Reflect.reflect( clazz );
         var tag = createTag( tag( r ) );
-        if( settings.isIgnoreOpenapiWS() && clazz.getCanonicalName().equals( OpenapiWS.class.getCanonicalName() ) ) {
-            return;
-        }
         if ( uniqueTags.add( tag.getName() ) ) {
             api.addTagsItem( tag );
         }
@@ -113,6 +124,7 @@ public class OpenapiGenerator {
 
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
+        boolean webServiceValid = false;
         for( Reflection.Method method : methods ) {
             if( !filterMethod( method ) ) {
                 continue;
@@ -120,6 +132,7 @@ public class OpenapiGenerator {
             if( method.findAnnotation( WsMethod.class ).isEmpty() ) {
                 continue;
             }
+            webServiceValid = true;
             var wsDescriptor = new WsMethodDescriptor( method );
             var paths = getPaths( api );
             var pathString = path( context, wsDescriptor.path );
@@ -131,6 +144,10 @@ public class OpenapiGenerator {
                 pathItem.operation( convertMethod( httpMethod ), operation );
             }
         }
+        if ( !webServiceValid ) {
+            return Result.SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE;
+        }
+        return Result.PROCESSED_OK;
     }
 
     private Operation prepareOperation( Reflection.Method method, WsMethodDescriptor wsDescriptor, OpenAPI api, Tag tag ) {

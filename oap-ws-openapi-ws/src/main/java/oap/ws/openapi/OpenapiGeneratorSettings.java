@@ -35,4 +35,10 @@ import lombok.ToString;
 public class OpenapiGeneratorSettings {
     @Getter
     private boolean ignoreOpenapiWS = true;
+    @Getter
+    private Type outputType = Type.JSON;
+    public enum Type {
+        YAML,
+        JSON
+    }
 }

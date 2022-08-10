@@ -68,7 +68,6 @@
 
     <properties>
         <oap-ws.project.version>17.11.2.1</oap-ws.project.version>
-
         <oap.deps.oap.version>17.10.21.0</oap.deps.oap.version>
 
         <oap.deps.assertj.version>3.12.2</oap.deps.assertj.version>
@@ -76,6 +75,7 @@
         <oap.deps.slf4j.version>1.7.32</oap.deps.slf4j.version>
         <oap.deps.httpcomponents.version>4.4.14</oap.deps.httpcomponents.version>
         <oap.deps.lombok.version>1.18.22</oap.deps.lombok.version>
+        <oap.deps.swagger.version>2.2.2</oap.deps.swagger.version>
         <!--        <oap.deps.apache.fileupload.version>1.3.3</oap.deps.apache.fileupload.version>-->
         <oap.deps.apache.httpclient.version>4.5.13</oap.deps.apache.httpclient.version>
         <oap.deps.javaassist.version>3.12.1.GA</oap.deps.javaassist.version>
