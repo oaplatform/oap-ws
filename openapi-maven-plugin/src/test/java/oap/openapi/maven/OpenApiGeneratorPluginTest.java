@@ -39,6 +39,8 @@ public class OpenApiGeneratorPluginTest extends Fixtures {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         OpenApiGeneratorPlugin mojo = new OpenApiGeneratorPlugin();
+        mojo.setOutputPath( "swagger" );
+        mojo.setOutputType( "JSON" );
 
         mojo.execute();
     }

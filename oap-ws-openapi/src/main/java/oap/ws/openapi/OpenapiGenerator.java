@@ -91,9 +91,9 @@ public class OpenapiGenerator {
             title,
             description,
             OpenapiGeneratorSettings.builder()
-                .ignoreOpenapiWS( true )
                 .processOnlyAnnotatedMethods( false )
-                .outputType( OpenapiGeneratorSettings.Type.JSON ).build() );
+                .outputType( OpenapiGeneratorSettings.Type.JSON )
+                .build() );
     }
 
     public OpenAPI build() {
@@ -107,7 +107,6 @@ public class OpenapiGenerator {
 
     public enum Result {
         PROCESSED_OK( " processed." ),
-        SKIPPED_DUE_TO_OPENAPI_WS( " skipped due to OpenapiWS file processing is off" ),
         SKIPPED_DUE_TO_ALREADY_PROCESSED( " has already been processed." ),
         SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE( "skipped due to class does not contain @WSMethod annotated methods" );
 
@@ -124,9 +123,6 @@ public class OpenapiGenerator {
     }
 
     public Result processWebservice( Class clazz, String context ) {
-        if( settings.isIgnoreOpenapiWS() && clazz.getCanonicalName().equals( OpenapiWS.class.getCanonicalName() ) ) {
-            return Result.SKIPPED_DUE_TO_OPENAPI_WS;
-        }
         if ( !processedClasses.add( clazz.getCanonicalName() ) ) {
             return Result.SKIPPED_DUE_TO_ALREADY_PROCESSED;
         }

@@ -34,12 +34,6 @@ import lombok.ToString;
 @ToString
 public class OpenapiGeneratorSettings {
     /**
-     * if true class OpenapiWS will be excluded from output
-     */
-    @Getter
-    private boolean ignoreOpenapiWS = true;
-
-    /**
      * This trigger HSON or YAML output file.
      */
     @Getter

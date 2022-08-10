@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-ws</artifactId>
+            <artifactId>oap-ws-openapi</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

@@ -31,6 +31,7 @@ import oap.ws.WsParam;
 import java.lang.reflect.Modifier;
 
 import static oap.ws.WsParam.From.QUERY;
+import static oap.ws.WsParam.From.SESSION;
 
 /**
  * Util class for working with Reflection in order to extract and filter ws api data
@@ -56,7 +57,7 @@ public class WsApiReflectionUtils {
      */
     public static boolean filterParameter( Reflection.Parameter parameter ) {
         return parameter.findAnnotation( WsParam.class )
-            .map( wsp -> wsp.from() != WsParam.From.SESSION )
+            .map( wsp -> wsp.from() != SESSION )
             .orElse( true )
             && !parameter.type().assignableTo( HttpServerExchange.class );
     }
