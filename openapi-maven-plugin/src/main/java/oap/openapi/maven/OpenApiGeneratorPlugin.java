@@ -48,10 +48,10 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
     private List<String> classpath;
     @Component
     private PluginDescriptor pluginDescriptor;
-    @Parameter( required = true, readonly = true, defaultValue = "swagger")
+    @Parameter( required = true, readonly = true, defaultValue = "swagger" )
     private String outputPath;
 
-    @Parameter( required = true, readonly = true, defaultValue = "JSON")
+    @Parameter( required = true, readonly = true, defaultValue = "JSON" )
     private String outputType;
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
