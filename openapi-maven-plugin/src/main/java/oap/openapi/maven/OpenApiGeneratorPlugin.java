@@ -74,6 +74,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             OpenapiGeneratorSettings settings = OpenapiGeneratorSettings
                 .builder()
                 .ignoreOpenapiWS( false )
+                .processOnlyAnnotatedMethods( false )
                 .outputType( OpenapiGeneratorSettings.Type.valueOf( outputType ) )
                 .build();
             OpenapiGenerator openapiGenerator = new OpenapiGenerator( "title", "", settings );

@@ -33,10 +33,23 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class OpenapiGeneratorSettings {
+    /**
+     * if true class OpenapiWS will be excluded from output
+     */
     @Getter
     private boolean ignoreOpenapiWS = true;
+
+    /**
+     * This trigger HSON or YAML output file.
+     */
     @Getter
     private Type outputType = Type.JSON;
+
+    /**
+     * if trus, only methods annotated with @WsMethod will be processed.
+     */
+    @Getter
+    private boolean processOnlyAnnotatedMethods = false;
     public enum Type {
         YAML,
         JSON

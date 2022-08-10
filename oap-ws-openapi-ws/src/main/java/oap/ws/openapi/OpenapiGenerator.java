@@ -87,7 +87,13 @@ public class OpenapiGenerator {
     }
 
     public OpenapiGenerator( String title, String description ) {
-        this( title, description, OpenapiGeneratorSettings.builder().ignoreOpenapiWS( true ).build() );
+        this(
+            title,
+            description,
+            OpenapiGeneratorSettings.builder()
+                .ignoreOpenapiWS( true )
+                .processOnlyAnnotatedMethods( false )
+                .outputType( OpenapiGeneratorSettings.Type.JSON ).build() );
     }
 
     public OpenAPI build() {
@@ -100,10 +106,21 @@ public class OpenapiGenerator {
     private Set<String> uniqueVersions = new HashSet<>();
 
     public enum Result {
-        PROCESSED_OK,
-        SKIPPED_DUE_TO_OPENAPI_WS,
-        SKIPPED_DUE_TO_ALREADY_PROCESSED,
-        SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE
+        PROCESSED_OK( " processed." ),
+        SKIPPED_DUE_TO_OPENAPI_WS( " skipped due to OpenapiWS file processing is off" ),
+        SKIPPED_DUE_TO_ALREADY_PROCESSED( " has already been processed." ),
+        SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE( "skipped due to class does not contain @WSMethod annotated methods" );
+
+        private String description;
+
+        Result( String description ) {
+            this.description = description;
+        }
+
+        @Override
+        public String toString() {
+            return description;
+        }
     }
 
     public Result processWebservice( Class clazz, String context ) {
@@ -129,7 +146,7 @@ public class OpenapiGenerator {
             if( !filterMethod( method ) ) {
                 continue;
             }
-            if( method.findAnnotation( WsMethod.class ).isEmpty() ) {
+            if( settings.isProcessOnlyAnnotatedMethods() && method.findAnnotation( WsMethod.class ).isEmpty() ) {
                 continue;
             }
             webServiceValid = true;
