@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
@@ -60,18 +59,16 @@ public class OpenapiWS {
     @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
     public OpenAPI openapi() {
         OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description );
-
-        for( Map.Entry<String, Object> ws : getServices().entrySet() ) {
+        log.info( "OpenAPI generating '{}'...", info.title );
+        for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
+            log.info( "Processing web-service {}...", ws.getKey() );
             Class clazz = ws.getValue().getClass();
             String context = ws.getKey();
+            log.info( "Processing web-service implementation class '{}'", clazz.getCanonicalName() );
             openapiGenerator.processWebservice( clazz, context );
         }
 
         return openapiGenerator.build();
-    }
-
-    public LinkedHashMap<String, Object> getServices() {
-        return webServices.services;
     }
 
 }
