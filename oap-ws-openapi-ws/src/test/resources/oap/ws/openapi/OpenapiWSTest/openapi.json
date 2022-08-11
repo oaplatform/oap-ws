@@ -14,6 +14,124 @@
       }
     },
     "schemas" : {
+      "ApiResponse" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "content" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/MediaType",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "properties" : {
+                "empty" : {
+                  "type" : "boolean"
+                }
+              },
+              "type" : "object"
+            },
+            "properties" : {
+              "empty" : {
+                "exampleSetFlag" : false,
+                "type" : "boolean",
+                "types" : [ "boolean" ]
+              }
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "headers" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Header",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "links" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          }
+        },
+        "type" : "object"
+      },
+      "ApiResponses" : {
+        "additionalProperties" : {
+          "$ref" : "#/components/schemas/ApiResponse",
+          "exampleSetFlag" : false
+        },
+        "exampleSetFlag" : false,
+        "properties" : {
+          "default" : {
+            "$ref" : "#/components/schemas/ApiResponse",
+            "exampleSetFlag" : false
+          },
+          "empty" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          }
+        },
+        "type" : "object",
+        "types" : [ "object" ]
+      },
       "Bean" : {
         "exampleSetFlag" : false,
         "properties" : {
@@ -24,7 +142,8 @@
           "dt" : {
             "exampleSetFlag" : false,
             "format" : "date-time",
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           },
           "ext" : {
             "$ref" : "#/components/schemas/Ext",
@@ -33,15 +152,18 @@
           "i" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           },
           "s" : {
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           },
           "something" : {
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           }
         },
         "type" : "object"
@@ -52,7 +174,363 @@
           "x" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Callback" : {
+        "additionalProperties" : {
+          "$ref" : "#/components/schemas/PathItem",
+          "exampleSetFlag" : false
+        },
+        "exampleSetFlag" : false,
+        "properties" : {
+          "empty" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object",
+        "types" : [ "object" ]
+      },
+      "Components" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "callbacks" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Callback",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "examples" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Example",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "headers" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Header",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "links" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "parameters" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Parameter",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "requestBodies" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/RequestBody",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "responses" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ApiResponse",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "schemas" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Schema",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "securitySchemes" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/SecurityScheme",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Contact" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "email" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "name" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "url" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Content" : {
+        "additionalProperties" : {
+          "$ref" : "#/components/schemas/MediaType",
+          "exampleSetFlag" : false
+        },
+        "exampleSetFlag" : false,
+        "properties" : {
+          "empty" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          }
+        },
+        "type" : "object",
+        "types" : [ "object" ]
+      },
+      "Discriminator" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "mapping" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "propertyName" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Encoding" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "allowReserved" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "contentType" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "explode" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "headers" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Header",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "style" : {
+            "_enum" : [ "form", "spaceDelimited", "pipeDelimited", "deepObject" ],
+            "enum" : [ "form", "spaceDelimited", "pipeDelimited", "deepObject" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Example" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "externalValue" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "summary" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "value" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
           }
         },
         "type" : "object"
@@ -60,13 +538,1906 @@
       "Ext" : {
         "exampleSetFlag" : false,
         "type" : "object"
+      },
+      "ExternalDocumentation" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "url" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Header" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "deprecated" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "example" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "examples" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Example",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "explode" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "required" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "schema" : {
+            "$ref" : "#/components/schemas/Schema",
+            "exampleSetFlag" : false
+          },
+          "style" : {
+            "_enum" : [ "simple" ],
+            "enum" : [ "simple" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Info" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "contact" : {
+            "$ref" : "#/components/schemas/Contact",
+            "exampleSetFlag" : false
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "license" : {
+            "$ref" : "#/components/schemas/License",
+            "exampleSetFlag" : false
+          },
+          "termsOfService" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "title" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "version" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "License" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "name" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "url" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Link" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "headers" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Header",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "operationId" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "operationRef" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "parameters" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "requestBody" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "server" : {
+            "$ref" : "#/components/schemas/Server",
+            "exampleSetFlag" : false
+          }
+        },
+        "type" : "object"
+      },
+      "MediaType" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "encoding" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Encoding",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "example" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "examples" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Example",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "schema" : {
+            "$ref" : "#/components/schemas/Schema",
+            "exampleSetFlag" : false
+          }
+        },
+        "type" : "object"
+      },
+      "OAuthFlow" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "authorizationUrl" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "refreshUrl" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "scopes" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "properties" : {
+                "empty" : {
+                  "type" : "boolean"
+                },
+                "extensions" : {
+                  "additionalProperties" : {
+                    "type" : "object"
+                  },
+                  "type" : "object",
+                  "writeOnly" : true
+                }
+              },
+              "type" : "object"
+            },
+            "properties" : {
+              "empty" : {
+                "exampleSetFlag" : false,
+                "type" : "boolean",
+                "types" : [ "boolean" ]
+              },
+              "extensions" : {
+                "additionalProperties" : {
+                  "exampleSetFlag" : false,
+                  "jsonSchema" : {
+                    "type" : "object"
+                  },
+                  "type" : "object",
+                  "types" : [ "object" ]
+                },
+                "exampleSetFlag" : false,
+                "jsonSchema" : {
+                  "type" : "object",
+                  "writeOnly" : true
+                },
+                "type" : "object",
+                "types" : [ "object" ],
+                "writeOnly" : true
+              }
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "tokenUrl" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "OAuthFlows" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "authorizationCode" : {
+            "$ref" : "#/components/schemas/OAuthFlow",
+            "exampleSetFlag" : false
+          },
+          "clientCredentials" : {
+            "$ref" : "#/components/schemas/OAuthFlow",
+            "exampleSetFlag" : false
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "implicit" : {
+            "$ref" : "#/components/schemas/OAuthFlow",
+            "exampleSetFlag" : false
+          },
+          "password" : {
+            "$ref" : "#/components/schemas/OAuthFlow",
+            "exampleSetFlag" : false
+          }
+        },
+        "type" : "object"
+      },
+      "OpenAPI" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "components" : {
+            "$ref" : "#/components/schemas/Components",
+            "exampleSetFlag" : false
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "externalDocs" : {
+            "$ref" : "#/components/schemas/ExternalDocumentation",
+            "exampleSetFlag" : false
+          },
+          "info" : {
+            "$ref" : "#/components/schemas/Info",
+            "exampleSetFlag" : false
+          },
+          "jsonSchemaDialect" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "openapi" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "paths" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/PathItem",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "properties" : {
+                "empty" : {
+                  "type" : "boolean"
+                },
+                "extensions" : {
+                  "additionalProperties" : {
+                    "type" : "object"
+                  },
+                  "type" : "object",
+                  "writeOnly" : true
+                }
+              },
+              "type" : "object"
+            },
+            "properties" : {
+              "empty" : {
+                "exampleSetFlag" : false,
+                "type" : "boolean",
+                "types" : [ "boolean" ]
+              },
+              "extensions" : {
+                "additionalProperties" : {
+                  "exampleSetFlag" : false,
+                  "jsonSchema" : {
+                    "type" : "object"
+                  },
+                  "type" : "object",
+                  "types" : [ "object" ]
+                },
+                "exampleSetFlag" : false,
+                "jsonSchema" : {
+                  "type" : "object",
+                  "writeOnly" : true
+                },
+                "type" : "object",
+                "types" : [ "object" ],
+                "writeOnly" : true
+              }
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "security" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/SecurityRequirement",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "servers" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Server",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "tags" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Tag",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Operation" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "callbacks" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Callback",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "deprecated" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "externalDocs" : {
+            "$ref" : "#/components/schemas/ExternalDocumentation",
+            "exampleSetFlag" : false
+          },
+          "operationId" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "parameters" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Parameter",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "requestBody" : {
+            "$ref" : "#/components/schemas/RequestBody",
+            "exampleSetFlag" : false
+          },
+          "responses" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ApiResponse",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "properties" : {
+                "default" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                },
+                "empty" : {
+                  "type" : "boolean"
+                },
+                "extensions" : {
+                  "additionalProperties" : {
+                    "type" : "object"
+                  },
+                  "type" : "object",
+                  "writeOnly" : true
+                }
+              },
+              "type" : "object"
+            },
+            "properties" : {
+              "default" : {
+                "$ref" : "#/components/schemas/ApiResponse",
+                "exampleSetFlag" : false
+              },
+              "empty" : {
+                "exampleSetFlag" : false,
+                "type" : "boolean",
+                "types" : [ "boolean" ]
+              },
+              "extensions" : {
+                "additionalProperties" : {
+                  "exampleSetFlag" : false,
+                  "jsonSchema" : {
+                    "type" : "object"
+                  },
+                  "type" : "object",
+                  "types" : [ "object" ]
+                },
+                "exampleSetFlag" : false,
+                "jsonSchema" : {
+                  "type" : "object",
+                  "writeOnly" : true
+                },
+                "type" : "object",
+                "types" : [ "object" ],
+                "writeOnly" : true
+              }
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "security" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/SecurityRequirement",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "servers" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Server",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "summary" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "tags" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Parameter" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "allowEmptyValue" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "allowReserved" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "content" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/MediaType",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "properties" : {
+                "empty" : {
+                  "type" : "boolean"
+                }
+              },
+              "type" : "object"
+            },
+            "properties" : {
+              "empty" : {
+                "exampleSetFlag" : false,
+                "type" : "boolean",
+                "types" : [ "boolean" ]
+              }
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "deprecated" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "example" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "examples" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Example",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "explode" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "in" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "name" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "required" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "schema" : {
+            "$ref" : "#/components/schemas/Schema",
+            "exampleSetFlag" : false
+          },
+          "style" : {
+            "_enum" : [ "matrix", "label", "form", "simple", "spaceDelimited", "pipeDelimited", "deepObject" ],
+            "enum" : [ "matrix", "label", "form", "simple", "spaceDelimited", "pipeDelimited", "deepObject" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "PathItem" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "delete" : {
+            "$ref" : "#/components/schemas/Operation",
+            "exampleSetFlag" : false
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "get" : {
+            "$ref" : "#/components/schemas/Operation",
+            "exampleSetFlag" : false
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "head" : {
+            "$ref" : "#/components/schemas/Operation",
+            "exampleSetFlag" : false
+          },
+          "options" : {
+            "$ref" : "#/components/schemas/Operation",
+            "exampleSetFlag" : false
+          },
+          "parameters" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Parameter",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "patch" : {
+            "$ref" : "#/components/schemas/Operation",
+            "exampleSetFlag" : false
+          },
+          "post" : {
+            "$ref" : "#/components/schemas/Operation",
+            "exampleSetFlag" : false
+          },
+          "put" : {
+            "$ref" : "#/components/schemas/Operation",
+            "exampleSetFlag" : false
+          },
+          "servers" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Server",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "summary" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "trace" : {
+            "$ref" : "#/components/schemas/Operation",
+            "exampleSetFlag" : false
+          }
+        },
+        "type" : "object"
+      },
+      "Paths" : {
+        "additionalProperties" : {
+          "$ref" : "#/components/schemas/PathItem",
+          "exampleSetFlag" : false
+        },
+        "exampleSetFlag" : false,
+        "properties" : {
+          "empty" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          }
+        },
+        "type" : "object",
+        "types" : [ "object" ]
+      },
+      "RequestBody" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "content" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/MediaType",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "properties" : {
+                "empty" : {
+                  "type" : "boolean"
+                }
+              },
+              "type" : "object"
+            },
+            "properties" : {
+              "empty" : {
+                "exampleSetFlag" : false,
+                "type" : "boolean",
+                "types" : [ "boolean" ]
+              }
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "required" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Schema" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "additionalProperties" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "allOf" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Schema",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "anyOf" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Schema",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "default" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "deprecated" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "discriminator" : {
+            "$ref" : "#/components/schemas/Discriminator",
+            "exampleSetFlag" : false
+          },
+          "enum" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "example" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "exclusiveMaximum" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "exclusiveMinimum" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "externalDocs" : {
+            "$ref" : "#/components/schemas/ExternalDocumentation",
+            "exampleSetFlag" : false
+          },
+          "format" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "items" : {
+            "$ref" : "#/components/schemas/SchemaObject",
+            "exampleSetFlag" : false
+          },
+          "maxItems" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "maxLength" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "maxProperties" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "maximum" : {
+            "exampleSetFlag" : false,
+            "type" : "number",
+            "types" : [ "number" ]
+          },
+          "minItems" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "minLength" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "minProperties" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "minimum" : {
+            "exampleSetFlag" : false,
+            "type" : "number",
+            "types" : [ "number" ]
+          },
+          "multipleOf" : {
+            "exampleSetFlag" : false,
+            "type" : "number",
+            "types" : [ "number" ]
+          },
+          "not" : {
+            "$ref" : "#/components/schemas/Schema",
+            "exampleSetFlag" : false
+          },
+          "nullable" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "oneOf" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Schema",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "pattern" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "properties" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Schema",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "readOnly" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "required" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "title" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "type" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "uniqueItems" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "writeOnly" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "xml" : {
+            "$ref" : "#/components/schemas/XML",
+            "exampleSetFlag" : false
+          }
+        },
+        "type" : "object"
+      },
+      "SchemaObject" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "additionalProperties" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "allOf" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Schema",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "anyOf" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Schema",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "default" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "deprecated" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "discriminator" : {
+            "$ref" : "#/components/schemas/Discriminator",
+            "exampleSetFlag" : false
+          },
+          "enum" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "example" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "exclusiveMaximum" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "exclusiveMinimum" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "externalDocs" : {
+            "$ref" : "#/components/schemas/ExternalDocumentation",
+            "exampleSetFlag" : false
+          },
+          "format" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "items" : {
+            "$ref" : "#/components/schemas/SchemaObject",
+            "exampleSetFlag" : false
+          },
+          "maxItems" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "maxLength" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "maxProperties" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "maximum" : {
+            "exampleSetFlag" : false,
+            "type" : "number",
+            "types" : [ "number" ]
+          },
+          "minItems" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "minLength" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "minProperties" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "minimum" : {
+            "exampleSetFlag" : false,
+            "type" : "number",
+            "types" : [ "number" ]
+          },
+          "multipleOf" : {
+            "exampleSetFlag" : false,
+            "type" : "number",
+            "types" : [ "number" ]
+          },
+          "not" : {
+            "$ref" : "#/components/schemas/Schema",
+            "exampleSetFlag" : false
+          },
+          "nullable" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "oneOf" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Schema",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "pattern" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "readOnly" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "required" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "title" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "type" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "uniqueItems" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "writeOnly" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "xml" : {
+            "$ref" : "#/components/schemas/XML",
+            "exampleSetFlag" : false
+          }
+        },
+        "type" : "object"
+      },
+      "Scopes" : {
+        "additionalProperties" : {
+          "exampleSetFlag" : false,
+          "type" : "string",
+          "types" : [ "string" ]
+        },
+        "exampleSetFlag" : false,
+        "properties" : {
+          "empty" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          }
+        },
+        "type" : "object",
+        "types" : [ "object" ]
+      },
+      "SecurityRequirement" : {
+        "additionalProperties" : {
+          "exampleSetFlag" : false,
+          "items" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "type" : "array",
+          "types" : [ "array" ]
+        },
+        "exampleSetFlag" : false,
+        "properties" : {
+          "empty" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          }
+        },
+        "type" : "object",
+        "types" : [ "object" ]
+      },
+      "SecurityScheme" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "bearerFormat" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "flows" : {
+            "$ref" : "#/components/schemas/OAuthFlows",
+            "exampleSetFlag" : false
+          },
+          "get$ref" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "in" : {
+            "_enum" : [ "cookie", "header", "query" ],
+            "enum" : [ "cookie", "header", "query" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "name" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "openIdConnectUrl" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "scheme" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "type" : {
+            "_enum" : [ "apiKey", "http", "oauth2", "openIdConnect", "mutualTLS" ],
+            "enum" : [ "apiKey", "http", "oauth2", "openIdConnect", "mutualTLS" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Server" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "url" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "variables" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ServerVariable",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "properties" : {
+                "empty" : {
+                  "type" : "boolean"
+                },
+                "extensions" : {
+                  "additionalProperties" : {
+                    "type" : "object"
+                  },
+                  "type" : "object",
+                  "writeOnly" : true
+                }
+              },
+              "type" : "object"
+            },
+            "properties" : {
+              "empty" : {
+                "exampleSetFlag" : false,
+                "type" : "boolean",
+                "types" : [ "boolean" ]
+              },
+              "extensions" : {
+                "additionalProperties" : {
+                  "exampleSetFlag" : false,
+                  "jsonSchema" : {
+                    "type" : "object"
+                  },
+                  "type" : "object",
+                  "types" : [ "object" ]
+                },
+                "exampleSetFlag" : false,
+                "jsonSchema" : {
+                  "type" : "object",
+                  "writeOnly" : true
+                },
+                "type" : "object",
+                "types" : [ "object" ],
+                "writeOnly" : true
+              }
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          }
+        },
+        "type" : "object"
+      },
+      "ServerVariable" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "default" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "enum" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          }
+        },
+        "type" : "object"
+      },
+      "ServerVariables" : {
+        "additionalProperties" : {
+          "$ref" : "#/components/schemas/ServerVariable",
+          "exampleSetFlag" : false
+        },
+        "exampleSetFlag" : false,
+        "properties" : {
+          "empty" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          }
+        },
+        "type" : "object",
+        "types" : [ "object" ]
+      },
+      "Tag" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "description" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "externalDocs" : {
+            "$ref" : "#/components/schemas/ExternalDocumentation",
+            "exampleSetFlag" : false
+          },
+          "name" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "XML" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "attribute" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "extensions" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ],
+            "writeOnly" : true
+          },
+          "name" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "namespace" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "prefix" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "wrapped" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          }
+        },
+        "type" : "object"
       }
     }
   },
   "info" : {
     "description" : "Test description",
     "title" : "Test title",
-    "version" : "17.10.21.0 (oap.ws.openapi.ExtTestWS, oap.ws.openapi.TestWS)"
+    "version" : "17.10.21.1 (oap.ws.openapi.ExtTestWS, oap.ws.openapi.TestWS, oap.ws.openapi.OpenapiWS)"
   },
   "openapi" : "3.0.3",
   "paths" : {
@@ -82,7 +2453,8 @@
                 "schema" : {
                   "exampleSetFlag" : false,
                   "format" : "int32",
-                  "type" : "integer"
+                  "type" : "integer",
+                  "types" : [ "integer" ]
                 }
               }
             },
@@ -103,7 +2475,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         }, {
           "in" : "query",
@@ -111,7 +2484,8 @@
           "required" : true,
           "schema" : {
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -125,7 +2499,8 @@
                     "$ref" : "#/components/schemas/Bean",
                     "exampleSetFlag" : false
                   },
-                  "type" : "array"
+                  "type" : "array",
+                  "types" : [ "array" ]
                 }
               }
             },
@@ -148,9 +2523,11 @@
                 "items" : {
                   "exampleSetFlag" : false,
                   "format" : "byte",
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 },
-                "type" : "array"
+                "type" : "array",
+                "types" : [ "array" ]
               }
             }
           }
@@ -162,7 +2539,8 @@
                 "exampleSetFlag" : false,
                 "schema" : {
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 }
               }
             },
@@ -183,7 +2561,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         } ],
         "responses" : {
@@ -206,7 +2585,8 @@
             "_enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
             "enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -218,7 +2598,8 @@
                   "_enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
                   "enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 }
               }
             },
@@ -238,7 +2619,8 @@
           "required" : true,
           "schema" : {
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -248,7 +2630,8 @@
                 "exampleSetFlag" : false,
                 "schema" : {
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 }
               }
             },
@@ -302,9 +2685,11 @@
                 "exampleSetFlag" : false,
                 "items" : {
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 },
-                "type" : "array"
+                "type" : "array",
+                "types" : [ "array" ]
               }
             }
           }
@@ -318,9 +2703,11 @@
                   "exampleSetFlag" : false,
                   "items" : {
                     "exampleSetFlag" : false,
-                    "type" : "string"
+                    "type" : "string",
+                    "types" : [ "string" ]
                   },
-                  "type" : "array"
+                  "type" : "array",
+                  "types" : [ "array" ]
                 }
               }
             },
@@ -341,7 +2728,8 @@
                 "exampleSetFlag" : false,
                 "schema" : {
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 }
               }
             },
@@ -361,7 +2749,8 @@
               "exampleSetFlag" : false,
               "schema" : {
                 "exampleSetFlag" : false,
-                "type" : "string"
+                "type" : "string",
+                "types" : [ "string" ]
               }
             }
           }
@@ -373,7 +2762,8 @@
                 "exampleSetFlag" : false,
                 "schema" : {
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 }
               }
             },
@@ -394,7 +2784,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         }, {
           "in" : "query",
@@ -403,7 +2794,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         } ],
         "responses" : {
@@ -414,7 +2806,8 @@
                 "schema" : {
                   "exampleSetFlag" : false,
                   "format" : "int32",
-                  "type" : "integer"
+                  "type" : "integer",
+                  "types" : [ "integer" ]
                 }
               }
             },
@@ -435,7 +2828,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         }, {
           "in" : "query",
@@ -443,7 +2837,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         } ],
         "responses" : {
@@ -454,7 +2849,8 @@
                 "schema" : {
                   "exampleSetFlag" : false,
                   "format" : "int32",
-                  "type" : "integer"
+                  "type" : "integer",
+                  "types" : [ "integer" ]
                 }
               }
             },
@@ -475,7 +2871,8 @@
                 "exampleSetFlag" : false,
                 "schema" : {
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 }
               }
             },
@@ -495,7 +2892,8 @@
           "required" : true,
           "schema" : {
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -505,7 +2903,8 @@
                 "exampleSetFlag" : false,
                 "schema" : {
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 }
               }
             },
@@ -525,7 +2924,8 @@
           "required" : true,
           "schema" : {
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -535,7 +2935,8 @@
                 "exampleSetFlag" : false,
                 "schema" : {
                   "exampleSetFlag" : false,
-                  "type" : "string"
+                  "type" : "string",
+                  "types" : [ "string" ]
                 }
               }
             },
@@ -556,7 +2957,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         }, {
           "in" : "query",
@@ -564,7 +2966,8 @@
           "required" : true,
           "schema" : {
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -575,7 +2978,8 @@
                 "schema" : {
                   "exampleSetFlag" : false,
                   "format" : "int32",
-                  "type" : "integer"
+                  "type" : "integer",
+                  "types" : [ "integer" ]
                 }
               }
             },
@@ -595,7 +2999,8 @@
           "required" : true,
           "schema" : {
             "exampleSetFlag" : false,
-            "type" : "string"
+            "type" : "string",
+            "types" : [ "string" ]
           }
         }, {
           "description" : "Non obligatory limit, MIGHT be skipped",
@@ -604,7 +3009,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         } ],
         "responses" : {
@@ -627,7 +3033,8 @@
           "schema" : {
             "exampleSetFlag" : false,
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         } ],
         "responses" : {
@@ -654,10 +3061,12 @@
                       "$ref" : "#/components/schemas/Bean",
                       "exampleSetFlag" : false
                     },
-                    "type" : "array"
+                    "type" : "array",
+                    "types" : [ "array" ]
                   },
                   "exampleSetFlag" : false,
-                  "type" : "object"
+                  "type" : "object",
+                  "types" : [ "object" ]
                 }
               }
             },
@@ -666,11 +3075,60 @@
         },
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
+    },
+    "/system/openapi/" : {
+      "get" : {
+        "description" : "Generates OpenAPI 3.0 json document",
+        "operationId" : "openapi",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "$ref" : "#/components/schemas/OpenAPI",
+                  "exampleSetFlag" : false
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.OpenapiWS" ]
+      }
+    },
+    "/system/openapi/getServices" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "getServices",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "additionalProperties" : {
+                    "exampleSetFlag" : false,
+                    "type" : "object"
+                  },
+                  "exampleSetFlag" : false,
+                  "type" : "object",
+                  "types" : [ "object" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.OpenapiWS" ]
+      }
     }
   },
   "tags" : [ {
     "name" : "oap.ws.openapi.ExtTestWS"
   }, {
     "name" : "oap.ws.openapi.TestWS"
+  }, {
+    "name" : "oap.ws.openapi.OpenapiWS"
   } ]
 }
