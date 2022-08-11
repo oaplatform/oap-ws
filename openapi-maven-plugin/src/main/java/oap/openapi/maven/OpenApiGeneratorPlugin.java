@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -64,7 +66,12 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                 .toList() );
             if ( classpath != null && !classpath.isEmpty() ) {
                 outputPath = classpath.get( 0 ) + "/swagger";
-                URL currentModuleUrl = new File( classpath.get( 0 ) + "/META-INF/oap-module.conf" ).toURI().toURL();
+                File file = new File( classpath.get( 0 ) + "/META-INF/oap-module.conf" );
+                if ( !Files.exists( Paths.get( file.getPath() ) ) ) {
+                    getLog().info( "File " + file.getPath() + " is missing, nothing to do" );
+                    return;
+                }
+                URL currentModuleUrl = file.toURI().toURL();
                 if ( moduleConfigurations.add( currentModuleUrl.toString() ) ) {
                     urls.add( currentModuleUrl );
                 }
