@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 /**
  *
- * mvn oap:openapi-maven-plugin:0.0.1-SNAPSHOT:openapi
+ * mvn oap:openapi-maven-plugin:0.0.7-SNAPSHOT:openapi
  */
 
 @Mojo(
@@ -69,7 +69,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                     urls.add( currentModuleUrl );
                 }
             }
-            getLog().debug( "Configurations (from oap-module.conf files) loaded: " + moduleConfigurations );
+            getLog().info( "Configurations (from oap-module.conf files) loaded: " + moduleConfigurations );
 
             OpenapiGeneratorSettings settings = OpenapiGeneratorSettings
                 .builder()

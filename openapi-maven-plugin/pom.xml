@@ -71,17 +71,19 @@
         </dependency>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-ws-openapi-ws</artifactId>
+            <artifactId>oap-ws</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-openapi</artifactId>
             <version>${oap-ws.project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-core</artifactId>
-            <version>2.1.12</version>
+            <version>${oap.deps.swagger.version}</version>
         </dependency>
-
-
-
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
@@ -97,7 +99,6 @@
             <artifactId>maven-plugin-annotations</artifactId>
             <version>${oap.deps.maven-plugin-annotations.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
