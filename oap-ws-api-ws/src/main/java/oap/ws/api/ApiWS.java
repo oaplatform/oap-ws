@@ -85,7 +85,7 @@ public class ApiWS {
             && !parameter.type().assignableTo( HttpServerExchange.class );
     }
 
-    @WsMethod( produces = "text/plain", path = "/", method = GET )
+    @WsMethod( produces = "text/plain", path = "/", method = GET, description = "Generates description of WS method with parameters and result" )
     public String api() {
         String result = "";
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
