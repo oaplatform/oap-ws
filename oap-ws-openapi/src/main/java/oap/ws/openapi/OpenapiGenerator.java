@@ -27,7 +27,6 @@ package oap.ws.openapi;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import io.swagger.v3.core.converter.ModelConverters;
-import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -58,7 +57,6 @@ import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +101,22 @@ public class OpenapiGenerator {
 
     public OpenAPI build() {
         api.info( createInfo( title, description ) );
+        addSecuritySchema();
         return api;
+    }
+
+    private void addSecuritySchema( ) {
+        SecurityScheme bearerAuth = new SecurityScheme()
+            .type( SecurityScheme.Type.HTTP )
+            .scheme( "bearer" )
+            .bearerFormat( "JWT" )
+            .in( SecurityScheme.In.HEADER )
+            .name( HttpHeaders.AUTHORIZATION );
+
+        SecurityRequirement addSecurityItem = new SecurityRequirement();
+        addSecurityItem.addList( "JWT" );
+        api.addSecurityItem( addSecurityItem );
+        api.schemaRequirement( "JWT", bearerAuth );
     }
 
     private Set<String> processedClasses = new HashSet<>();
@@ -139,7 +152,6 @@ public class OpenapiGenerator {
         if ( uniqueVersions.add( r.getType().getTypeName() ) ) {
             versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
         }
-        securitySchema();
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
         boolean webServiceValid = false;
@@ -167,20 +179,6 @@ public class OpenapiGenerator {
             return Result.SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE;
         }
         return Result.PROCESSED_OK;
-    }
-
-    private void securitySchema() {
-        SecurityScheme bearerAuth = new SecurityScheme()
-            .type( SecurityScheme.Type.HTTP )
-            .scheme( "bearer" )
-            .bearerFormat( "JWT" )
-            .in( SecurityScheme.In.HEADER )
-            .name( HttpHeaders.AUTHORIZATION );
-
-        SecurityRequirement addSecurityItem = new SecurityRequirement();
-        addSecurityItem.addList( "JWT" );
-        api.components( new Components().addSecuritySchemes( "JWT", bearerAuth ) );
-        api.addSecurityItem( addSecurityItem );
     }
 
     private Operation prepareOperation( Reflection.Method method,
@@ -213,7 +211,7 @@ public class OpenapiGenerator {
         if ( type.equals( Void.class ) ) {
             return responses;
         }
-        Map<String, Schema> schemas = api.getComponents() == null ? Collections.emptyMap() : api.getComponents().getSchemas();
+        Map<String, Schema> schemas = api.getComponents().getSchemas();
         response.content( createContent( produces, createSchemaRef( resolvedSchema.schema, schemas ) ) );
         return responses;
     }
