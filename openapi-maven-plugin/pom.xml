@@ -44,9 +44,6 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-
-        <oap-ws.project.version>17.11.2.1</oap-ws.project.version>
-        <oap.deps.oap.version>17.10.21.1</oap.deps.oap.version>
         <oap.deps.jackson.version>2.13.3</oap.deps.jackson.version>
         <oap.deps.maven.plugin-build-helper.version>1.10</oap.deps.maven.plugin-build-helper.version>
         <oap.deps.maven.plugin-api.version>3.8.1</oap.deps.maven.plugin-api.version>

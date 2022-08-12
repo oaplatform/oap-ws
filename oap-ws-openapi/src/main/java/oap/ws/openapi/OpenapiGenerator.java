@@ -47,6 +47,7 @@ import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.util.Lists;
+import oap.ws.WsDeprecated;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
@@ -60,6 +61,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Comparator.comparing;
@@ -195,6 +197,8 @@ public class OpenapiGenerator {
         operation.description( wsMethodDescriptor.description );
         operation.setRequestBody( prepareRequestBody( params ) );
         operation.setResponses( prepareResponse( returnType, wsMethodDescriptor.produces ) );
+        Optional<WsDeprecated> deprecated = method.findAnnotation( WsDeprecated.class );
+        deprecated.ifPresent( x -> operation.deprecated( true ) );
         if ( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET ) {
             operation.addSecurityItem( new SecurityRequirement().addList( "JWT" ) );
         }

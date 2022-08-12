@@ -3033,6 +3033,7 @@
     "/apiExt/test/empty_required_param/" : {
       "get" : {
         "description" : "This method returns nothing (Void)",
+        "deprecated" : true,
         "operationId" : "testVoid",
         "parameters" : [ {
           "description" : "Required parameter, MUST be specified",
