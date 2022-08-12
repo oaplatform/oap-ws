@@ -147,11 +147,11 @@ public class OpenapiGenerator {
             }
             webServiceValid = true;
             var wsDescriptor = new WsMethodDescriptor( method );
-            var paths = getPaths( api );
+            var paths = getPaths();
             var pathString = path( context, wsDescriptor.path );
             var pathItem = getPathItem( pathString, paths );
 
-            var operation = prepareOperation( method, wsDescriptor, api, tag );
+            var operation = prepareOperation( method, wsDescriptor, tag );
 
             for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
                 pathItem.operation( convertMethod( httpMethod ), operation );
@@ -163,7 +163,7 @@ public class OpenapiGenerator {
         return Result.PROCESSED_OK;
     }
 
-    private Operation prepareOperation( Reflection.Method method, WsMethodDescriptor wsDescriptor, OpenAPI api, Tag tag ) {
+    private Operation prepareOperation( Reflection.Method method, WsMethodDescriptor wsDescriptor, Tag tag ) {
         var params = Lists.filter( method.parameters, WsApiReflectionUtils::filterParameter );
         var returnType = prepareType( method.returnType() );
 
@@ -172,12 +172,12 @@ public class OpenapiGenerator {
         operation.setOperationId( wsDescriptor.id );
         operation.setParameters( prepareParameters( params ) );
         operation.description( wsDescriptor.description );
-        operation.setRequestBody( prepareRequestBody( params, api ) );
-        operation.setResponses( prepareResponse( returnType, wsDescriptor.produces, api ) );
+        operation.setRequestBody( prepareRequestBody( params ) );
+        operation.setResponses( prepareResponse( returnType, wsDescriptor.produces ) );
         return operation;
     }
 
-    private ApiResponses prepareResponse( Type type, String produces, OpenAPI api ) {
+    private ApiResponses prepareResponse( Type type, String produces ) {
         var responses = new ApiResponses();
         ApiResponse response = new ApiResponse();
         responses.addApiResponse( "200", response );
@@ -192,10 +192,10 @@ public class OpenapiGenerator {
         return responses;
     }
 
-    private RequestBody prepareRequestBody( List<Reflection.Parameter> parameters, OpenAPI api ) {
+    private RequestBody prepareRequestBody( List<Reflection.Parameter> parameters ) {
         return parameters.stream()
             .filter( item -> from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
-            .map( item -> createBody( item, api ) )
+            .map( item -> createBody( item ) )
             .findFirst().orElse( null );
     }
 
@@ -206,7 +206,7 @@ public class OpenapiGenerator {
             .toList();
     }
 
-    private RequestBody createBody( Reflection.Parameter parameter, OpenAPI api ) {
+    private RequestBody createBody( Reflection.Parameter parameter ) {
         var resolvedSchema = prepareSchema( prepareType( parameter.type() ), api );
         var schemas = api.getComponents().getSchemas();
 
@@ -270,7 +270,7 @@ public class OpenapiGenerator {
         return pathItem;
     }
 
-    private Paths getPaths( OpenAPI api ) {
+    private Paths getPaths( ) {
         var paths = api.getPaths();
         if( paths == null ) {
             paths = new Paths();
