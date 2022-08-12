@@ -28,6 +28,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
+import oap.ws.sso.WsSecurity;
 
 import java.util.Map;
 
@@ -57,8 +58,14 @@ public class OpenapiWS {
      * @return openapi documentation
      */
     @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
+    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ" } )
     public OpenAPI openapi() {
-        OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description );
+        OpenapiGeneratorSettings settings = OpenapiGeneratorSettings
+            .builder()
+            .processOnlyAnnotatedMethods( false )
+            .outputType( OpenapiGeneratorSettings.Type.JSON )
+            .build();
+        OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description, settings );
         log.info( "OpenAPI generating '{}'...", info.title );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             log.info( "Processing web-service {}...", ws.getKey() );

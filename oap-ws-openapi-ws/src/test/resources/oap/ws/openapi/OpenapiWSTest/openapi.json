@@ -1,18 +1,5 @@
 {
   "components" : {
-    "requestBodies" : {
-      "Bean" : {
-        "content" : {
-          "application/json" : {
-            "exampleSetFlag" : false,
-            "schema" : {
-              "$ref" : "#/components/schemas/Bean",
-              "exampleSetFlag" : false
-            }
-          }
-        }
-      }
-    },
     "schemas" : {
       "ApiResponse" : {
         "exampleSetFlag" : false,
@@ -131,54 +118,6 @@
         },
         "type" : "object",
         "types" : [ "object" ]
-      },
-      "Bean" : {
-        "exampleSetFlag" : false,
-        "properties" : {
-          "b2" : {
-            "$ref" : "#/components/schemas/Bean2",
-            "exampleSetFlag" : false
-          },
-          "dt" : {
-            "exampleSetFlag" : false,
-            "format" : "date-time",
-            "type" : "string",
-            "types" : [ "string" ]
-          },
-          "ext" : {
-            "$ref" : "#/components/schemas/Ext",
-            "exampleSetFlag" : false
-          },
-          "i" : {
-            "exampleSetFlag" : false,
-            "format" : "int32",
-            "type" : "integer",
-            "types" : [ "integer" ]
-          },
-          "s" : {
-            "exampleSetFlag" : false,
-            "type" : "string",
-            "types" : [ "string" ]
-          },
-          "something" : {
-            "exampleSetFlag" : false,
-            "type" : "string",
-            "types" : [ "string" ]
-          }
-        },
-        "type" : "object"
-      },
-      "Bean2" : {
-        "exampleSetFlag" : false,
-        "properties" : {
-          "x" : {
-            "exampleSetFlag" : false,
-            "format" : "int32",
-            "type" : "integer",
-            "types" : [ "integer" ]
-          }
-        },
-        "type" : "object"
       },
       "Callback" : {
         "additionalProperties" : {
@@ -533,10 +472,6 @@
             "types" : [ "object" ]
           }
         },
-        "type" : "object"
-      },
-      "Ext" : {
-        "exampleSetFlag" : false,
         "type" : "object"
       },
       "ExternalDocumentation" : {
@@ -2432,6 +2367,15 @@
         },
         "type" : "object"
       }
+    },
+    "securitySchemes" : {
+      "JWT" : {
+        "bearerFormat" : "JWT",
+        "in" : "HEADER",
+        "name" : "Authorization",
+        "scheme" : "bearer",
+        "type" : "HTTP"
+      }
     }
   },
   "info" : {
@@ -3094,36 +3038,20 @@
             "description" : ""
           }
         },
-        "tags" : [ "oap.ws.openapi.OpenapiWS" ]
-      }
-    },
-    "/system/openapi/getServices" : {
-      "get" : {
-        "description" : "",
-        "operationId" : "getServices",
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "exampleSetFlag" : false,
-                "schema" : {
-                  "additionalProperties" : {
-                    "exampleSetFlag" : false,
-                    "type" : "object"
-                  },
-                  "exampleSetFlag" : false,
-                  "type" : "object",
-                  "types" : [ "object" ]
-                }
-              }
-            },
-            "description" : ""
-          }
-        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
         "tags" : [ "oap.ws.openapi.OpenapiWS" ]
       }
     }
   },
+  "security" : [ {
+    "JWT" : [ ]
+  }, {
+    "JWT" : [ ]
+  }, {
+    "JWT" : [ ]
+  } ],
   "tags" : [ {
     "name" : "oap.ws.openapi.ExtTestWS"
   }, {

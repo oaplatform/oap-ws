@@ -27,6 +27,7 @@ package oap.ws.openapi;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -39,6 +40,8 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 import lombok.Setter;
 import oap.http.server.nio.HttpServerExchange;
@@ -48,7 +51,9 @@ import oap.util.Lists;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
+import oap.ws.WsSecurityDescriptor;
 import oap.ws.openapi.util.WsApiReflectionUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
@@ -134,7 +139,7 @@ public class OpenapiGenerator {
         if ( uniqueVersions.add( r.getType().getTypeName() ) ) {
             versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
         }
-
+        securitySchema();
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
         boolean webServiceValid = false;
@@ -146,14 +151,15 @@ public class OpenapiGenerator {
                 continue;
             }
             webServiceValid = true;
-            var wsDescriptor = new WsMethodDescriptor( method );
+            var wsMethodDescriptor = new WsMethodDescriptor( method );
+            var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
             var paths = getPaths();
-            var pathString = path( context, wsDescriptor.path );
+            var pathString = path( context, wsMethodDescriptor.path );
             var pathItem = getPathItem( pathString, paths );
 
-            var operation = prepareOperation( method, wsDescriptor, tag );
+            var operation = prepareOperation( method, wsMethodDescriptor, wsSecurityDescriptor, tag );
 
-            for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
+            for( HttpServerExchange.HttpMethod httpMethod : wsMethodDescriptor.methods ) {
                 pathItem.operation( convertMethod( httpMethod ), operation );
             }
         }
@@ -163,17 +169,37 @@ public class OpenapiGenerator {
         return Result.PROCESSED_OK;
     }
 
-    private Operation prepareOperation( Reflection.Method method, WsMethodDescriptor wsDescriptor, Tag tag ) {
+    private void securitySchema() {
+        SecurityScheme bearerAuth = new SecurityScheme()
+            .type( SecurityScheme.Type.HTTP )
+            .scheme( "bearer" )
+            .bearerFormat( "JWT" )
+            .in( SecurityScheme.In.HEADER )
+            .name( HttpHeaders.AUTHORIZATION );
+
+        SecurityRequirement addSecurityItem = new SecurityRequirement();
+        addSecurityItem.addList( "JWT" );
+        api.components( new Components().addSecuritySchemes( "JWT", bearerAuth ) );
+        api.addSecurityItem( addSecurityItem );
+    }
+
+    private Operation prepareOperation( Reflection.Method method,
+                                        WsMethodDescriptor wsMethodDescriptor,
+                                        WsSecurityDescriptor wsSecurityDescriptor,
+                                        Tag tag ) {
         var params = Lists.filter( method.parameters, WsApiReflectionUtils::filterParameter );
         var returnType = prepareType( method.returnType() );
 
         Operation operation = new Operation();
         operation.addTagsItem( tag.getName() );
-        operation.setOperationId( wsDescriptor.id );
+        operation.setOperationId( wsMethodDescriptor.id );
         operation.setParameters( prepareParameters( params ) );
-        operation.description( wsDescriptor.description );
+        operation.description( wsMethodDescriptor.description );
         operation.setRequestBody( prepareRequestBody( params ) );
-        operation.setResponses( prepareResponse( returnType, wsDescriptor.produces ) );
+        operation.setResponses( prepareResponse( returnType, wsMethodDescriptor.produces ) );
+        if ( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET ) {
+            operation.addSecurityItem( new SecurityRequirement().addList( "JWT" ) );
+        }
         return operation;
     }
 
