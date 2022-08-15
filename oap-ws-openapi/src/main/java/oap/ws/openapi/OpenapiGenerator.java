@@ -39,7 +39,6 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
@@ -53,7 +52,6 @@ import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
 import oap.ws.WsSecurityDescriptor;
 import oap.ws.openapi.util.WsApiReflectionUtils;
-import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
