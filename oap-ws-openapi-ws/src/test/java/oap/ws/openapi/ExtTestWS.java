@@ -1,7 +1,6 @@
 
 package oap.ws.openapi;
 
-import oap.ws.WsDeprecated;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 
@@ -19,7 +18,7 @@ public class ExtTestWS {
     }
 
     @WsMethod( method = GET, path = "/test/empty_required_param/", description = "This method returns nothing (Void)" )
-    @WsDeprecated( since = "not applicable" )
+    @Deprecated( since = "not applicable" )
     public void testVoid( @WsParam( from = QUERY, description = "Required parameter, MUST be specified" ) Integer limit ) {
     }
 }

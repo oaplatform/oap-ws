@@ -26,7 +26,6 @@ package oap.ws.api;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
-import oap.ws.WsDeprecated;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.sso.WsSecurity;
@@ -54,6 +53,8 @@ class ExampleWS {
     }
 
     @WsMethod( method = GET, path = "/test/sort/{id}" )
+    @WsSecurity( permissions = { "SUPERADMIN" } )
+    @Deprecated
     public String test1( @WsParam( from = PATH ) String id ) {
         return id;
     }

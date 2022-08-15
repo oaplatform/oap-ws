@@ -39,6 +39,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
@@ -47,7 +48,6 @@ import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.util.Lists;
-import oap.ws.WsDeprecated;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
@@ -75,6 +75,7 @@ import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
 
 public class OpenapiGenerator {
     public static final String OPEN_API_VERSION = "3.0.3";
+    public static final String SECURITY_SCHEMA_NAME = "JWT";
     private final ArrayListMultimap<String, String> versions = ArrayListMultimap.create();
     private final ModelConverters converters = new ModelConverters();
     private final OpenAPI api = new OpenAPI();
@@ -107,18 +108,20 @@ public class OpenapiGenerator {
         return api;
     }
 
+    // see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.0.md#securitySchemeObject
+    // and https://www.baeldung.com/openapi-jwt-authentication
     private void addSecuritySchema( ) {
-        SecurityScheme bearerAuth = new SecurityScheme()
-            .type( SecurityScheme.Type.HTTP )
-            .scheme( "bearer" )
-            .bearerFormat( "JWT" )
-            .in( SecurityScheme.In.HEADER )
-            .name( HttpHeaders.AUTHORIZATION );
+        SecurityScheme securityScheme = new SecurityScheme()
+            .name( "Bearer Authentication" )
+            .type( SecurityScheme.Type.HTTP ) // "apiKey", "http", "oauth2", "openIdConnect"
+            .description( "In order to use the method you have to be authorised" )
+            .scheme( "bearer" ) //see https://www.rfc-editor.org/rfc/rfc7235#section-5.1
+            .bearerFormat( SECURITY_SCHEMA_NAME );
+        api.schemaRequirement( SECURITY_SCHEMA_NAME, securityScheme );
 
-        SecurityRequirement addSecurityItem = new SecurityRequirement();
-        addSecurityItem.addList( "JWT" );
-        api.addSecurityItem( addSecurityItem );
-        api.schemaRequirement( "JWT", bearerAuth );
+//        SecurityRequirement securityRequirement = new SecurityRequirement();
+//        securityRequirement.addList( "JWT" );
+//        api.addSecurityItem( securityRequirement );
     }
 
     private Set<String> processedClasses = new HashSet<>();
@@ -197,10 +200,17 @@ public class OpenapiGenerator {
         operation.description( wsMethodDescriptor.description );
         operation.setRequestBody( prepareRequestBody( params ) );
         operation.setResponses( prepareResponse( returnType, wsMethodDescriptor.produces ) );
-        Optional<WsDeprecated> deprecated = method.findAnnotation( WsDeprecated.class );
+        Optional<Deprecated> deprecated = method.findAnnotation( Deprecated.class );
         deprecated.ifPresent( x -> operation.deprecated( true ) );
         if ( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET ) {
-            operation.addSecurityItem( new SecurityRequirement().addList( "JWT" ) );
+            operation.addSecurityItem( new SecurityRequirement().addList( SECURITY_SCHEMA_NAME ) );
+            String descriptionWithAuth = operation.getDescription();
+            if ( descriptionWithAuth.length() > 0 ) {
+                descriptionWithAuth += "\n    Note: \n- security permissions: "
+                    + "\n  - " + Joiner.on( "\n  - " ).join( wsSecurityDescriptor.permissions )
+                    + "\n- realm: " + wsSecurityDescriptor.realm;
+                operation.description( descriptionWithAuth );
+            }
         }
         return operation;
     }

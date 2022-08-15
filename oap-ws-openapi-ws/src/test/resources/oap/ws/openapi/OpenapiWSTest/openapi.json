@@ -2436,8 +2436,8 @@
     "securitySchemes" : {
       "JWT" : {
         "bearerFormat" : "JWT",
-        "in" : "HEADER",
-        "name" : "Authorization",
+        "description" : "In order to use the method you have to be authorised",
+        "name" : "Bearer Authentication",
         "scheme" : "bearer",
         "type" : "HTTP"
       }
@@ -3088,7 +3088,7 @@
     },
     "/system/openapi/" : {
       "get" : {
-        "description" : "Generates OpenAPI 3.0 json document",
+        "description" : "Generates OpenAPI 3.0 json document\n    Note: \n- security permissions: \n  - ACCOUNT_READ\n  - PERMISSIONS_READ\n- realm: organizationId",
         "operationId" : "openapi",
         "responses" : {
           "200" : {
@@ -3111,9 +3111,6 @@
       }
     }
   },
-  "security" : [ {
-    "JWT" : [ ]
-  } ],
   "tags" : [ {
     "name" : "oap.ws.openapi.ExtTestWS"
   }, {
