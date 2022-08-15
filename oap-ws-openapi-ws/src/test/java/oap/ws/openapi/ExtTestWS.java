@@ -18,6 +18,7 @@ public class ExtTestWS {
     }
 
     @WsMethod( method = GET, path = "/test/empty_required_param/", description = "This method returns nothing (Void)" )
+    @Deprecated( since = "not applicable" )
     public void testVoid( @WsParam( from = QUERY, description = "Required parameter, MUST be specified" ) Integer limit ) {
     }
 }

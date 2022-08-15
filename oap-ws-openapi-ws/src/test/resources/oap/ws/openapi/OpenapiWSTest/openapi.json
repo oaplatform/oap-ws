@@ -2432,6 +2432,15 @@
         },
         "type" : "object"
       }
+    },
+    "securitySchemes" : {
+      "JWT" : {
+        "bearerFormat" : "JWT",
+        "description" : "In order to use the method you have to be authorised",
+        "name" : "Bearer Authentication",
+        "scheme" : "bearer",
+        "type" : "HTTP"
+      }
     }
   },
   "info" : {
@@ -3024,6 +3033,7 @@
     "/apiExt/test/empty_required_param/" : {
       "get" : {
         "description" : "This method returns nothing (Void)",
+        "deprecated" : true,
         "operationId" : "testVoid",
         "parameters" : [ {
           "description" : "Required parameter, MUST be specified",
@@ -3078,7 +3088,7 @@
     },
     "/system/openapi/" : {
       "get" : {
-        "description" : "Generates OpenAPI 3.0 json document",
+        "description" : "Generates OpenAPI 3.0 json document\n    Note: \n- security permissions: \n  - ACCOUNT_READ\n  - PERMISSIONS_READ\n- realm: organizationId",
         "operationId" : "openapi",
         "responses" : {
           "200" : {
@@ -3094,32 +3104,9 @@
             "description" : ""
           }
         },
-        "tags" : [ "oap.ws.openapi.OpenapiWS" ]
-      }
-    },
-    "/system/openapi/getServices" : {
-      "get" : {
-        "description" : "",
-        "operationId" : "getServices",
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "exampleSetFlag" : false,
-                "schema" : {
-                  "additionalProperties" : {
-                    "exampleSetFlag" : false,
-                    "type" : "object"
-                  },
-                  "exampleSetFlag" : false,
-                  "type" : "object",
-                  "types" : [ "object" ]
-                }
-              }
-            },
-            "description" : ""
-          }
-        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
         "tags" : [ "oap.ws.openapi.OpenapiWS" ]
       }
     }

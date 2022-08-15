@@ -53,6 +53,8 @@ class ExampleWS {
     }
 
     @WsMethod( method = GET, path = "/test/sort/{id}" )
+    @WsSecurity( permissions = { "SUPERADMIN" } )
+    @Deprecated
     public String test1( @WsParam( from = PATH ) String id ) {
         return id;
     }

@@ -39,6 +39,9 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.OAuthFlows;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 import lombok.Setter;
 import oap.http.server.nio.HttpServerExchange;
@@ -48,15 +51,17 @@ import oap.util.Lists;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
+import oap.ws.WsSecurityDescriptor;
 import oap.ws.openapi.util.WsApiReflectionUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Comparator.comparing;
@@ -70,6 +75,7 @@ import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
 
 public class OpenapiGenerator {
     public static final String OPEN_API_VERSION = "3.0.3";
+    public static final String SECURITY_SCHEMA_NAME = "JWT";
     private final ArrayListMultimap<String, String> versions = ArrayListMultimap.create();
     private final ModelConverters converters = new ModelConverters();
     private final OpenAPI api = new OpenAPI();
@@ -98,7 +104,24 @@ public class OpenapiGenerator {
 
     public OpenAPI build() {
         api.info( createInfo( title, description ) );
+        addSecuritySchema();
         return api;
+    }
+
+    // see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.0.md#securitySchemeObject
+    // and https://www.baeldung.com/openapi-jwt-authentication
+    private void addSecuritySchema( ) {
+        SecurityScheme securityScheme = new SecurityScheme()
+            .name( "Bearer Authentication" )
+            .type( SecurityScheme.Type.HTTP ) // "apiKey", "http", "oauth2", "openIdConnect"
+            .description( "In order to use the method you have to be authorised" )
+            .scheme( "bearer" ) //see https://www.rfc-editor.org/rfc/rfc7235#section-5.1
+            .bearerFormat( SECURITY_SCHEMA_NAME );
+        api.schemaRequirement( SECURITY_SCHEMA_NAME, securityScheme );
+
+//        SecurityRequirement securityRequirement = new SecurityRequirement();
+//        securityRequirement.addList( "JWT" );
+//        api.addSecurityItem( securityRequirement );
     }
 
     private Set<String> processedClasses = new HashSet<>();
@@ -134,7 +157,6 @@ public class OpenapiGenerator {
         if ( uniqueVersions.add( r.getType().getTypeName() ) ) {
             versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
         }
-
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
         boolean webServiceValid = false;
@@ -146,14 +168,15 @@ public class OpenapiGenerator {
                 continue;
             }
             webServiceValid = true;
-            var wsDescriptor = new WsMethodDescriptor( method );
-            var paths = getPaths( api );
-            var pathString = path( context, wsDescriptor.path );
+            var wsMethodDescriptor = new WsMethodDescriptor( method );
+            var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
+            var paths = getPaths();
+            var pathString = path( context, wsMethodDescriptor.path );
             var pathItem = getPathItem( pathString, paths );
 
-            var operation = prepareOperation( method, wsDescriptor, api, tag );
+            var operation = prepareOperation( method, wsMethodDescriptor, wsSecurityDescriptor, tag );
 
-            for( HttpServerExchange.HttpMethod httpMethod : wsDescriptor.methods ) {
+            for( HttpServerExchange.HttpMethod httpMethod : wsMethodDescriptor.methods ) {
                 pathItem.operation( convertMethod( httpMethod ), operation );
             }
         }
@@ -163,21 +186,36 @@ public class OpenapiGenerator {
         return Result.PROCESSED_OK;
     }
 
-    private Operation prepareOperation( Reflection.Method method, WsMethodDescriptor wsDescriptor, OpenAPI api, Tag tag ) {
+    private Operation prepareOperation( Reflection.Method method,
+                                        WsMethodDescriptor wsMethodDescriptor,
+                                        WsSecurityDescriptor wsSecurityDescriptor,
+                                        Tag tag ) {
         var params = Lists.filter( method.parameters, WsApiReflectionUtils::filterParameter );
         var returnType = prepareType( method.returnType() );
 
         Operation operation = new Operation();
         operation.addTagsItem( tag.getName() );
-        operation.setOperationId( wsDescriptor.id );
+        operation.setOperationId( wsMethodDescriptor.id );
         operation.setParameters( prepareParameters( params ) );
-        operation.description( wsDescriptor.description );
-        operation.setRequestBody( prepareRequestBody( params, api ) );
-        operation.setResponses( prepareResponse( returnType, wsDescriptor.produces, api ) );
+        operation.description( wsMethodDescriptor.description );
+        operation.setRequestBody( prepareRequestBody( params ) );
+        operation.setResponses( prepareResponse( returnType, wsMethodDescriptor.produces ) );
+        Optional<Deprecated> deprecated = method.findAnnotation( Deprecated.class );
+        deprecated.ifPresent( x -> operation.deprecated( true ) );
+        if ( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET ) {
+            operation.addSecurityItem( new SecurityRequirement().addList( SECURITY_SCHEMA_NAME ) );
+            String descriptionWithAuth = operation.getDescription();
+            if ( descriptionWithAuth.length() > 0 ) {
+                descriptionWithAuth += "\n    Note: \n- security permissions: "
+                    + "\n  - " + Joiner.on( "\n  - " ).join( wsSecurityDescriptor.permissions )
+                    + "\n- realm: " + wsSecurityDescriptor.realm;
+                operation.description( descriptionWithAuth );
+            }
+        }
         return operation;
     }
 
-    private ApiResponses prepareResponse( Type type, String produces, OpenAPI api ) {
+    private ApiResponses prepareResponse( Type type, String produces ) {
         var responses = new ApiResponses();
         ApiResponse response = new ApiResponse();
         responses.addApiResponse( "200", response );
@@ -187,15 +225,15 @@ public class OpenapiGenerator {
         if ( type.equals( Void.class ) ) {
             return responses;
         }
-        Map<String, Schema> schemas = api.getComponents() == null ? Collections.emptyMap() : api.getComponents().getSchemas();
+        Map<String, Schema> schemas = api.getComponents().getSchemas();
         response.content( createContent( produces, createSchemaRef( resolvedSchema.schema, schemas ) ) );
         return responses;
     }
 
-    private RequestBody prepareRequestBody( List<Reflection.Parameter> parameters, OpenAPI api ) {
+    private RequestBody prepareRequestBody( List<Reflection.Parameter> parameters ) {
         return parameters.stream()
             .filter( item -> from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
-            .map( item -> createBody( item, api ) )
+            .map( item -> createBody( item ) )
             .findFirst().orElse( null );
     }
 
@@ -206,7 +244,7 @@ public class OpenapiGenerator {
             .toList();
     }
 
-    private RequestBody createBody( Reflection.Parameter parameter, OpenAPI api ) {
+    private RequestBody createBody( Reflection.Parameter parameter ) {
         var resolvedSchema = prepareSchema( prepareType( parameter.type() ), api );
         var schemas = api.getComponents().getSchemas();
 
@@ -270,7 +308,7 @@ public class OpenapiGenerator {
         return pathItem;
     }
 
-    private Paths getPaths( OpenAPI api ) {
+    private Paths getPaths( ) {
         var paths = api.getPaths();
         if( paths == null ) {
             paths = new Paths();
