@@ -13,7 +13,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -46,7 +45,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
 
     @Parameter( property = "project.compileClasspathElements", required = true, readonly = true )
     private List<String> classpath;
-    @Component
+    @Parameter( defaultValue = "${plugin}", readonly = true )
     private PluginDescriptor pluginDescriptor;
     @Parameter( required = true, readonly = true, defaultValue = "swagger" )
     private String outputPath;
