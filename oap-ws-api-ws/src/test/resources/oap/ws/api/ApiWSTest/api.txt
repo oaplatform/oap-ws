@@ -1,3 +1,4 @@
+################################################################################
 Service oap.ws.api.ExampleWS
 Bound to example
 Methods:
@@ -168,8 +169,8 @@ Methods:
 	Method test1
 	[GET] /example/test/sort/{id}
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param SYSTEM
+	Permissions [SUPERADMIN]
 	Returns String
 	Parameters
 		id: path String
@@ -202,6 +203,7 @@ Methods:
 		s: query String
 
 
+################################################################################
 Service oap.ws.api.ApiWS
 Bound to system/api
 Methods:
