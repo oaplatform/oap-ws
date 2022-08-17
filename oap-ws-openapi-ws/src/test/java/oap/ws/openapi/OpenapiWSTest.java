@@ -27,7 +27,9 @@ package oap.ws.openapi;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.http.Http;
+import oap.reflect.Reflect;
 import oap.testng.Fixtures;
+import org.codehaus.plexus.util.StringUtils;
 import org.testng.annotations.Test;
 
 import java.util.Map;
@@ -39,15 +41,18 @@ import static oap.testng.Asserts.contentOfTestResource;
 
 @Slf4j
 public class OpenapiWSTest extends Fixtures {
-    {
+    public OpenapiWSTest() {
         fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test
     public void api() {
+        var currentVersion = Reflect.reflect( ExtTestWS.class ).getClass().getPackage().getImplementationVersion();
+
         assertGet( httpUrl( "/system/openapi" ) )
             .respondedJson( Http.StatusCode.OK, "OK",
-                contentOfTestResource( getClass(), "openapi.json", Map.of() ) );
+                StringUtils.replace( contentOfTestResource( getClass(), "openapi.json", Map.of() ), "<oap-ws-version>", currentVersion )
+            );
     }
 }
 
