@@ -51,7 +51,7 @@ public class WebServices {
         this.sessionManager = sessionManager;
     }
 
-    public void start() {
+    public void preStart() {
         log.info( "binding web services..." );
 
         wsConfigServices = kernel.servicesByExt( "ws-service", WsConfig.class );
@@ -85,28 +85,6 @@ public class WebServices {
                 bind( path, ( HttpHandler ) config.getInstance(), config.ext.compression );
             }
         }
-    }
-
-
-    public void stop() {
-        if( wsConfigServices != null ) {
-
-            for( var config : wsConfigServices )
-                for( var path : config.ext.path )
-                    server.unbind( path );
-            wsConfigServices = null;
-        }
-
-        if( wsConfigHandlers != null ) {
-            for( var config : wsConfigHandlers )
-                for( var path : config.ext.path ) {
-                    if( !path.startsWith( "/" ) ) path = "/" + path;
-                    server.unbind( path );
-                }
-
-            wsConfigHandlers = null;
-        }
-
     }
 
     public void bind( String context, Object service, boolean sessionAware,

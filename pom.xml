@@ -69,7 +69,7 @@
 
     <properties>
         <oap-ws.project.version>17.11.2.4</oap-ws.project.version>
-        <oap.deps.oap.version>17.10.21.1</oap.deps.oap.version>
+        <oap.deps.oap.version>17.10.21.3-oap_21_3-1287</oap.deps.oap.version>
 
         <oap.deps.assertj.version>3.12.2</oap.deps.assertj.version>
         <oap.deps.guava.version>31.0.1-jre</oap.deps.guava.version>
