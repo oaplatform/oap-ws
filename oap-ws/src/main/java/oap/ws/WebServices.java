@@ -51,7 +51,7 @@ public class WebServices {
         this.sessionManager = sessionManager;
     }
 
-    public void start() {
+    public void preStart() {
         log.info( "binding web services..." );
 
         wsConfigServices = kernel.servicesByExt( "ws-service", WsConfig.class );
