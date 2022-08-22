@@ -87,26 +87,9 @@ public class WebServices {
         }
     }
 
-
     public void stop() {
-        if( wsConfigServices != null ) {
-
-            for( var config : wsConfigServices )
-                for( var path : config.ext.path )
-                    server.unbind( path );
-            wsConfigServices = null;
-        }
-
-        if( wsConfigHandlers != null ) {
-            for( var config : wsConfigHandlers )
-                for( var path : config.ext.path ) {
-                    if( !path.startsWith( "/" ) ) path = "/" + path;
-                    server.unbind( path );
-                }
-
-            wsConfigHandlers = null;
-        }
-
+        wsConfigServices = null;
+        wsConfigHandlers = null;
     }
 
     public void bind( String context, Object service, boolean sessionAware,

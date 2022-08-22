@@ -2446,7 +2446,7 @@
   "info" : {
     "description" : "Test description",
     "title" : "Test title",
-    "version" : "17.10.21.1 (oap.ws.openapi.ExtTestWS, oap.ws.openapi.TestWS, oap.ws.openapi.OpenapiWS)"
+    "version" : "17.10.24.0 (oap.ws.openapi.ExtTestWS, oap.ws.openapi.TestWS, oap.ws.openapi.OpenapiWS)"
   },
   "openapi" : "3.0.3",
   "paths" : {
