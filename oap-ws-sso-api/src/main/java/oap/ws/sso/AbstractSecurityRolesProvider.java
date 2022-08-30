@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class AbstractSecurityRolesProvider implements SecurityRolesProvider {
-    private final Map<String, Set<String>> roles;
+    protected final Map<String, Set<String>> roles;
 
     protected AbstractSecurityRolesProvider( Map<String, Set<String>> roles ) {
         this.roles = roles;
