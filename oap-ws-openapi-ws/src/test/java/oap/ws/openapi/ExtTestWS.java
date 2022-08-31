@@ -3,6 +3,7 @@ package oap.ws.openapi;
 
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import oap.ws.sso.WsSecurity;
 
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ public class ExtTestWS {
 
     @WsMethod( method = GET, path = "/test/empty_required_param/", description = "This method returns nothing (Void)" )
     @Deprecated( since = "not applicable" )
+    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ", "PERMISSIONS_READ" } )
     public void testVoid( @WsParam( from = QUERY, description = "Required parameter, MUST be specified" ) Integer limit ) {
     }
 }

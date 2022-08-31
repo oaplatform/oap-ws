@@ -24,30 +24,29 @@
 
 package oap.ws.openapi;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import lombok.extern.slf4j.Slf4j;
-import oap.ws.WsMethod;
-import oap.ws.sso.WsSecurity;
+import oap.application.testng.KernelFixture;
+import oap.testng.Fixtures;
+import org.testng.annotations.Test;
 
-import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import java.security.Permission;
+import java.util.Set;
 
-/**
- * Web service for openapi documentation
- */
-@Slf4j
-public class OpenapiWS {
+import static oap.io.Resources.urlOrThrow;
 
-    OpenapiService openapiService;
+public class OpenapiWsServiceTest extends Fixtures {
 
-    /**
-     * Generates openapi documentation for all web services in appropriate oap-module.conf
-     *
-     * @return openapi documentation
-     */
-    @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
-    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ", "PERMISSIONS_READ" } )
-    public OpenAPI openapi() {
-        return openapiService.generateOpenApi();
+
+    protected final KernelFixture kernelFixture;
+
+    public OpenapiWsServiceTest( ) {
+        this.kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
+    }
+
+    @Test
+    public void api() {
+        final OpenapiService service = kernelFixture.service( "oap-ws-openapi-ws", OpenapiService.class );
+//        final Set<Permission> permissions = service.preparePermissions();
+//        System.out.println(permissions);
     }
 
 }
