@@ -56,6 +56,7 @@ import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -116,10 +117,6 @@ public class OpenapiGenerator {
             .scheme( "bearer" ) //see https://www.rfc-editor.org/rfc/rfc7235#section-5.1
             .bearerFormat( SECURITY_SCHEMA_NAME );
         api.schemaRequirement( SECURITY_SCHEMA_NAME, securityScheme );
-
-//        SecurityRequirement securityRequirement = new SecurityRequirement();
-//        securityRequirement.addList( "JWT" );
-//        api.addSecurityItem( securityRequirement );
     }
 
     private Set<String> processedClasses = new HashSet<>();
@@ -223,7 +220,7 @@ public class OpenapiGenerator {
         if ( type.equals( Void.class ) ) {
             return responses;
         }
-        Map<String, Schema> schemas = api.getComponents().getSchemas();
+        Map<String, Schema> schemas = api.getComponents() == null ? Collections.emptyMap() : api.getComponents().getSchemas();
         response.content( createContent( produces, createSchemaRef( resolvedSchema.schema, schemas ) ) );
         return responses;
     }
