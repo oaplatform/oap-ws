@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface WebServiceVisitor {
-    void visit( WsConfig wsService, Class aClass, String basePath ) throws Exception ;
+    void visit( WsConfig wsService, Class aClass, String basePath ) throws Exception;
 
     @NotNull
     default Class loadClass( Service service ) throws ClassNotFoundException {

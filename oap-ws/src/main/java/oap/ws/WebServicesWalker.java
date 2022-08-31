@@ -26,11 +26,8 @@ package oap.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.application.module.Module;
-import oap.application.module.Service;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
