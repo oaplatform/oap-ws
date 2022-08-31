@@ -12,6 +12,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -36,7 +37,8 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
 
     @Parameter( property = "project.compileClasspathElements", required = true, readonly = true )
     private List<String> classpath;
-    @Parameter( defaultValue = "${plugin}", readonly = true )
+    @Parameter( defaultValue = "${plugin}", required = true, readonly = true )
+    @Component
     private PluginDescriptor pluginDescriptor;
     @Parameter( required = true, readonly = true, defaultValue = "swagger" )
     private String outputPath;
@@ -55,8 +57,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                 .outputType( OpenapiGeneratorSettings.Type.valueOf( outputType ) )
                 .build();
             var openapiGenerator = new OpenapiGenerator( "title", "", settings );
-            var visitor = new WebServiceVisitorForPlugin( openapiGenerator, classpath, outputPath, getLog() );
-            visitor.setPluginDescriptor( pluginDescriptor );
+            var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, getLog() );
 
             WebServicesWalker.walk( visitor );
             getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );

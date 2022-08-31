@@ -46,7 +46,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
 
     private Log log;
     private final OpenapiGenerator openapiGenerator;
-    private PluginDescriptor pluginDescriptor;
+    private final PluginDescriptor pluginDescriptor;
     private final LinkedHashSet<String> moduleConfigurations;
     private final List<String> classpath;
 
@@ -65,19 +65,17 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     private String outputPath;
     private final LinkedHashSet<String> description = new LinkedHashSet<>();
 
-    public WebServiceVisitorForPlugin( OpenapiGenerator openapiGenerator,
+    public WebServiceVisitorForPlugin( PluginDescriptor pluginDescriptor,
+                                       OpenapiGenerator openapiGenerator,
                                        List<String> classpath,
                                        String outputPath,
                                        Log log ) {
+        this.pluginDescriptor = pluginDescriptor;
         this.openapiGenerator = openapiGenerator;
         this.log = log;
         this.moduleConfigurations = new LinkedHashSet<>(  );
         this.classpath = classpath;
         this.outputPath = outputPath;
-    }
-
-    public void setPluginDescriptor( PluginDescriptor pluginDescriptor ) {
-        this.pluginDescriptor = pluginDescriptor;
     }
 
     @Override
