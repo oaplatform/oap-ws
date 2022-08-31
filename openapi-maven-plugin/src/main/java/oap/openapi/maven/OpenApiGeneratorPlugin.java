@@ -77,6 +77,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                 getLog().debug( "OpenAPI YAML is written to " + outputPath );
             }
         } catch( Exception e ) {
+            getLog().error( "OpenAPI generator plugin error", e );
             throw new ApplicationException( e );
         }
     }
