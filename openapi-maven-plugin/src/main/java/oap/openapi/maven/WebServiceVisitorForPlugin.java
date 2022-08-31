@@ -69,7 +69,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
                                        OpenapiGenerator openapiGenerator,
                                        List<String> classpath,
                                        String outputPath,
-                                       Log log) {
+                                       Log log ) {
         this.pluginDescriptor = pluginDescriptor;
         this.openapiGenerator = openapiGenerator;
         this.log = log;
