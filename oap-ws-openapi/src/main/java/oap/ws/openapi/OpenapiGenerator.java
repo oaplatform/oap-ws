@@ -208,7 +208,7 @@ public class OpenapiGenerator {
                 operation.description( descriptionWithAuth );
             }
             SecurityRequirement securityRequirement = new SecurityRequirement();
-            securityRequirement.addList( wsSecurityDescriptor.realm, Arrays.asList(wsSecurityDescriptor.permissions));
+            securityRequirement.addList( wsSecurityDescriptor.realm, Arrays.asList( wsSecurityDescriptor.permissions ) );
             operation.addSecurityItem( securityRequirement );
         }
         return operation;
