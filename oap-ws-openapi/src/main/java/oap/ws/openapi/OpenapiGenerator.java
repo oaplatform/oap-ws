@@ -56,6 +56,7 @@ import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -205,6 +206,9 @@ public class OpenapiGenerator {
                     + "\n  - " + Joiner.on( "\n  - " ).join( wsSecurityDescriptor.permissions )
                     + "\n- realm: " + wsSecurityDescriptor.realm;
                 operation.description( descriptionWithAuth );
+                SecurityRequirement securityRequirement = new SecurityRequirement();
+                securityRequirement.addList( wsSecurityDescriptor.realm, Arrays.asList(wsSecurityDescriptor.permissions));
+                operation.addSecurityItem( securityRequirement );
             }
         }
         return operation;
@@ -241,7 +245,7 @@ public class OpenapiGenerator {
 
     private RequestBody createBody( Reflection.Parameter parameter ) {
         var resolvedSchema = prepareSchema( prepareType( parameter.type() ), api );
-        var schemas = api.getComponents().getSchemas();
+        var schemas = api.getComponents() == null ? Collections.<String, Schema>emptyMap() : api.getComponents().getSchemas();
 
         var result = new RequestBody();
         result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(),

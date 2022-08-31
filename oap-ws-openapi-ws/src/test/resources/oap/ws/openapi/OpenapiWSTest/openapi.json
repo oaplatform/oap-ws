@@ -3032,8 +3032,8 @@
     },
     "/apiExt/test/empty_required_param/" : {
       "get" : {
-        "description" : "This method returns nothing (Void)",
         "deprecated" : true,
+        "description" : "This method returns nothing (Void)",
         "operationId" : "testVoid",
         "parameters" : [ {
           "description" : "Required parameter, MUST be specified",
@@ -3106,6 +3106,8 @@
         },
         "security" : [ {
           "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_READ", "PERMISSIONS_READ" ]
         } ],
         "tags" : [ "oap.ws.openapi.OpenapiWS" ]
       }
