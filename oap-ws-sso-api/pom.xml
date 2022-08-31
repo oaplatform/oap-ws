@@ -7,7 +7,7 @@
     <parent>
         <groupId>oap</groupId>
         <artifactId>oap-ws-parent</artifactId>
-        <version>${oap-ws.project.version}</version>
+        <version>17.11.2.11</version>
     </parent>
 
     <artifactId>oap-ws-sso-api</artifactId>
