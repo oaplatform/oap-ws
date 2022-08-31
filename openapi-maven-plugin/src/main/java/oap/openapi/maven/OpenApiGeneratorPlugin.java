@@ -55,7 +55,8 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                 .outputType( OpenapiGeneratorSettings.Type.valueOf( outputType ) )
                 .build();
             var openapiGenerator = new OpenapiGenerator( "title", "", settings );
-            var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, getLog() );
+            var visitor = new WebServiceVisitorForPlugin( openapiGenerator, classpath, outputPath, getLog() );
+            visitor.setPluginDescriptor( pluginDescriptor );
 
             WebServicesWalker.walk( visitor );
             getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
