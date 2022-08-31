@@ -206,6 +206,9 @@ public class OpenapiGenerator {
                     + "\n- realm: " + wsSecurityDescriptor.realm;
                 operation.description( descriptionWithAuth );
             }
+            SecurityRequirement securityRequirement = new SecurityRequirement();
+            securityRequirement.addList( wsSecurityDescriptor.realm, Arrays.asList(wsSecurityDescriptor.permissions));
+            operation.addSecurityItem( securityRequirement );
         }
         return operation;
     }
