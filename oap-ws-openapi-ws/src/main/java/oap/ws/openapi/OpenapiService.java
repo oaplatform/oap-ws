@@ -75,7 +75,7 @@ public class OpenapiService {
     }
 
 
-    public Set<String> preparePermissions() {
+    public Set<String> preparePermissions() throws Exception {
         final HashSet<String> permissions = new HashSet<>();
         try {
             WebServicesWalker.walk( ( wsService, clazz, basePath ) -> {
@@ -94,10 +94,10 @@ public class OpenapiService {
                     }
                 }
             } );
-        } catch(
-            Exception e ) {
-            e.printStackTrace();
+            return permissions;
+        } catch( Exception e ) {
+            log.error( "Error occurred while preparing permissions", e );
+            throw e;
         }
-        return permissions;
     }
 }

@@ -43,7 +43,7 @@ public class OpenapiWsServiceTest extends Fixtures {
     }
 
     @Test
-    public void api() {
+    public void api() throws Exception {
         final OpenapiService service = kernelFixture.service( "oap-ws-openapi-ws", OpenapiService.class );
         final Set<String> permissions = service.preparePermissions();
         assertThat( permissions ).containsOnly( "PERMISSIONS_READ", "ACCOUNT_READ", "PERMISSIONS_WRITE", "ACCOUNT_WRITE" );
