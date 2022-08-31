@@ -22,31 +22,26 @@
  * SOFTWARE.
  */
 
-package oap.ws.openapi;
+package oap.ws;
 
-import oap.application.testng.KernelFixture;
-import oap.testng.Fixtures;
-import org.testng.annotations.Test;
+import oap.application.module.Module;
+import oap.application.module.Service;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import static oap.io.Resources.urlOrThrow;
-import static org.assertj.core.api.Assertions.assertThat;
+public interface WebServiceVisitor {
+    void visit( WsConfig wsService, Class aClass, String basePath ) throws Exception;
 
-public class OpenapiWsServiceTest extends Fixtures {
-
-
-    protected final KernelFixture kernelFixture;
-
-    public OpenapiWsServiceTest() {
-        this.kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
+    @NotNull
+    default Class loadClass( Service service ) throws ClassNotFoundException {
+        return Class.forName( service.implementation );
     }
 
-    @Test
-    public void api() {
-        final OpenapiService service = kernelFixture.service( "oap-ws-openapi-ws", OpenapiService.class );
-        final Set<String> permissions = service.preparePermissions();
-        assertThat( permissions ).containsOnly( "PERMISSIONS_READ", "ACCOUNT_READ", "PERMISSIONS_WRITE", "ACCOUNT_WRITE" );
+    @NotNull
+    default List<URL> getWebServiceUrls() throws Exception {
+        return new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath() );
     }
-
 }

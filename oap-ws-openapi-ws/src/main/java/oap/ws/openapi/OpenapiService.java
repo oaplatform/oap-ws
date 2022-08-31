@@ -25,30 +25,26 @@
 package oap.ws.openapi;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
+import oap.reflect.Reflect;
+import oap.reflect.Reflection;
 import oap.ws.WebServices;
+import oap.ws.WebServicesWalker;
+import oap.ws.WsSecurityDescriptor;
 
-import java.security.Permission;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
 
 @Slf4j
 public class OpenapiService {
 
     private final WebServices webServices;
     public ApiInfo info;
+    private final Set<String> processedClasses = new HashSet<>();
 
     public OpenapiService( WebServices webServices ) {
         this.webServices = webServices;
@@ -79,15 +75,29 @@ public class OpenapiService {
     }
 
 
-    public Set<Permission> preparePermissions() {
-        final OpenAPI openAPI = generateOpenApi();
-        final Paths paths = openAPI.getPaths();
-//        final List<String> collect = paths.values().stream().flatMap( path -> coalesce( path.getGet() ).stream() ).collect( Collectors.toList() );
-//        System.out.println( collect );
-//
-//        final List<Stream<String>> streams = paths.values().stream().flatMap( pathItem -> pathItem.getGet().getSecurity().stream() )
-//            .flatMap( securityRequirement -> securityRequirement.values().stream().map( Collection::stream ) ).collect( Collectors.toList() );
-        return null;
-    }
+    public Set<String> preparePermissions() {
+        final HashSet<String> permissions = new HashSet<>();
+        try {
+            WebServicesWalker.walk( ( wsService, clazz, basePath ) -> {
+                if( !processedClasses.add( clazz.getCanonicalName() ) ) {
+                    return;
+                }
+                var r = Reflect.reflect( clazz );
 
+                for( Reflection.Method method : r.methods ) {
+                    if( !filterMethod( method ) ) {
+                        continue;
+                    }
+                    var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
+                    if( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET && wsSecurityDescriptor.permissions != null ) {
+                        permissions.addAll( List.of( wsSecurityDescriptor.permissions ) );
+                    }
+                }
+            } );
+        } catch(
+            Exception e ) {
+            e.printStackTrace();
+        }
+        return permissions;
+    }
 }

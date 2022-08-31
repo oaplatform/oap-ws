@@ -54,11 +54,13 @@ public class TestWS {
     }
 
     @WsMethod( method = GET, path = "/test/sort={id}/test" )
+    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_WRITE", "PERMISSIONS_WRITE" } )
     public String testEqual( @WsParam( from = PATH ) String id ) {
         return id;
     }
 
     @WsMethod( method = GET, path = "/test/sort/default" )
+    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ" } )
     public String test2() {
         return "__default__";
     }
