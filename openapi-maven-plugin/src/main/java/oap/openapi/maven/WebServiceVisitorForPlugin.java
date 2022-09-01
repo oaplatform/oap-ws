@@ -99,6 +99,9 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
             .stream()
             .filter( url -> moduleConfigurations.add( url.toString() ) )
             .toList() );
+        System.err.println( "!!!!! OUTPUT PATH:" + outputPath );
+        System.err.println( "!!!!! CLASS PATH:" + classpath );
+
         if ( classpath != null && !classpath.isEmpty() ) {
             outputPath = classpath.get( 0 ) + "/swagger";
             File file = new File( classpath.get( 0 ) + "/META-INF/oap-module.conf" );

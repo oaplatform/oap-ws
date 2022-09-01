@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 /**
  *
- * mvn oap:openapi-maven-plugin:0.0.7-SNAPSHOT:openapi
+ * mvn oap:openapi-maven-plugin:0.0.9:openapi
  */
 
 @Mojo(
@@ -43,7 +43,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
     @Parameter( required = true, readonly = true, defaultValue = "swagger" )
     private String outputPath;
 
-    @Parameter( required = true, readonly = true, defaultValue = "JSON" )
+    @Parameter( required = true, readonly = true, defaultValue = "YAML" )
     private String outputType;
 
     @Override
@@ -60,6 +60,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, getLog() );
 
             WebServicesWalker.walk( visitor );
+            getLog().info( "!!!!!!!!!!!!!!!Output: " + visitor.getOutputPath() );
             getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
 
             openapiGenerator.setDescription( "WS services: " + Joiner.on( ", " ).join( visitor.getDescription() ) );
