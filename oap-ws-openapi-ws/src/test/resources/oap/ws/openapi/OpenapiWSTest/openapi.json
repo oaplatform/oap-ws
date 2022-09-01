@@ -2888,6 +2888,11 @@
             "description" : ""
           }
         },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_READ" ]
+        } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
@@ -2920,6 +2925,11 @@
             "description" : ""
           }
         },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_READ", "PERMISSIONS_READ" ]
+        } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
@@ -2952,6 +2962,11 @@
             "description" : ""
           }
         },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_WRITE", "PERMISSIONS_WRITE" ]
+        } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
@@ -3052,6 +3067,11 @@
             "description" : ""
           }
         },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_READ", "PERMISSIONS_READ" ]
+        } ],
         "tags" : [ "oap.ws.openapi.ExtTestWS" ]
       }
     },

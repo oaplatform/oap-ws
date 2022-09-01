@@ -88,6 +88,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     @NotNull
     @Override
     public Class loadClass( Service service ) throws ClassNotFoundException {
+        if ( pluginDescriptor == null ) throw new ClassNotFoundException( "PluginDescriptor is null" );
         ClassRealm realm = pluginDescriptor.getClassRealm();
         return realm.loadClass( service.implementation );
     }
