@@ -125,8 +125,8 @@ public class OpenapiGenerator {
     private Set<String> uniqueVersions = new HashSet<>();
 
     public enum Result {
-        PROCESSED_OK( " processed." ),
-        SKIPPED_DUE_TO_ALREADY_PROCESSED( " has already been processed." ),
+        PROCESSED_OK( "processed." ),
+        SKIPPED_DUE_TO_ALREADY_PROCESSED( "has already been processed." ),
         SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE( "skipped due to class does not contain @WSMethod annotated methods" );
 
         private String description;

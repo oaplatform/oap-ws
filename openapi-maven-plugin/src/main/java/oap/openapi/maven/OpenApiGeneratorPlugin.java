@@ -20,11 +20,12 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 /**
  *
- * mvn oap:openapi-maven-plugin:0.0.7-SNAPSHOT:openapi
+ * mvn oap:openapi-maven-plugin:0.0.9:openapi
  */
 
 @Mojo(
@@ -63,6 +64,9 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
 
             openapiGenerator.setDescription( "WS services: " + Joiner.on( ", " ).join( visitor.getDescription() ) );
+            if ( !Paths.get( visitor.getOutputPath() + ".bak" ).toFile().canWrite() ) {
+                return;
+            }
             if ( settings.getOutputType() == OpenapiGeneratorSettings.Type.JSON ) {
                 String json = Binder.json.marshal( openapiGenerator.build() );
                 outputPath = visitor.getOutputPath() + ".json";
