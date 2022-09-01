@@ -21,7 +21,7 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-ws</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${oap-ws.project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
