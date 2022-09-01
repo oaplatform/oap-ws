@@ -18,14 +18,16 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 /**
  *
- * mvn oap:openapi-maven-plugin:0.0.9:openapi
+ * mvn oap:openapi-maven-plugin:17.11.2.11:openapi
  */
 
 @Mojo(
@@ -64,7 +66,19 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
 
             openapiGenerator.setDescription( "WS services: " + Joiner.on( ", " ).join( visitor.getDescription() ) );
-            if ( !Paths.get( visitor.getOutputPath() + ".bak" ).toFile().canWrite() ) {
+            if ( settings.getOutputType() == OpenapiGeneratorSettings.Type.JSON ) {
+                outputPath = visitor.getOutputPath() + ".json";
+            } else {
+                outputPath = visitor.getOutputPath() + ".yml";
+            }
+            try {
+                File file = Paths.get( outputPath ).toFile();
+                if( !file.createNewFile() ) {
+                    getLog().warn( "Cannot write to " + outputPath );
+                    return;
+                }
+            } catch( IOException ex ) {
+                //no such path, just ignore
                 return;
             }
             if ( settings.getOutputType() == OpenapiGeneratorSettings.Type.JSON ) {
@@ -72,13 +86,13 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                 outputPath = visitor.getOutputPath() + ".json";
                 getLog().info( "OpenAPI JSON generated -> " + outputPath );
                 IOUtils.write( json.getBytes( StandardCharsets.UTF_8 ), new FileOutputStream( outputPath ) );
-                getLog().debug( "OpenAPI JSON is written to " + outputPath );
+                getLog().info( "OpenAPI JSON is written to " + outputPath );
             } else {
                 outputPath = visitor.getOutputPath() + ".yml";
                 String yaml = Yaml.mapper().writeValueAsString( openapiGenerator.build() );
                 getLog().info( "OpenAPI YAML generated -> " + outputPath );
                 IOUtils.write( yaml.getBytes( StandardCharsets.UTF_8 ), new FileOutputStream( outputPath ) );
-                getLog().debug( "OpenAPI YAML is written to " + outputPath );
+                getLog().info( "OpenAPI YAML is written to " + outputPath );
             }
         } catch( Exception e ) {
             getLog().error( "OpenAPI generator plugin error", e );
