@@ -49,7 +49,6 @@ public class WebServicesWalker {
                     Class clazz = visitor.loadClass( service );
                     String basePath = wsService.path.stream().findFirst().orElse( "" );
                     visitor.visit( wsService, clazz, basePath );
-                    log.info( "WebService class " + clazz.getCanonicalName() );
                 } catch( Exception e ) {
                     log.warn( "Could not deal with module: " + name + " due to the implementation class '"
                         + service.implementation + "' is unavailable", e );

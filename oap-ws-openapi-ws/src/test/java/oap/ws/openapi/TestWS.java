@@ -28,6 +28,7 @@ import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import oap.ws.sso.WsSecurity;
 import org.joda.time.LocalDateTime;
 
 import java.lang.annotation.RetentionPolicy;
@@ -47,16 +48,19 @@ public class TestWS {
     }
 
     @WsMethod( method = GET, path = "/test/sort/{id}" )
+    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ", "PERMISSIONS_READ" } )
     public String test1( @WsParam( from = PATH ) String id ) {
         return id;
     }
 
     @WsMethod( method = GET, path = "/test/sort={id}/test" )
+    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_WRITE", "PERMISSIONS_WRITE" } )
     public String testEqual( @WsParam( from = PATH ) String id ) {
         return id;
     }
 
     @WsMethod( method = GET, path = "/test/sort/default" )
+    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ" } )
     public String test2() {
         return "__default__";
     }

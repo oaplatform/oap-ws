@@ -2888,6 +2888,11 @@
             "description" : ""
           }
         },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_READ" ]
+        } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
@@ -2920,6 +2925,11 @@
             "description" : ""
           }
         },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_READ", "PERMISSIONS_READ" ]
+        } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
@@ -2952,6 +2962,11 @@
             "description" : ""
           }
         },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_WRITE", "PERMISSIONS_WRITE" ]
+        } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
@@ -3033,7 +3048,7 @@
     "/apiExt/test/empty_required_param/" : {
       "get" : {
         "deprecated" : true,
-        "description" : "This method returns nothing (Void)",
+        "description" : "This method returns nothing (Void)\n    Note: \n- security permissions: \n  - ACCOUNT_READ\n  - PERMISSIONS_READ\n- realm: organizationId",
         "operationId" : "testVoid",
         "parameters" : [ {
           "description" : "Required parameter, MUST be specified",
@@ -3052,6 +3067,11 @@
             "description" : ""
           }
         },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "ACCOUNT_READ", "PERMISSIONS_READ" ]
+        } ],
         "tags" : [ "oap.ws.openapi.ExtTestWS" ]
       }
     },

@@ -39,12 +39,12 @@
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>oap-ws-sso</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${oap-ws.project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>oap-ws-sso-roles-config</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${oap-ws.project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
