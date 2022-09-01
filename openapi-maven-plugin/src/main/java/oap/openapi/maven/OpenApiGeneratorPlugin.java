@@ -20,6 +20,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 /**
@@ -43,7 +44,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
     @Parameter( required = true, readonly = true, defaultValue = "swagger" )
     private String outputPath;
 
-    @Parameter( required = true, readonly = true, defaultValue = "YAML" )
+    @Parameter( required = true, readonly = true, defaultValue = "JSON" )
     private String outputType;
 
     @Override
@@ -60,10 +61,12 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, getLog() );
 
             WebServicesWalker.walk( visitor );
-            getLog().info( "!!!!!!!!!!!!!!!Output: " + visitor.getOutputPath() );
             getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
 
             openapiGenerator.setDescription( "WS services: " + Joiner.on( ", " ).join( visitor.getDescription() ) );
+            if ( !Paths.get( visitor.getOutputPath() + ".bak" ).toFile().canWrite() ) {
+                return;
+            }
             if ( settings.getOutputType() == OpenapiGeneratorSettings.Type.JSON ) {
                 String json = Binder.json.marshal( openapiGenerator.build() );
                 outputPath = visitor.getOutputPath() + ".json";
