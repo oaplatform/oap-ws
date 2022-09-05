@@ -57,7 +57,7 @@
         <oap.deps.versions-maven-plugin.version>2.11.0</oap.deps.versions-maven-plugin.version>
         <oap.deps.plexus-component-metadata.version>2.1.1</oap.deps.plexus-component-metadata.version>
 
-        <oap.deps.commons-lang3.version>3.4</oap.deps.commons-lang3.version>
+        <oap.deps.commons-lang3.version>3.12.0</oap.deps.commons-lang3.version>
     </properties>
 
     <dependencies>
