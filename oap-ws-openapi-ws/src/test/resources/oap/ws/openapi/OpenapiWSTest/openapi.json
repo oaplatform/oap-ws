@@ -3108,7 +3108,7 @@
     },
     "/system/openapi/" : {
       "get" : {
-        "description" : "Generates OpenAPI 3.0 json document\n    Note: \n- security permissions: \n  - ACCOUNT_READ\n  - PERMISSIONS_READ\n- realm: organizationId",
+        "description" : "Generates OpenAPI 3.0 json document",
         "operationId" : "openapi",
         "responses" : {
           "200" : {
@@ -3124,11 +3124,6 @@
             "description" : ""
           }
         },
-        "security" : [ {
-          "JWT" : [ ]
-        }, {
-          "organizationId" : [ "ACCOUNT_READ", "PERMISSIONS_READ" ]
-        } ],
         "tags" : [ "oap.ws.openapi.OpenapiWS" ]
       }
     }

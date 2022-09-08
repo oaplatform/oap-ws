@@ -45,7 +45,6 @@ public class OpenapiWS {
      * @return openapi documentation
      */
     @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
-    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ", "PERMISSIONS_READ" } )
     public OpenAPI openapi() {
         return openapiService.generateOpenApi();
     }
