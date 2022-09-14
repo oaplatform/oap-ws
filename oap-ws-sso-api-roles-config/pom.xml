@@ -33,7 +33,7 @@
         <version>${oap-ws.project.version}</version>
     </parent>
 
-    <artifactId>oap-ws-sso-roles-config</artifactId>
+    <artifactId>oap-ws-sso-api-roles-config</artifactId>
 
     <dependencies>
         <dependency>
