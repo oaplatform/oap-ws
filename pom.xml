@@ -46,11 +46,11 @@
         <module>oap-ws-api-ws</module>
         <module>oap-ws-file-ws</module>
         <module>oap-ws-admin-ws</module>
-        <module>oap-ws-openapi-ws</module>
-        <module>oap-ws-sso-testing</module>
-        <module>oap-ws-sso-api-roles-config</module>
-        <module>openapi-maven-plugin</module>
         <module>oap-ws-openapi</module>
+        <module>oap-ws-openapi-ws</module>
+        <module>oap-ws-sso-api-roles-config</module>
+        <module>oap-ws-sso-testing</module>
+        <module>openapi-maven-plugin</module>
     </modules>
 
     <repositories>
