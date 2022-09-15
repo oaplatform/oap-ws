@@ -55,6 +55,7 @@ public class JWTSecurityInterceptor implements Interceptor {
         }
         if( !tokenProvider.verifyToken( authorization ) ) {
             log.trace( "Not authenticated." );
+            return Optional.of( new Response( FORBIDDEN, "Invalid token" ));
         }
 
         Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
