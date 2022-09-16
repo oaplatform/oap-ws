@@ -33,7 +33,7 @@ import java.util.List;
 @Slf4j
 public class WebServicesWalker {
 
-    public static void walk( WebServiceVisitor visitor ) throws Exception {
+    public static void walk( WebServiceVisitor visitor ) {
         List<URL> urls = visitor.getWebServiceUrls();
         urls.forEach( url -> {
             log.info( "Reading config from " + url.getPath() );

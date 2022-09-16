@@ -30,21 +30,23 @@ import oap.ws.WebServiceVisitor;
 import oap.ws.WsConfig;
 import oap.ws.openapi.OpenapiGenerator;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import org.apache.maven.plugin.logging.Log;
 
 public class WebServiceVisitorForPlugin implements WebServiceVisitor {
 
-    private Log log;
+    private final Log log;
     private final OpenapiGenerator openapiGenerator;
     private final PluginDescriptor pluginDescriptor;
     private final LinkedHashSet<String> moduleConfigurations;
@@ -79,7 +81,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     }
 
     @Override
-    public void visit( WsConfig wsService, Class clazz, String basePath ) throws Exception {
+    public void visit( WsConfig wsService, Class<?> clazz, String basePath ) {
         OpenapiGenerator.Result result = openapiGenerator.processWebservice( clazz, wsService.path.stream().findFirst().orElse( "" ) );
         log.info( "WebService class " + clazz.getCanonicalName() + " " + result );
         description.add( clazz.getCanonicalName() );
@@ -87,7 +89,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
 
     @NotNull
     @Override
-    public Class loadClass( Service service ) throws ClassNotFoundException {
+    public Class<?> loadClass( Service service ) throws ClassNotFoundException {
         if ( pluginDescriptor == null ) throw new ClassNotFoundException( "PluginDescriptor is null" );
         ClassRealm realm = pluginDescriptor.getClassRealm();
         return realm.loadClass( service.implementation );
@@ -95,7 +97,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
 
     @NotNull
     @Override
-    public List<URL> getWebServiceUrls() throws Exception {
+    public List<URL> getWebServiceUrls() {
         List<URL> urls = new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath()
             .stream()
             .filter( url -> moduleConfigurations.add( url.toString() ) )
@@ -107,10 +109,13 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
                 log.info( "File " + file.getPath() + " is missing, nothing to do" );
                 return urls;
             }
-            URL currentModuleUrl = file.toURI().toURL();
-            if ( moduleConfigurations.add( currentModuleUrl.toString() ) ) {
-                urls.add( currentModuleUrl );
+            URL currentModuleUrl;
+            try {
+                currentModuleUrl = file.toURI().toURL();
+            } catch( MalformedURLException e ) {
+                throw new UncheckedIOException( e );
             }
+            if ( moduleConfigurations.add( currentModuleUrl.toString() ) ) urls.add( currentModuleUrl );
         }
         return urls;
     }

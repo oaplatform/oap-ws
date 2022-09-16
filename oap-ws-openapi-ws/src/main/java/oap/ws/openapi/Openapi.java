@@ -40,17 +40,17 @@ import java.util.Set;
 import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
 
 @Slf4j
-public class OpenapiService {
+public class Openapi {
 
     private final WebServices webServices;
     public ApiInfo info;
     private final Set<String> processedClasses = new HashSet<>();
 
-    public OpenapiService( WebServices webServices ) {
+    public Openapi( WebServices webServices ) {
         this.webServices = webServices;
     }
 
-    public OpenapiService( WebServices webServices, ApiInfo info ) {
+    public Openapi( WebServices webServices, ApiInfo info ) {
         this( webServices );
         this.info = info;
     }
@@ -65,7 +65,7 @@ public class OpenapiService {
         log.info( "OpenAPI generating '{}'...", info.title );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             log.info( "Processing web-service {}...", ws.getKey() );
-            Class clazz = ws.getValue().getClass();
+            Class<?> clazz = ws.getValue().getClass();
             String context = ws.getKey();
             log.info( "Processing web-service implementation class '{}'", clazz.getCanonicalName() );
             openapiGenerator.processWebservice( clazz, context );
@@ -75,29 +75,24 @@ public class OpenapiService {
     }
 
 
-    public Set<String> preparePermissions() throws Exception {
+    public Set<String> preparePermissions() {
         final HashSet<String> permissions = new HashSet<>();
-        try {
-            WebServicesWalker.walk( ( wsService, clazz, basePath ) -> {
-                if( !processedClasses.add( clazz.getCanonicalName() ) ) {
-                    return;
-                }
-                var r = Reflect.reflect( clazz );
+        WebServicesWalker.walk( ( wsService, clazz, basePath ) -> {
+            if( !processedClasses.add( clazz.getCanonicalName() ) ) {
+                return;
+            }
+            var r = Reflect.reflect( clazz );
 
-                for( Reflection.Method method : r.methods ) {
-                    if( !filterMethod( method ) ) {
-                        continue;
-                    }
-                    var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
-                    if( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET && wsSecurityDescriptor.permissions != null ) {
-                        permissions.addAll( List.of( wsSecurityDescriptor.permissions ) );
-                    }
+            for( Reflection.Method method : r.methods ) {
+                if( !filterMethod( method ) ) {
+                    continue;
                 }
-            } );
-            return permissions;
-        } catch( Exception e ) {
-            log.error( "Error occurred while preparing permissions", e );
-            throw e;
-        }
+                var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
+                if( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET && wsSecurityDescriptor.permissions != null ) {
+                    permissions.addAll( List.of( wsSecurityDescriptor.permissions ) );
+                }
+            }
+        } );
+        return permissions;
     }
 }

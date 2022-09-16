@@ -26,7 +26,7 @@ package oap.ws.openapi;
 
 /**
  * Representation of some OpenApi Info object fields
- * @link {https://swagger.io/specification/#info-object}
+ * @link {<a href="https://swagger.io/specification/#info-object">Info Object</a>}
  */
 public class ApiInfo {
     public String title;

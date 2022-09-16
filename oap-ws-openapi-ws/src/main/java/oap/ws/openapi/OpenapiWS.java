@@ -36,7 +36,11 @@ import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 @Slf4j
 public class OpenapiWS {
 
-    OpenapiService openapiService;
+    private final Openapi openapi;
+
+    public OpenapiWS( Openapi openapi ) {
+        this.openapi = openapi;
+    }
 
     /**
      * Generates openapi documentation for all web services in appropriate oap-module.conf
@@ -45,7 +49,7 @@ public class OpenapiWS {
      */
     @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
     public OpenAPI openapi() {
-        return openapiService.generateOpenApi();
+        return openapi.generateOpenApi();
     }
 
 }
