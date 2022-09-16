@@ -30,5 +30,9 @@ public interface AuthTokenProvider {
 
     List<String> getPermissions( String token );
 
+    String getUserId( String token );
+
+    List<String> getAccounts( String token );
+
     boolean verifyToken( String token );
 }

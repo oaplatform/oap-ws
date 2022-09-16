@@ -35,8 +35,8 @@ import oap.ws.sso.AuthTokenProvider;
 @Slf4j
 public abstract class AbstractAuthTokenProvider implements AuthTokenProvider {
 
-    private String secret;
-    private String issuer;
+    private final String secret;
+    private final String issuer;
 
     public AbstractAuthTokenProvider( String secret, String issuer ) {
         this.secret = secret;
@@ -61,4 +61,13 @@ public abstract class AbstractAuthTokenProvider implements AuthTokenProvider {
             .build();
         return verifier.verify( token );
     }
+
+    public static String extractBearerToken( String authorization ) {
+        if( authorization.startsWith( "Bearer " ) ) {
+            return authorization.substring( "Bearer ".length() );
+        } else {
+            return authorization;
+        }
+    }
 }
+

@@ -37,6 +37,7 @@ import java.util.Optional;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
 import static oap.ws.sso.WsSecurity.SYSTEM;
+import static oap.ws.sso.interceptor.AbstractAuthTokenProvider.extractBearerToken;
 
 @Slf4j
 public class JWTSecurityInterceptor implements Interceptor {
@@ -53,7 +54,7 @@ public class JWTSecurityInterceptor implements Interceptor {
         if( authorization == null || authorization.isEmpty() ) {
             log.trace( "Not authenticated. No token in header {}", context.exchange );
         }
-        if( !tokenProvider.verifyToken( authorization ) ) {
+        if( !tokenProvider.verifyToken( extractBearerToken( authorization ) ) ) {
             log.trace( "Not authenticated." );
             return Optional.of( new Response( FORBIDDEN, "Invalid token" ) );
         }

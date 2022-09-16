@@ -42,4 +42,17 @@ public class Auth0TokenProvider extends AbstractAuthTokenProvider {
         final Claim permissions = decodedJWT.getClaims().get( "permissions" );
         return permissions != null ? permissions.asList( String.class ) : Collections.emptyList();
     }
+
+    @Override
+    public String getUserId( String token ) {
+        final DecodedJWT decodedJWT = decodeJWT( token );
+        return decodedJWT.getClaims().get( "user_id" ).asString();
+    }
+
+    @Override
+    public List<String> getAccounts( String token ) {
+        final DecodedJWT decodedJWT = decodeJWT( token );
+        return ( List ) decodedJWT.getClaims().get( "app_metadata" ).asMap().get( "accounts" );
+    }
+
 }
