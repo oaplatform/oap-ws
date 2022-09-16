@@ -63,11 +63,11 @@ public abstract class AbstractAuthTokenProvider implements AuthTokenProvider {
     }
 
     public static String extractBearerToken( String authorization ) {
-        if( authorization.startsWith( "Bearer " ) ) {
-            return authorization.substring( "Bearer ".length() );
-        } else {
-            return authorization;
+        if( authorization != null ) {
+            if( authorization.startsWith( "Bearer " ) ) {
+                return authorization.substring( "Bearer ".length() );
+            }
         }
+        return authorization;
     }
 }
-
