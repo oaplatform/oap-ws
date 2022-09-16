@@ -24,6 +24,7 @@
 
 package oap.ws.admin;
 
+import ch.qos.logback.classic.ClassicConstants;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -31,11 +32,15 @@ import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import lombok.extern.slf4j.Slf4j;
+import oap.http.Url;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
+
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.io.Resources.urlOrThrow;
 import static oap.ws.WsParam.From.PATH;
 
 @Slf4j
@@ -45,8 +50,7 @@ public class LogWS {
         log.debug( "reset" );
 
         var loggerContext = ( LoggerContext ) LoggerFactory.getILoggerFactory();
-        var ci = new ContextInitializer( loggerContext );
-        var url = ci.findURLOfDefaultConfigurationFile( true );
+        var url = urlOrThrow( getClass(), "/logback-test.xml" );
 
         try {
             var configurator = new JoranConfigurator();
