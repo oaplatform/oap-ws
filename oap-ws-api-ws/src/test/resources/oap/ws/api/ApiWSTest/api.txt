@@ -1,4 +1,23 @@
 ################################################################################
+Service oap.ws.api.TestRecursiveWS
+Bound to recursion
+Methods:
+	Method methodWithRecursiveObject
+	[GET] /recursion/getRecursiveObject
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns SomeClass
+			{
+				otherObject: OtherClass
+				{
+					someObject: <Recursive Reference>
+				}
+			}
+	No parameters
+
+
+################################################################################
 Service oap.ws.api.ExampleWS
 Bound to example
 Methods:

@@ -33,15 +33,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface WebServiceVisitor {
-    void visit( WsConfig wsService, Class aClass, String basePath ) throws Exception;
+    void visit( WsConfig wsService, Class<?> aClass, String basePath );
 
     @NotNull
-    default Class loadClass( Service service ) throws ClassNotFoundException {
+    default Class<?> loadClass( Service service ) throws ClassNotFoundException {
         return Class.forName( service.implementation );
     }
 
     @NotNull
-    default List<URL> getWebServiceUrls() throws Exception {
+    default List<URL> getWebServiceUrls() {
         return new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath() );
     }
 }

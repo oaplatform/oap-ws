@@ -22,34 +22,25 @@
  * SOFTWARE.
  */
 
-package oap.ws.openapi;
+package oap.ws.api;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import lombok.extern.slf4j.Slf4j;
 import oap.ws.WsMethod;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 
-/**
- * Web service for openapi documentation
- */
-@Slf4j
-public class OpenapiWS {
+public class TestRecursiveWS {
 
-    private final Openapi openapi;
-
-    public OpenapiWS( Openapi openapi ) {
-        this.openapi = openapi;
+    @WsMethod( method = GET, path = "/getRecursiveObject" )
+    public SomeClass methodWithRecursiveObject( ) {
+        return new SomeClass();
     }
 
-    /**
-     * Generates openapi documentation for all web services in appropriate oap-module.conf
-     *
-     * @return openapi documentation
-     */
-    @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
-    public OpenAPI openapi() {
-        return openapi.generateOpenApi();
+    public class SomeClass {
+        public OtherClass otherObject;
+    }
+
+    public class OtherClass {
+        public SomeClass someObject;
     }
 
 }

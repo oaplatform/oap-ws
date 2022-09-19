@@ -108,14 +108,14 @@ public class ApiWS {
                 result += "\tProduces " + d.produces + "\n";
                 result += "\tRealm param " + formatRealm( m ) + "\n";
                 result += "\tPermissions " + formatPermissions( m ) + "\n";
-                result += "\tReturns " + formatType( 3, r, m.returnType() ) + "\n";
+                result += "\tReturns " + formatType( 3, r, m.returnType(),  new ArrayList<>() ) + "\n";
                 List<Reflection.Parameter> params = Lists.filter( m.parameters, ApiWS::filterParameter );
                 if( params.isEmpty() ) result += "\tNo parameters\n";
                 else {
                     result += "\tParameters\n";
                     for( Reflection.Parameter p : params ) {
                         log.trace( "parameter {}", p.name() );
-                        result += "\t\t" + formatParameter( p ) + "\n";
+                        result += "\t\t" + formatParameter( p, new ArrayList<>() ) + "\n";
                     }
                 }
                 result += "\n";
@@ -137,20 +137,20 @@ public class ApiWS {
             .orElse( "<unsecure>" );
     }
 
-    private String formatParameter( Reflection.Parameter p ) {
+    private String formatParameter( Reflection.Parameter p, List<String> previouslyReferencedClasses ) {
         String from = p.findAnnotation( WsParam.class ).map( WsParam::from ).orElse( QUERY ).name().toLowerCase();
-        return p.name() + ": " + from + " " + formatType( 3, null, p.type() );
+        return p.name() + ": " + from + " " + formatType( 3, null, p.type(), previouslyReferencedClasses );
     }
 
-    private String formatType( int shift, Reflection clazz, Reflection r ) {
-        if( r.isOptional() ) return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ) );
+    private String formatType( int shift, Reflection clazz, Reflection r, List<String> previouslyReferencedClasses ) {
+        if( r.isOptional() ) return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ), previouslyReferencedClasses );
         if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Collection.class ) ) {
             log.trace( "DEBUG: Collections recursion - {}/{}/{}", shift, clazz, r );
-            return formatType( shift, clazz, r.getCollectionComponentType() ) + "[]";
+            return formatType( shift, clazz, r.getCollectionComponentType(), previouslyReferencedClasses ) + "[]";
         }
-        if( r.isArray() ) return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ) ) + "[]";
+        if( r.isArray() ) return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ), previouslyReferencedClasses ) + "[]";
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
         if( r.underlying.getPackageName().startsWith( DateTime.class.getPackageName() ) )
             return r.underlying.getSimpleName();
@@ -166,10 +166,16 @@ public class ApiWS {
         if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
-        return formatComplexType( shift, r );
+        return formatComplexType( shift, r, previouslyReferencedClasses );
     }
 
-    private String formatComplexType( int shift, Reflection r ) {
+    private String formatComplexType( int shift, Reflection r, List<String> previouslyReferencedClasses ) {
+        if ( previouslyReferencedClasses.contains( r.name() ) ) {
+            return "<Recursive Reference>";
+        }
+        List<String> referencedClasses = new ArrayList<>( previouslyReferencedClasses );
+        referencedClasses.add( r.name() );
+
         var result = r.underlying.getSimpleName() + "\n";
         log.trace( "complex type {}", r.name() );
         List<Reflection.Field> fields = new ArrayList<>( r.fields.values() );
@@ -178,14 +184,14 @@ public class ApiWS {
         for( Reflection.Field f : fields ) {
             if( !filterField( f ) ) continue;
             log.trace( "type field {}", f.name() );
-            result += fill( "\t", shift + 1 ) + f.name() + ": " + formatField( shift, r, f ) + "\n";
+            result += fill( "\t", shift + 1 ) + f.name() + ": " + formatField( shift, r, f, referencedClasses ) + "\n";
         }
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
         for( Reflection.Method m : methods ) {
             if( !filterGetters( m, fields ) ) continue;
             log.trace( "type getter {}", m.name() );
-            result += fill( "\t", shift + 1 ) + getPropertyName( m.underlying ) + ": " + formatType( shift + 1, r, m.returnType() ) + "\n";
+            result += fill( "\t", shift + 1 ) + getPropertyName( m.underlying ) + ": " + formatType( shift + 1, r, m.returnType(), referencedClasses ) + "\n";
         }
         result += fill( "\t", shift ) + "}";
         return result;
@@ -198,11 +204,11 @@ public class ApiWS {
             && !Lists.map( fields, Reflection.Field::name ).contains( getPropertyName( m.underlying ) );
     }
 
-    private String formatField( int shift, Reflection r, Reflection.Field f ) {
+    private String formatField( int shift, Reflection r, Reflection.Field f, List<String> previouslyReferencedClasses ) {
         Class<?> ext = f.type().assignableTo( Ext.class )
             ? ExtDeserializer.extensionOf( r.underlying, f.name() ) : null;
         Reflection target = ext != null ? Reflect.reflect( ext ) : f.type();
-        return formatType( shift + 1, r, target );
+        return formatType( shift + 1, r, target, previouslyReferencedClasses );
     }
 
 }

@@ -47,6 +47,7 @@ import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.util.Lists;
+import oap.util.Strings;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
@@ -120,14 +121,14 @@ public class OpenapiGenerator {
         api.schemaRequirement( SECURITY_SCHEMA_NAME, securityScheme );
     }
 
-    private Set<String> processedClasses = new HashSet<>();
-    private Set<String> uniqueTags = new HashSet<>();
-    private Set<String> uniqueVersions = new HashSet<>();
+    private final Set<String> processedClasses = new HashSet<>();
+    private final Set<String> uniqueTags = new HashSet<>();
+    private final Set<String> uniqueVersions = new HashSet<>();
 
     public enum Result {
         PROCESSED_OK( "processed." ),
         SKIPPED_DUE_TO_ALREADY_PROCESSED( "has already been processed." ),
-        SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE( "skipped due to class does not contain @WSMethod annotated methods" );
+        SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE( "skipped due to class does not contain @WsMethod annotated methods" );
 
         private String description;
 
@@ -141,28 +142,22 @@ public class OpenapiGenerator {
         }
     }
 
-    public Result processWebservice( Class clazz, String context ) {
-        if( !processedClasses.add( clazz.getCanonicalName() ) ) {
-            return Result.SKIPPED_DUE_TO_ALREADY_PROCESSED;
-        }
+    public Result processWebservice( Class<?> clazz, String context ) {
+        if( !processedClasses.add( clazz.getCanonicalName() ) ) return Result.SKIPPED_DUE_TO_ALREADY_PROCESSED;
         var r = Reflect.reflect( clazz );
         var tag = createTag( tag( r ) );
-        if( uniqueTags.add( tag.getName() ) ) {
-            api.addTagsItem( tag );
-        }
-        if( uniqueVersions.add( r.getType().getTypeName() ) ) {
-            versions.put( r.getClass().getPackage().getImplementationVersion(), r.getType().getTypeName() );
-        }
-        List<Reflection.Method> methods = r.methods;
-        methods.sort( comparing( Reflection.Method::name ) );
+        if( uniqueTags.add( tag.getName() ) ) api.addTagsItem( tag );
+        if( uniqueVersions.add( r.getType().getTypeName() ) )
+            versions.put(
+                clazz.getPackage().getImplementationVersion() != null
+                    ? clazz.getPackage().getImplementationVersion()
+                    : Strings.UNDEFINED, r.getType().getTypeName() );
+        List<Reflection.Method> methods = r.methods.stream().sorted( comparing( Reflection.Method::name ) ).toList();
         boolean webServiceValid = false;
         for( Reflection.Method method : methods ) {
-            if( !filterMethod( method ) ) {
+            if( !filterMethod( method ) ) continue;
+            if( settings.isProcessOnlyAnnotatedMethods() && method.findAnnotation( WsMethod.class ).isEmpty() )
                 continue;
-            }
-            if( settings.isProcessOnlyAnnotatedMethods() && method.findAnnotation( WsMethod.class ).isEmpty() ) {
-                continue;
-            }
             webServiceValid = true;
             var wsMethodDescriptor = new WsMethodDescriptor( method );
             var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
@@ -172,13 +167,11 @@ public class OpenapiGenerator {
 
             var operation = prepareOperation( method, wsMethodDescriptor, wsSecurityDescriptor, tag );
 
-            for( HttpServerExchange.HttpMethod httpMethod : wsMethodDescriptor.methods ) {
+            for( HttpServerExchange.HttpMethod httpMethod : wsMethodDescriptor.methods )
                 pathItem.operation( convertMethod( httpMethod ), operation );
-            }
         }
-        if( !webServiceValid ) {
+        if( !webServiceValid )
             return Result.SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE;
-        }
         return Result.PROCESSED_OK;
     }
 
@@ -221,9 +214,7 @@ public class OpenapiGenerator {
 
         var resolvedSchema = prepareSchema( type, api );
         response.description( "" );
-        if( type.equals( Void.class ) ) {
-            return responses;
-        }
+        if( type.equals( Void.class ) ) return responses;
         Map<String, Schema> schemas =
             api.getComponents() == null ? Collections.emptyMap() : api.getComponents().getSchemas();
         response.content( createContent( produces, createSchemaRef( resolvedSchema.schema, schemas ) ) );
@@ -233,7 +224,7 @@ public class OpenapiGenerator {
     private RequestBody prepareRequestBody( List<Reflection.Parameter> parameters ) {
         return parameters.stream()
             .filter( item -> from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
-            .map( item -> createBody( item ) )
+            .map( this::createBody )
             .findFirst().orElse( null );
     }
 
@@ -252,9 +243,8 @@ public class OpenapiGenerator {
         var result = new RequestBody();
         result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(),
             createSchemaRef( resolvedSchema.schema, schemas ) ) );
-        if( schemas.containsKey( resolvedSchema.schema.getName() ) ) {
+        if( schemas.containsKey( resolvedSchema.schema.getName() ) )
             api.getComponents().addRequestBodies( resolvedSchema.schema.getName(), result );
-        }
 
         return result;
     }
@@ -323,9 +313,7 @@ public class OpenapiGenerator {
         info.setTitle( title );
         info.setDescription( description );
         List<String> webServiceVersions = new ArrayList<>();
-        versions.asMap().forEach( ( key, value ) -> {
-            webServiceVersions.add( key + " (" + Joiner.on( ", " ).skipNulls().join( value ) + ")" );
-        } );
+        versions.asMap().forEach( ( key, value ) -> webServiceVersions.add( key + " (" + Joiner.on( ", " ).skipNulls().join( value ) + ")" ) );
         info.setVersion( Joiner.on( ", " ).join( webServiceVersions ) );
         return info;
     }

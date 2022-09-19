@@ -28,25 +28,22 @@ import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
 
-import java.util.Set;
-
 import static oap.io.Resources.urlOrThrow;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OpenapiWsServiceTest extends Fixtures {
+public class OpenapiTest extends Fixtures {
 
 
     protected final KernelFixture kernelFixture;
 
-    public OpenapiWsServiceTest() {
+    public OpenapiTest() {
         this.kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
     @Test
-    public void api() throws Exception {
-        final OpenapiService service = kernelFixture.service( "oap-ws-openapi-ws", OpenapiService.class );
-        final Set<String> permissions = service.preparePermissions();
-        assertThat( permissions ).containsOnly( "PERMISSIONS_READ", "ACCOUNT_READ", "PERMISSIONS_WRITE", "ACCOUNT_WRITE" );
+    public void api() {
+        Openapi openapi = kernelFixture.service( "oap-ws-openapi-ws", Openapi.class );
+        assertThat( openapi.preparePermissions() ).containsOnly( "PERMISSIONS_READ", "ACCOUNT_READ", "PERMISSIONS_WRITE", "ACCOUNT_WRITE" );
     }
 
 }
