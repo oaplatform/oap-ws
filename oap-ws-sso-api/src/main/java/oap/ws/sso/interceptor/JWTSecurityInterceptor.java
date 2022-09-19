@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import oap.ws.InvocationContext;
 import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
+import oap.ws.sso.AbstractTokenProvider;
 import oap.ws.sso.WsSecurity;
 
 import java.util.Arrays;
@@ -37,14 +38,14 @@ import java.util.Optional;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
 import static oap.ws.sso.WsSecurity.SYSTEM;
-import static oap.ws.sso.interceptor.AbstractAuthTokenProvider.extractBearerToken;
+import static oap.ws.sso.AbstractTokenProvider.extractBearerToken;
 
 @Slf4j
 public class JWTSecurityInterceptor implements Interceptor {
 
-    private AbstractAuthTokenProvider tokenProvider;
+    private final AbstractTokenProvider tokenProvider;
 
-    public JWTSecurityInterceptor( AbstractAuthTokenProvider tokenProvider ) {
+    public JWTSecurityInterceptor( AbstractTokenProvider tokenProvider ) {
         this.tokenProvider = tokenProvider;
     }
 
@@ -54,7 +55,8 @@ public class JWTSecurityInterceptor implements Interceptor {
         if( authorization == null || authorization.isEmpty() ) {
             log.trace( "Not authenticated. No token in header {}", context.exchange );
         }
-        if( !tokenProvider.verifyToken( extractBearerToken( authorization ) ) ) {
+        final String token = extractBearerToken( authorization );
+        if( !tokenProvider.verifyToken( token ) ) {
             log.trace( "Not authenticated." );
             return Optional.of( new Response( FORBIDDEN, "Invalid token" ) );
         }
@@ -70,7 +72,7 @@ public class JWTSecurityInterceptor implements Interceptor {
         if( realm.isEmpty() )
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
 
-        final List<String> permissions = tokenProvider.getPermissions( authorization );
+        final List<String> permissions = tokenProvider.getPermissions( token );
         if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
             return Optional.empty();
         return Optional.of( new Response( FORBIDDEN, "user doesn't have permissions" ) );

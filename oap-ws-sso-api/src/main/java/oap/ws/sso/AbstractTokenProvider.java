@@ -22,25 +22,27 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso.interceptor;
+package oap.ws.sso;
 
+import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwk.UrlJwkProvider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
-import oap.ws.sso.AuthTokenProvider;
+
+import java.security.interfaces.RSAPublicKey;
 
 @Slf4j
-public abstract class AbstractAuthTokenProvider implements AuthTokenProvider {
+public abstract class AbstractTokenProvider implements AuthTokenProvider {
 
-    private final String secret;
-    private final String issuer;
+    private final String domain;
 
-    public AbstractAuthTokenProvider( String secret, String issuer ) {
-        this.secret = secret;
-        this.issuer = issuer;
+    public AbstractTokenProvider( String domain ) {
+        this.domain = domain;
     }
 
     @Override
@@ -55,18 +57,23 @@ public abstract class AbstractAuthTokenProvider implements AuthTokenProvider {
     }
 
     protected DecodedJWT decodeJWT( String token ) {
-        Algorithm algorithm = Algorithm.HMAC256( secret );
-        JWTVerifier verifier = JWT.require( algorithm )
-            .withIssuer( issuer )
-            .build();
-        return verifier.verify( token );
+        JwkProvider provider = new UrlJwkProvider( domain );
+        try {
+            DecodedJWT jwt = JWT.decode( token );
+            Jwk jwk = provider.get( jwt.getKeyId() );
+            Algorithm algorithm = Algorithm.RSA256( ( RSAPublicKey ) jwk.getPublicKey(), null );
+            JWTVerifier verifier = JWT.require( algorithm )
+                .withIssuer( domain )
+                .build();
+            return verifier.verify( token );
+        } catch( Exception e ) {
+            return null;
+        }
     }
 
     public static String extractBearerToken( String authorization ) {
-        if( authorization != null ) {
-            if( authorization.startsWith( "Bearer " ) ) {
-                return authorization.substring( "Bearer ".length() );
-            }
+        if( authorization != null && authorization.startsWith( "Bearer " ) ) {
+            return authorization.substring( "Bearer ".length() );
         }
         return authorization;
     }

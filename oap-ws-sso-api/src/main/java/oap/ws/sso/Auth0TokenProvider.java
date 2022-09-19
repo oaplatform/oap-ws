@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso.interceptor;
+package oap.ws.sso;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -30,10 +30,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.Collections;
 import java.util.List;
 
-public class Auth0TokenProvider extends AbstractAuthTokenProvider {
+public class Auth0TokenProvider extends AbstractTokenProvider {
 
-    public Auth0TokenProvider( String secret, String issuer ) {
-        super( secret, issuer );
+
+    public Auth0TokenProvider( String domain ) {
+        super( domain );
     }
 
     @Override
@@ -46,7 +47,7 @@ public class Auth0TokenProvider extends AbstractAuthTokenProvider {
     @Override
     public String getUserId( String token ) {
         final DecodedJWT decodedJWT = decodeJWT( token );
-        return decodedJWT.getClaims().get( "user_id" ).asString();
+        return decodedJWT.getClaims().get( "sub" ).asString();
     }
 
     @Override

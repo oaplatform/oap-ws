@@ -60,6 +60,11 @@
             <artifactId>java-jwt</artifactId>
             <version>${oap.deps.jwt.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>jwks-rsa</artifactId>
+            <version>${oap.deps.jwks.version}</version>
+        </dependency>
     </dependencies>
 
     
