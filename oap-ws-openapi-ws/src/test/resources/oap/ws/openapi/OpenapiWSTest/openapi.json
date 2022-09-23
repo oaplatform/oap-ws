@@ -2446,7 +2446,7 @@
   "info" : {
     "description" : "Test description",
     "title" : "Test title",
-    "version" : "UNDEFINED (oap.ws.openapi.ExtTestWS, oap.ws.openapi.TestWS, oap.ws.openapi.OpenapiWS)"
+    "version" : "UNDEFINED (oap.ws.openapi.ExtTestWS, oap.ws.openapi.IgnoredPermissionsTestWS, oap.ws.openapi.TestWS, oap.ws.openapi.OpenapiWS)"
   },
   "openapi" : "3.0.3",
   "paths" : {
@@ -2891,7 +2891,7 @@
         "security" : [ {
           "JWT" : [ ]
         }, {
-          "organizationId" : [ "ACCOUNT_READ" ]
+          "organizationId" : [ "account:read" ]
         } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
@@ -2928,7 +2928,7 @@
         "security" : [ {
           "JWT" : [ ]
         }, {
-          "organizationId" : [ "ACCOUNT_READ", "PERMISSIONS_READ" ]
+          "organizationId" : [ "account:read", "permissions:read" ]
         } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
@@ -2965,7 +2965,7 @@
         "security" : [ {
           "JWT" : [ ]
         }, {
-          "organizationId" : [ "ACCOUNT_WRITE", "PERMISSIONS_WRITE" ]
+          "organizationId" : [ "account:write", "permissions:write" ]
         } ],
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
@@ -3048,7 +3048,7 @@
     "/apiExt/test/empty_required_param/" : {
       "get" : {
         "deprecated" : true,
-        "description" : "This method returns nothing (Void)\n    Note: \n- security permissions: \n  - ACCOUNT_READ\n  - PERMISSIONS_READ\n- realm: organizationId",
+        "description" : "This method returns nothing (Void)\n    Note: \n- security permissions: \n  - account:read\n  - permissions:read\n- realm: organizationId",
         "operationId" : "testVoid",
         "parameters" : [ {
           "description" : "Required parameter, MUST be specified",
@@ -3070,7 +3070,7 @@
         "security" : [ {
           "JWT" : [ ]
         }, {
-          "organizationId" : [ "ACCOUNT_READ", "PERMISSIONS_READ" ]
+          "organizationId" : [ "account:read", "permissions:read" ]
         } ],
         "tags" : [ "oap.ws.openapi.ExtTestWS" ]
       }
@@ -3106,6 +3106,43 @@
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
+    "/ignored-permissions/test/ignored" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "test",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "organizationId" : [ "dummy:permission" ]
+        } ],
+        "tags" : [ "oap.ws.openapi.IgnoredPermissionsTestWS" ]
+      }
+    },
     "/system/openapi/" : {
       "get" : {
         "description" : "Generates OpenAPI 3.0 json document",
@@ -3130,6 +3167,8 @@
   },
   "tags" : [ {
     "name" : "oap.ws.openapi.ExtTestWS"
+  }, {
+    "name" : "oap.ws.openapi.IgnoredPermissionsTestWS"
   }, {
     "name" : "oap.ws.openapi.TestWS"
   }, {
