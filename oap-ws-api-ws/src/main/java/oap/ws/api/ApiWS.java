@@ -53,7 +53,6 @@ import static ch.qos.logback.core.joran.util.beans.BeanUtil.getPropertyName;
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.isGetter;
 import static java.util.Comparator.comparing;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
-import static oap.util.Strings.fill;
 import static oap.util.Strings.join;
 import static oap.ws.WsParam.From.QUERY;
 
@@ -92,7 +91,7 @@ public class ApiWS {
             var context = ws.getKey();
             var r = Reflect.reflect( ws.getValue().getClass() );
             log.trace( "service {} -> {}", context, r.name() );
-            result += fill( "#", 80 ) + "\n";
+            result += "#".repeat( 80 ) + "\n";
             result += "Service " + r.name() + "\n";
             result += "Bound to " + context + "\n";
             result += "Methods:\n";
@@ -108,7 +107,7 @@ public class ApiWS {
                 result += "\tProduces " + d.produces + "\n";
                 result += "\tRealm param " + formatRealm( m ) + "\n";
                 result += "\tPermissions " + formatPermissions( m ) + "\n";
-                result += "\tReturns " + formatType( 3, r, m.returnType(),  new ArrayList<>() ) + "\n";
+                result += "\tReturns " + formatType( 3, r, m.returnType(), new ArrayList<>() ) + "\n";
                 List<Reflection.Parameter> params = Lists.filter( m.parameters, ApiWS::filterParameter );
                 if( params.isEmpty() ) result += "\tNo parameters\n";
                 else {
@@ -143,14 +142,16 @@ public class ApiWS {
     }
 
     private String formatType( int shift, Reflection clazz, Reflection r, List<String> previouslyReferencedClasses ) {
-        if( r.isOptional() ) return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ), previouslyReferencedClasses );
+        if( r.isOptional() )
+            return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ), previouslyReferencedClasses );
         if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Collection.class ) ) {
             log.trace( "DEBUG: Collections recursion - {}/{}/{}", shift, clazz, r );
             return formatType( shift, clazz, r.getCollectionComponentType(), previouslyReferencedClasses ) + "[]";
         }
-        if( r.isArray() ) return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ), previouslyReferencedClasses ) + "[]";
+        if( r.isArray() )
+            return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ), previouslyReferencedClasses ) + "[]";
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
         if( r.underlying.getPackageName().startsWith( DateTime.class.getPackageName() ) )
             return r.underlying.getSimpleName();
@@ -170,7 +171,7 @@ public class ApiWS {
     }
 
     private String formatComplexType( int shift, Reflection r, List<String> previouslyReferencedClasses ) {
-        if ( previouslyReferencedClasses.contains( r.name() ) ) {
+        if( previouslyReferencedClasses.contains( r.name() ) ) {
             return "<Recursive Reference>";
         }
         List<String> referencedClasses = new ArrayList<>( previouslyReferencedClasses );
@@ -180,20 +181,20 @@ public class ApiWS {
         log.trace( "complex type {}", r.name() );
         List<Reflection.Field> fields = new ArrayList<>( r.fields.values() );
         fields.sort( comparing( Reflection.Field::name ) );
-        result += fill( "\t", shift ) + "{\n";
+        result += "\t".repeat( shift ) + "{\n";
         for( Reflection.Field f : fields ) {
             if( !filterField( f ) ) continue;
             log.trace( "type field {}", f.name() );
-            result += fill( "\t", shift + 1 ) + f.name() + ": " + formatField( shift, r, f, referencedClasses ) + "\n";
+            result += "\t".repeat( shift + 1 ) + f.name() + ": " + formatField( shift, r, f, referencedClasses ) + "\n";
         }
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
         for( Reflection.Method m : methods ) {
             if( !filterGetters( m, fields ) ) continue;
             log.trace( "type getter {}", m.name() );
-            result += fill( "\t", shift + 1 ) + getPropertyName( m.underlying ) + ": " + formatType( shift + 1, r, m.returnType(), referencedClasses ) + "\n";
+            result += "\t".repeat( shift + 1 ) + getPropertyName( m.underlying ) + ": " + formatType( shift + 1, r, m.returnType(), referencedClasses ) + "\n";
         }
-        result += fill( "\t", shift ) + "}";
+        result += "\t".repeat( shift ) + "}";
         return result;
     }
 

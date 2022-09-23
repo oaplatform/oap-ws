@@ -25,6 +25,8 @@
 package oap.ws.file;
 
 import oap.io.Files;
+import oap.io.content.ContentReader;
+import oap.io.content.ContentWriter;
 import oap.util.Cuid;
 import oap.util.Strings;
 
@@ -50,7 +52,7 @@ public class BucketManager {
     public String put( String bucket, Data data ) {
         String name = data.nameOrConstruct( cuid.next() );
         Path path = getBucket( bucket ).resolve( name );
-        Files.write( path, data.decoded() );
+        Files.write( path, data.decoded(), ContentWriter.ofBytes() );
         return name;
     }
 
@@ -60,7 +62,7 @@ public class BucketManager {
 
     public Optional<byte[]> get( String bucket, String relativePath ) {
         Path path = getBucket( bucket ).resolve( relativePath );
-        return Files.exists( path ) ? Optional.of( Files.read( path ) ) : Optional.empty();
+        return Files.exists( path ) ? Optional.of( Files.read( path, ContentReader.ofBytes() ) ) : Optional.empty();
     }
 
     public Optional<byte[]> get( String relativePath ) {

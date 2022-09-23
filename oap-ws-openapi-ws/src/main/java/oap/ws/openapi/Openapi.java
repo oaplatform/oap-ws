@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
+import static oap.ws.openapi.OpenapiReflection.webMethod;
 
 @Slf4j
 public class Openapi {
@@ -56,12 +56,8 @@ public class Openapi {
     }
 
     public OpenAPI generateOpenApi() {
-        OpenapiGeneratorSettings settings = OpenapiGeneratorSettings
-            .builder()
-            .processOnlyAnnotatedMethods( false )
-            .outputType( OpenapiGeneratorSettings.Type.JSON )
-            .build();
-        OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description, settings );
+        OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description,
+            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON, false ) );
         log.info( "OpenAPI generating '{}'...", info.title );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             log.info( "Processing web-service {}...", ws.getKey() );
@@ -84,7 +80,7 @@ public class Openapi {
             var r = Reflect.reflect( clazz );
 
             for( Reflection.Method method : r.methods ) {
-                if( !filterMethod( method ) ) {
+                if( !webMethod( method ) ) {
                     continue;
                 }
                 var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );

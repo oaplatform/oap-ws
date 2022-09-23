@@ -152,7 +152,9 @@ public class Response {
         } else if( body instanceof String str ) {
             if( raw ) return str;
             else return HttpServerExchange.contentToString( false, str, contentType );
-        } else if( body instanceof Consumer cons ) {
+        } else if( body instanceof Consumer ) {
+            @SuppressWarnings( "unchecked" )
+            var cons = ( Consumer<ByteArrayOutputStream> ) body;
             var baos = new ByteArrayOutputStream();
             cons.accept( baos );
             body = baos.toByteArray();

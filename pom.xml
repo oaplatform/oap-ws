@@ -46,11 +46,12 @@
         <module>oap-ws-api-ws</module>
         <module>oap-ws-file-ws</module>
         <module>oap-ws-admin-ws</module>
+        <module>oap-ws-sso-testing</module>
+        <module>oap-ws-sso-api-roles-config</module>
         <module>oap-ws-openapi</module>
         <module>oap-ws-openapi-ws</module>
-        <module>oap-ws-sso-api-roles-config</module>
-        <module>oap-ws-sso-testing</module>
-        <module>openapi-maven-plugin</module>
+        <module>oap-ws-openapi-maven-plugin</module>
+        <module>oap-ws-maven</module>
     </modules>
 
     <repositories>
@@ -68,7 +69,7 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>17.11.6.6</oap-ws.project.version>
+        <oap-ws.project.version>17.11.7.0</oap-ws.project.version>
         <oap.deps.oap.version>17.10.32.3</oap.deps.oap.version>
 
         <oap.deps.assertj.version>3.23.1</oap.deps.assertj.version>
