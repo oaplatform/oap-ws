@@ -47,7 +47,7 @@ public class Openapi {
     private final Set<String> processedClasses = new HashSet<>();
     private Set<String> servicesWL = new HashSet<>();
 
-    public Openapi( WebServices webServices) {
+    public Openapi( WebServices webServices ) {
         this.webServices = webServices;
     }
 
@@ -56,8 +56,8 @@ public class Openapi {
         this.info = info;
     }
 
-    public Openapi(WebServices webServices, ApiInfo info, Set<String> servicesWL) {
-        this( webServices, info);
+    public Openapi( WebServices webServices, ApiInfo info, Set<String> servicesWL ) {
+        this( webServices, info );
         this.servicesWL = servicesWL;
     }
 
