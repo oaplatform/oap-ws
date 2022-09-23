@@ -84,7 +84,7 @@ public class Openapi {
     public Set<String> preparePermissions() {
         final HashSet<String> permissions = new HashSet<>();
         WebServicesWalker.walk( ( wsService, clazz, basePath ) -> {
-            if( !processedClasses.add( clazz.getCanonicalName() ) || ( !servicesWL.isEmpty() && !servicesWL.contains( clazz.getCanonicalName() ) ) ) {
+            if( !processedClasses.add( clazz.getCanonicalName() ) || !servicesWL.isEmpty() && !servicesWL.contains( clazz.getCanonicalName() ) ) {
                 return;
             }
             var r = Reflect.reflect( clazz );
