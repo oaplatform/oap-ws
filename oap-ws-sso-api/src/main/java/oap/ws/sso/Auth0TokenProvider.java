@@ -50,10 +50,11 @@ public class Auth0TokenProvider extends AbstractTokenProvider {
         return decodedJWT.getClaims().get( "sub" ).asString();
     }
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public List<String> getAccounts( String token ) {
         final DecodedJWT decodedJWT = decodeJWT( token );
-        return ( List ) decodedJWT.getClaims().get( "app_metadata" ).asMap().get( "accounts" );
+        return ( List<String> ) decodedJWT.getClaims().get( "app_metadata" ).asMap().get( "accounts" );
     }
 
 }

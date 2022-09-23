@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package oap.ws.openapi.util;
+package oap.ws.openapi;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.v3.core.converter.ModelConverters;
@@ -31,7 +31,6 @@ import io.swagger.v3.core.util.RefUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.Schema;
 import oap.reflect.Reflection;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
@@ -43,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class SchemaUtils {
+class OpenapiSchema {
 
     private static final Map<String, Class<?>> namePrimitiveMap = new HashMap<>();
     private static final ModelConverters converters = new ModelConverters();
@@ -65,7 +64,7 @@ public class SchemaUtils {
      *
      * @param type - reflection class data
      * @return prepared type
-     * @see Schema
+     * @see io.swagger.v3.oas.models.media.Schema
      */
     public static Type prepareType( Reflection type ) {
         if( type.isPrimitive() ) {
@@ -88,11 +87,11 @@ public class SchemaUtils {
      * @return schema reference if openapi components schema map already contains schema with same name
      * otherwise return schema object without changes
      */
-    public static Schema createSchemaRef( Schema schema, Map<String, Schema> map ) {
+    public static io.swagger.v3.oas.models.media.Schema createSchemaRef( io.swagger.v3.oas.models.media.Schema schema, Map<String, io.swagger.v3.oas.models.media.Schema> map ) {
         if( schema != null
             && schema.getName() != null
             && map.containsKey( schema.getName() ) ) {
-            var result = new Schema<>();
+            var result = new io.swagger.v3.oas.models.media.Schema<>();
             result.$ref( RefUtils.constructRef( schema.getName() ) );
             return result;
         }
@@ -105,7 +104,7 @@ public class SchemaUtils {
      * @param type - Type to create openapi schema
      * @param api  - prepared openapi object
      * @return resolved schema
-     * @see Schema
+     * @see io.swagger.v3.oas.models.media.Schema
      */
     public static ResolvedSchema prepareSchema( Type type, OpenAPI api ) {
         var resolvedSchema = resolveSchema( type );
@@ -120,7 +119,7 @@ public class SchemaUtils {
      *
      * @param type to transform
      * @return transformed schema
-     * @see Schema
+     * @see io.swagger.v3.oas.models.media.Schema
      */
     public static ResolvedSchema resolveSchema( Type type ) {
         var resolvedSchema = converters.readAllAsResolvedSchema( type );

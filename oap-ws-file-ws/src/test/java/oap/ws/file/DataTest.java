@@ -25,7 +25,7 @@
 package oap.ws.file;
 
 
-import oap.json.Binder;
+import oap.io.content.ContentReader;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -44,7 +44,7 @@ public class DataTest {
 
     @Test( dataProvider = "jsons" )
     public void unmarshalSingle( String file, String name ) {
-        Data data = Binder.json.unmarshal( Data.class, contentOfTestResource( getClass(), file ) );
+        Data data = contentOfTestResource( getClass(), file, ContentReader.ofJson( Data.class ) );
         assertThat( data.mimeType ).isEqualTo( "text/plain" );
         assertThat( data.extension() ).isEqualTo( "txt" );
         assertThat( data.decoded() ).isEqualTo( "test".getBytes() );

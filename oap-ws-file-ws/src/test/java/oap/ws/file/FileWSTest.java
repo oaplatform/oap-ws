@@ -27,6 +27,7 @@ package oap.ws.file;
 import oap.application.testng.KernelFixture;
 import oap.http.Http;
 import oap.io.Files;
+import oap.io.content.ContentWriter;
 import oap.testng.Env;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
@@ -34,6 +35,7 @@ import org.testng.annotations.Test;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.io.content.ContentReader.ofString;
 import static oap.testng.Asserts.contentOfTestResource;
 import static oap.testng.Asserts.urlOfTestResource;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,22 +48,22 @@ public class FileWSTest extends Fixtures {
 
     @Test
     public void upload() {
-        assertPost( httpUrl( "/file" ), contentOfTestResource( getClass(), "data-complex.json" ), Http.ContentType.APPLICATION_JSON )
+        assertPost( httpUrl( "/file" ), contentOfTestResource( getClass(), "data-complex.json", ofString() ), Http.ContentType.APPLICATION_JSON )
             .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "file.txt" );
         assertThat( Env.tmpPath( "default/file.txt" ) ).hasContent( "test" );
 
-        assertPost( httpUrl( "/file?bucket=b1" ), contentOfTestResource( getClass(), "data-single.json" ), Http.ContentType.APPLICATION_JSON )
+        assertPost( httpUrl( "/file?bucket=b1" ), contentOfTestResource( getClass(), "data-single.json", ofString() ), Http.ContentType.APPLICATION_JSON )
             .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "file.txt" );
         assertThat( Env.tmpPath( "b1/file.txt" ) ).hasContent( "test" );
     }
 
     @Test
     public void download() {
-        Files.writeString( Env.tmpPath( "default/test.txt" ), "test" );
+        Files.write( Env.tmpPath( "default/test.txt" ), "test", ContentWriter.ofString() );
         assertGet( httpUrl( "/file?path=test.txt" ) )
             .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "test" );
 
-        Files.writeString( Env.tmpPath( "b1/test.txt" ), "b1test" );
+        Files.write( Env.tmpPath( "b1/test.txt" ), "b1test", ContentWriter.ofString() );
         assertGet( httpUrl( "/file?path=test.txt&bucket=b1" ) )
             .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "b1test" );
     }

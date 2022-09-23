@@ -27,6 +27,7 @@ package oap.ws.openapi;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -42,17 +43,19 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import lombok.SneakyThrows;
+import lombok.ToString;
 import oap.http.server.nio.HttpServerExchange;
+import oap.io.content.ContentWriter;
 import oap.reflect.Reflect;
-import oap.reflect.Reflection;
 import oap.util.Lists;
 import oap.util.Strings;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
 import oap.ws.WsSecurityDescriptor;
-import oap.ws.openapi.util.WsApiReflectionUtils;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
@@ -66,13 +69,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Comparator.comparing;
-import static oap.ws.openapi.util.SchemaUtils.createSchemaRef;
-import static oap.ws.openapi.util.SchemaUtils.prepareSchema;
-import static oap.ws.openapi.util.SchemaUtils.prepareType;
-import static oap.ws.openapi.util.WsApiReflectionUtils.description;
-import static oap.ws.openapi.util.WsApiReflectionUtils.filterMethod;
-import static oap.ws.openapi.util.WsApiReflectionUtils.from;
-import static oap.ws.openapi.util.WsApiReflectionUtils.tag;
+import static oap.ws.openapi.OpenapiReflection.description;
+import static oap.ws.openapi.OpenapiReflection.from;
+import static oap.ws.openapi.OpenapiReflection.tag;
+import static oap.ws.openapi.OpenapiReflection.webMethod;
+import static oap.ws.openapi.OpenapiSchema.createSchemaRef;
+import static oap.ws.openapi.OpenapiSchema.prepareSchema;
+import static oap.ws.openapi.OpenapiSchema.prepareType;
 
 public class OpenapiGenerator {
     public static final String OPEN_API_VERSION = "3.0.3";
@@ -84,9 +87,9 @@ public class OpenapiGenerator {
     private String title;
     @Setter
     private String description;
-    private final OpenapiGeneratorSettings settings;
+    private final Settings settings;
 
-    public OpenapiGenerator( String title, String description, OpenapiGeneratorSettings settings ) {
+    public OpenapiGenerator( String title, String description, Settings settings ) {
         this.title = title;
         this.description = description;
         this.settings = settings;
@@ -97,10 +100,7 @@ public class OpenapiGenerator {
         this(
             title,
             description,
-            OpenapiGeneratorSettings.builder()
-                .processOnlyAnnotatedMethods( false )
-                .outputType( OpenapiGeneratorSettings.Type.JSON )
-                .build() );
+            new Settings( Settings.OutputType.JSON, false ) );
     }
 
     public OpenAPI build() {
@@ -152,11 +152,11 @@ public class OpenapiGenerator {
                 clazz.getPackage().getImplementationVersion() != null
                     ? clazz.getPackage().getImplementationVersion()
                     : Strings.UNDEFINED, r.getType().getTypeName() );
-        List<Reflection.Method> methods = r.methods.stream().sorted( comparing( Reflection.Method::name ) ).toList();
+        List<oap.reflect.Reflection.Method> methods = r.methods.stream().sorted( comparing( oap.reflect.Reflection.Method::name ) ).toList();
         boolean webServiceValid = false;
-        for( Reflection.Method method : methods ) {
-            if( !filterMethod( method ) ) continue;
-            if( settings.isProcessOnlyAnnotatedMethods() && method.findAnnotation( WsMethod.class ).isEmpty() )
+        for( oap.reflect.Reflection.Method method : methods ) {
+            if( !webMethod( method ) ) continue;
+            if( settings.processOnlyAnnotatedMethods && method.findAnnotation( WsMethod.class ).isEmpty() )
                 continue;
             webServiceValid = true;
             var wsMethodDescriptor = new WsMethodDescriptor( method );
@@ -175,11 +175,11 @@ public class OpenapiGenerator {
         return Result.PROCESSED_OK;
     }
 
-    private Operation prepareOperation( Reflection.Method method,
+    private Operation prepareOperation( oap.reflect.Reflection.Method method,
                                         WsMethodDescriptor wsMethodDescriptor,
                                         WsSecurityDescriptor wsSecurityDescriptor,
                                         Tag tag ) {
-        var params = Lists.filter( method.parameters, WsApiReflectionUtils::filterParameter );
+        var params = Lists.filter( method.parameters, OpenapiReflection::webParameter );
         var returnType = prepareType( method.returnType() );
 
         Operation operation = new Operation();
@@ -196,7 +196,7 @@ public class OpenapiGenerator {
             String descriptionWithAuth = operation.getDescription();
             if( descriptionWithAuth.length() > 0 ) {
                 descriptionWithAuth += "\n    Note: \n- security permissions: "
-                    + "\n  - " + Joiner.on( "\n  - " ).join( wsSecurityDescriptor.permissions )
+                    + "\n  - " + String.join( "\n  - ", wsSecurityDescriptor.permissions )
                     + "\n- realm: " + wsSecurityDescriptor.realm;
                 operation.description( descriptionWithAuth );
             }
@@ -204,6 +204,7 @@ public class OpenapiGenerator {
             securityRequirement.addList( wsSecurityDescriptor.realm, Arrays.asList( wsSecurityDescriptor.permissions ) );
             operation.addSecurityItem( securityRequirement );
         }
+
         return operation;
     }
 
@@ -221,21 +222,21 @@ public class OpenapiGenerator {
         return responses;
     }
 
-    private RequestBody prepareRequestBody( List<Reflection.Parameter> parameters ) {
+    private RequestBody prepareRequestBody( List<oap.reflect.Reflection.Parameter> parameters ) {
         return parameters.stream()
             .filter( item -> from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
             .map( this::createBody )
             .findFirst().orElse( null );
     }
 
-    private List<Parameter> prepareParameters( List<Reflection.Parameter> parameters ) {
+    private List<Parameter> prepareParameters( List<oap.reflect.Reflection.Parameter> parameters ) {
         return parameters.stream()
             .filter( item -> !from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
             .map( this::createParameter )
             .toList();
     }
 
-    private RequestBody createBody( Reflection.Parameter parameter ) {
+    private RequestBody createBody( oap.reflect.Reflection.Parameter parameter ) {
         var resolvedSchema = prepareSchema( prepareType( parameter.type() ), api );
         var schemas =
             api.getComponents() == null ? Collections.<String, Schema>emptyMap() : api.getComponents().getSchemas();
@@ -249,7 +250,7 @@ public class OpenapiGenerator {
         return result;
     }
 
-    private Parameter createParameter( Reflection.Parameter parameter ) {
+    private Parameter createParameter( oap.reflect.Reflection.Parameter parameter ) {
         var result = new Parameter();
         result.setName( parameter.name() );
         var from = from( parameter );
@@ -314,7 +315,45 @@ public class OpenapiGenerator {
         info.setDescription( description );
         List<String> webServiceVersions = new ArrayList<>();
         versions.asMap().forEach( ( key, value ) -> webServiceVersions.add( key + " (" + Joiner.on( ", " ).skipNulls().join( value ) + ")" ) );
-        info.setVersion( Joiner.on( ", " ).join( webServiceVersions ) );
+        info.setVersion( String.join( ", ", webServiceVersions ) );
         return info;
+    }
+
+    @EqualsAndHashCode
+    @ToString
+    public static class Settings {
+        /**
+         * This trigger HSON or YAML output file.
+         */
+        public final OutputType outputType;
+
+        /**
+         * if trus, only methods annotated with @WsMethod will be processed.
+         */
+        public final boolean processOnlyAnnotatedMethods;
+
+        public Settings( OutputType outputType, boolean processOnlyAnnotatedMethods ) {
+            this.outputType = outputType;
+            this.processOnlyAnnotatedMethods = processOnlyAnnotatedMethods;
+        }
+
+        public enum OutputType {
+            YAML( ".yaml", new ContentWriter<>() {
+                @Override
+                @SneakyThrows
+                public byte[] write( OpenAPI object ) {
+                    return Yaml.mapper().writeValueAsBytes( object );
+                }
+            } ),
+            JSON( ".json", ContentWriter.ofJson() );
+
+            public final String fileExtension;
+            public final ContentWriter<OpenAPI> writer;
+
+            OutputType( String fileExtension, ContentWriter<OpenAPI> writer ) {
+                this.fileExtension = fileExtension;
+                this.writer = writer;
+            }
+        }
     }
 }

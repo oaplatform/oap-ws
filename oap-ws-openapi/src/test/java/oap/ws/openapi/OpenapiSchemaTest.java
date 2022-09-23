@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package oap.ws.openapi.util;
+package oap.ws.openapi;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.swagger.v3.core.converter.ModelConverters;
@@ -31,13 +31,9 @@ import io.swagger.v3.core.util.RefUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import junit.framework.TestCase;
 import oap.reflect.Reflect;
-import oap.reflect.Reflection;
-import oap.ws.openapi.ApiInfo;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Type;
@@ -47,69 +43,62 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SchemaUtilsTest extends TestCase {
-
-    Reflection innerTypeReflect;
-
-    @BeforeTest
-    public void setUp() {
-        innerTypeReflect = Reflect.reflect( InnerType.class );
-    }
+public class OpenapiSchemaTest extends TestCase {
 
     @Test
     public void testPrepareTypeForPrimitive() {
-        Type type = SchemaUtils.prepareType( innerTypeReflect.field( "a" ).get().type() );
+        Type type = OpenapiSchema.prepareType( Reflect.reflect( InnerType.class ).field( "a" ).orElseThrow().type() );
         assertThat( type ).isEqualTo( new TypeReference<Integer>() {}.getType() );
     }
 
     @Test
     public void testPrepareTypeForPrimitiveArray() {
-        Type type = SchemaUtils.prepareType( innerTypeReflect.field( "b" ).get().type() );
+        Type type = OpenapiSchema.prepareType( Reflect.reflect( InnerType.class ).field( "b" ).orElseThrow().type() );
         assertThat( type ).isEqualTo( new TypeReference<List<Integer>>() {}.getType() );
     }
 
     @Test
     public void testPrepareTypeForString() {
-        Type type = SchemaUtils.prepareType( innerTypeReflect.field( "str" ).get().type() );
+        Type type = OpenapiSchema.prepareType( Reflect.reflect( InnerType.class ).field( "str" ).orElseThrow().type() );
         assertThat( type ).isEqualTo( new TypeReference<String>() {}.getType() );
     }
 
     @Test
     public void testPrepareTypeForStringArray() {
-        Type type = SchemaUtils.prepareType( innerTypeReflect.field( "objarray" ).get().type() );
+        Type type = OpenapiSchema.prepareType( Reflect.reflect( InnerType.class ).field( "objarray" ).orElseThrow().type() );
         assertThat( type ).isEqualTo( new TypeReference<List<String>>() {}.getType() );
     }
 
     @Test
     public void testPrepareTypeForObjectList() {
-        Type type = SchemaUtils.prepareType( innerTypeReflect.field( "listApi" ).get().type() );
+        Type type = OpenapiSchema.prepareType( Reflect.reflect( InnerType.class ).field( "listApi" ).orElseThrow().type() );
         assertThat( type ).isEqualTo( new TypeReference<List<ApiInfo>>() {}.getType() );
     }
 
     @Test
     public void testCreateSchemaRefForNull() {
-        assertThat( SchemaUtils.createSchemaRef( null, Map.of() ) ).isNull();
+        assertThat( OpenapiSchema.createSchemaRef( null, Map.of() ) ).isNull();
     }
 
     @Test
     public void testCreateSchemaRefForSchemaWithEmptyName() {
-        assertThat( SchemaUtils.createSchemaRef( new StringSchema(), Map.of() ) )
+        assertThat( OpenapiSchema.createSchemaRef( new StringSchema(), Map.of() ) )
             .isEqualTo( new StringSchema() );
     }
 
     @Test
     public void testCreateSchemaRefForSchemaForEmptyMap() {
         var resolvedSchema = ModelConverters.getInstance().readAllAsResolvedSchema( InnerType.class );
-        assertThat( SchemaUtils.createSchemaRef( resolvedSchema.schema, Map.of() ) )
+        assertThat( OpenapiSchema.createSchemaRef( resolvedSchema.schema, Map.of() ) )
             .isEqualTo( resolvedSchema.schema );
     }
 
     @Test
     public void testCreateSchemaRefForSchema() {
         var resolvedSchema = ModelConverters.getInstance().readAllAsResolvedSchema( InnerType.class );
-        var expected = new Schema();
+        var expected = new io.swagger.v3.oas.models.media.Schema<>();
         expected.name( resolvedSchema.schema.getName() ).$ref( RefUtils.constructRef( resolvedSchema.schema.getName() ) );
-        assertThat( SchemaUtils.createSchemaRef( resolvedSchema.schema, resolvedSchema.referencedSchemas ) )
+        assertThat( OpenapiSchema.createSchemaRef( resolvedSchema.schema, resolvedSchema.referencedSchemas ) )
             .isEqualTo( expected );
     }
 
@@ -119,7 +108,7 @@ public class SchemaUtilsTest extends TestCase {
 
         assertThat( openAPI.getComponents() ).isNull();
 
-        var resolvedSchema = SchemaUtils.prepareSchema( InnerType.class, openAPI );
+        var resolvedSchema = OpenapiSchema.prepareSchema( InnerType.class, openAPI );
 
         assertThat( resolvedSchema.referencedSchemas ).isEqualTo( openAPI.getComponents().getSchemas() );
         assertThat( resolvedSchema.schema ).isNotNull();
@@ -131,17 +120,18 @@ public class SchemaUtilsTest extends TestCase {
 
         assertThat( openAPI.getComponents() ).isNull();
 
-        var resolvedSchema = SchemaUtils.prepareSchema( String.class, openAPI );
+        var resolvedSchema = OpenapiSchema.prepareSchema( String.class, openAPI );
 
         assertThat( openAPI.getComponents() ).isNull();
         assertThat( resolvedSchema.referencedSchemas ).isEmpty();
         assertThat( resolvedSchema.schema ).isNotNull();
     }
 
+    @SuppressWarnings( "unchecked" )
     @Test
     public void testResolvedSchemaForInnerType() {
 
-        ResolvedSchema resolvedSchema = SchemaUtils.resolveSchema( InnerType.class );
+        ResolvedSchema resolvedSchema = OpenapiSchema.resolveSchema( InnerType.class );
 
         assertThat( resolvedSchema ).isNotNull();
         assertThat( resolvedSchema.schema.getProperties() ).hasSize( 9 );
@@ -151,7 +141,7 @@ public class SchemaUtilsTest extends TestCase {
     @Test
     public void testResolvedSchemaForStringType() {
 
-        ResolvedSchema resolvedSchema = SchemaUtils.resolveSchema( String.class );
+        ResolvedSchema resolvedSchema = OpenapiSchema.resolveSchema( String.class );
 
         assertThat( resolvedSchema ).isNotNull();
         assertThat( resolvedSchema.schema.getClass() ).isEqualTo( StringSchema.class );
@@ -160,7 +150,7 @@ public class SchemaUtilsTest extends TestCase {
     @Test
     public void testResolvedSchemaForOptionalType() {
 
-        ResolvedSchema resolvedSchema = SchemaUtils.resolveSchema( new TypeReference<Optional<String>>() {}.getType() );
+        ResolvedSchema resolvedSchema = OpenapiSchema.resolveSchema( new TypeReference<Optional<String>>() {}.getType() );
 
         assertThat( resolvedSchema ).isNotNull();
         assertThat( resolvedSchema.schema.getClass() ).isEqualTo( StringSchema.class );
@@ -169,7 +159,7 @@ public class SchemaUtilsTest extends TestCase {
     @Test
     public void testResolvedSchemaForListType() {
 
-        ResolvedSchema resolvedSchema = SchemaUtils.resolveSchema( new TypeReference<List<String>>() {}.getType() );
+        ResolvedSchema resolvedSchema = OpenapiSchema.resolveSchema( new TypeReference<List<String>>() {}.getType() );
 
         assertThat( resolvedSchema ).isNotNull();
         assertThat( resolvedSchema.schema.getClass() ).isEqualTo( ArraySchema.class );
@@ -179,20 +169,20 @@ public class SchemaUtilsTest extends TestCase {
     @Test
     public void testResolvedSchemaForComplexListType() {
 
-        ResolvedSchema resolvedSchema = SchemaUtils.resolveSchema( new TypeReference<Optional<List<List<String>>>>() {}.getType() );
+        ResolvedSchema resolvedSchema = OpenapiSchema.resolveSchema( new TypeReference<Optional<List<List<String>>>>() {}.getType() );
 
         assertThat( resolvedSchema ).isNotNull();
         var schema = resolvedSchema.schema;
         assertThat( schema.getClass() ).isEqualTo( ArraySchema.class );
         var items = ( ( ArraySchema ) schema ).getItems();
         assertThat( items.getClass() ).isEqualTo( ArraySchema.class );
-        assertThat( ( ( ArraySchema ) items ).getItems().getClass() ).isEqualTo( StringSchema.class );
+        assertThat( items.getItems().getClass() ).isEqualTo( StringSchema.class );
     }
 
     @Test
     public void testResolvedSchemaForComplexMapType() {
 
-        ResolvedSchema resolvedSchema = SchemaUtils.resolveSchema( new TypeReference<Optional<Map<String, List<String>>>>() {}.getType() );
+        ResolvedSchema resolvedSchema = OpenapiSchema.resolveSchema( new TypeReference<Optional<Map<String, List<String>>>>() {}.getType() );
 
         assertThat( resolvedSchema ).isNotNull();
         var schema = resolvedSchema.schema;
@@ -202,6 +192,7 @@ public class SchemaUtilsTest extends TestCase {
         assertThat( ( ( ArraySchema ) properties ).getItems().getClass() ).isEqualTo( StringSchema.class );
     }
 
+    @SuppressWarnings( "unused" )
     public static class InnerType {
         public int a;
         public int[] b;

@@ -35,31 +35,4 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>oap</groupId>-->
-<!--                <artifactId>openapi-maven-plugin</artifactId>-->
-<!--                <version>0.0.5-SNAPSHOT</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>openapi</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--&lt;!&ndash;                <dependencies>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <dependency>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <groupId>oap</groupId>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <artifactId>oap-stdlib</artifactId>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <version>${oap.deps.oap.version}</version>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </dependency>&ndash;&gt;-->
-<!--&lt;!&ndash;                </dependencies>&ndash;&gt;-->
-<!--                <configuration>-->
-<!--                    <outputPath>/Users/mac/IdeaProjects/oap-ws/oap-ws-api-ws/target/swagger.json</outputPath>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
 </project>

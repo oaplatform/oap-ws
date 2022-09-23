@@ -35,18 +35,18 @@ public class WebServicesWalker {
 
     public static void walk( WebServiceVisitor visitor ) {
         List<URL> urls = visitor.getWebServiceUrls();
-        urls.forEach( url -> {
+        for( URL url : urls ) {
             log.info( "Reading config from " + url.getPath() );
             Module config = Module.CONFIGURATION.fromUrl( url );
             config.services.forEach( ( name, service ) -> {
                 WsConfig wsService = ( WsConfig ) service.ext.get( "ws-service" );
-                if ( wsService == null ) {
+                if( wsService == null ) {
                     log.debug( "Skipping bean: " + name + " as it's not a WS" );
                     return;
                 }
                 log.debug( "WS bean: " + name + " implementing " + service.implementation );
                 try {
-                    Class clazz = visitor.loadClass( service );
+                    Class<?> clazz = visitor.loadClass( service );
                     String basePath = wsService.path.stream().findFirst().orElse( "" );
                     visitor.visit( wsService, clazz, basePath );
                 } catch( Exception e ) {
@@ -54,6 +54,6 @@ public class WebServicesWalker {
                         + service.implementation + "' is unavailable", e );
                 }
             } );
-        } );
+        }
     }
 }
