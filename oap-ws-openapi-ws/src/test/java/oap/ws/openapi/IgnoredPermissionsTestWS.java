@@ -24,26 +24,18 @@
 
 package oap.ws.openapi;
 
-import oap.application.testng.KernelFixture;
-import oap.testng.Fixtures;
-import org.testng.annotations.Test;
+import oap.ws.WsMethod;
+import oap.ws.WsParam;
+import oap.ws.sso.WsSecurity;
 
-import static oap.io.Resources.urlOrThrow;
-import static org.assertj.core.api.Assertions.assertThat;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.ws.WsParam.From.PATH;
 
-public class OpenapiTest extends Fixtures {
+public class IgnoredPermissionsTestWS {
 
-
-    protected final KernelFixture kernelFixture;
-
-    public OpenapiTest() {
-        this.kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
+    @WsMethod( method = GET, path = "/test/ignored" )
+    @WsSecurity( realm = "organizationId", permissions = { "dummy:permission" } )
+    public String test( @WsParam( from = PATH ) String id ) {
+        return id;
     }
-
-    @Test
-    public void api() {
-        Openapi openapi = kernelFixture.service( "oap-ws-openapi-ws", Openapi.class );
-        assertThat( openapi.preparePermissions() ).containsOnly( "account:read", "permissions:write", "account:write", "permissions:read" );
-    }
-
 }

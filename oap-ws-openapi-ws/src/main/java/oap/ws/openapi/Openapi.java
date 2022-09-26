@@ -45,6 +45,7 @@ public class Openapi {
     private final WebServices webServices;
     public ApiInfo info;
     private final Set<String> processedClasses = new HashSet<>();
+    private Set<String> servicesWL = new HashSet<>();
 
     public Openapi( WebServices webServices ) {
         this.webServices = webServices;
@@ -53,6 +54,11 @@ public class Openapi {
     public Openapi( WebServices webServices, ApiInfo info ) {
         this( webServices );
         this.info = info;
+    }
+
+    public Openapi( WebServices webServices, ApiInfo info, Set<String> servicesWL ) {
+        this( webServices, info );
+        this.servicesWL = servicesWL;
     }
 
     public OpenAPI generateOpenApi() {
@@ -74,7 +80,7 @@ public class Openapi {
     public Set<String> preparePermissions() {
         final HashSet<String> permissions = new HashSet<>();
         WebServicesWalker.walk( ( wsService, clazz, basePath ) -> {
-            if( !processedClasses.add( clazz.getCanonicalName() ) ) {
+            if( !processedClasses.add( clazz.getCanonicalName() ) || !servicesWL.isEmpty() && !servicesWL.contains( clazz.getCanonicalName() ) ) {
                 return;
             }
             var r = Reflect.reflect( clazz );

@@ -48,19 +48,19 @@ public class TestWS {
     }
 
     @WsMethod( method = GET, path = "/test/sort/{id}" )
-    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ", "PERMISSIONS_READ" } )
+    @WsSecurity( realm = "organizationId", permissions = { "account:read", "permissions:read" } )
     public String test1( @WsParam( from = PATH ) String id ) {
         return id;
     }
 
     @WsMethod( method = GET, path = "/test/sort={id}/test" )
-    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_WRITE", "PERMISSIONS_WRITE" } )
+    @WsSecurity( realm = "organizationId", permissions = { "account:write", "permissions:write" } )
     public String testEqual( @WsParam( from = PATH ) String id ) {
         return id;
     }
 
     @WsMethod( method = GET, path = "/test/sort/default" )
-    @WsSecurity( realm = "organizationId", permissions = { "ACCOUNT_READ" } )
+    @WsSecurity( realm = "organizationId", permissions = { "account:read" } )
     public String test2() {
         return "__default__";
     }
