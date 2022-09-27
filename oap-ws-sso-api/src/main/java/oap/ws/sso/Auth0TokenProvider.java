@@ -29,6 +29,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Auth0TokenProvider extends AbstractTokenProvider {
 
@@ -41,7 +42,10 @@ public class Auth0TokenProvider extends AbstractTokenProvider {
     public List<String> getPermissions( String token ) {
         final DecodedJWT decodedJWT = decodeJWT( token );
         final Claim permissions = decodedJWT.getClaims().get( "permissions" );
-        return permissions != null ? permissions.asList( String.class ) : Collections.emptyList();
+        if( permissions != null ) {
+            return permissions.asList( String.class ).stream().map( this::adaptPermission ).collect( Collectors.toList() );
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -55,6 +59,20 @@ public class Auth0TokenProvider extends AbstractTokenProvider {
     public List<String> getAccounts( String token ) {
         final DecodedJWT decodedJWT = decodeJWT( token );
         return ( List<String> ) decodedJWT.getClaims().get( "app_metadata" ).asMap().get( "accounts" );
+    }
+
+    /**
+     * Converts xnss:store:account into account:store
+     */
+    private String adaptPermission( String auth0Permission ) {
+        final String[] words = auth0Permission.split( ":" );
+        if( words.length == 3 ) {
+            return words[2] + ":" + words[1];
+        }
+        if( words.length == 2 ) {
+            return words[1] + ":" + words[0];
+        }
+        return auth0Permission;
     }
 
 }
