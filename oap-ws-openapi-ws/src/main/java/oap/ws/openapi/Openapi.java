@@ -29,8 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.ws.WebServices;
-import oap.ws.WebServicesWalker;
-import oap.ws.WsSecurityDescriptor;
 
 import java.util.HashSet;
 import java.util.List;

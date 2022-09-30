@@ -55,7 +55,6 @@ import oap.util.Strings;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
-import oap.ws.WsSecurityDescriptor;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
