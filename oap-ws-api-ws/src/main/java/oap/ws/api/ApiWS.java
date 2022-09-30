@@ -109,8 +109,8 @@ public class ApiWS {
                 if( !filterMethod( m ) ) continue;
                 var d = new WsMethodDescriptor( m );
                 log.trace( "method {}", m.name() );
-                result += "\tMethod " + m.name() +
-                    ( m.isAnnotatedWith( Deprecated.class ) ? " (Deprecated)" : "" ) + "\n";
+                result += "\tMethod " + m.name()
+                    + ( m.isAnnotatedWith( Deprecated.class ) ? " (Deprecated)" : "" ) + "\n";
                 result += "\t" + Arrays.toString( d.methods ) + " /" + context + d.path + "\n";
                 result += "\tProduces " + d.produces + "\n";
                 result += "\tRealm param " + formatRealm( m ) + "\n";
