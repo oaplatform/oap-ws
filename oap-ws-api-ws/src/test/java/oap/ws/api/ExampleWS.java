@@ -54,7 +54,6 @@ class ExampleWS {
 
     @WsMethod( method = GET, path = "/test/sort/{id}" )
     @WsSecurity( permissions = { "SUPERADMIN" } )
-    @Deprecated
     public String test1( @WsParam( from = PATH ) String id ) {
         return id;
     }
@@ -117,12 +116,18 @@ class ExampleWS {
         return bytes;
     }
 
+    @Deprecated
+    public String deprecated() {
+        return null;
+    }
+
     public static class Bean2 {
         public int x;
     }
 
     public static class Bean {
         public int i;
+        @Deprecated
         public String s;
         public LocalDateTime dt;
         public Bean2 b2;
