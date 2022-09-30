@@ -26,9 +26,9 @@ package oap.openapi.maven;
 
 import oap.application.module.Module;
 import oap.application.module.Service;
-import oap.ws.WebServiceVisitor;
 import oap.ws.WsConfig;
 import oap.ws.openapi.OpenapiGenerator;
+import oap.ws.openapi.WebServiceVisitor;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
