@@ -119,6 +119,8 @@ class ExampleWS {
 
     public static class Bean2 {
         public int x;
+        @Deprecated
+        public double price;
     }
 
     public static class Bean {

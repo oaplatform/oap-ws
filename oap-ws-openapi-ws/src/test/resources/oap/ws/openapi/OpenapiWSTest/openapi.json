@@ -171,6 +171,18 @@
       "Bean2" : {
         "exampleSetFlag" : false,
         "properties" : {
+          "overpriced" : {
+            "deprecated" : true,
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "price" : {
+            "exampleSetFlag" : false,
+            "format" : "double",
+            "type" : "number",
+            "types" : [ "number" ]
+          },
           "x" : {
             "exampleSetFlag" : false,
             "format" : "int32",
@@ -920,6 +932,7 @@
                   "additionalProperties" : {
                     "type" : "object"
                   },
+                  "deprecated" : true,
                   "type" : "object",
                   "writeOnly" : true
                 }
@@ -941,8 +954,10 @@
                   "type" : "object",
                   "types" : [ "object" ]
                 },
+                "deprecated" : true,
                 "exampleSetFlag" : false,
                 "jsonSchema" : {
+                  "deprecated" : true,
                   "type" : "object",
                   "writeOnly" : true
                 },
@@ -2084,6 +2099,7 @@
               "type" : "object",
               "types" : [ "object" ]
             },
+            "deprecated" : true,
             "exampleSetFlag" : false,
             "jsonSchema" : {
               "type" : "object"
@@ -2234,6 +2250,7 @@
                   "additionalProperties" : {
                     "type" : "object"
                   },
+                  "deprecated" : true,
                   "type" : "object",
                   "writeOnly" : true
                 }
@@ -2255,8 +2272,10 @@
                   "type" : "object",
                   "types" : [ "object" ]
                 },
+                "deprecated" : true,
                 "exampleSetFlag" : false,
                 "jsonSchema" : {
+                  "deprecated" : true,
                   "type" : "object",
                   "writeOnly" : true
                 },
@@ -2335,6 +2354,7 @@
               "type" : "object",
               "types" : [ "object" ]
             },
+            "deprecated" : true,
             "exampleSetFlag" : false,
             "jsonSchema" : {
               "type" : "object"

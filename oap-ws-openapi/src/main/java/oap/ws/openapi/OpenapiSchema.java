@@ -27,11 +27,13 @@ package oap.ws.openapi;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
+import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.core.util.RefUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MapSchema;
 import oap.reflect.Reflection;
+import oap.ws.openapi.swagger.DeprecationAnnotationResolver;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 import java.lang.reflect.ParameterizedType;
@@ -57,6 +59,8 @@ class OpenapiSchema {
         namePrimitiveMap.put( "double", Double.class );
         namePrimitiveMap.put( "float", Float.class );
         namePrimitiveMap.put( "void", Void.class );
+        ModelResolver modelConverter = ( ModelResolver ) converters.getConverters().get( 0 );
+        converters.addConverter( new DeprecationAnnotationResolver( modelConverter ) );
     }
 
     /**
