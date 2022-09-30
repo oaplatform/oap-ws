@@ -51,7 +51,6 @@
         <module>oap-ws-openapi</module>
         <module>oap-ws-openapi-ws</module>
         <module>oap-ws-openapi-maven-plugin</module>
-        <module>oap-ws-maven</module>
     </modules>
 
     <repositories>
