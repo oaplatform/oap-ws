@@ -30,6 +30,7 @@ Methods:
 			{
 				b2: Bean2
 				{
+					price: double
 					x: int
 				}
 				dt: LocalDateTime
@@ -90,6 +91,7 @@ Methods:
 			{
 				b2: Bean2
 				{
+					price: double
 					x: int
 				}
 				dt: LocalDateTime
@@ -106,6 +108,7 @@ Methods:
 			{
 				b2: Bean2
 				{
+					price: double
 					x: int
 				}
 				dt: LocalDateTime

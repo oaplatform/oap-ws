@@ -1,0 +1,347 @@
+################################################################################
+Service oap.ws.openapi.ExtTestWS
+Bound to apiExt
+Methods:
+	Method testVoid
+	[GET] /apiExt/test/empty_optional_param/{id}
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns void
+	Parameters
+		id: path String
+		limit: query optional int
+
+	Method testVoid
+	[GET] /apiExt/test/empty_required_param/
+	Produces application/json
+	Realm param organizationId
+	Permissions [account:read, permissions:read]
+	Returns void
+	Parameters
+		limit: query int
+
+
+################################################################################
+Service oap.ws.openapi.IgnoredPermissionsTestWS
+Bound to ignored-permissions
+Methods:
+	Method test
+	[GET] /ignored-permissions/test/ignored
+	Produces application/json
+	Realm param organizationId
+	Permissions [dummy:permission]
+	Returns String
+	Parameters
+		id: path String
+
+
+################################################################################
+Service oap.ws.openapi.TestWS
+Bound to api
+Methods:
+	Method bean
+	[GET] /api/bean
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns Bean
+			{
+				b2: Bean2
+				{
+					overpriced: boolean
+					price: double
+					x: int
+				}
+				dt: LocalDateTime
+				ext: DynamicBeanExt
+				{
+					databaseType: ["STATIC","DYNAMIC"]
+					extension: String
+					score: int
+				}
+				i: int
+				s: String
+				something: String
+			}[]
+	Parameters
+		i: query int
+		s: query String
+
+	Method bytes
+	[GET] /api/bytes
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns String
+	Parameters
+		bytes: body byte[]
+
+	Method code
+	[GET] /api/code
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns void
+	Parameters
+		code: query int
+
+	Method en
+	[GET] /api/en
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns ["SOURCE","CLASS","RUNTIME"]
+	Parameters
+		a: query ["SOURCE","CLASS","RUNTIME"]
+
+	Method id
+	[GET] /api/id
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns String
+	Parameters
+		a: query String
+
+	Method json
+	[GET] /api/json
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns Bean
+			{
+				b2: Bean2
+				{
+					overpriced: boolean
+					price: double
+					x: int
+				}
+				dt: LocalDateTime
+				ext: DynamicBeanExt
+				{
+					databaseType: ["STATIC","DYNAMIC"]
+					extension: String
+					score: int
+				}
+				i: int
+				s: String
+				something: String
+			}
+	Parameters
+		bean: body Bean
+			{
+				b2: Bean2
+				{
+					overpriced: boolean
+					price: double
+					x: int
+				}
+				dt: LocalDateTime
+				ext: DynamicBeanExt
+				{
+					databaseType: ["STATIC","DYNAMIC"]
+					extension: String
+					score: int
+				}
+				i: int
+				s: String
+				something: String
+			}
+
+	Method list
+	[GET] /api/list
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns String[]
+	Parameters
+		str: body String[]
+
+	Method mapbean
+	[GET] /apigeneric
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns Map
+	No parameters
+
+	Method req
+	[GET] /api/req
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns String
+	No parameters
+
+	Method string
+	[GET] /api/string
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns String
+	Parameters
+		bytes: body String
+
+	Method sumab
+	[GET] /api/sumab
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns int
+	Parameters
+		a: query int
+		b: query int
+
+	Method sumabopt
+	[GET] /api/sumabopt
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns int
+	Parameters
+		a: query int
+		b: query optional int
+
+	Method test
+	[GET] /api/
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns int
+	No parameters
+
+	Method test1
+	[GET] /api/test/sort/{id}
+	Produces application/json
+	Realm param organizationId
+	Permissions [account:read, permissions:read]
+	Returns String
+	Parameters
+		id: path String
+
+	Method test2
+	[GET] /api/test/sort/default
+	Produces application/json
+	Realm param organizationId
+	Permissions [account:read]
+	Returns String
+	No parameters
+
+	Method testEqual
+	[GET] /api/test/sort={id}/test
+	Produces application/json
+	Realm param organizationId
+	Permissions [account:write, permissions:write]
+	Returns String
+	Parameters
+		id: path String
+
+	Method x
+	[GET] /api/x
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns int
+	Parameters
+		i: query int
+		s: query String
+
+
+################################################################################
+Service oap.ws.api.ApiWS
+Bound to system/api
+Methods:
+	Method api
+	[GET] /system/api/
+	Produces text/plain
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns String
+	No parameters
+
+
+################################################################################
+Service oap.ws.openapi.OpenapiWS
+Bound to system/openapi
+Methods:
+	Method openapi
+	[GET] /system/openapi/
+	Produces application/json
+	Realm param <unsecure>
+	Permissions <unsecure>
+	Returns OpenAPI
+			{
+				components: Components
+				{
+					callbacks: Map
+					examples: Map
+					extensions: Map
+					headers: Map
+					links: Map
+					parameters: Map
+					pathItems: Map
+					requestBodies: Map
+					responses: Map
+					schemas: Map
+					securitySchemes: Map
+				}
+				extensions: Map
+				externalDocs: ExternalDocumentation
+				{
+					description: String
+					extensions: Map
+					url: String
+				}
+				info: Info
+				{
+					contact: Contact
+					{
+						email: String
+						extensions: Map
+						name: String
+						url: String
+					}
+					description: String
+					extensions: Map
+					license: License
+					{
+						extensions: Map
+						identifier: String
+						name: String
+						url: String
+					}
+					summary: String
+					termsOfService: String
+					title: String
+					version: String
+				}
+				jsonSchemaDialect: String
+				openapi: String
+				paths: Map
+				security: Map[]
+				servers: Server
+				{
+					description: String
+					extensions: Map
+					url: String
+					variables: Map
+				}[]
+				specVersion: ["V30","V31"]
+				tags: Tag
+				{
+					description: String
+					extensions: Map
+					externalDocs: ExternalDocumentation
+					{
+						description: String
+						extensions: Map
+						url: String
+					}
+					name: String
+				}[]
+				webhooks: Map
+			}
+	No parameters
+
+
