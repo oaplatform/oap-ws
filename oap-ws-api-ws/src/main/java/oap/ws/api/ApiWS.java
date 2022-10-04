@@ -71,10 +71,10 @@ public class ApiWS {
         this.webServices = webServices;
     }
 
-    private static boolean filterField( Reflection.Field field ) {
-        return !field.isStatic()
-            && !field.underlying.isSynthetic()
-            && field.findAnnotation( JsonIgnore.class ).isEmpty();
+    private static boolean ignorable( Reflection.Field field ) {
+        return field.isStatic()
+            || field.underlying.isSynthetic()
+            || field.findAnnotation( JsonIgnore.class ).isPresent();
     }
 
     private static boolean filterMethod( Reflection.Method m ) {
@@ -192,7 +192,7 @@ public class ApiWS {
         fields.sort( comparing( Reflection.Field::name ) );
         result += "{\n";
         for( Reflection.Field f : fields ) {
-            if( !filterField( f ) ) continue;
+            if( ignorable( f ) ) continue;
             log.trace( "type field {}", f.name() );
             result += "\t" + f.name() + ": " + formatField( r, f, types ) + "\n";
         }
@@ -216,7 +216,8 @@ public class ApiWS {
 
     private String formatField( Reflection r, Reflection.Field f, Types types ) {
         Class<?> ext = f.type().assignableTo( Ext.class )
-            ? ExtDeserializer.extensionOf( r.underlying, f.name() ) : null;
+            ? ExtDeserializer.extensionOf( r.underlying, f.name() )
+            : null;
         Reflection target = ext != null ? Reflect.reflect( ext ) : f.type();
         return formatType( 1, r, target, types );
     }

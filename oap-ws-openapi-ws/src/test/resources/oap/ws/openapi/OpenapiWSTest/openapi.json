@@ -146,7 +146,7 @@
             "types" : [ "string" ]
           },
           "ext" : {
-            "$ref" : "#/components/schemas/Ext",
+            "$ref" : "#/components/schemas/DynamicBeanExt",
             "exampleSetFlag" : false
           },
           "i" : {
@@ -171,6 +171,18 @@
       "Bean2" : {
         "exampleSetFlag" : false,
         "properties" : {
+          "overpriced" : {
+            "deprecated" : true,
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "price" : {
+            "exampleSetFlag" : false,
+            "format" : "double",
+            "type" : "number",
+            "types" : [ "number" ]
+          },
           "x" : {
             "exampleSetFlag" : false,
             "format" : "int32",
@@ -423,6 +435,30 @@
             "exampleSetFlag" : false,
             "type" : "string",
             "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "DynamicBeanExt" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "databaseType" : {
+            "_enum" : [ "STATIC", "DYNAMIC" ],
+            "enum" : [ "STATIC", "DYNAMIC" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extension" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "score" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         },
         "type" : "object"
@@ -920,6 +956,7 @@
                   "additionalProperties" : {
                     "type" : "object"
                   },
+                  "deprecated" : true,
                   "type" : "object",
                   "writeOnly" : true
                 }
@@ -941,8 +978,10 @@
                   "type" : "object",
                   "types" : [ "object" ]
                 },
+                "deprecated" : true,
                 "exampleSetFlag" : false,
                 "jsonSchema" : {
+                  "deprecated" : true,
                   "type" : "object",
                   "writeOnly" : true
                 },
@@ -2084,6 +2123,7 @@
               "type" : "object",
               "types" : [ "object" ]
             },
+            "deprecated" : true,
             "exampleSetFlag" : false,
             "jsonSchema" : {
               "type" : "object"
@@ -2234,6 +2274,7 @@
                   "additionalProperties" : {
                     "type" : "object"
                   },
+                  "deprecated" : true,
                   "type" : "object",
                   "writeOnly" : true
                 }
@@ -2255,8 +2296,10 @@
                   "type" : "object",
                   "types" : [ "object" ]
                 },
+                "deprecated" : true,
                 "exampleSetFlag" : false,
                 "jsonSchema" : {
+                  "deprecated" : true,
                   "type" : "object",
                   "writeOnly" : true
                 },
@@ -2335,6 +2378,7 @@
               "type" : "object",
               "types" : [ "object" ]
             },
+            "deprecated" : true,
             "exampleSetFlag" : false,
             "jsonSchema" : {
               "type" : "object"
@@ -2446,7 +2490,7 @@
   "info" : {
     "description" : "Test description",
     "title" : "Test title",
-    "version" : "UNDEFINED (oap.ws.openapi.ExtTestWS, oap.ws.openapi.IgnoredPermissionsTestWS, oap.ws.openapi.TestWS, oap.ws.openapi.OpenapiWS)"
+    "version" : "UNDEFINED (oap.ws.openapi.ExtTestWS, oap.ws.openapi.IgnoredPermissionsTestWS, oap.ws.openapi.TestWS, oap.ws.api.ApiWS, oap.ws.openapi.OpenapiWS)"
   },
   "openapi" : "3.0.3",
   "paths" : {
@@ -3143,6 +3187,28 @@
         "tags" : [ "oap.ws.openapi.IgnoredPermissionsTestWS" ]
       }
     },
+    "/system/api/" : {
+      "get" : {
+        "description" : "Generates description of WS method with parameters and result",
+        "operationId" : "api",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "text/plain" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.api.ApiWS" ]
+      }
+    },
     "/system/openapi/" : {
       "get" : {
         "description" : "Generates OpenAPI 3.0 json document",
@@ -3171,6 +3237,8 @@
     "name" : "oap.ws.openapi.IgnoredPermissionsTestWS"
   }, {
     "name" : "oap.ws.openapi.TestWS"
+  }, {
+    "name" : "oap.ws.api.ApiWS"
   }, {
     "name" : "oap.ws.openapi.OpenapiWS"
   } ]

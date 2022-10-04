@@ -60,7 +60,9 @@ public class Openapi {
     }
 
     public OpenAPI generateOpenApi() {
-        OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description,
+        OpenapiGenerator openapiGenerator = new OpenapiGenerator(
+            info.title,
+            info.description,
             new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON, false ) );
         log.info( "OpenAPI generating '{}'...", info.title );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
@@ -70,7 +72,7 @@ public class Openapi {
             log.info( "Processing web-service implementation class '{}'", clazz.getCanonicalName() );
             openapiGenerator.processWebservice( clazz, context );
         }
-
+        openapiGenerator.afterProcesingServices();
         return openapiGenerator.build();
     }
 
