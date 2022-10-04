@@ -220,6 +220,7 @@ OtherClass
 ## oap.ws.api.ExampleWS.Bean2 ##################################################
 Bean2
 {
+	price: double
 	x: int
 }
 
