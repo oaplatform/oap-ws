@@ -24,7 +24,8 @@ import java.util.Objects;
     name = "openapi",
     defaultPhase = LifecyclePhase.COMPILE,
     configurator = "include-project-dependencies",
-    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
+    requiresDependencyResolution = ResolutionScope.COMPILE,
+    requiresDependencyCollection = ResolutionScope.COMPILE
 )
 public class OpenApiGeneratorPlugin extends AbstractMojo {
 
@@ -56,6 +57,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                 Files.ensureFile( Paths.get( outputPath ) );
             } catch( Exception ex ) {
                 //no such path, just ignore
+                getLog().info( "OpenAPI " + settings.outputType + " output path not found, skipping -> " + outputPath );
                 return;
             }
             getLog().info( "OpenAPI " + settings.outputType + " generated -> " + outputPath );
