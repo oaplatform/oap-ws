@@ -26,7 +26,6 @@ package oap.ws.openapi.swagger;
 
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
-import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
@@ -35,23 +34,17 @@ import io.swagger.v3.oas.models.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import oap.json.ext.Ext;
 import oap.json.ext.ExtDeserializer;
-import oap.util.Lists;
 import oap.util.Pair;
 import oap.util.Strings;
-import org.apache.commons.collections.map.HashedMap;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import static io.swagger.v3.core.util.RefUtils.constructRef;
 
 @Slf4j
 public class DeprecationAnnotationResolver extends ModelResolver implements ModelConverter {
@@ -63,9 +56,9 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
     }
 
     @Override
-    public synchronized Schema resolve( AnnotatedType annotatedType,
-                                        ModelConverterContext context,
-                                        Iterator<ModelConverter> next) {
+    public Schema resolve( AnnotatedType annotatedType,
+                           ModelConverterContext context,
+                           Iterator<ModelConverter> next) {
         this.context = context;
         return super.resolve( annotatedType, context, next );
     }

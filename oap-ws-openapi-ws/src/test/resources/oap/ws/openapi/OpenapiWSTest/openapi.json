@@ -146,7 +146,7 @@
             "types" : [ "string" ]
           },
           "ext" : {
-            "$ref" : "#/components/schemas/Ext",
+            "$ref" : "#/components/schemas/DynamicBeanExt",
             "exampleSetFlag" : false
           },
           "i" : {
@@ -435,6 +435,30 @@
             "exampleSetFlag" : false,
             "type" : "string",
             "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "DynamicBeanExt" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "databaseType" : {
+            "_enum" : [ "STATIC", "DYNAMIC" ],
+            "enum" : [ "STATIC", "DYNAMIC" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "extension" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "score" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         },
         "type" : "object"
