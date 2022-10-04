@@ -22,10 +22,11 @@
  * SOFTWARE.
  */
 
-package oap.ws;
+package oap.ws.openapi;
 
 import oap.reflect.Reflection;
 import oap.ws.sso.WsSecurity;
+
 import java.util.Optional;
 
 public class WsSecurityDescriptor {
@@ -37,9 +38,8 @@ public class WsSecurityDescriptor {
 
     public static WsSecurityDescriptor ofMethod( Reflection.Method method ) {
         Optional<WsSecurity> annotation = method.findAnnotation( WsSecurity.class );
-        if( !annotation.isPresent() ) return NO_SECURITY_SET;
-        WsSecurityDescriptor wsSecurityDescriptor = new WsSecurityDescriptor( method, annotation.get() );
-        return wsSecurityDescriptor;
+        if( annotation.isEmpty() ) return NO_SECURITY_SET;
+        return new WsSecurityDescriptor( method, annotation.get() );
     }
 
     private WsSecurityDescriptor( Reflection.Method method, WsSecurity annotation ) {
