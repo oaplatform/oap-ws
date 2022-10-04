@@ -32,6 +32,8 @@ import io.swagger.v3.core.util.RefUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import lombok.extern.slf4j.Slf4j;
 import oap.reflect.Reflection;
 import oap.ws.openapi.swagger.DeprecationAnnotationResolver;
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -44,10 +46,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 class OpenapiSchema {
-
     private static final Map<String, Class<?>> namePrimitiveMap = new HashMap<>();
-    private static final ModelConverters converters = new ModelConverters();
+    private final ModelConverters converters = new ModelConverters();
+    private final DeprecationAnnotationResolver converter;
 
     static {
         namePrimitiveMap.put( "boolean", Boolean.class );
@@ -59,8 +62,12 @@ class OpenapiSchema {
         namePrimitiveMap.put( "double", Double.class );
         namePrimitiveMap.put( "float", Float.class );
         namePrimitiveMap.put( "void", Void.class );
+    }
+
+    public OpenapiSchema() {
         ModelResolver modelConverter = ( ModelResolver ) converters.getConverters().get( 0 );
-        converters.addConverter( new DeprecationAnnotationResolver( modelConverter ) );
+        converter = new DeprecationAnnotationResolver( modelConverter );
+        converters.addConverter( converter );
     }
 
     /**
@@ -73,7 +80,8 @@ class OpenapiSchema {
     public static Type prepareType( Reflection type ) {
         if( type.isPrimitive() ) {
             return namePrimitiveMap.get( type.name() );
-        } else if( type.isArray() ) {
+        }
+        if( type.isArray() ) {
             var componentType = type.underlying.componentType();
             if( componentType.isPrimitive() ) {
                 componentType = namePrimitiveMap.get( componentType.getName() );
@@ -91,11 +99,11 @@ class OpenapiSchema {
      * @return schema reference if openapi components schema map already contains schema with same name
      * otherwise return schema object without changes
      */
-    public static io.swagger.v3.oas.models.media.Schema createSchemaRef( io.swagger.v3.oas.models.media.Schema schema, Map<String, io.swagger.v3.oas.models.media.Schema> map ) {
+    public Schema createSchemaRef( Schema schema, Map<String, Schema> map ) {
         if( schema != null
             && schema.getName() != null
             && map.containsKey( schema.getName() ) ) {
-            var result = new io.swagger.v3.oas.models.media.Schema<>();
+            var result = new Schema<>();
             result.$ref( RefUtils.constructRef( schema.getName() ) );
             return result;
         }
@@ -110,11 +118,9 @@ class OpenapiSchema {
      * @return resolved schema
      * @see io.swagger.v3.oas.models.media.Schema
      */
-    public static ResolvedSchema prepareSchema( Type type, OpenAPI api ) {
+    public ResolvedSchema prepareSchema( Type type, OpenAPI api ) {
         var resolvedSchema = resolveSchema( type );
-
         resolvedSchema.referencedSchemas.forEach( api::schema );
-
         return resolvedSchema;
     }
 
@@ -125,27 +131,43 @@ class OpenapiSchema {
      * @return transformed schema
      * @see io.swagger.v3.oas.models.media.Schema
      */
-    public static ResolvedSchema resolveSchema( Type type ) {
+    public ResolvedSchema resolveSchema( Type type ) {
         var resolvedSchema = converters.readAllAsResolvedSchema( type );
-        if( resolvedSchema != null && resolvedSchema.schema == null ) {
-            if( type instanceof ParameterizedType paramType ) {
-                var rawClass = TypeFactory.rawClass( type );
-                if( Collection.class.isAssignableFrom( rawClass ) ) {
-                    var schema = new ArraySchema();
-                    var genericSchema = resolveSchema( getGenericType( paramType, 0 ) );
-                    schema.setItems( createSchemaRef( genericSchema.schema, resolvedSchema.referencedSchemas ) );
-                    resolvedSchema.schema = schema;
-                } else if( Map.class.isAssignableFrom( rawClass ) ) {
-                    var schema = new MapSchema();
-                    var genericSchema = resolveSchema( getGenericType( paramType, 1 ) );
-                    schema.setAdditionalProperties( genericSchema.schema );
-                    resolvedSchema.schema = schema;
-                } else if( Optional.class.isAssignableFrom( rawClass ) ) {
-                    resolvedSchema = resolveSchema( getGenericType( paramType, 0 ) );
-                }
+        if ( resolvedSchema == null || resolvedSchema.schema != null ) {
+            return resolvedSchema;
+        }
+        if( type instanceof ParameterizedType paramType ) {
+            var rawClass = TypeFactory.rawClass( type );
+            if( isCollection( rawClass ) ) {
+                var schema = new ArraySchema();
+                var genericSchema = resolveSchema( getGenericType( paramType, 0 ) );
+                schema.setItems( createSchemaRef( genericSchema.schema, resolvedSchema.referencedSchemas ) );
+                resolvedSchema.schema = schema;
+                log.debug( "Type {} resolved to {} (a collection)", type, rawClass );
+            } else if( isMap( rawClass ) ) {
+                var schema = new MapSchema();
+                var genericSchema = resolveSchema( getGenericType( paramType, 1 ) );
+                schema.setAdditionalProperties( genericSchema.schema );
+                resolvedSchema.schema = schema;
+                log.debug( "Type {} resolved to {} (a map)", type, rawClass );
+            } else if( isOptional( rawClass ) ) {
+                resolvedSchema = resolveSchema( getGenericType( paramType, 0 ) );
+                log.debug( "Type {} resolved to {} (an optional)", type, rawClass );
             }
         }
         return resolvedSchema;
+    }
+
+    private boolean isOptional( Class<?> rawClass ) {
+        return Optional.class.isAssignableFrom( rawClass );
+    }
+
+    private boolean isMap( Class<?> rawClass ) {
+        return Map.class.isAssignableFrom( rawClass );
+    }
+
+    private boolean isCollection( Class<?> rawClass ) {
+        return Collection.class.isAssignableFrom( rawClass );
     }
 
     private static Type getGenericType( ParameterizedType type, int number ) {
@@ -153,5 +175,11 @@ class OpenapiSchema {
             return type.getActualTypeArguments()[number];
         }
         return null;
+    }
+
+    public void processExtensionsInSchemas( Schema schema, String className, String fieldName ) {
+        Schema ext = converter.getSchema( className, fieldName );
+        if( ext == null ) return;
+        schema.$ref( RefUtils.constructRef( ext.getName() ) );
     }
 }

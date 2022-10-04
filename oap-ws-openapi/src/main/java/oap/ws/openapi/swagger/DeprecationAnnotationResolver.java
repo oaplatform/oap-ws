@@ -24,24 +24,56 @@
 
 package oap.ws.openapi.swagger;
 
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
+import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.extern.slf4j.Slf4j;
+import oap.json.ext.Ext;
+import oap.json.ext.ExtDeserializer;
+import oap.util.Lists;
+import oap.util.Pair;
 import oap.util.Strings;
+import org.apache.commons.collections.map.HashedMap;
 
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+
+import static io.swagger.v3.core.util.RefUtils.constructRef;
 
 @Slf4j
 public class DeprecationAnnotationResolver extends ModelResolver implements ModelConverter {
+    private ModelConverterContext context;
+    private Map<Pair<String, String>, Schema> extensionsSchemas = new HashMap<>();
+
     public DeprecationAnnotationResolver( ModelResolver modelResolver ) {
         super( modelResolver.objectMapper() );
     }
 
     @Override
-    protected void applyBeanValidatorAnnotations( Schema property, Annotation[] annotations, Schema parent ) {
+    public synchronized Schema resolve( AnnotatedType annotatedType,
+                                        ModelConverterContext context,
+                                        Iterator<ModelConverter> next) {
+        this.context = context;
+        return super.resolve( annotatedType, context, next );
+    }
+
+    @Override
+    protected void applyBeanValidatorAnnotations( Schema property,
+                                                  Annotation[] annotations,
+                                                  Schema parent ) {
         super.applyBeanValidatorAnnotations( property, annotations, parent );
         if ( annotations == null || annotations.length == 0 ) return;
         Optional<Annotation> deprecated = Arrays.stream( annotations ).filter( anno -> anno.annotationType().equals( Deprecated.class ) ).findAny();
@@ -52,5 +84,27 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
             if( property.getName() != null )
                 log.debug( "Field '{}' marked as deprecated{}", property.getName(), since );
         } );
+    }
+
+    @Override
+    protected boolean ignore( Annotated member,
+                              XmlAccessorType xmlAccessorTypeAnnotation,
+                              String propName,
+                              Set<String> propertiesToIgnore,
+                              BeanPropertyDefinition propDef) {
+        if ( propDef.getPrimaryMember() != null && Ext.class.isAssignableFrom( member.getRawType() ) ) {
+            Class<?> ext = ExtDeserializer.extensionOf( propDef.getPrimaryMember().getDeclaringClass(), propDef.getName() );
+            AnnotatedType annotatedType = new AnnotatedType( ext );
+            Schema extensionSchema = super.resolve( annotatedType, context, context.getConverters() );
+            String className = propDef.getPrimaryMember().getDeclaringClass().getSimpleName();
+            String fieldName = propDef.getName();
+            extensionsSchemas.put(  Pair.__( className, fieldName ), extensionSchema );
+            log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, className, ext.getCanonicalName() );
+        }
+        return super.ignore( member, xmlAccessorTypeAnnotation, propName, propertiesToIgnore, propDef );
+    }
+
+    public Schema getSchema( String className, String fieldName ) {
+        return extensionsSchemas.get( Pair.__(className, fieldName) );
     }
 }
