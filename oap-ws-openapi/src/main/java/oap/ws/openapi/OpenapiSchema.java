@@ -64,7 +64,7 @@ class OpenapiSchema {
         namePrimitiveMap.put( "void", Void.class );
     }
 
-    public OpenapiSchema() {
+    OpenapiSchema() {
         ModelResolver modelConverter = ( ModelResolver ) converters.getConverters().get( 0 );
         converter = new DeprecationAnnotationResolver( modelConverter );
         converters.addConverter( converter );

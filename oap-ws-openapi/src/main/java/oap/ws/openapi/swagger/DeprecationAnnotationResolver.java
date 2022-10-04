@@ -58,7 +58,7 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
     @Override
     public Schema resolve( AnnotatedType annotatedType,
                            ModelConverterContext context,
-                           Iterator<ModelConverter> next) {
+                           Iterator<ModelConverter> next ) {
         this.context = context;
         return super.resolve( annotatedType, context, next );
     }
@@ -84,7 +84,7 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                               XmlAccessorType xmlAccessorTypeAnnotation,
                               String propName,
                               Set<String> propertiesToIgnore,
-                              BeanPropertyDefinition propDef) {
+                              BeanPropertyDefinition propDef ) {
         if ( propDef.getPrimaryMember() != null && Ext.class.isAssignableFrom( member.getRawType() ) ) {
             Class<?> ext = ExtDeserializer.extensionOf( propDef.getPrimaryMember().getDeclaringClass(), propDef.getName() );
             AnnotatedType annotatedType = new AnnotatedType( ext );
@@ -98,6 +98,6 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
     }
 
     public Schema getSchema( String className, String fieldName ) {
-        return extensionsSchemas.get( Pair.__(className, fieldName) );
+        return extensionsSchemas.get( Pair.__( className, fieldName ) );
     }
 }
