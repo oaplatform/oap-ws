@@ -32,8 +32,6 @@ import static oap.io.Resources.urlOrThrow;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OpenapiTest extends Fixtures {
-
-
     protected final KernelFixture kernelFixture;
 
     public OpenapiTest() {
