@@ -32,7 +32,7 @@ public interface AuthTokenProvider {
 
     String getUserId( String token );
 
-    List<String> getAccounts( String token );
+    String getUserEmail( String token );
 
     boolean verifyToken( String token );
 }
