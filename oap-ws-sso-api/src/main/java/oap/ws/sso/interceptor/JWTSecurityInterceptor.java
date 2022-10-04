@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.ws.sso.AbstractTokenProvider.extractBearerToken;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
@@ -91,6 +92,7 @@ public class JWTSecurityInterceptor implements Interceptor {
             if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
                 return Optional.empty();
         }
+        log.info( format( "Permissions required: %s, but found: %s", Arrays.toString( wss.get().permissions() ), permissions ) );
         return Optional.of( new Response( FORBIDDEN, "user doesn't have permissions" ) );
     }
 }
