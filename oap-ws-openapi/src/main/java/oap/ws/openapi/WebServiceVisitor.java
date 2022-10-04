@@ -22,10 +22,11 @@
  * SOFTWARE.
  */
 
-package oap.ws;
+package oap.ws.openapi;
 
 import oap.application.module.Module;
 import oap.application.module.Service;
+import oap.ws.WsConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;

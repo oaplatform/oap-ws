@@ -29,8 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.ws.WebServices;
-import oap.ws.WebServicesWalker;
-import oap.ws.WsSecurityDescriptor;
 
 import java.util.HashSet;
 import java.util.List;
@@ -62,7 +60,9 @@ public class Openapi {
     }
 
     public OpenAPI generateOpenApi() {
-        OpenapiGenerator openapiGenerator = new OpenapiGenerator( info.title, info.description,
+        OpenapiGenerator openapiGenerator = new OpenapiGenerator(
+            info.title,
+            info.description,
             new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON, false ) );
         log.info( "OpenAPI generating '{}'...", info.title );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
@@ -72,7 +72,7 @@ public class Openapi {
             log.info( "Processing web-service implementation class '{}'", clazz.getCanonicalName() );
             openapiGenerator.processWebservice( clazz, context );
         }
-
+        openapiGenerator.afterProcesingServices();
         return openapiGenerator.build();
     }
 

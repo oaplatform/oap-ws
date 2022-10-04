@@ -50,12 +50,12 @@ import lombok.ToString;
 import oap.http.server.nio.HttpServerExchange;
 import oap.io.content.ContentWriter;
 import oap.reflect.Reflect;
+import oap.reflect.Reflection;
 import oap.util.Lists;
 import oap.util.Strings;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
-import oap.ws.WsSecurityDescriptor;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
@@ -73,8 +73,7 @@ import static oap.ws.openapi.OpenapiReflection.description;
 import static oap.ws.openapi.OpenapiReflection.from;
 import static oap.ws.openapi.OpenapiReflection.tag;
 import static oap.ws.openapi.OpenapiReflection.webMethod;
-import static oap.ws.openapi.OpenapiSchema.createSchemaRef;
-import static oap.ws.openapi.OpenapiSchema.prepareSchema;
+
 import static oap.ws.openapi.OpenapiSchema.prepareType;
 
 public class OpenapiGenerator {
@@ -83,6 +82,7 @@ public class OpenapiGenerator {
     private final ArrayListMultimap<String, String> versions = ArrayListMultimap.create();
     private final ModelConverters converters = new ModelConverters();
     private final OpenAPI api = new OpenAPI();
+    private OpenapiSchema openapiSchema = new OpenapiSchema();
     @Setter
     private String title;
     @Setter
@@ -97,10 +97,7 @@ public class OpenapiGenerator {
     }
 
     public OpenapiGenerator( String title, String description ) {
-        this(
-            title,
-            description,
-            new Settings( Settings.OutputType.JSON, false ) );
+        this( title, description, new Settings( Settings.OutputType.JSON, false ) );
     }
 
     public OpenAPI build() {
@@ -188,7 +185,7 @@ public class OpenapiGenerator {
         operation.setParameters( prepareParameters( params ) );
         operation.description( wsMethodDescriptor.description );
         operation.setRequestBody( prepareRequestBody( params ) );
-        operation.setResponses( prepareResponse( returnType, wsMethodDescriptor.produces ) );
+        operation.setResponses( prepareResponse( method, returnType, wsMethodDescriptor.produces ) );
         Optional<Deprecated> deprecated = method.findAnnotation( Deprecated.class );
         deprecated.ifPresent( x -> operation.deprecated( true ) );
         if( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET ) {
@@ -204,21 +201,20 @@ public class OpenapiGenerator {
             securityRequirement.addList( wsSecurityDescriptor.realm, Arrays.asList( wsSecurityDescriptor.permissions ) );
             operation.addSecurityItem( securityRequirement );
         }
-
         return operation;
     }
 
-    private ApiResponses prepareResponse( Type type, String produces ) {
+    private ApiResponses prepareResponse( Reflection.Method method, Type returnType, String produces ) {
         var responses = new ApiResponses();
         ApiResponse response = new ApiResponse();
         responses.addApiResponse( "200", response );
-
-        var resolvedSchema = prepareSchema( type, api );
+        var resolvedSchema = openapiSchema.prepareSchema( returnType, api );
         response.description( "" );
-        if( type.equals( Void.class ) ) return responses;
-        Map<String, Schema> schemas =
-            api.getComponents() == null ? Collections.emptyMap() : api.getComponents().getSchemas();
-        response.content( createContent( produces, createSchemaRef( resolvedSchema.schema, schemas ) ) );
+        if( returnType.equals( Void.class ) ) return responses;
+        Map<String, Schema> schemas = api.getComponents() == null
+            ? Collections.emptyMap()
+            : api.getComponents().getSchemas();
+        response.content( createContent( produces, openapiSchema.createSchemaRef( resolvedSchema.schema, schemas ) ) );
         return responses;
     }
 
@@ -237,13 +233,13 @@ public class OpenapiGenerator {
     }
 
     private RequestBody createBody( oap.reflect.Reflection.Parameter parameter ) {
-        var resolvedSchema = prepareSchema( prepareType( parameter.type() ), api );
-        var schemas =
-            api.getComponents() == null ? Collections.<String, Schema>emptyMap() : api.getComponents().getSchemas();
-
+        var resolvedSchema = openapiSchema.prepareSchema( prepareType( parameter.type() ), api );
+        var schemas = api.getComponents() == null
+            ? Collections.<String, Schema>emptyMap()
+            : api.getComponents().getSchemas();
         var result = new RequestBody();
         result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(),
-            createSchemaRef( resolvedSchema.schema, schemas ) ) );
+            openapiSchema.createSchemaRef( resolvedSchema.schema, schemas ) ) );
         if( schemas.containsKey( resolvedSchema.schema.getName() ) )
             api.getComponents().addRequestBodies( resolvedSchema.schema.getName(), result );
 
@@ -355,5 +351,19 @@ public class OpenapiGenerator {
                 this.writer = writer;
             }
         }
+    }
+
+    public void afterProcesingServices() {
+        api.getComponents().getSchemas().forEach( ( className, parentSchema ) -> {
+            if ( "object".equals( parentSchema.getType() ) && parentSchema.getProperties() != null ) {
+                parentSchema.getProperties().forEach( ( name, childSchema ) -> {
+                    var fieldName = ( String ) name;
+                    var schema = ( Schema ) childSchema;
+                    if ( !Strings.isEmpty( schema.get$ref() ) ) {
+                        openapiSchema.processExtensionsInSchemas( schema, className, fieldName );
+                    }
+                } );
+            }
+        } );
     }
 }

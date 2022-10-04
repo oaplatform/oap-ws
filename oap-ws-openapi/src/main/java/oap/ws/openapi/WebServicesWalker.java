@@ -22,10 +22,11 @@
  * SOFTWARE.
  */
 
-package oap.ws;
+package oap.ws.openapi;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.application.module.Module;
+import oap.ws.WsConfig;
 
 import java.net.URL;
 import java.util.List;

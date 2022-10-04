@@ -120,6 +120,9 @@ public class TestWS {
 
     public static class Bean2 {
         public int x;
+        @Deprecated
+        public boolean overpriced;
+        public double price;
     }
 
     public static class Bean {

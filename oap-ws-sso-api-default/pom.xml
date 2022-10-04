@@ -26,43 +26,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>oap-ws-parent</artifactId>
         <groupId>oap</groupId>
+        <artifactId>oap-ws-parent</artifactId>
         <version>${oap-ws.project.version}</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>oap-ws-maven</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>oap-ws-sso-api-default</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-ws-openapi-maven-plugin</artifactId>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>oap-ws-sso-api</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${oap.deps.lombok.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>oap</groupId>
-                <artifactId>oap-ws-openapi-maven-plugin</artifactId>
-                <version>${project.parent.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>openapi</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <outputPath>${project.build.directory}/target/swagger</outputPath>
-                    <outputType>JSON</outputType>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

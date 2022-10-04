@@ -39,6 +39,7 @@ import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
 import oap.ws.sso.WsSecurity;
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 
 import java.lang.reflect.Modifier;
@@ -46,8 +47,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.getPropertyName;
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.isGetter;
@@ -56,6 +62,7 @@ import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.util.Strings.join;
 import static oap.ws.WsParam.From.QUERY;
 
+@SuppressWarnings( "StringConcatenationInLoop" )
 @Slf4j
 public class ApiWS {
     private final WebServices webServices;
@@ -64,10 +71,10 @@ public class ApiWS {
         this.webServices = webServices;
     }
 
-    private static boolean filterField( Reflection.Field field ) {
-        return !field.isStatic()
-            && !field.underlying.isSynthetic()
-            && field.findAnnotation( JsonIgnore.class ).isEmpty();
+    private static boolean ignorable( Reflection.Field field ) {
+        return field.isStatic()
+            || field.underlying.isSynthetic()
+            || field.findAnnotation( JsonIgnore.class ).isPresent();
     }
 
     private static boolean filterMethod( Reflection.Method m ) {
@@ -86,13 +93,13 @@ public class ApiWS {
 
     @WsMethod( produces = "text/plain", path = "/", method = GET, description = "Generates description of WS method with parameters and result" )
     public String api() {
-        String result = "";
+        String result = "# SERVICES " + "#".repeat( 69 ) + "\n";
+        Types types = new Types();
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             var context = ws.getKey();
             var r = Reflect.reflect( ws.getValue().getClass() );
             log.trace( "service {} -> {}", context, r.name() );
-            result += "#".repeat( 80 ) + "\n";
-            result += "Service " + r.name() + "\n";
+            result += "## " + r.name() + " " + "#".repeat( Math.max( 0, 76 - r.name().length() ) ) + "\n";
             result += "Bound to " + context + "\n";
             result += "Methods:\n";
 
@@ -102,23 +109,30 @@ public class ApiWS {
                 if( !filterMethod( m ) ) continue;
                 var d = new WsMethodDescriptor( m );
                 log.trace( "method {}", m.name() );
-                result += "\tMethod " + m.name() + "\n";
+                result += "\tMethod " + m.name()
+                    + ( m.isAnnotatedWith( Deprecated.class ) ? " (Deprecated)" : "" ) + "\n";
                 result += "\t" + Arrays.toString( d.methods ) + " /" + context + d.path + "\n";
                 result += "\tProduces " + d.produces + "\n";
                 result += "\tRealm param " + formatRealm( m ) + "\n";
                 result += "\tPermissions " + formatPermissions( m ) + "\n";
-                result += "\tReturns " + formatType( 3, r, m.returnType(), new ArrayList<>() ) + "\n";
+                result += "\tReturns " + formatType( 3, r, m.returnType(), types ) + "\n";
                 List<Reflection.Parameter> params = Lists.filter( m.parameters, ApiWS::filterParameter );
                 if( params.isEmpty() ) result += "\tNo parameters\n";
                 else {
                     result += "\tParameters\n";
                     for( Reflection.Parameter p : params ) {
                         log.trace( "parameter {}", p.name() );
-                        result += "\t\t" + formatParameter( p, new ArrayList<>() ) + "\n";
+                        result += "\t\t" + formatParameter( p, types ) + "\n";
                     }
                 }
                 result += "\n";
             }
+            result += "\n";
+        }
+        result += "# TYPES " + "#".repeat( 72 ) + "\n";
+        for( Reflection type : types ) {
+            result += "## " + type.name() + " " + "#".repeat( Math.max( 0, 76 - type.name().length() ) ) + "\n";
+            result += formatComplexType( type, types ) + "\n";
             result += "\n";
         }
         return result;
@@ -127,31 +141,31 @@ public class ApiWS {
     private String formatRealm( Reflection.Method method ) {
         return method.findAnnotation( WsSecurity.class )
             .map( WsSecurity::realm )
-            .orElse( "<unsecure>" );
+            .orElse( "<no realm>" );
     }
 
     private String formatPermissions( Reflection.Method method ) {
         return method.findAnnotation( WsSecurity.class )
             .map( ws -> Arrays.toString( ws.permissions() ) )
-            .orElse( "<unsecure>" );
+            .orElse( "<no permissions>" );
     }
 
-    private String formatParameter( Reflection.Parameter p, List<String> previouslyReferencedClasses ) {
+    private String formatParameter( Reflection.Parameter p, Types types ) {
         String from = p.findAnnotation( WsParam.class ).map( WsParam::from ).orElse( QUERY ).name().toLowerCase();
-        return p.name() + ": " + from + " " + formatType( 3, null, p.type(), previouslyReferencedClasses );
+        return p.name() + ": " + from + " " + formatType( 3, null, p.type(), types );
     }
 
-    private String formatType( int shift, Reflection clazz, Reflection r, List<String> previouslyReferencedClasses ) {
+    private String formatType( int shift, Reflection clazz, Reflection r, Types types ) {
         if( r.isOptional() )
-            return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ), previouslyReferencedClasses );
+            return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ), types );
         if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
         if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
         if( r.assignableTo( Collection.class ) ) {
             log.trace( "DEBUG: Collections recursion - {}/{}/{}", shift, clazz, r );
-            return formatType( shift, clazz, r.getCollectionComponentType(), previouslyReferencedClasses ) + "[]";
+            return formatType( shift, clazz, r.getCollectionComponentType(), types ) + "[]";
         }
         if( r.isArray() )
-            return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ), previouslyReferencedClasses ) + "[]";
+            return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ), types ) + "[]";
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
         if( r.underlying.getPackageName().startsWith( DateTime.class.getPackageName() ) )
             return r.underlying.getSimpleName();
@@ -167,34 +181,29 @@ public class ApiWS {
         if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
 
-        return formatComplexType( shift, r, previouslyReferencedClasses );
+        types.push( r );
+        return r.name();
     }
 
-    private String formatComplexType( int shift, Reflection r, List<String> previouslyReferencedClasses ) {
-        if( previouslyReferencedClasses.contains( r.name() ) ) {
-            return "<Recursive Reference>";
-        }
-        List<String> referencedClasses = new ArrayList<>( previouslyReferencedClasses );
-        referencedClasses.add( r.name() );
-
+    private String formatComplexType( Reflection r, Types types ) {
         var result = r.underlying.getSimpleName() + "\n";
         log.trace( "complex type {}", r.name() );
         List<Reflection.Field> fields = new ArrayList<>( r.fields.values() );
         fields.sort( comparing( Reflection.Field::name ) );
-        result += "\t".repeat( shift ) + "{\n";
+        result += "{\n";
         for( Reflection.Field f : fields ) {
-            if( !filterField( f ) ) continue;
+            if( ignorable( f ) ) continue;
             log.trace( "type field {}", f.name() );
-            result += "\t".repeat( shift + 1 ) + f.name() + ": " + formatField( shift, r, f, referencedClasses ) + "\n";
+            result += "\t" + f.name() + ": " + formatField( r, f, types ) + "\n";
         }
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
         for( Reflection.Method m : methods ) {
             if( !filterGetters( m, fields ) ) continue;
             log.trace( "type getter {}", m.name() );
-            result += "\t".repeat( shift + 1 ) + getPropertyName( m.underlying ) + ": " + formatType( shift + 1, r, m.returnType(), referencedClasses ) + "\n";
+            result += "\t" + getPropertyName( m.underlying ) + ": " + formatType( 1, r, m.returnType(), types ) + "\n";
         }
-        result += "\t".repeat( shift ) + "}";
+        result += "\t".repeat( 0 ) + "}";
         return result;
     }
 
@@ -205,11 +214,38 @@ public class ApiWS {
             && !Lists.map( fields, Reflection.Field::name ).contains( getPropertyName( m.underlying ) );
     }
 
-    private String formatField( int shift, Reflection r, Reflection.Field f, List<String> previouslyReferencedClasses ) {
+    private String formatField( Reflection r, Reflection.Field f, Types types ) {
         Class<?> ext = f.type().assignableTo( Ext.class )
-            ? ExtDeserializer.extensionOf( r.underlying, f.name() ) : null;
+            ? ExtDeserializer.extensionOf( r.underlying, f.name() )
+            : null;
         Reflection target = ext != null ? Reflect.reflect( ext ) : f.type();
-        return formatType( shift + 1, r, target, previouslyReferencedClasses );
+        return formatType( 1, r, target, types );
+    }
+
+    private static class Types implements Iterable<Reflection> {
+        private final Set<Reflection> processed = new HashSet<>();
+        private final Queue<Reflection> types = new LinkedList<>();
+
+        public void push( Reflection type ) {
+            if( !processed.contains( type ) && !types.contains( type ) ) types.add( type );
+        }
+
+        @NotNull
+        public Iterator<Reflection> iterator() {
+            return new Iterator<>() {
+                @Override
+                public boolean hasNext() {
+                    return !types.isEmpty();
+                }
+
+                @Override
+                public Reflection next() {
+                    Reflection next = types.poll();
+                    processed.add( next );
+                    return next;
+                }
+            };
+        }
     }
 
 }
