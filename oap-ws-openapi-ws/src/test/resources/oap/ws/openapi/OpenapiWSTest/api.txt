@@ -1,18 +1,18 @@
-################################################################################
-Service oap.ws.openapi.ExtTestWS
+# SERVICES #####################################################################
+## oap.ws.openapi.ExtTestWS ####################################################
 Bound to apiExt
 Methods:
 	Method testVoid
 	[GET] /apiExt/test/empty_optional_param/{id}
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns void
 	Parameters
 		id: path String
 		limit: query optional int
 
-	Method testVoid
+	Method testVoid (Deprecated)
 	[GET] /apiExt/test/empty_required_param/
 	Produces application/json
 	Realm param organizationId
@@ -22,8 +22,7 @@ Methods:
 		limit: query int
 
 
-################################################################################
-Service oap.ws.openapi.IgnoredPermissionsTestWS
+## oap.ws.openapi.IgnoredPermissionsTestWS #####################################
 Bound to ignored-permissions
 Methods:
 	Method test
@@ -36,34 +35,15 @@ Methods:
 		id: path String
 
 
-################################################################################
-Service oap.ws.openapi.TestWS
+## oap.ws.openapi.TestWS #######################################################
 Bound to api
 Methods:
 	Method bean
 	[GET] /api/bean
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
-	Returns Bean
-			{
-				b2: Bean2
-				{
-					overpriced: boolean
-					price: double
-					x: int
-				}
-				dt: LocalDateTime
-				ext: DynamicBeanExt
-				{
-					databaseType: ["STATIC","DYNAMIC"]
-					extension: String
-					score: int
-				}
-				i: int
-				s: String
-				something: String
-			}[]
+	Realm param <no realm>
+	Permissions <no permissions>
+	Returns oap.ws.openapi.TestWS.Bean[]
 	Parameters
 		i: query int
 		s: query String
@@ -71,8 +51,8 @@ Methods:
 	Method bytes
 	[GET] /api/bytes
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns String
 	Parameters
 		bytes: body byte[]
@@ -80,8 +60,8 @@ Methods:
 	Method code
 	[GET] /api/code
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns void
 	Parameters
 		code: query int
@@ -89,8 +69,8 @@ Methods:
 	Method en
 	[GET] /api/en
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns ["SOURCE","CLASS","RUNTIME"]
 	Parameters
 		a: query ["SOURCE","CLASS","RUNTIME"]
@@ -98,8 +78,8 @@ Methods:
 	Method id
 	[GET] /api/id
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns String
 	Parameters
 		a: query String
@@ -107,53 +87,17 @@ Methods:
 	Method json
 	[GET] /api/json
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
-	Returns Bean
-			{
-				b2: Bean2
-				{
-					overpriced: boolean
-					price: double
-					x: int
-				}
-				dt: LocalDateTime
-				ext: DynamicBeanExt
-				{
-					databaseType: ["STATIC","DYNAMIC"]
-					extension: String
-					score: int
-				}
-				i: int
-				s: String
-				something: String
-			}
+	Realm param <no realm>
+	Permissions <no permissions>
+	Returns oap.ws.openapi.TestWS.Bean
 	Parameters
-		bean: body Bean
-			{
-				b2: Bean2
-				{
-					overpriced: boolean
-					price: double
-					x: int
-				}
-				dt: LocalDateTime
-				ext: DynamicBeanExt
-				{
-					databaseType: ["STATIC","DYNAMIC"]
-					extension: String
-					score: int
-				}
-				i: int
-				s: String
-				something: String
-			}
+		bean: body oap.ws.openapi.TestWS.Bean
 
 	Method list
 	[GET] /api/list
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns String[]
 	Parameters
 		str: body String[]
@@ -161,24 +105,24 @@ Methods:
 	Method mapbean
 	[GET] /apigeneric
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns Map
 	No parameters
 
 	Method req
 	[GET] /api/req
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns String
 	No parameters
 
 	Method string
 	[GET] /api/string
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns String
 	Parameters
 		bytes: body String
@@ -186,8 +130,8 @@ Methods:
 	Method sumab
 	[GET] /api/sumab
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns int
 	Parameters
 		a: query int
@@ -196,8 +140,8 @@ Methods:
 	Method sumabopt
 	[GET] /api/sumabopt
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns int
 	Parameters
 		a: query int
@@ -206,8 +150,8 @@ Methods:
 	Method test
 	[GET] /api/
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns int
 	No parameters
 
@@ -240,108 +184,153 @@ Methods:
 	Method x
 	[GET] /api/x
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns int
 	Parameters
 		i: query int
 		s: query String
 
 
-################################################################################
-Service oap.ws.api.ApiWS
+## oap.ws.api.ApiWS ############################################################
 Bound to system/api
 Methods:
 	Method api
 	[GET] /system/api/
 	Produces text/plain
-	Realm param <unsecure>
-	Permissions <unsecure>
+	Realm param <no realm>
+	Permissions <no permissions>
 	Returns String
 	No parameters
 
 
-################################################################################
-Service oap.ws.openapi.OpenapiWS
+## oap.ws.openapi.OpenapiWS ####################################################
 Bound to system/openapi
 Methods:
 	Method openapi
 	[GET] /system/openapi/
 	Produces application/json
-	Realm param <unsecure>
-	Permissions <unsecure>
-	Returns OpenAPI
-			{
-				components: Components
-				{
-					callbacks: Map
-					examples: Map
-					extensions: Map
-					headers: Map
-					links: Map
-					parameters: Map
-					pathItems: Map
-					requestBodies: Map
-					responses: Map
-					schemas: Map
-					securitySchemes: Map
-				}
-				extensions: Map
-				externalDocs: ExternalDocumentation
-				{
-					description: String
-					extensions: Map
-					url: String
-				}
-				info: Info
-				{
-					contact: Contact
-					{
-						email: String
-						extensions: Map
-						name: String
-						url: String
-					}
-					description: String
-					extensions: Map
-					license: License
-					{
-						extensions: Map
-						identifier: String
-						name: String
-						url: String
-					}
-					summary: String
-					termsOfService: String
-					title: String
-					version: String
-				}
-				jsonSchemaDialect: String
-				openapi: String
-				paths: Map
-				security: Map[]
-				servers: Server
-				{
-					description: String
-					extensions: Map
-					url: String
-					variables: Map
-				}[]
-				specVersion: ["V30","V31"]
-				tags: Tag
-				{
-					description: String
-					extensions: Map
-					externalDocs: ExternalDocumentation
-					{
-						description: String
-						extensions: Map
-						url: String
-					}
-					name: String
-				}[]
-				webhooks: Map
-			}
+	Realm param <no realm>
+	Permissions <no permissions>
+	Returns io.swagger.v3.oas.models.OpenAPI
 	No parameters
 
+
+# TYPES ########################################################################
+## oap.ws.openapi.TestWS.Bean ##################################################
+Bean
+{
+	b2: oap.ws.openapi.TestWS.Bean2
+	dt: LocalDateTime
+	ext: oap.ws.openapi.DynamicBeanExt
+	i: int
+	s: String
+	something: String
+}
+
+## io.swagger.v3.oas.models.OpenAPI ############################################
+OpenAPI
+{
+	components: io.swagger.v3.oas.models.Components
+	extensions: Map
+	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
+	info: io.swagger.v3.oas.models.info.Info
+	jsonSchemaDialect: String
+	openapi: String
+	paths: Map
+	security: Map[]
+	servers: io.swagger.v3.oas.models.servers.Server[]
+	specVersion: ["V30","V31"]
+	tags: io.swagger.v3.oas.models.tags.Tag[]
+	webhooks: Map
+}
+
+## oap.ws.openapi.TestWS.Bean2 #################################################
+Bean2
+{
+	overpriced: boolean
+	price: double
+	x: int
+}
+
+## oap.ws.openapi.DynamicBeanExt ###############################################
+DynamicBeanExt
+{
+	databaseType: ["STATIC","DYNAMIC"]
+	extension: String
+	score: int
+}
+
+## io.swagger.v3.oas.models.Components #########################################
+Components
+{
+	callbacks: Map
+	examples: Map
+	extensions: Map
+	headers: Map
+	links: Map
+	parameters: Map
+	pathItems: Map
+	requestBodies: Map
+	responses: Map
+	schemas: Map
+	securitySchemes: Map
+}
+
+## io.swagger.v3.oas.models.ExternalDocumentation ##############################
+ExternalDocumentation
+{
+	description: String
+	extensions: Map
+	url: String
+}
+
+## io.swagger.v3.oas.models.info.Info ##########################################
+Info
+{
+	contact: io.swagger.v3.oas.models.info.Contact
+	description: String
+	extensions: Map
+	license: io.swagger.v3.oas.models.info.License
+	summary: String
+	termsOfService: String
+	title: String
+	version: String
+}
+
+## io.swagger.v3.oas.models.servers.Server #####################################
+Server
+{
+	description: String
+	extensions: Map
+	url: String
+	variables: Map
+}
+
+## io.swagger.v3.oas.models.tags.Tag ###########################################
+Tag
+{
+	description: String
+	extensions: Map
+	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
+	name: String
+}
+
+## io.swagger.v3.oas.models.info.Contact #######################################
+Contact
+{
+	email: String
+	extensions: Map
+	name: String
+	url: String
+}
+
+## io.swagger.v3.oas.models.info.License #######################################
+License
+{
+	extensions: Map
+	identifier: String
+	name: String
+	url: String
+}
 
