@@ -24,6 +24,7 @@
 
 package oap.ws.openapi.swagger;
 
+import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import io.swagger.v3.core.converter.AnnotatedType;
@@ -85,14 +86,19 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                               String propName,
                               Set<String> propertiesToIgnore,
                               BeanPropertyDefinition propDef ) {
-        if ( propDef.getPrimaryMember() != null && Ext.class.isAssignableFrom( member.getRawType() ) ) {
-            Class<?> ext = ExtDeserializer.extensionOf( propDef.getPrimaryMember().getDeclaringClass(), propDef.getName() );
-            AnnotatedType annotatedType = new AnnotatedType( ext );
-            Schema extensionSchema = super.resolve( annotatedType, context, context.getConverters() );
+        if( propDef.getPrimaryMember() != null && Ext.class.isAssignableFrom( member.getRawType() ) ) {
             String className = propDef.getPrimaryMember().getDeclaringClass().getSimpleName();
             String fieldName = propDef.getName();
-            extensionsSchemas.put(  Pair.__( className, fieldName ), extensionSchema );
-            log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, className, ext.getCanonicalName() );
+            PropertyName propertyName = propDef.getFullName();
+            try {
+                Class<?> ext = ExtDeserializer.extensionOf( propDef.getPrimaryMember().getDeclaringClass(), propDef.getName() );
+                AnnotatedType annotatedType = new AnnotatedType( ext );
+                Schema extensionSchema = super.resolve( annotatedType, context, context.getConverters() );
+                extensionsSchemas.put( Pair.__( className, fieldName ), extensionSchema );
+                log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, className, ext.getCanonicalName() );
+            } catch( Exception ex ) {
+                log.error( "Cannot resolve '{}.{}'. Detailed member:{}", className, fieldName, propertyName, ex );
+            }
         }
         return super.ignore( member, xmlAccessorTypeAnnotation, propName, propertiesToIgnore, propDef );
     }
