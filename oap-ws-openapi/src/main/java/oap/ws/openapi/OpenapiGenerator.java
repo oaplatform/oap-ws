@@ -162,14 +162,14 @@ public class OpenapiGenerator {
         var params = method.parameters();
         var returnType = prepareType( method.resultType() );
 
-        Operation operation = new Operation();
-        operation.addTagsItem( tag.getName() );
-        operation.setOperationId( method.id );
-        operation.setParameters( prepareParameters( params ) );
-        operation.description( method.description );
-        operation.setRequestBody( prepareRequestBody( params ) );
-        operation.setResponses( prepareResponse( returnType, method.produces ) );
-        operation.deprecated( method.deprecated );
+        Operation operation = new Operation()
+            .addTagsItem( tag.getName() )
+            .operationId( method.name )
+            .parameters( prepareParameters( params ) )
+            .description( method.description )
+            .requestBody( prepareRequestBody( params ) )
+            .responses( prepareResponse( returnType, method.produces ) );
+        if( method.deprecated ) operation.deprecated( true );
         if( method.secure ) {
             operation.addSecurityItem( new SecurityRequirement().addList( SECURITY_SCHEMA_NAME ) );
             String descriptionWithAuth = operation.getDescription();
@@ -234,7 +234,7 @@ public class OpenapiGenerator {
         result.setIn( parameter.from.name().toLowerCase() );
         result.setRequired( parameter.from == WsParam.From.PATH
             || parameter.from == WsParam.From.QUERY && !parameter.type().isOptional() );
-        if( parameter.description.trim().length() > 0 ) result.description( parameter.description );
+        if( !Strings.isEmpty( parameter.description ) ) result.description( parameter.description );
         var resolvedSchema = this.converters.readAllAsResolvedSchema( prepareType( parameter.type() ) );
         if( resolvedSchema != null ) result.setSchema( resolvedSchema.schema );
         return result;

@@ -3,23 +3,25 @@
 Bound to apiExt
 Methods:
 	Method testVoid
+	Description This method returns nothing (Void)
 	[GET] /apiExt/test/empty_optional_param/{id}
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns void
 	Parameters
-		id: path String
-		limit: query optional int
+		id: PATH String
+		limit: QUERY optional int
 
 	Method testVoid (Deprecated)
+	Description This method returns nothing (Void)
 	[GET] /apiExt/test/empty_required_param/
 	Produces application/json
 	Realm param organizationId
 	Permissions [account:read, permissions:read]
 	Returns void
 	Parameters
-		limit: query int
+		limit: QUERY int
 
 
 ## oap.ws.openapi.IgnoredPermissionsTestWS #####################################
@@ -32,126 +34,127 @@ Methods:
 	Permissions [dummy:permission]
 	Returns String
 	Parameters
-		id: path String
+		id: PATH String
 
 
 ## oap.ws.openapi.TestWS #######################################################
 Bound to api
 Methods:
 	Method bean
-	[GET] /api/bean
+	[GET, POST] /api/bean
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns oap.ws.openapi.TestWS.Bean[]
 	Parameters
-		i: query int
-		s: query String
+		i: QUERY int
+		s: QUERY String
 
 	Method bytes
-	[GET] /api/bytes
+	[GET, POST] /api/bytes
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	Parameters
-		bytes: body byte[]
+		bytes: BODY byte[]
 
 	Method code
-	[GET] /api/code
+	[GET, POST] /api/code
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns void
 	Parameters
-		code: query int
+		code: QUERY int
 
 	Method en
-	[GET] /api/en
+	[GET, POST] /api/en
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns ["SOURCE","CLASS","RUNTIME"]
 	Parameters
-		a: query ["SOURCE","CLASS","RUNTIME"]
+		a: QUERY ["SOURCE","CLASS","RUNTIME"]
 
 	Method id
-	[GET] /api/id
+	[GET, POST] /api/id
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	Parameters
-		a: query String
+		a: QUERY String
 
 	Method json
-	[GET] /api/json
+	[GET, POST] /api/json
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns oap.ws.openapi.TestWS.Bean
 	Parameters
-		bean: body oap.ws.openapi.TestWS.Bean
+		bean: BODY oap.ws.openapi.TestWS.Bean
 
 	Method list
-	[GET] /api/list
+	[GET, POST] /api/list
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String[]
 	Parameters
-		str: body String[]
+		str: BODY String[]
 
 	Method mapbean
 	[GET] /apigeneric
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns map String -> oap.ws.openapi.TestWS.Bean[]
 	No parameters
 
 	Method req
-	[GET] /api/req
+	[GET, POST] /api/req
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	No parameters
 
 	Method string
-	[GET] /api/string
+	[GET, POST] /api/string
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	Parameters
-		bytes: body String
+		bytes: BODY String
 
 	Method sumab
-	[GET] /api/sumab
+	[GET, POST] /api/sumab
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns int
 	Parameters
-		a: query int
-		b: query int
+		a: QUERY int
+		b: QUERY int
 
 	Method sumabopt
-	[GET] /api/sumabopt
+	[GET, POST] /api/sumabopt
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns int
 	Parameters
-		a: query int
-		b: query optional int
+		a: QUERY int
+		b: QUERY optional int
 
 	Method test
+	Description Returns a simple word Two as a result.
 	[GET] /api/
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns int
 	No parameters
 
@@ -162,7 +165,7 @@ Methods:
 	Permissions [account:read, permissions:read]
 	Returns String
 	Parameters
-		id: path String
+		id: PATH String
 
 	Method test2
 	[GET] /api/test/sort/default
@@ -179,39 +182,42 @@ Methods:
 	Permissions [account:write, permissions:write]
 	Returns String
 	Parameters
-		id: path String
+		id: PATH String
 
 	Method x
-	[GET] /api/x
+	[GET, POST] /api/x
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns int
 	Parameters
-		i: query int
-		s: query String
+		i: QUERY int
+		s: QUERY String
 
 
 ## oap.ws.api.ApiWS ############################################################
 Bound to system/api
 Methods:
 	Method api
+	Description Generates description of WS method with parameters and result
 	[GET] /system/api/
 	Produces text/plain
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
-	No parameters
+	Parameters
+		deprecated: QUERY optional Boolean
 
 
 ## oap.ws.openapi.OpenapiWS ####################################################
 Bound to system/openapi
 Methods:
 	Method openapi
+	Description Generates OpenAPI 3.0 json document
 	[GET] /system/openapi/
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns io.swagger.v3.oas.models.OpenAPI
 	No parameters
 
@@ -234,7 +240,7 @@ OpenAPI
 	components: io.swagger.v3.oas.models.Components
 	extensions: map String -> java.lang.Object
 	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
-	info: io.swagger.v3.oas.models.oap.ws.api.Info
+	info: io.swagger.v3.oas.models.info.Info
 	jsonSchemaDialect: String
 	openapi: String
 	paths: map String -> io.swagger.v3.oas.models.PathItem

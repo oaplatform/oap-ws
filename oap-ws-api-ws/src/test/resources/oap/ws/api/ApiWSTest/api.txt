@@ -15,7 +15,7 @@ Methods:
 Bound to example
 Methods:
 	Method bean
-	[GET, POST, PATCH] /example/bean
+	[GET, POST] /example/bean
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -25,7 +25,7 @@ Methods:
 		s: QUERY String
 
 	Method bytes
-	[GET, POST, PATCH] /example/bytes
+	[GET, POST] /example/bytes
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -34,7 +34,7 @@ Methods:
 		bytes: BODY byte[]
 
 	Method code
-	[GET, POST, PATCH] /example/code
+	[GET, POST] /example/code
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -43,7 +43,7 @@ Methods:
 		code: QUERY int
 
 	Method deprecated (Deprecated)
-	[GET, POST, PATCH] /example/deprecated
+	[GET, POST] /example/deprecated
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -51,7 +51,7 @@ Methods:
 	No parameters
 
 	Method en
-	[GET, POST, PATCH] /example/en
+	[GET, POST] /example/en
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -60,7 +60,7 @@ Methods:
 		a: QUERY ["SOURCE","CLASS","RUNTIME"]
 
 	Method id
-	[GET, POST, PATCH] /example/id
+	[GET, POST] /example/id
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -69,7 +69,7 @@ Methods:
 		a: QUERY String
 
 	Method json
-	[GET, POST, PATCH] /example/json
+	[GET, POST] /example/json
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -78,7 +78,7 @@ Methods:
 		bean: BODY oap.ws.api.ExampleWS.Bean
 
 	Method list
-	[GET, POST, PATCH] /example/list
+	[GET, POST] /example/list
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -87,7 +87,7 @@ Methods:
 		str: BODY String[]
 
 	Method req
-	[GET, POST, PATCH] /example/req
+	[GET, POST] /example/req
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -95,7 +95,7 @@ Methods:
 	No parameters
 
 	Method response
-	[GET, POST, PATCH] /example/response
+	[GET, POST] /example/response
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -103,7 +103,7 @@ Methods:
 	No parameters
 
 	Method stream
-	[GET, POST, PATCH] /example/stream
+	[GET, POST] /example/stream
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -111,7 +111,7 @@ Methods:
 	No parameters
 
 	Method string
-	[GET, POST, PATCH] /example/string
+	[GET, POST] /example/string
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -120,7 +120,7 @@ Methods:
 		bytes: BODY String
 
 	Method sum
-	[GET, POST, PATCH] /example/sum
+	[GET, POST] /example/sum
 	Produces application/json
 	Realm param realm
 	Permissions [ALLOWED]
@@ -133,7 +133,7 @@ Methods:
 		rp: QUERY optional ["SOURCE","CLASS","RUNTIME"]
 
 	Method sumab
-	[GET, POST, PATCH] /example/sumab
+	[GET, POST] /example/sumab
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -143,7 +143,7 @@ Methods:
 		b: QUERY int
 
 	Method sumabopt
-	[GET, POST, PATCH] /example/sumabopt
+	[GET, POST] /example/sumabopt
 	Produces application/json
 	Realm param <no realm>
 	Permissions []
@@ -187,7 +187,7 @@ Methods:
 		id: PATH String
 
 	Method x
-	[GET, POST, PATCH] /example/x
+	[GET, POST] /example/x
 	Produces application/json
 	Realm param <no realm>
 	Permissions []

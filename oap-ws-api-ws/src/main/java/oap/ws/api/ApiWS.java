@@ -79,8 +79,8 @@ public class ApiWS {
             result += "Methods:\n";
 
             for( Info.WebMethodInfo m : ws.methods( withDeprecated ) ) {
-                log.trace( "method {}", m.id );
-                result += "\tMethod " + m.id
+                log.trace( "method {}", m.name );
+                result += "\tMethod " + m.name
                     + ( m.deprecated ? " (Deprecated)" : "" ) + "\n";
                 if( m.description.length() > 0 )
                     result += "\tDescription " + m.description + "\n";

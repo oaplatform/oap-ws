@@ -43,7 +43,6 @@ import java.util.Optional;
 
 import static java.util.Comparator.comparing;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
-import static oap.http.server.nio.HttpServerExchange.HttpMethod.PATCH;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.QUERY;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
@@ -99,7 +98,7 @@ public class Info {
         public final String path;
         public final List<HttpServerExchange.HttpMethod> methods;
         public final String produces;
-        public final String id;
+        public final String name;
         public final String description;
         public final boolean deprecated;
         public final String realm;
@@ -109,27 +108,19 @@ public class Info {
 
         public WebMethodInfo( Reflection.Method method ) {
             this.method = method;
+            this.name = method.name();
             this.deprecated = method.isAnnotatedWith( Deprecated.class );
             Optional<WsSecurity> wsSecurity = method.findAnnotation( WsSecurity.class );
             this.secure = wsSecurity.isPresent();
             this.realm = wsSecurity.map( WsSecurity::realm ).orElse( "<no realm>" );
             this.permissions = wsSecurity.map( a -> List.of( a.permissions() ) ).orElse( List.of() );
-
             Optional<WsMethod> wsMethod = method.findAnnotation( WsMethod.class );
-            if( wsMethod.isPresent() ) {
-                WsMethod wsm = wsMethod.get();
-                this.path = Strings.isUndefined( wsm.path() ) ? method.name() : wsm.path();
-                this.methods = List.of( wsm.method() );
-                this.produces = wsm.produces();
-                this.id = method.name();
-                this.description = Strings.isUndefined( wsm.description() ) ? "" : wsm.description();
-            } else {
-                this.path = "/" + method.name();
-                this.methods = List.of( GET, POST, PATCH );
-                this.produces = APPLICATION_JSON.getMimeType();
-                this.id = method.name();
-                this.description = "";
-            }
+            this.path = wsMethod.map( m -> Strings.isUndefined( m.path() ) ? method.name() : m.path() )
+                .orElse( "/" + method.name() );
+            this.methods = wsMethod.map( m -> List.of( m.method() ) ).orElse( List.of( GET, POST ) );
+            this.produces = wsMethod.map( WsMethod::produces ).orElse( APPLICATION_JSON.getMimeType() );
+            this.description = wsMethod.map( m -> Strings.isUndefined( m.description() ) ? ""
+                : m.description() ).orElse( "" ).trim();
         }
 
         public String path( WebServiceInfo ws ) {
