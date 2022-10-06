@@ -64,18 +64,13 @@ public class Openapi {
             info.title,
             info.description,
             new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON, false ) );
-        log.info( "OpenAPI generating '{}'...", info.title );
+        openapiGenerator.beforeProcesingServices();
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
-            log.info( "Processing web-service {}...", ws.getKey() );
-            Class<?> clazz = ws.getValue().getClass();
-            String context = ws.getKey();
-            log.info( "Processing web-service implementation class '{}'", clazz.getCanonicalName() );
-            openapiGenerator.processWebservice( clazz, context );
+            openapiGenerator.processWebservice( ws.getValue().getClass(), ws.getKey() );
         }
         openapiGenerator.afterProcesingServices();
         return openapiGenerator.build();
     }
-
 
     public Set<String> preparePermissions() {
         final HashSet<String> permissions = new HashSet<>();

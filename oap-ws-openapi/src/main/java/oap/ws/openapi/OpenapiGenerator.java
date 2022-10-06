@@ -44,9 +44,11 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import oap.http.server.nio.HttpServerExchange;
 import oap.io.content.ContentWriter;
 import oap.reflect.Reflect;
@@ -76,18 +78,31 @@ import static oap.ws.openapi.OpenapiReflection.webMethod;
 
 import static oap.ws.openapi.OpenapiSchema.prepareType;
 
+/**
+ * Common procedure:
+ *
+ * OpenapiGenerator gen = new OpenapiGenerator(...);
+ * gen.beforeProcesingServices();
+ * gen.processWebservice(...);
+ * gen.afterProcesingServices();
+ * gem.build();
+ */
+@Slf4j
 public class OpenapiGenerator {
     public static final String OPEN_API_VERSION = "3.0.3";
     public static final String SECURITY_SCHEMA_NAME = "JWT";
     private final ArrayListMultimap<String, String> versions = ArrayListMultimap.create();
     private final ModelConverters converters = new ModelConverters();
     private final OpenAPI api = new OpenAPI();
-    private OpenapiSchema openapiSchema = new OpenapiSchema();
+    private final OpenapiSchema openapiSchema = new OpenapiSchema();
     @Setter
     private String title;
     @Setter
     private String description;
+    @Getter
     private final Settings settings;
+    @Setter
+    private OpenapiGenerationCallbackProcessor callbackProcessor = new OpenapiGenerationCallbackProcessor() {};
 
     public OpenapiGenerator( String title, String description, Settings settings ) {
         this.title = title;
@@ -101,7 +116,6 @@ public class OpenapiGenerator {
     }
 
     public OpenAPI build() {
-        api.info( createInfo( title, description ) );
         addSecuritySchema();
         return api;
     }
@@ -127,7 +141,7 @@ public class OpenapiGenerator {
         SKIPPED_DUE_TO_ALREADY_PROCESSED( "has already been processed." ),
         SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE( "skipped due to class does not contain @WsMethod annotated methods" );
 
-        private String description;
+        private final String description;
 
         Result( String description ) {
             this.description = description;
@@ -140,6 +154,7 @@ public class OpenapiGenerator {
     }
 
     public Result processWebservice( Class<?> clazz, String context ) {
+        log.info( "Processing web-service {} implementation class '{}' ...", context, clazz.getCanonicalName() );
         if( !processedClasses.add( clazz.getCanonicalName() ) ) return Result.SKIPPED_DUE_TO_ALREADY_PROCESSED;
         var r = Reflect.reflect( clazz );
         var tag = createTag( tag( r ) );
@@ -152,23 +167,30 @@ public class OpenapiGenerator {
         List<oap.reflect.Reflection.Method> methods = r.methods.stream().sorted( comparing( oap.reflect.Reflection.Method::name ) ).toList();
         boolean webServiceValid = false;
         for( oap.reflect.Reflection.Method method : methods ) {
-            if( !webMethod( method ) ) continue;
-            if( settings.processOnlyAnnotatedMethods && method.findAnnotation( WsMethod.class ).isEmpty() )
+            if( !webMethod( method ) ) {
+                callbackProcessor.doIfMethodIsNotWebservice( method );
                 continue;
+            }
+            if( settings.processOnlyAnnotatedMethods && method.findAnnotation( WsMethod.class ).isEmpty() ) {
+                callbackProcessor.doIfMethodHasNoAnnotation( method );
+                continue;
+            }
             webServiceValid = true;
             var wsMethodDescriptor = new WsMethodDescriptor( method );
             var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
             var paths = getPaths();
             var pathString = path( context, wsMethodDescriptor.path );
             var pathItem = getPathItem( pathString, paths );
-
             var operation = prepareOperation( method, wsMethodDescriptor, wsSecurityDescriptor, tag );
-
-            for( HttpServerExchange.HttpMethod httpMethod : wsMethodDescriptor.methods )
+            for( HttpServerExchange.HttpMethod httpMethod : wsMethodDescriptor.methods ) {
+                callbackProcessor.doForHttpMethod( httpMethod, operation, method );
                 pathItem.operation( convertMethod( httpMethod ), operation );
+            }
         }
-        if( !webServiceValid )
+        if( !webServiceValid ) {
+            callbackProcessor.doIfWebserviceIsNotValid( methods );
             return Result.SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE;
+        }
         return Result.PROCESSED_OK;
     }
 
@@ -353,17 +375,27 @@ public class OpenapiGenerator {
         }
     }
 
+    public void beforeProcesingServices() {
+        log.info( "OpenAPI generating '{}'...", title );
+    }
+
     public void afterProcesingServices() {
-        api.getComponents().getSchemas().forEach( ( className, parentSchema ) -> {
-            if ( "object".equals( parentSchema.getType() ) && parentSchema.getProperties() != null ) {
-                parentSchema.getProperties().forEach( ( name, childSchema ) -> {
-                    var fieldName = ( String ) name;
-                    var schema = ( Schema ) childSchema;
-                    if ( !Strings.isEmpty( schema.get$ref() ) ) {
-                        openapiSchema.processExtensionsInSchemas( schema, className, fieldName );
-                    }
-                } );
-            }
-        } );
+        try {
+            api.getComponents().getSchemas().forEach( ( className, parentSchema ) -> {
+                if( "object".equals( parentSchema.getType() ) && parentSchema.getProperties() != null ) {
+                    parentSchema.getProperties().forEach( ( name, childSchema ) -> {
+                        var fieldName = ( String ) name;
+                        var schema = ( Schema ) childSchema;
+                        if( !Strings.isEmpty( schema.get$ref() ) ) {
+                            openapiSchema.processExtensionsInSchemas( schema, className, fieldName );
+                        }
+                    } );
+                }
+            } );
+        } catch( Exception ex ) {
+            log.error( "Cannot process extensions in schemas", ex );
+            callbackProcessor.doIfException( ex );
+        }
+        api.info( createInfo( title, description ) );
     }
 }

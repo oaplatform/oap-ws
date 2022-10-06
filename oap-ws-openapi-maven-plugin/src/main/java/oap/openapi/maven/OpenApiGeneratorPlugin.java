@@ -46,11 +46,12 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
         try {
             var settings = new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.valueOf( outputType ), false );
             var openapiGenerator = new OpenapiGenerator( "title", "", settings );
+            openapiGenerator.beforeProcesingServices();
+
             var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, getLog() );
-
             WebServicesWalker.walk( visitor );
-            getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
 
+            getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
             openapiGenerator.setDescription( "WS services: " + Joiner.on( ", " ).join( visitor.getDescription() ) );
             outputPath = visitor.getOutputPath() + settings.outputType.fileExtension;
             try {
@@ -60,6 +61,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
                 getLog().info( "OpenAPI " + settings.outputType + " output path not found, skipping -> " + outputPath );
                 return;
             }
+            openapiGenerator.afterProcesingServices();
             getLog().info( "OpenAPI " + settings.outputType + " generated -> " + outputPath );
             Files.write( Paths.get( outputPath ), openapiGenerator.build(), settings.outputType.writer );
             getLog().info( "OpenAPI " + settings.outputType + " is written to " + outputPath );

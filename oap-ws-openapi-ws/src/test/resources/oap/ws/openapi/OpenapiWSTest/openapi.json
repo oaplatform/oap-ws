@@ -11,6 +11,17 @@
             }
           }
         }
+      },
+      "NewWsBean" : {
+        "content" : {
+          "application/json" : {
+            "exampleSetFlag" : false,
+            "schema" : {
+              "$ref" : "#/components/schemas/NewWsBean",
+              "exampleSetFlag" : false
+            }
+          }
+        }
       }
     },
     "schemas" : {
@@ -146,7 +157,7 @@
             "types" : [ "string" ]
           },
           "ext" : {
-            "$ref" : "#/components/schemas/DynamicBeanExt",
+            "$ref" : "#/components/schemas/Ext",
             "exampleSetFlag" : false
           },
           "i" : {
@@ -191,6 +202,22 @@
           }
         },
         "type" : "object"
+      },
+      "Beans" : {
+        "exampleSetFlag" : false,
+        "items" : {
+          "$ref" : "#/components/schemas/NewWsBean2",
+          "exampleSetFlag" : false
+        },
+        "properties" : {
+          "empty" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          }
+        },
+        "type" : "array",
+        "types" : [ "array" ]
       },
       "Callback" : {
         "additionalProperties" : {
@@ -414,6 +441,63 @@
         },
         "type" : "object",
         "types" : [ "object" ]
+      },
+      "Cookie" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "cookie" : {
+            "$ref" : "#/components/schemas/Cookie",
+            "exampleSetFlag" : false
+          },
+          "domain" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "expires" : {
+            "exampleSetFlag" : false,
+            "format" : "date-time",
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "httpOnly" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "maxAge" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "name" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "path" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "sameSite" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "secure" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "value" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
       },
       "Discriminator" : {
         "exampleSetFlag" : false,
@@ -906,6 +990,90 @@
           "schema" : {
             "$ref" : "#/components/schemas/Schema",
             "exampleSetFlag" : false
+          }
+        },
+        "type" : "object"
+      },
+      "NewWsBean" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "b2" : {
+            "$ref" : "#/components/schemas/NewWsBean2",
+            "exampleSetFlag" : false
+          },
+          "beans" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/NewWsBean2",
+              "exampleSetFlag" : false
+            },
+            "properties" : {
+              "empty" : {
+                "exampleSetFlag" : false,
+                "type" : "boolean",
+                "types" : [ "boolean" ]
+              }
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "dt" : {
+            "exampleSetFlag" : false,
+            "format" : "date-time",
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "ext" : {
+            "$ref" : "#/components/schemas/DynamicBeanExt",
+            "exampleSetFlag" : false
+          },
+          "i" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "map" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/NewWsBean2",
+              "exampleSetFlag" : false
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "s" : {
+            "deprecated" : true,
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "something" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "NewWsBean2" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "price" : {
+            "deprecated" : true,
+            "exampleSetFlag" : false,
+            "format" : "double",
+            "type" : "number",
+            "types" : [ "number" ]
+          },
+          "x" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
           }
         },
         "type" : "object"
@@ -1619,6 +1787,63 @@
             "exampleSetFlag" : false,
             "type" : "boolean",
             "types" : [ "boolean" ]
+          }
+        },
+        "type" : "object"
+      },
+      "Response" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "body" : {
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "code" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "contentType" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "cookies" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Cookie",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "headers" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "raw" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "reasonPhrase" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
           }
         },
         "type" : "object"
@@ -2391,6 +2616,17 @@
         "type" : "object",
         "types" : [ "object" ]
       },
+      "StreamString" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "parallel" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          }
+        },
+        "type" : "object"
+      },
       "Tag" : {
         "exampleSetFlag" : false,
         "properties" : {
@@ -2490,7 +2726,7 @@
   "info" : {
     "description" : "Test description",
     "title" : "Test title",
-    "version" : "UNDEFINED (oap.ws.openapi.ExtTestWS, oap.ws.openapi.IgnoredPermissionsTestWS, oap.ws.openapi.TestWS, oap.ws.api.ApiWS, oap.ws.openapi.OpenapiWS)"
+    "version" : "UNDEFINED (oap.ws.openapi.ExtTestWS, oap.ws.openapi.ExampleNewWS, oap.ws.openapi.IgnoredPermissionsTestWS, oap.ws.openapi.TestWS, oap.ws.openapi.OpenapiWS), 17.11.17.1 (oap.ws.api.ApiWS)"
   },
   "openapi" : "3.0.3",
   "paths" : {
@@ -3150,6 +3386,695 @@
         "tags" : [ "oap.ws.openapi.TestWS" ]
       }
     },
+    "/example/" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "test",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer",
+                  "types" : [ "integer" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/bean" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "bean",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "i",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "s",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "items" : {
+                    "$ref" : "#/components/schemas/NewWsBean",
+                    "exampleSetFlag" : false
+                  },
+                  "type" : "array",
+                  "types" : [ "array" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/bytes" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "bytes",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "items" : {
+                  "exampleSetFlag" : false,
+                  "format" : "byte",
+                  "type" : "string",
+                  "types" : [ "string" ]
+                },
+                "type" : "array",
+                "types" : [ "array" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/code" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "code",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "code",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/deprecated" : {
+      "get" : {
+        "deprecated" : true,
+        "description" : "",
+        "operationId" : "deprecated",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/en" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "en",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "_enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+            "enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "_enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+                  "enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/id" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "id",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/json" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "json",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "$ref" : "#/components/schemas/NewWsBean",
+                "exampleSetFlag" : false
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "$ref" : "#/components/schemas/NewWsBean",
+                  "exampleSetFlag" : false
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/list" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "list",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "items" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                },
+                "type" : "array",
+                "types" : [ "array" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "items" : {
+                    "exampleSetFlag" : false,
+                    "type" : "string",
+                    "types" : [ "string" ]
+                  },
+                  "type" : "array",
+                  "types" : [ "array" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/req" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "req",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/response" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "response",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "$ref" : "#/components/schemas/Response",
+                  "exampleSetFlag" : false
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/stream" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "stream",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamString",
+                  "exampleSetFlag" : false
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/string" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "string",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "type" : "string",
+                "types" : [ "string" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/sum" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "sum",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "realm",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "b",
+          "required" : true
+        }, {
+          "in" : "query",
+          "name" : "c",
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "rp",
+          "schema" : {
+            "_enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+            "enum" : [ "SOURCE", "CLASS", "RUNTIME" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer",
+                  "types" : [ "integer" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "realm" : [ "ALLOWED" ]
+        } ],
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/sumab" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "sumab",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "b",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer",
+                  "types" : [ "integer" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/sumabopt" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "sumabopt",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "a",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "b",
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer",
+                  "types" : [ "integer" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/test/sort/default" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "test2",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/test/sort/{id}" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "test1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        }, {
+          "SYSTEM" : [ "SUPERADMIN" ]
+        } ],
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/test/sort={id}/test" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "testEqual",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "string",
+                  "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/x" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "x",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "i",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "s",
+          "required" : true,
+          "schema" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "format" : "int32",
+                  "type" : "integer",
+                  "types" : [ "integer" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
     "/ignored-permissions/test/ignored" : {
       "get" : {
         "description" : "",
@@ -3233,6 +4158,8 @@
   },
   "tags" : [ {
     "name" : "oap.ws.openapi.ExtTestWS"
+  }, {
+    "name" : "oap.ws.openapi.ExampleNewWS"
   }, {
     "name" : "oap.ws.openapi.IgnoredPermissionsTestWS"
   }, {

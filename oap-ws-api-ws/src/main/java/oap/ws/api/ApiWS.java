@@ -78,6 +78,13 @@ public class ApiWS {
             || field.findAnnotation( JsonIgnore.class ).isPresent();
     }
 
+    private boolean ignorable( Reflection.Method m, List<Reflection.Field> fields ) {
+        return !m.underlying.getDeclaringClass().equals( Object.class )
+            && isGetter( m.underlying )
+            && !m.isAnnotatedWith( JsonIgnore.class )
+            && !Lists.map( fields, Reflection.Field::name ).contains( getPropertyName( m.underlying ) );
+    }
+
     private static boolean filterMethod( Reflection.Method m ) {
         return !m.underlying.getDeclaringClass().equals( Object.class )
             && !m.underlying.isSynthetic()
@@ -208,13 +215,6 @@ public class ApiWS {
         }
         result += "\t".repeat( 0 ) + "}";
         return result;
-    }
-
-    private boolean ignorable( Reflection.Method m, List<Reflection.Field> fields ) {
-        return !m.underlying.getDeclaringClass().equals( Object.class )
-            && isGetter( m.underlying )
-            && !m.isAnnotatedWith( JsonIgnore.class )
-            && !Lists.map( fields, Reflection.Field::name ).contains( getPropertyName( m.underlying ) );
     }
 
     private String formatField( Reflection r, Reflection.Field f, Types types ) {
