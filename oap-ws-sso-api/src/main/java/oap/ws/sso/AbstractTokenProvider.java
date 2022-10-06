@@ -73,7 +73,7 @@ public abstract class AbstractTokenProvider implements AuthTokenProvider {
 
     public static String extractBearerToken( String authorization ) {
         if( authorization != null && authorization.startsWith( "Bearer " ) ) {
-            return authorization.substring( "Bearer token ".length() );
+            return authorization.substring( "Bearer ".length() );
         }
         return authorization;
     }
