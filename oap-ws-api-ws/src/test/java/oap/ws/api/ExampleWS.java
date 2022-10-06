@@ -28,6 +28,7 @@ import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.util.AssocList;
 import oap.util.Stream;
+import oap.ws.Response;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.sso.WsSecurity;
@@ -122,6 +123,10 @@ class ExampleWS {
 
     public Stream<String> stream() {
         return Stream.of();
+    }
+
+    public Response response() {
+        return null;
     }
 
     @Deprecated

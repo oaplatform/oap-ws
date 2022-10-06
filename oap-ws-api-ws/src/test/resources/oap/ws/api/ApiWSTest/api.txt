@@ -94,6 +94,14 @@ Methods:
 	Returns String
 	No parameters
 
+	Method response
+	[GET] /example/response
+	Produces application/json
+	Realm param <no realm>
+	Permissions <no permissions>
+	Returns <http response>
+	No parameters
+
 	Method stream
 	[GET] /example/stream
 	Produces application/json

@@ -33,6 +33,7 @@ import oap.json.ext.ExtDeserializer;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
 import oap.util.Lists;
+import oap.ws.Response;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
 import oap.ws.WsMethodDescriptor;
@@ -181,7 +182,7 @@ public class ApiWS {
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
         if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
-
+        if( r.assignableTo( Response.class ) ) return "<http response>";
         types.push( r );
         return r.name();
     }
@@ -201,7 +202,7 @@ public class ApiWS {
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );
         for( Reflection.Method m : methods ) {
-            if( !filterGetters( m, fields ) ) continue;
+            if( !ignorable( m, fields ) ) continue;
             log.trace( "type getter {}", m.name() );
             result += "\t" + getPropertyName( m.underlying ) + ": " + formatType( m.returnType(), types ) + "\n";
         }
@@ -209,10 +210,10 @@ public class ApiWS {
         return result;
     }
 
-    private boolean filterGetters( Reflection.Method m, List<Reflection.Field> fields ) {
+    private boolean ignorable( Reflection.Method m, List<Reflection.Field> fields ) {
         return !m.underlying.getDeclaringClass().equals( Object.class )
             && isGetter( m.underlying )
-            && m.findAnnotation( JsonIgnore.class ).isEmpty()
+            && !m.isAnnotatedWith( JsonIgnore.class )
             && !Lists.map( fields, Reflection.Field::name ).contains( getPropertyName( m.underlying ) );
     }
 
