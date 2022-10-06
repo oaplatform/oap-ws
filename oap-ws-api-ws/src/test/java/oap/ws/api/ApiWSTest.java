@@ -24,14 +24,10 @@
 
 package oap.ws.api;
 
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
-import oap.json.Binder;
 import oap.testng.Fixtures;
 import org.testng.annotations.Test;
-
-import java.util.Map;
 
 import static oap.http.Http.ContentType.TEXT_PLAIN;
 import static oap.http.Http.StatusCode.OK;
@@ -52,25 +48,6 @@ public class ApiWSTest extends Fixtures {
         assertGet( httpUrl( "/system/api" ) )
             .responded( OK, "OK", TEXT_PLAIN,
                 contentOfTestResource( getClass(), "api.txt", ofString() ) );
-    }
-
-    @Test
-    public void testMap() {
-        System.out.println( Binder.json.marshal( new B() ) );
-    }
-
-    public static class B {
-        Map<String, Integer> map = Map.of( "1", 1, "2", 2 );
-        Map<A, Integer> objectmap = Map.of( new A( "1" ), 1, new A( "2" ), 2 );
-    }
-
-    @ToString
-    public static class A {
-        String v;
-
-        public A( String v ) {
-            this.v = v;
-        }
     }
 }
 

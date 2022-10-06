@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.util.AssocList;
+import oap.util.Stream;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.sso.WsSecurity;
@@ -119,6 +120,10 @@ class ExampleWS {
         return bytes;
     }
 
+    public Stream<String> stream() {
+        return Stream.of();
+    }
+
     @Deprecated
     public String deprecated() {
         return null;
@@ -137,8 +142,16 @@ class ExampleWS {
         public LocalDateTime dt;
         public Bean2 b2;
         public Ext ext;
-        public AssocList<String, Bean2> beans = AssocList.forKey( b -> String.valueOf( b.x ) );
+        public Beans beans = new Beans();
         public Map<String, Bean2> map = new HashMap<>();
+
+        public class Beans extends AssocList<String, Bean2> {
+
+            @Override
+            protected String keyOf( Bean2 bean2 ) {
+                return String.valueOf( bean2.x );
+            }
+        }
 
         protected Bean() {
         }

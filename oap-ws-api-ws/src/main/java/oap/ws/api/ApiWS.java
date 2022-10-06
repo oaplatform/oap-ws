@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.getPropertyName;
 import static ch.qos.logback.core.joran.util.beans.BeanUtil.isGetter;
@@ -160,6 +161,10 @@ public class ApiWS {
         if( r.assignableTo( Map.class ) ) return "map String -> " + formatType( r.getMapComponentsType()._2, types );
         if( r.assignableTo( Collection.class ) )
             return formatType( r.getCollectionComponentType(), types ) + "[]";
+        if( r.assignableTo( Stream.class ) )
+            return formatType( r.typeParameters.get( 0 ), types ) + "[]";
+        if( r.assignableTo( Iterator.class ) )
+            return formatType( r.typeParameters.get( 0 ), types ) + "[]";
         if( r.isArray() )
             return formatType( Reflect.reflect( r.underlying.componentType() ), types ) + "[]";
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
