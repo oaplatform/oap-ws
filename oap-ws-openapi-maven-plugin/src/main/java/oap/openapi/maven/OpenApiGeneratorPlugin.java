@@ -44,7 +44,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
         Objects.requireNonNull( outputPath );
         getLog().info( "OpenAPI generation..." );
         try {
-            var settings = new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.valueOf( outputType ), false );
+            var settings = new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.valueOf( outputType ) );
             var openapiGenerator = new OpenapiGenerator( "title", "", settings );
             var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, getLog() );
 
