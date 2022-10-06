@@ -66,12 +66,6 @@ public class ApiWS {
         this.webServices = webServices;
     }
 
-    private static boolean ignorable( Reflection.Field field ) {
-        return field.isStatic()
-            || field.underlying.isSynthetic()
-            || field.findAnnotation( JsonIgnore.class ).isPresent();
-    }
-
     @WsMethod( produces = "text/plain", path = "/", method = GET, description = "Generates description of WS method with parameters and result" )
     public String api( Optional<Boolean> deprecated ) {
         boolean withDeprecated = deprecated.orElse( true );
@@ -171,6 +165,12 @@ public class ApiWS {
         }
         result += "\t".repeat( 0 ) + "}";
         return result;
+    }
+
+    private static boolean ignorable( Reflection.Field field ) {
+        return field.isStatic()
+            || field.underlying.isSynthetic()
+            || field.findAnnotation( JsonIgnore.class ).isPresent();
     }
 
     private boolean ignorable( Reflection.Method m, List<Reflection.Field> fields ) {

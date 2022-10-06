@@ -233,7 +233,7 @@ public class OpenapiGenerator {
         result.setName( parameter.name );
         result.setIn( parameter.from.name().toLowerCase() );
         result.setRequired( parameter.from == WsParam.From.PATH
-            || ( parameter.from == WsParam.From.QUERY && !parameter.type().isOptional() ) );
+            || parameter.from == WsParam.From.QUERY && !parameter.type().isOptional() );
         if( parameter.description.trim().length() > 0 ) result.description( parameter.description );
         var resolvedSchema = this.converters.readAllAsResolvedSchema( prepareType( parameter.type() ) );
         if( resolvedSchema != null ) result.setSchema( resolvedSchema.schema );
@@ -318,6 +318,7 @@ public class OpenapiGenerator {
         }
     }
 
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
     public void afterProcesingServices() {
         api.getComponents().getSchemas().forEach( ( className, parentSchema ) -> {
             if( "object".equals( parentSchema.getType() ) && parentSchema.getProperties() != null ) {
