@@ -107,7 +107,7 @@ Methods:
 	Produces application/json
 	Realm param <no realm>
 	Permissions <no permissions>
-	Returns Map
+	Returns map String -> oap.ws.openapi.TestWS.Bean[]
 	No parameters
 
 	Method req
@@ -232,17 +232,17 @@ Bean
 OpenAPI
 {
 	components: io.swagger.v3.oas.models.Components
-	extensions: Map
+	extensions: map String -> java.lang.Object
 	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
 	info: io.swagger.v3.oas.models.info.Info
 	jsonSchemaDialect: String
 	openapi: String
-	paths: Map
-	security: Map[]
+	paths: map String -> io.swagger.v3.oas.models.PathItem
+	security: map String -> String[][]
 	servers: io.swagger.v3.oas.models.servers.Server[]
 	specVersion: ["V30","V31"]
 	tags: io.swagger.v3.oas.models.tags.Tag[]
-	webhooks: Map
+	webhooks: map String -> io.swagger.v3.oas.models.PathItem
 }
 
 ## oap.ws.openapi.TestWS.Bean2 #################################################
@@ -264,24 +264,29 @@ DynamicBeanExt
 ## io.swagger.v3.oas.models.Components #########################################
 Components
 {
-	callbacks: Map
-	examples: Map
-	extensions: Map
-	headers: Map
-	links: Map
-	parameters: Map
-	pathItems: Map
-	requestBodies: Map
-	responses: Map
-	schemas: Map
-	securitySchemes: Map
+	callbacks: map String -> map String -> io.swagger.v3.oas.models.PathItem
+	examples: map String -> io.swagger.v3.oas.models.examples.Example
+	extensions: map String -> java.lang.Object
+	headers: map String -> io.swagger.v3.oas.models.headers.Header
+	links: map String -> io.swagger.v3.oas.models.links.Link
+	parameters: map String -> io.swagger.v3.oas.models.parameters.Parameter
+	pathItems: map String -> io.swagger.v3.oas.models.PathItem
+	requestBodies: map String -> io.swagger.v3.oas.models.parameters.RequestBody
+	responses: map String -> io.swagger.v3.oas.models.responses.ApiResponse
+	schemas: map String -> io.swagger.v3.oas.models.media.Schema
+	securitySchemes: map String -> io.swagger.v3.oas.models.security.SecurityScheme
+}
+
+## java.lang.Object ############################################################
+Object
+{
 }
 
 ## io.swagger.v3.oas.models.ExternalDocumentation ##############################
 ExternalDocumentation
 {
 	description: String
-	extensions: Map
+	extensions: map String -> java.lang.Object
 	url: String
 }
 
@@ -290,7 +295,7 @@ Info
 {
 	contact: io.swagger.v3.oas.models.info.Contact
 	description: String
-	extensions: Map
+	extensions: map String -> java.lang.Object
 	license: io.swagger.v3.oas.models.info.License
 	summary: String
 	termsOfService: String
@@ -298,29 +303,225 @@ Info
 	version: String
 }
 
+## io.swagger.v3.oas.models.PathItem ###########################################
+PathItem
+{
+	$ref: String
+	delete: io.swagger.v3.oas.models.Operation
+	description: String
+	extensions: map String -> java.lang.Object
+	get: io.swagger.v3.oas.models.Operation
+	head: io.swagger.v3.oas.models.Operation
+	options: io.swagger.v3.oas.models.Operation
+	parameters: io.swagger.v3.oas.models.parameters.Parameter[]
+	patch: io.swagger.v3.oas.models.Operation
+	post: io.swagger.v3.oas.models.Operation
+	put: io.swagger.v3.oas.models.Operation
+	servers: io.swagger.v3.oas.models.servers.Server[]
+	summary: String
+	trace: io.swagger.v3.oas.models.Operation
+}
+
 ## io.swagger.v3.oas.models.servers.Server #####################################
 Server
 {
 	description: String
-	extensions: Map
+	extensions: map String -> java.lang.Object
 	url: String
-	variables: Map
+	variables: map String -> io.swagger.v3.oas.models.servers.ServerVariable
 }
 
 ## io.swagger.v3.oas.models.tags.Tag ###########################################
 Tag
 {
 	description: String
-	extensions: Map
+	extensions: map String -> java.lang.Object
 	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
 	name: String
+}
+
+## io.swagger.v3.oas.models.examples.Example ###################################
+Example
+{
+	$ref: String
+	description: String
+	extensions: map String -> java.lang.Object
+	externalValue: String
+	summary: String
+	value: java.lang.Object
+	valueSetFlag: boolean
+}
+
+## io.swagger.v3.oas.models.headers.Header #####################################
+Header
+{
+	$ref: String
+	content: map String -> io.swagger.v3.oas.models.media.MediaType
+	deprecated: Boolean
+	description: String
+	example: java.lang.Object
+	examples: map String -> io.swagger.v3.oas.models.examples.Example
+	explode: Boolean
+	extensions: map String -> java.lang.Object
+	required: Boolean
+	schema: io.swagger.v3.oas.models.media.Schema
+	style: ["simple"]
+}
+
+## io.swagger.v3.oas.models.links.Link #########################################
+Link
+{
+	$ref: String
+	description: String
+	extensions: map String -> java.lang.Object
+	headers: map String -> io.swagger.v3.oas.models.headers.Header
+	operationId: String
+	operationRef: String
+	parameters: map String -> String
+	requestBody: java.lang.Object
+	server: io.swagger.v3.oas.models.servers.Server
+}
+
+## io.swagger.v3.oas.models.parameters.Parameter ###############################
+Parameter
+{
+	$ref: String
+	allowEmptyValue: Boolean
+	allowReserved: Boolean
+	content: map String -> io.swagger.v3.oas.models.media.MediaType
+	deprecated: Boolean
+	description: String
+	example: java.lang.Object
+	examples: map String -> io.swagger.v3.oas.models.examples.Example
+	explode: Boolean
+	extensions: map String -> java.lang.Object
+	in: String
+	name: String
+	required: Boolean
+	schema: io.swagger.v3.oas.models.media.Schema
+	style: ["matrix","label","form","simple","spaceDelimited","pipeDelimited","deepObject"]
+}
+
+## io.swagger.v3.oas.models.parameters.RequestBody #############################
+RequestBody
+{
+	$ref: String
+	content: map String -> io.swagger.v3.oas.models.media.MediaType
+	description: String
+	extensions: map String -> java.lang.Object
+	required: Boolean
+}
+
+## io.swagger.v3.oas.models.responses.ApiResponse ##############################
+ApiResponse
+{
+	$ref: String
+	content: map String -> io.swagger.v3.oas.models.media.MediaType
+	description: String
+	extensions: map String -> java.lang.Object
+	headers: map String -> io.swagger.v3.oas.models.headers.Header
+	links: map String -> io.swagger.v3.oas.models.links.Link
+}
+
+## io.swagger.v3.oas.models.media.Schema #######################################
+Schema
+{
+	$anchor: String
+	$comment: String
+	$id: String
+	$ref: String
+	$schema: String
+	_const: java.lang.Object
+	_default: java.lang.Object
+	_else: io.swagger.v3.oas.models.media.Schema
+	_enum: java.lang.Object[]
+	_if: io.swagger.v3.oas.models.media.Schema
+	additionalItems: io.swagger.v3.oas.models.media.Schema
+	additionalProperties: java.lang.Object
+	allOf: io.swagger.v3.oas.models.media.Schema[]
+	anyOf: io.swagger.v3.oas.models.media.Schema[]
+	booleanSchemaValue: Boolean
+	contains: io.swagger.v3.oas.models.media.Schema
+	contentEncoding: String
+	contentMediaType: String
+	contentSchema: io.swagger.v3.oas.models.media.Schema
+	dependentRequired: map String -> String[]
+	dependentSchemas: map String -> io.swagger.v3.oas.models.media.Schema
+	deprecated: Boolean
+	description: String
+	discriminator: io.swagger.v3.oas.models.media.Discriminator
+	example: java.lang.Object
+	exampleSetFlag: boolean
+	examples: java.lang.Object[]
+	exclusiveMaximum: Boolean
+	exclusiveMaximumValue: java.math.BigDecimal
+	exclusiveMinimum: Boolean
+	exclusiveMinimumValue: java.math.BigDecimal
+	extensions: map String -> java.lang.Object
+	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
+	format: String
+	items: io.swagger.v3.oas.models.media.Schema
+	jsonSchema: map String -> java.lang.Object
+	jsonSchemaImpl: java.lang.Object
+	maxContains: int
+	maxItems: int
+	maxLength: int
+	maxProperties: int
+	maximum: java.math.BigDecimal
+	minContains: int
+	minItems: int
+	minLength: int
+	minProperties: int
+	minimum: java.math.BigDecimal
+	multipleOf: java.math.BigDecimal
+	name: String
+	not: io.swagger.v3.oas.models.media.Schema
+	nullable: Boolean
+	oneOf: io.swagger.v3.oas.models.media.Schema[]
+	pattern: String
+	patternProperties: map String -> io.swagger.v3.oas.models.media.Schema
+	prefixItems: io.swagger.v3.oas.models.media.Schema[]
+	properties: map String -> io.swagger.v3.oas.models.media.Schema
+	propertyNames: io.swagger.v3.oas.models.media.Schema
+	readOnly: Boolean
+	required: String[]
+	specVersion: ["V30","V31"]
+	then: io.swagger.v3.oas.models.media.Schema
+	title: String
+	type: String
+	types: String[]
+	unevaluatedItems: io.swagger.v3.oas.models.media.Schema
+	unevaluatedProperties: io.swagger.v3.oas.models.media.Schema
+	uniqueItems: Boolean
+	writeOnly: Boolean
+	xml: io.swagger.v3.oas.models.media.XML
+	const: java.lang.Object
+	default: java.lang.Object
+	else: io.swagger.v3.oas.models.media.Schema
+	enum: java.lang.Object[]
+	if: io.swagger.v3.oas.models.media.Schema
+}
+
+## io.swagger.v3.oas.models.security.SecurityScheme ############################
+SecurityScheme
+{
+	$ref: String
+	bearerFormat: String
+	description: String
+	extensions: map String -> java.lang.Object
+	flows: io.swagger.v3.oas.models.security.OAuthFlows
+	in: ["cookie","header","query"]
+	name: String
+	openIdConnectUrl: String
+	scheme: String
+	type: ["apiKey","http","oauth2","openIdConnect","mutualTLS"]
 }
 
 ## io.swagger.v3.oas.models.info.Contact #######################################
 Contact
 {
 	email: String
-	extensions: Map
+	extensions: map String -> java.lang.Object
 	name: String
 	url: String
 }
@@ -328,9 +529,211 @@ Contact
 ## io.swagger.v3.oas.models.info.License #######################################
 License
 {
-	extensions: Map
+	extensions: map String -> java.lang.Object
 	identifier: String
 	name: String
 	url: String
+}
+
+## io.swagger.v3.oas.models.Operation ##########################################
+Operation
+{
+	callbacks: map String -> map String -> io.swagger.v3.oas.models.PathItem
+	deprecated: Boolean
+	description: String
+	extensions: map String -> java.lang.Object
+	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
+	operationId: String
+	parameters: io.swagger.v3.oas.models.parameters.Parameter[]
+	requestBody: io.swagger.v3.oas.models.parameters.RequestBody
+	responses: map String -> io.swagger.v3.oas.models.responses.ApiResponse
+	security: map String -> String[][]
+	servers: io.swagger.v3.oas.models.servers.Server[]
+	summary: String
+	tags: String[]
+}
+
+## io.swagger.v3.oas.models.servers.ServerVariable #############################
+ServerVariable
+{
+	_default: String
+	_enum: String[]
+	description: String
+	extensions: map String -> java.lang.Object
+	default: String
+	enum: String[]
+}
+
+## io.swagger.v3.oas.models.media.MediaType ####################################
+MediaType
+{
+	encoding: map String -> io.swagger.v3.oas.models.media.Encoding
+	example: java.lang.Object
+	exampleSetFlag: boolean
+	examples: map String -> io.swagger.v3.oas.models.examples.Example
+	extensions: map String -> java.lang.Object
+	schema: io.swagger.v3.oas.models.media.Schema
+}
+
+## java.lang.Object ############################################################
+Object
+{
+}
+
+## io.swagger.v3.oas.models.media.Discriminator ################################
+Discriminator
+{
+	extensions: map String -> java.lang.Object
+	mapping: map String -> String
+	propertyName: String
+}
+
+## java.math.BigDecimal ########################################################
+BigDecimal
+{
+	intCompact: long
+	intVal: java.math.BigInteger
+	precision: int
+	scale: int
+	stringCache: String
+	powerOfTen: boolean
+}
+
+## io.swagger.v3.oas.models.media.Schema #######################################
+Schema
+{
+	$anchor: String
+	$comment: String
+	$id: String
+	$ref: String
+	$schema: String
+	_const: java.lang.Object
+	_default: java.lang.Object
+	_else: io.swagger.v3.oas.models.media.Schema
+	_enum: java.lang.Object[]
+	_if: io.swagger.v3.oas.models.media.Schema
+	additionalItems: io.swagger.v3.oas.models.media.Schema
+	additionalProperties: java.lang.Object
+	allOf: io.swagger.v3.oas.models.media.Schema[]
+	anyOf: io.swagger.v3.oas.models.media.Schema[]
+	booleanSchemaValue: Boolean
+	contains: io.swagger.v3.oas.models.media.Schema
+	contentEncoding: String
+	contentMediaType: String
+	contentSchema: io.swagger.v3.oas.models.media.Schema
+	dependentRequired: map String -> String[]
+	dependentSchemas: map String -> io.swagger.v3.oas.models.media.Schema
+	deprecated: Boolean
+	description: String
+	discriminator: io.swagger.v3.oas.models.media.Discriminator
+	example: java.lang.Object
+	exampleSetFlag: boolean
+	examples: java.lang.Object[]
+	exclusiveMaximum: Boolean
+	exclusiveMaximumValue: java.math.BigDecimal
+	exclusiveMinimum: Boolean
+	exclusiveMinimumValue: java.math.BigDecimal
+	extensions: map String -> java.lang.Object
+	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
+	format: String
+	items: io.swagger.v3.oas.models.media.Schema
+	jsonSchema: map String -> java.lang.Object
+	jsonSchemaImpl: java.lang.Object
+	maxContains: int
+	maxItems: int
+	maxLength: int
+	maxProperties: int
+	maximum: java.math.BigDecimal
+	minContains: int
+	minItems: int
+	minLength: int
+	minProperties: int
+	minimum: java.math.BigDecimal
+	multipleOf: java.math.BigDecimal
+	name: String
+	not: io.swagger.v3.oas.models.media.Schema
+	nullable: Boolean
+	oneOf: io.swagger.v3.oas.models.media.Schema[]
+	pattern: String
+	patternProperties: map String -> io.swagger.v3.oas.models.media.Schema
+	prefixItems: io.swagger.v3.oas.models.media.Schema[]
+	properties: map String -> io.swagger.v3.oas.models.media.Schema
+	propertyNames: io.swagger.v3.oas.models.media.Schema
+	readOnly: Boolean
+	required: String[]
+	specVersion: ["V30","V31"]
+	then: io.swagger.v3.oas.models.media.Schema
+	title: String
+	type: String
+	types: String[]
+	unevaluatedItems: io.swagger.v3.oas.models.media.Schema
+	unevaluatedProperties: io.swagger.v3.oas.models.media.Schema
+	uniqueItems: Boolean
+	writeOnly: Boolean
+	xml: io.swagger.v3.oas.models.media.XML
+	const: java.lang.Object
+	default: java.lang.Object
+	else: io.swagger.v3.oas.models.media.Schema
+	enum: java.lang.Object[]
+	if: io.swagger.v3.oas.models.media.Schema
+}
+
+## io.swagger.v3.oas.models.media.XML ##########################################
+XML
+{
+	attribute: Boolean
+	extensions: map String -> java.lang.Object
+	name: String
+	namespace: String
+	prefix: String
+	wrapped: Boolean
+}
+
+## io.swagger.v3.oas.models.security.OAuthFlows ################################
+OAuthFlows
+{
+	authorizationCode: io.swagger.v3.oas.models.security.OAuthFlow
+	clientCredentials: io.swagger.v3.oas.models.security.OAuthFlow
+	extensions: map String -> java.lang.Object
+	implicit: io.swagger.v3.oas.models.security.OAuthFlow
+	password: io.swagger.v3.oas.models.security.OAuthFlow
+}
+
+## io.swagger.v3.oas.models.media.Encoding #####################################
+Encoding
+{
+	allowReserved: Boolean
+	contentType: String
+	explode: Boolean
+	extensions: map String -> java.lang.Object
+	headers: map String -> io.swagger.v3.oas.models.headers.Header
+	style: ["form","spaceDelimited","pipeDelimited","deepObject"]
+}
+
+## java.math.BigInteger ########################################################
+BigInteger
+{
+	bitCountPlusOne: int
+	bitLengthPlusOne: int
+	firstNonzeroIntNumPlusTwo: int
+	lowestSetBitPlusTwo: int
+	mag: int[]
+	signum: int
+	lowestSetBit: int
+}
+
+## java.lang.Object ############################################################
+Object
+{
+}
+
+## io.swagger.v3.oas.models.security.OAuthFlow #################################
+OAuthFlow
+{
+	authorizationUrl: String
+	extensions: map String -> java.lang.Object
+	refreshUrl: String
+	scopes: map String -> String
+	tokenUrl: String
 }
 
