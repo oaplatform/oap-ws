@@ -63,7 +63,7 @@ public class Openapi {
         OpenapiGenerator openapiGenerator = new OpenapiGenerator(
             info.title,
             info.description,
-            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON, false ) );
+            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON ) );
         openapiGenerator.beforeProcesingServices();
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             openapiGenerator.processWebservice( ws.getValue().getClass(), ws.getKey() );

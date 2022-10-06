@@ -27,6 +27,7 @@ package oap.ws.openapi;
 import io.swagger.v3.oas.models.Operation;
 import oap.http.server.nio.HttpServerExchange;
 import oap.reflect.Reflection;
+import oap.ws.api.Info;
 
 import java.util.List;
 
@@ -35,9 +36,9 @@ public interface OpenapiGenerationCallbackProcessor {
 
     default void doIfMethodHasNoAnnotation( Reflection.Method method ) {}
 
-    default void doForHttpMethod( HttpServerExchange.HttpMethod httpMethod, Operation operation, Reflection.Method method ) {}
+    default void doForHttpMethod( HttpServerExchange.HttpMethod httpMethod, Operation operation, Info.WebMethodInfo method ) {}
 
-    default void doIfWebserviceIsNotValid( List<Reflection.Method> methods ) {}
+    default void doIfWebserviceIsNotValid( List<Info.WebMethodInfo> methods ) {}
 
     default void doIfException( Exception ex ) {}
 }

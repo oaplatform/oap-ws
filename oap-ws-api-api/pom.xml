@@ -26,14 +26,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>oap</groupId>
         <artifactId>oap-ws-parent</artifactId>
         <version>${oap-ws.project.version}</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>oap-ws-openapi</artifactId>
+    <artifactId>oap-ws-api-api</artifactId>
 
     <dependencies>
         <dependency>
@@ -44,17 +44,12 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-ws</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${oap-ws.project.version}</version>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-ws-api-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-ws-sso</artifactId>
-            <version>${project.parent.version}</version>
+            <artifactId>oap-ws-sso-api</artifactId>
+            <version>${oap-ws.project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -62,11 +57,5 @@
             <version>${oap.deps.lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-core</artifactId>
-            <version>${oap.deps.swagger.version}</version>
-        </dependency>
     </dependencies>
-
 </project>
