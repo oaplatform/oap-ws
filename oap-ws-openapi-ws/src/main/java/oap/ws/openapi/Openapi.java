@@ -26,24 +26,15 @@ package oap.ws.openapi;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
-import oap.reflect.Reflect;
-import oap.reflect.Reflection;
 import oap.ws.WebServices;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static oap.ws.openapi.OpenapiReflection.webMethod;
 
 @Slf4j
 public class Openapi {
 
     private final WebServices webServices;
     public ApiInfo info;
-    private final Set<String> processedClasses = new HashSet<>();
-    private Set<String> servicesWL = new HashSet<>();
 
     public Openapi( WebServices webServices ) {
         this.webServices = webServices;
@@ -54,16 +45,11 @@ public class Openapi {
         this.info = info;
     }
 
-    public Openapi( WebServices webServices, ApiInfo info, Set<String> servicesWL ) {
-        this( webServices, info );
-        this.servicesWL = servicesWL;
-    }
-
     public OpenAPI generateOpenApi() {
         OpenapiGenerator openapiGenerator = new OpenapiGenerator(
             info.title,
             info.description,
-            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON, false ) );
+            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON ) );
         log.info( "OpenAPI generating '{}'...", info.title );
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             log.info( "Processing web-service {}...", ws.getKey() );
@@ -77,24 +63,4 @@ public class Openapi {
     }
 
 
-    public Set<String> preparePermissions() {
-        final HashSet<String> permissions = new HashSet<>();
-        WebServicesWalker.walk( ( wsService, clazz, basePath ) -> {
-            if( !processedClasses.add( clazz.getCanonicalName() ) || !servicesWL.isEmpty() && !servicesWL.contains( clazz.getCanonicalName() ) ) {
-                return;
-            }
-            var r = Reflect.reflect( clazz );
-
-            for( Reflection.Method method : r.methods ) {
-                if( !webMethod( method ) ) {
-                    continue;
-                }
-                var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
-                if( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET && wsSecurityDescriptor.permissions != null ) {
-                    permissions.addAll( List.of( wsSecurityDescriptor.permissions ) );
-                }
-            }
-        } );
-        return permissions;
-    }
 }

@@ -42,14 +42,6 @@ Methods:
 	Parameters
 		code: QUERY int
 
-	Method deprecated (Deprecated)
-	[GET, POST, PATCH] /example/deprecated
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String
-	No parameters
-
 	Method en
 	[GET, POST, PATCH] /example/en
 	Produces application/json
@@ -227,7 +219,6 @@ Bean
 	ext: oap.ws.api.ExampleWS.Bean.BeanExt
 	i: int
 	map: map String -> oap.ws.api.ExampleWS.Bean2
-	s: String (Deprecated)
 	something: String
 }
 
@@ -240,7 +231,6 @@ OtherClass
 ## oap.ws.api.ExampleWS.Bean2 ##################################################
 Bean2
 {
-	price: double (Deprecated)
 	x: int
 }
 

@@ -49,5 +49,12 @@ public class ApiWSTest extends Fixtures {
             .responded( OK, "OK", TEXT_PLAIN,
                 contentOfTestResource( getClass(), "api.txt", ofString() ) );
     }
+
+    @Test
+    public void apiWithoutDeprecated() {
+        assertGet( httpUrl( "/system/api?deprecated=false" ) )
+            .responded( OK, "OK", TEXT_PLAIN,
+                contentOfTestResource( getClass(), "apiWithoutDeprecated.txt", ofString() ) );
+    }
 }
 

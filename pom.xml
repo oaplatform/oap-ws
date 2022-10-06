@@ -43,6 +43,7 @@
         <module>oap-ws-sso-api</module>
         <module>oap-ws-sso</module>
         <!--        <module>oap-ws-media</module>-->
+        <module>oap-ws-api-api</module>
         <module>oap-ws-api-ws</module>
         <module>oap-ws-file-ws</module>
         <module>oap-ws-admin-ws</module>
@@ -68,9 +69,8 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>17.11.17.0</oap-ws.project.version>
-        <oap.deps.oap.version>17.10.32.19</oap.deps.oap.version>
-
+        <oap-ws.project.version>17.11.18.0</oap-ws.project.version>
+        <oap.deps.oap.version>17.10.34.0</oap.deps.oap.version>
         <oap.deps.assertj.version>3.23.1</oap.deps.assertj.version>
         <oap.deps.guava.version>31.1-jre</oap.deps.guava.version>
         <oap.deps.slf4j.version>2.0.3</oap.deps.slf4j.version>

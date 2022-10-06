@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package oap.ws.api.info;
+package oap.ws.api;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -34,12 +34,18 @@ import oap.util.Stream;
 import oap.util.Strings;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
+import oap.ws.WsParam;
+import oap.ws.sso.WsSecurity;
 
 import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Comparator.comparing;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.PATCH;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
+import static oap.ws.WsParam.From.QUERY;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class Info {
@@ -49,9 +55,10 @@ public class Info {
         this.webServices = webServices;
     }
 
-    public Stream<WebServiceInfo> services() {
+    public List<WebServiceInfo> services() {
         return BiStream.of( webServices.services )
-            .mapToObj( ( context, ws ) -> new WebServiceInfo( Reflect.reflect( ws.getClass() ), context ) );
+            .mapToObj( ( context, ws ) -> new WebServiceInfo( Reflect.reflect( ws.getClass() ), context ) )
+            .toList();
     }
 
     private static boolean isWebMethod( Reflection.Method m ) {
@@ -75,11 +82,13 @@ public class Info {
             this.name = clazz.name();
         }
 
-        public Stream<WebMethodInfo> methods() {
+        public List<WebMethodInfo> methods( boolean withDeprecated ) {
             return Stream.of( reflection.methods )
                 .filter( Info::isWebMethod )
                 .sorted( comparing( Reflection.Method::name ) )
-                .map( WebMethodInfo::new );
+                .map( WebMethodInfo::new )
+                .filter( m -> !m.deprecated || withDeprecated )
+                .toList();
         }
     }
 
@@ -88,29 +97,81 @@ public class Info {
     public static class WebMethodInfo {
         private final Reflection.Method method;
         public final String path;
-        public final HttpServerExchange.HttpMethod[] methods;
+        public final List<HttpServerExchange.HttpMethod> methods;
         public final String produces;
         public final String id;
         public final String description;
+        public final boolean deprecated;
+        public final String realm;
+        public final List<String> permissions;
+        public final boolean secure;
+
 
         public WebMethodInfo( Reflection.Method method ) {
             this.method = method;
-            Optional<WsMethod> annotation = method.findAnnotation( WsMethod.class );
-            if( annotation.isPresent() ) {
-                WsMethod wsm = annotation.get();
+            this.deprecated = method.isAnnotatedWith( Deprecated.class );
+            Optional<WsSecurity> wsSecurity = method.findAnnotation( WsSecurity.class );
+            this.secure = wsSecurity.isPresent();
+            this.realm = wsSecurity.map( WsSecurity::realm ).orElse( "<no realm>" );
+            this.permissions = wsSecurity.map( a -> List.of( a.permissions() ) ).orElse( List.of() );
+
+            Optional<WsMethod> wsMethod = method.findAnnotation( WsMethod.class );
+            if( wsMethod.isPresent() ) {
+                WsMethod wsm = wsMethod.get();
                 this.path = Strings.isUndefined( wsm.path() ) ? method.name() : wsm.path();
-                this.methods = wsm.method();
+                this.methods = List.of( wsm.method() );
                 this.produces = wsm.produces();
                 this.id = method.name();
                 this.description = Strings.isUndefined( wsm.description() ) ? "" : wsm.description();
             } else {
                 this.path = "/" + method.name();
-                this.methods = new HttpServerExchange.HttpMethod[] { GET };
+                this.methods = List.of( GET, POST, PATCH );
                 this.produces = APPLICATION_JSON.getMimeType();
                 this.id = method.name();
                 this.description = "";
             }
+        }
 
+        public String path( WebServiceInfo ws ) {
+            return "/" + ws.context + path;
+        }
+
+        public Reflection resultType() {
+            return method.returnType();
+        }
+
+        public List<WebMethodParameterInfo> parameters() {
+            return method.parameters
+                .stream()
+                .filter( WebMethodInfo::isWebParameter )
+                .map( WebMethodParameterInfo::new )
+                .toList();
+        }
+
+        private static boolean isWebParameter( Reflection.Parameter parameter ) {
+            return parameter.findAnnotation( WsParam.class )
+                .map( wsp -> wsp.from() != WsParam.From.SESSION )
+                .orElse( true )
+                && !parameter.type().assignableTo( HttpServerExchange.class );
+        }
+    }
+
+    public static class WebMethodParameterInfo {
+        private final Reflection.Parameter parameter;
+        public final String name;
+        public final WsParam.From from;
+        public final String description;
+
+        public WebMethodParameterInfo( Reflection.Parameter parameter ) {
+            this.parameter = parameter;
+            this.name = parameter.name();
+            Optional<WsParam> wsParam = parameter.findAnnotation( WsParam.class );
+            this.from = wsParam.map( WsParam::from ).orElse( QUERY );
+            this.description = wsParam.map( WsParam::description ).orElse( null );
+        }
+
+        public Reflection type() {
+            return parameter.type();
         }
     }
 }

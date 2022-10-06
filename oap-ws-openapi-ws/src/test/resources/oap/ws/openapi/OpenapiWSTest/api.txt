@@ -234,7 +234,7 @@ OpenAPI
 	components: io.swagger.v3.oas.models.Components
 	extensions: map String -> java.lang.Object
 	externalDocs: io.swagger.v3.oas.models.ExternalDocumentation
-	info: io.swagger.v3.oas.models.info.Info
+	info: io.swagger.v3.oas.models.oap.ws.api.Info
 	jsonSchemaDialect: String
 	openapi: String
 	paths: map String -> io.swagger.v3.oas.models.PathItem

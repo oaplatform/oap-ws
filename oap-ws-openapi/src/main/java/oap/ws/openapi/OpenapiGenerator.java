@@ -50,29 +50,17 @@ import lombok.ToString;
 import oap.http.server.nio.HttpServerExchange;
 import oap.io.content.ContentWriter;
 import oap.reflect.Reflect;
-import oap.reflect.Reflection;
-import oap.util.Lists;
 import oap.util.Strings;
-import oap.ws.WsMethod;
-import oap.ws.WsMethodDescriptor;
 import oap.ws.WsParam;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-
-import static java.util.Comparator.comparing;
-import static oap.ws.openapi.OpenapiReflection.description;
-import static oap.ws.openapi.OpenapiReflection.from;
-import static oap.ws.openapi.OpenapiReflection.tag;
-import static oap.ws.openapi.OpenapiReflection.webMethod;
 
 import static oap.ws.openapi.OpenapiSchema.prepareType;
 
@@ -82,7 +70,7 @@ public class OpenapiGenerator {
     private final ArrayListMultimap<String, String> versions = ArrayListMultimap.create();
     private final ModelConverters converters = new ModelConverters();
     private final OpenAPI api = new OpenAPI();
-    private OpenapiSchema openapiSchema = new OpenapiSchema();
+    private final OpenapiSchema openapiSchema = new OpenapiSchema();
     @Setter
     private String title;
     @Setter
@@ -97,7 +85,7 @@ public class OpenapiGenerator {
     }
 
     public OpenapiGenerator( String title, String description ) {
-        this( title, description, new Settings( Settings.OutputType.JSON, false ) );
+        this( title, description, new Settings( Settings.OutputType.JSON ) );
     }
 
     public OpenAPI build() {
@@ -141,30 +129,28 @@ public class OpenapiGenerator {
 
     public Result processWebservice( Class<?> clazz, String context ) {
         if( !processedClasses.add( clazz.getCanonicalName() ) ) return Result.SKIPPED_DUE_TO_ALREADY_PROCESSED;
-        var r = Reflect.reflect( clazz );
-        var tag = createTag( tag( r ) );
+        oap.ws.api.Info.WebServiceInfo wsInfo = new oap.ws.api.Info.WebServiceInfo( Reflect.reflect( clazz ), context );
+//        var r = Reflect.reflect( clazz );
+        var tag = createTag( wsInfo.name );
         if( uniqueTags.add( tag.getName() ) ) api.addTagsItem( tag );
-        if( uniqueVersions.add( r.getType().getTypeName() ) )
+        if( uniqueVersions.add( wsInfo.name ) )
             versions.put(
                 clazz.getPackage().getImplementationVersion() != null
                     ? clazz.getPackage().getImplementationVersion()
-                    : Strings.UNDEFINED, r.getType().getTypeName() );
-        List<oap.reflect.Reflection.Method> methods = r.methods.stream().sorted( comparing( oap.reflect.Reflection.Method::name ) ).toList();
+                    : Strings.UNDEFINED, wsInfo.name );
+        List<oap.ws.api.Info.WebMethodInfo> methods = wsInfo.methods( true );
         boolean webServiceValid = false;
-        for( oap.reflect.Reflection.Method method : methods ) {
-            if( !webMethod( method ) ) continue;
-            if( settings.processOnlyAnnotatedMethods && method.findAnnotation( WsMethod.class ).isEmpty() )
-                continue;
+        for( oap.ws.api.Info.WebMethodInfo method : methods ) {
             webServiceValid = true;
-            var wsMethodDescriptor = new WsMethodDescriptor( method );
-            var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
+//            var wsMethodDescriptor = new WsMethodDescriptor( method );
+//            var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
             var paths = getPaths();
-            var pathString = path( context, wsMethodDescriptor.path );
+            var pathString = method.path( wsInfo );
             var pathItem = getPathItem( pathString, paths );
 
-            var operation = prepareOperation( method, wsMethodDescriptor, wsSecurityDescriptor, tag );
+            var operation = prepareOperation( method, tag );
 
-            for( HttpServerExchange.HttpMethod httpMethod : wsMethodDescriptor.methods )
+            for( HttpServerExchange.HttpMethod httpMethod : method.methods )
                 pathItem.operation( convertMethod( httpMethod ), operation );
         }
         if( !webServiceValid )
@@ -172,39 +158,35 @@ public class OpenapiGenerator {
         return Result.PROCESSED_OK;
     }
 
-    private Operation prepareOperation( oap.reflect.Reflection.Method method,
-                                        WsMethodDescriptor wsMethodDescriptor,
-                                        WsSecurityDescriptor wsSecurityDescriptor,
-                                        Tag tag ) {
-        var params = Lists.filter( method.parameters, OpenapiReflection::webParameter );
-        var returnType = prepareType( method.returnType() );
+    private Operation prepareOperation( oap.ws.api.Info.WebMethodInfo method, Tag tag ) {
+        var params = method.parameters();
+        var returnType = prepareType( method.resultType() );
 
         Operation operation = new Operation();
         operation.addTagsItem( tag.getName() );
-        operation.setOperationId( wsMethodDescriptor.id );
+        operation.setOperationId( method.id );
         operation.setParameters( prepareParameters( params ) );
-        operation.description( wsMethodDescriptor.description );
+        operation.description( method.description );
         operation.setRequestBody( prepareRequestBody( params ) );
-        operation.setResponses( prepareResponse( method, returnType, wsMethodDescriptor.produces ) );
-        Optional<Deprecated> deprecated = method.findAnnotation( Deprecated.class );
-        deprecated.ifPresent( x -> operation.deprecated( true ) );
-        if( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET ) {
+        operation.setResponses( prepareResponse( returnType, method.produces ) );
+        operation.deprecated( method.deprecated );
+        if( method.secure ) {
             operation.addSecurityItem( new SecurityRequirement().addList( SECURITY_SCHEMA_NAME ) );
             String descriptionWithAuth = operation.getDescription();
             if( descriptionWithAuth.length() > 0 ) {
                 descriptionWithAuth += "\n    Note: \n- security permissions: "
-                    + "\n  - " + String.join( "\n  - ", wsSecurityDescriptor.permissions )
-                    + "\n- realm: " + wsSecurityDescriptor.realm;
+                    + "\n  - " + String.join( "\n  - ", method.permissions )
+                    + "\n- realm: " + method.realm;
                 operation.description( descriptionWithAuth );
             }
             SecurityRequirement securityRequirement = new SecurityRequirement();
-            securityRequirement.addList( wsSecurityDescriptor.realm, Arrays.asList( wsSecurityDescriptor.permissions ) );
+            securityRequirement.addList( method.realm, method.permissions );
             operation.addSecurityItem( securityRequirement );
         }
         return operation;
     }
 
-    private ApiResponses prepareResponse( Reflection.Method method, Type returnType, String produces ) {
+    private ApiResponses prepareResponse( Type returnType, String produces ) {
         var responses = new ApiResponses();
         ApiResponse response = new ApiResponse();
         responses.addApiResponse( "200", response );
@@ -218,24 +200,24 @@ public class OpenapiGenerator {
         return responses;
     }
 
-    private RequestBody prepareRequestBody( List<oap.reflect.Reflection.Parameter> parameters ) {
+    private RequestBody prepareRequestBody( List<oap.ws.api.Info.WebMethodParameterInfo> parameters ) {
         return parameters.stream()
-            .filter( item -> from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
+            .filter( p -> p.from == WsParam.From.BODY )
             .map( this::createBody )
             .findFirst().orElse( null );
     }
 
-    private List<Parameter> prepareParameters( List<oap.reflect.Reflection.Parameter> parameters ) {
+    private List<Parameter> prepareParameters( List<oap.ws.api.Info.WebMethodParameterInfo> parameters ) {
         return parameters.stream()
-            .filter( item -> !from( item ).equals( WsParam.From.BODY.name().toLowerCase() ) )
+            .filter( p -> p.from != WsParam.From.BODY )
             .map( this::createParameter )
             .toList();
     }
 
-    private RequestBody createBody( oap.reflect.Reflection.Parameter parameter ) {
+    private RequestBody createBody( oap.ws.api.Info.WebMethodParameterInfo parameter ) {
         var resolvedSchema = openapiSchema.prepareSchema( prepareType( parameter.type() ), api );
-        var schemas = api.getComponents() == null
-            ? Collections.<String, Schema>emptyMap()
+        Map<String, Schema> schemas = api.getComponents() == null
+            ? Map.of()
             : api.getComponents().getSchemas();
         var result = new RequestBody();
         result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(),
@@ -246,31 +228,20 @@ public class OpenapiGenerator {
         return result;
     }
 
-    private Parameter createParameter( oap.reflect.Reflection.Parameter parameter ) {
+    private Parameter createParameter( oap.ws.api.Info.WebMethodParameterInfo parameter ) {
         var result = new Parameter();
-        result.setName( parameter.name() );
-        var from = from( parameter );
-        result.setIn( from );
-        if( WsParam.From.PATH.name().toLowerCase().equals( from ) ) {
-            result.setRequired( true );
-        } else if( WsParam.From.QUERY.name().toLowerCase().equals( from ) && !parameter.type().isOptional() ) {
-            result.setRequired( true );
-        }
-        String description = description( parameter );
-        if( description.trim().length() > 0 ) result.description( description );
+        result.setName( parameter.name );
+        result.setIn( parameter.from.name().toLowerCase() );
+        result.setRequired( parameter.from == WsParam.From.PATH
+            || ( parameter.from == WsParam.From.QUERY && !parameter.type().isOptional() ) );
+        if( parameter.description.trim().length() > 0 ) result.description( parameter.description );
         var resolvedSchema = this.converters.readAllAsResolvedSchema( prepareType( parameter.type() ) );
-        if( resolvedSchema != null ) {
-            result.setSchema( resolvedSchema.schema );
-        }
+        if( resolvedSchema != null ) result.setSchema( resolvedSchema.schema );
         return result;
     }
 
     private PathItem.HttpMethod convertMethod( HttpServerExchange.HttpMethod method ) {
         return PathItem.HttpMethod.valueOf( method.toString() );
-    }
-
-    private String path( String context, String path ) {
-        return "/" + context + path;
     }
 
     private Content createContent( String mimeType, Schema schema ) {
@@ -323,14 +294,8 @@ public class OpenapiGenerator {
          */
         public final OutputType outputType;
 
-        /**
-         * if trus, only methods annotated with @WsMethod will be processed.
-         */
-        public final boolean processOnlyAnnotatedMethods;
-
-        public Settings( OutputType outputType, boolean processOnlyAnnotatedMethods ) {
+        public Settings( OutputType outputType ) {
             this.outputType = outputType;
-            this.processOnlyAnnotatedMethods = processOnlyAnnotatedMethods;
         }
 
         public enum OutputType {
@@ -355,11 +320,11 @@ public class OpenapiGenerator {
 
     public void afterProcesingServices() {
         api.getComponents().getSchemas().forEach( ( className, parentSchema ) -> {
-            if ( "object".equals( parentSchema.getType() ) && parentSchema.getProperties() != null ) {
+            if( "object".equals( parentSchema.getType() ) && parentSchema.getProperties() != null ) {
                 parentSchema.getProperties().forEach( ( name, childSchema ) -> {
                     var fieldName = ( String ) name;
                     var schema = ( Schema ) childSchema;
-                    if ( !Strings.isEmpty( schema.get$ref() ) ) {
+                    if( !Strings.isEmpty( schema.get$ref() ) ) {
                         openapiSchema.processExtensionsInSchemas( schema, className, fieldName );
                     }
                 } );
