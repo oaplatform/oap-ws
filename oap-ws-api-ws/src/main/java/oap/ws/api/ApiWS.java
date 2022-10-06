@@ -190,7 +190,8 @@ public class ApiWS {
         for( Reflection.Field f : fields ) {
             if( ignorable( f ) ) continue;
             log.trace( "type field {}", f.name() );
-            result += "\t" + f.name() + ": " + formatField( r, f, types ) + "\n";
+            result += "\t" + f.name() + ": " + formatField( r, f, types )
+                + ( f.isAnnotatedWith( Deprecated.class ) ? " (Deprecated)" : "" ) + "\n";
         }
         List<Reflection.Method> methods = r.methods;
         methods.sort( comparing( Reflection.Method::name ) );

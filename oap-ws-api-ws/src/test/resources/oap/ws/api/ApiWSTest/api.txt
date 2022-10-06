@@ -209,7 +209,7 @@ Bean
 	ext: oap.ws.api.ExampleWS.Bean.BeanExt
 	i: int
 	map: map String -> oap.ws.api.ExampleWS.Bean2
-	s: String
+	s: String (Deprecated)
 	something: String
 }
 
@@ -222,7 +222,7 @@ OtherClass
 ## oap.ws.api.ExampleWS.Bean2 ##################################################
 Bean2
 {
-	price: double
+	price: double (Deprecated)
 	x: int
 }
 

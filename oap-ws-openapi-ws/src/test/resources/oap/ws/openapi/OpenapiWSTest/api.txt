@@ -248,7 +248,7 @@ OpenAPI
 ## oap.ws.openapi.TestWS.Bean2 #################################################
 Bean2
 {
-	overpriced: boolean
+	overpriced: boolean (Deprecated)
 	price: double
 	x: int
 }
