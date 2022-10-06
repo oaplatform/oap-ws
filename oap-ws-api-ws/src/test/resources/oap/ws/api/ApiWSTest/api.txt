@@ -204,9 +204,11 @@ SomeClass
 Bean
 {
 	b2: oap.ws.api.ExampleWS.Bean2
+	beans: String[]
 	dt: LocalDateTime
 	ext: oap.ws.api.ExampleWS.Bean.BeanExt
 	i: int
+	map: map String -> oap.ws.api.ExampleWS.Bean2
 	s: String
 	something: String
 }

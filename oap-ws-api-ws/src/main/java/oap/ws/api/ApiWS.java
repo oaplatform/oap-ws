@@ -32,7 +32,6 @@ import oap.json.ext.Ext;
 import oap.json.ext.ExtDeserializer;
 import oap.reflect.Reflect;
 import oap.reflect.Reflection;
-import oap.util.AssocList;
 import oap.util.Lists;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
@@ -115,7 +114,7 @@ public class ApiWS {
                 result += "\tProduces " + d.produces + "\n";
                 result += "\tRealm param " + formatRealm( m ) + "\n";
                 result += "\tPermissions " + formatPermissions( m ) + "\n";
-                result += "\tReturns " + formatType( 3, r, m.returnType(), types ) + "\n";
+                result += "\tReturns " + formatType( m.returnType(), types ) + "\n";
                 List<Reflection.Parameter> params = Lists.filter( m.parameters, ApiWS::filterParameter );
                 if( params.isEmpty() ) result += "\tNo parameters\n";
                 else {
@@ -152,20 +151,17 @@ public class ApiWS {
 
     private String formatParameter( Reflection.Parameter p, Types types ) {
         String from = p.findAnnotation( WsParam.class ).map( WsParam::from ).orElse( QUERY ).name().toLowerCase();
-        return p.name() + ": " + from + " " + formatType( 3, null, p.type(), types );
+        return p.name() + ": " + from + " " + formatType( p.type(), types );
     }
 
-    private String formatType( int shift, Reflection clazz, Reflection r, Types types ) {
+    private String formatType( Reflection r, Types types ) {
         if( r.isOptional() )
-            return "optional " + formatType( shift, clazz, r.typeParameters.get( 0 ), types );
-        if( r.assignableTo( AssocList.class ) ) return AssocList.class.getSimpleName();
-        if( r.assignableTo( Map.class ) ) return Map.class.getSimpleName();
-        if( r.assignableTo( Collection.class ) ) {
-            log.trace( "DEBUG: Collections recursion - {}/{}/{}", shift, clazz, r );
-            return formatType( shift, clazz, r.getCollectionComponentType(), types ) + "[]";
-        }
+            return "optional " + formatType( r.typeParameters.get( 0 ), types );
+        if( r.assignableTo( Map.class ) ) return "map String -> " + formatType( r.getMapComponentsType()._2, types );
+        if( r.assignableTo( Collection.class ) )
+            return formatType( r.getCollectionComponentType(), types ) + "[]";
         if( r.isArray() )
-            return formatType( shift, clazz, Reflect.reflect( r.underlying.componentType() ), types ) + "[]";
+            return formatType( Reflect.reflect( r.underlying.componentType() ), types ) + "[]";
         if( r.isPrimitive() ) return r.underlying.getSimpleName();
         if( r.underlying.getPackageName().startsWith( DateTime.class.getPackageName() ) )
             return r.underlying.getSimpleName();
@@ -201,7 +197,7 @@ public class ApiWS {
         for( Reflection.Method m : methods ) {
             if( !filterGetters( m, fields ) ) continue;
             log.trace( "type getter {}", m.name() );
-            result += "\t" + getPropertyName( m.underlying ) + ": " + formatType( 1, r, m.returnType(), types ) + "\n";
+            result += "\t" + getPropertyName( m.underlying ) + ": " + formatType( m.returnType(), types ) + "\n";
         }
         result += "\t".repeat( 0 ) + "}";
         return result;
@@ -219,7 +215,7 @@ public class ApiWS {
             ? ExtDeserializer.extensionOf( r.underlying, f.name() )
             : null;
         Reflection target = ext != null ? Reflect.reflect( ext ) : f.type();
-        return formatType( 1, r, target, types );
+        return formatType( target, types );
     }
 
     private static class Types implements Iterable<Reflection> {

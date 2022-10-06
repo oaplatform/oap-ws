@@ -26,13 +26,16 @@ package oap.ws.api;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
+import oap.util.AssocList;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.sso.WsSecurity;
 import org.joda.time.LocalDateTime;
 
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
@@ -134,6 +137,8 @@ class ExampleWS {
         public LocalDateTime dt;
         public Bean2 b2;
         public Ext ext;
+        public AssocList<String, Bean2> beans = AssocList.forKey( b -> String.valueOf( b.x ) );
+        public Map<String, Bean2> map = new HashMap<>();
 
         protected Bean() {
         }
