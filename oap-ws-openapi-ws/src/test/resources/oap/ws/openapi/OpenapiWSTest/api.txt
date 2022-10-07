@@ -72,6 +72,23 @@ Methods:
 	Parameters
 		a: QUERY ["SOURCE","CLASS","RUNTIME"]
 
+	Method getOapStreamOfStrings
+	[GET, POST] /example/getOapStreamOfStrings
+	Produces application/json
+	Realm param <no realm>
+	Permissions []
+	Returns String[]
+	No parameters
+
+	Method getVanillaStreamOfStrings
+	[GET, POST] /example/getVanillaStreamOfStrings
+	Produces application/json
+	Realm param <no realm>
+	Permissions []
+	Returns String[]
+	Parameters
+		str: BODY String[]
+
 	Method id
 	[GET, POST] /example/id
 	Produces application/json
@@ -113,14 +130,6 @@ Methods:
 	Realm param <no realm>
 	Permissions []
 	Returns <http response>
-	No parameters
-
-	Method stream
-	[GET, POST] /example/stream
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String[]
 	No parameters
 
 	Method string
@@ -263,6 +272,15 @@ Methods:
 	Parameters
 		a: QUERY ["SOURCE","CLASS","RUNTIME"]
 
+	Method getStream
+	[GET, POST] /api/getStream
+	Produces application/json
+	Realm param <no realm>
+	Permissions []
+	Returns String[]
+	Parameters
+		str: BODY String[]
+
 	Method id
 	[GET, POST] /api/id
 	Produces application/json
@@ -280,15 +298,6 @@ Methods:
 	Returns oap.ws.openapi.TestWS.Bean
 	Parameters
 		bean: BODY oap.ws.openapi.TestWS.Bean
-
-	Method list
-	[GET, POST] /api/list
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String[]
-	Parameters
-		str: BODY String[]
 
 	Method mapbean
 	[GET] /apigeneric

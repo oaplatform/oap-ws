@@ -32,6 +32,7 @@ import oap.ws.sso.WsSecurity;
 import org.joda.time.LocalDateTime;
 
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -99,8 +100,8 @@ public class TestWS {
         return bean;
     }
 
-    public Stream<String> list( @WsParam( from = BODY ) List<String> str ) {
-        return str.stream();
+    public Stream<String> getStream( @WsParam( from = BODY ) List<String> str ) {
+        return new ArrayList<>( str ).stream();
     }
 
     public int x( int i, String s ) {

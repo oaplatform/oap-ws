@@ -14,6 +14,7 @@ import oap.ws.sso.WsSecurity;
 import org.joda.time.LocalDateTime;
 
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,8 +102,11 @@ class ExampleNewWS {
         return bytes;
     }
 
-    public Stream<String> stream() {
+    public oap.util.Stream<String> getOapStreamOfStrings() {
         return Stream.of();
+    }
+    public java.util.stream.Stream<String> getVanillaStreamOfStrings( @WsParam( from = BODY ) List<String> str ) {
+        return new ArrayList<>( str ).stream();
     }
 
     public Response response() {

@@ -33,6 +33,7 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -54,8 +55,11 @@ import oap.io.content.ContentWriter;
 import oap.reflect.Reflect;
 import oap.util.Strings;
 import oap.ws.WsParam;
+import oap.ws.openapi.swagger.DeprecationAnnotationResolver;
 import org.apache.http.entity.ContentType;
 
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +67,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static oap.ws.openapi.OpenapiSchema.prepareType;
 
@@ -127,7 +132,7 @@ public class OpenapiGenerator {
     public enum Result {
         PROCESSED_OK( "processed." ),
         SKIPPED_DUE_TO_ALREADY_PROCESSED( "has already been processed." ),
-        SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE( "skipped due to class does not contain @WsMethod annotated methods" );
+        SKIPPED_DUE_TO_CLASS_HAS_NO_METHODS( "skipped due to class does not contain any public method" );
 
         private final String description;
 
@@ -154,25 +159,19 @@ public class OpenapiGenerator {
                     ? clazz.getPackage().getImplementationVersion()
                     : Strings.UNDEFINED, wsInfo.name );
         List<oap.ws.api.Info.WebMethodInfo> methods = wsInfo.methods( true );
-        boolean webServiceValid = false;
         for( oap.ws.api.Info.WebMethodInfo method : methods ) {
-            webServiceValid = true;
-//            var wsMethodDescriptor = new WsMethodDescriptor( method );
-//            var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
             var paths = getPaths();
             var pathString = method.path( wsInfo );
             var pathItem = getPathItem( pathString, paths );
-
             var operation = prepareOperation( method, tag );
-
             for( HttpServerExchange.HttpMethod httpMethod : method.methods ) {
                 callbackProcessor.doForHttpMethod( httpMethod, operation, method );
                 pathItem.operation( convertMethod( httpMethod ), operation );
             }
         }
-        if( !webServiceValid ) {
+        if( !methods.isEmpty() ) {
             callbackProcessor.doIfWebserviceIsNotValid( methods );
-            return Result.SKIPPED_DUE_TO_CLASS_IS_NOT_WEB_SERVICE;
+            return Result.SKIPPED_DUE_TO_CLASS_HAS_NO_METHODS;
         }
         return Result.PROCESSED_OK;
     }
@@ -187,7 +186,7 @@ public class OpenapiGenerator {
             .parameters( prepareParameters( params ) )
             .description( method.description )
             .requestBody( prepareRequestBody( params ) )
-            .responses( prepareResponse( returnType, method.produces ) );
+            .responses( prepareResponse( returnType, method ) );
         if( method.deprecated ) operation.deprecated( true );
         if( method.secure ) {
             operation.addSecurityItem( new SecurityRequirement().addList( SECURITY_SCHEMA_NAME ) );
@@ -205,18 +204,42 @@ public class OpenapiGenerator {
         return operation;
     }
 
-    private ApiResponses prepareResponse( Type returnType, String produces ) {
+    private ApiResponses prepareResponse( Type returnType, oap.ws.api.Info.WebMethodInfo method ) {
         var responses = new ApiResponses();
         ApiResponse response = new ApiResponse();
-        responses.addApiResponse( "200", response );
-        var resolvedSchema = openapiSchema.prepareSchema( returnType, api );
         response.description( "" );
+        responses.addApiResponse( "200", response );
         if( returnType.equals( Void.class ) ) return responses;
+        response.content( createContent( method, returnType ) );
+        return responses;
+    }
+
+    private Schema getSchemaByReturnType( Type returnType ) {
+        Type rawType = returnType;
+        String underlyingType = null;
+        if ( returnType instanceof ParameterizedType ) {
+            rawType = ( ( ParameterizedType ) returnType ).getRawType();
+            Type[] actualTypeArguments = ( ( ParameterizedType ) returnType ).getActualTypeArguments();
+            underlyingType = actualTypeArguments != null && actualTypeArguments.length == 1
+                ? actualTypeArguments[0].getTypeName()
+                : "java.lang.String";
+        } else if ( returnType instanceof GenericArrayType ) {
+            rawType = null;
+        }
+        if ( Stream.class.equals( rawType ) ||  oap.util.Stream.class.equals( rawType ) ) {
+            // return type of Array with embedded schema
+            Schema envelop = new ArraySchema();
+            envelop.setItems( DeprecationAnnotationResolver.detectInnerSchema( underlyingType ) );
+            return envelop;
+        }
+
+        var resolvedSchema = openapiSchema.prepareSchema( returnType, api );
         Map<String, Schema> schemas = api.getComponents() == null
             ? Collections.emptyMap()
             : api.getComponents().getSchemas();
-        response.content( createContent( produces, openapiSchema.createSchemaRef( resolvedSchema.schema, schemas ) ) );
-        return responses;
+        Schema reference = openapiSchema.createSchemaRef( resolvedSchema.schema, schemas );
+
+        return reference;
     }
 
     private RequestBody prepareRequestBody( List<oap.ws.api.Info.WebMethodParameterInfo> parameters ) {
@@ -239,8 +262,8 @@ public class OpenapiGenerator {
             ? Map.of()
             : api.getComponents().getSchemas();
         var result = new RequestBody();
-        result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(),
-            openapiSchema.createSchemaRef( resolvedSchema.schema, schemas ) ) );
+        Schema schemaRef = openapiSchema.createSchemaRef( resolvedSchema.schema, schemas );
+        result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(), schemaRef ) );
         if( schemas.containsKey( resolvedSchema.schema.getName() ) )
             api.getComponents().addRequestBodies( resolvedSchema.schema.getName(), result );
 
@@ -261,6 +284,12 @@ public class OpenapiGenerator {
 
     private PathItem.HttpMethod convertMethod( HttpServerExchange.HttpMethod method ) {
         return PathItem.HttpMethod.valueOf( method.toString() );
+    }
+
+    private Content createContent( oap.ws.api.Info.WebMethodInfo method, Type type ) {
+        Schema schema = getSchemaByReturnType( type );
+        schema.setName( method.resultType().getType() + " " + method.name + "(" + Joiner.on( "," ).join(  method.parameters().stream().map( info -> info.name  ).toList()) + ")" );
+        return createContent( method.produces, schema );
     }
 
     private Content createContent( String mimeType, Schema schema ) {

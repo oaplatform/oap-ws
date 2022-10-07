@@ -157,8 +157,6 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
             String innerType = type.getTypeName().replaceFirst( "[^<>]++<([^<>]++)>", "$1" );
             Schema typeSchema = detectInnerSchema( innerType );
             schemaTo.setItems( typeSchema);
-
-            schemaTo.setItems( new StringSchema() ); //cannot detect
         }
         schemaTo.setDeprecated( schemaFrom.getDeprecated() );
 
@@ -188,7 +186,7 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
     }
 
     @NotNull
-    private static Schema detectInnerSchema( String innerType ) {
+    public static Schema detectInnerSchema( String innerType ) {
         Schema typeSchema = switch( innerType ) {
             case "java.lang.Integer" -> new IntegerSchema();
             case "java.lang.Long",
