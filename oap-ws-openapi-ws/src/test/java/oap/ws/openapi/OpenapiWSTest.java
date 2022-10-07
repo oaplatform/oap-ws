@@ -32,12 +32,9 @@ import org.testng.annotations.Test;
 
 import java.util.Map;
 
-import static oap.http.Http.ContentType.TEXT_PLAIN;
-import static oap.http.Http.StatusCode.OK;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
-import static oap.io.content.ContentReader.ofString;
 import static oap.testng.Asserts.contentOfTestResource;
 
 @Slf4j
@@ -49,8 +46,8 @@ public class OpenapiWSTest extends Fixtures {
     @Test
     public void openapi() {
         assertGet( httpUrl( "/system/openapi" ) )
-//            .satisfies( r -> System.out.println( r.contentString()
-//            ) )
+            .satisfies( r -> System.out.println( r.contentString()
+            ) )
             .respondedJson( Http.StatusCode.OK, "OK",
                 contentOfTestResource( getClass(), "openapi.json", Map.of() ) );
     }
