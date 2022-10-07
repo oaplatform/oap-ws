@@ -26,16 +26,11 @@ package oap.ws.openapi;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
-import oap.reflect.Reflect;
-import oap.reflect.Reflection;
 import oap.ws.WebServices;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static oap.ws.openapi.OpenapiReflection.webMethod;
 
 @Slf4j
 public class Openapi {
@@ -70,26 +65,5 @@ public class Openapi {
         }
         openapiGenerator.afterProcesingServices();
         return openapiGenerator.build();
-    }
-
-    public Set<String> preparePermissions() {
-        final HashSet<String> permissions = new HashSet<>();
-        WebServicesWalker.walk( ( wsService, clazz, basePath ) -> {
-            if( !processedClasses.add( clazz.getCanonicalName() ) || !servicesWL.isEmpty() && !servicesWL.contains( clazz.getCanonicalName() ) ) {
-                return;
-            }
-            var r = Reflect.reflect( clazz );
-
-            for( Reflection.Method method : r.methods ) {
-                if( !webMethod( method ) ) {
-                    continue;
-                }
-                var wsSecurityDescriptor = WsSecurityDescriptor.ofMethod( method );
-                if( wsSecurityDescriptor != WsSecurityDescriptor.NO_SECURITY_SET && wsSecurityDescriptor.permissions != null ) {
-                    permissions.addAll( List.of( wsSecurityDescriptor.permissions ) );
-                }
-            }
-        } );
-        return permissions;
     }
 }

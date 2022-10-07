@@ -28,148 +28,148 @@ Methods:
 Bound to example
 Methods:
 	Method bean
-	[GET] /example/bean
+	[GET, POST] /example/bean
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns oap.ws.openapi.ExampleNewWS.NewWsBean[]
 	Parameters
-		i: query int
-		s: query String
+		i: QUERY int
+		s: QUERY String
 
 	Method bytes
-	[GET] /example/bytes
+	[GET, POST] /example/bytes
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	Parameters
-		bytes: body byte[]
+		bytes: BODY byte[]
 
 	Method code
-	[GET] /example/code
+	[GET, POST] /example/code
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns void
 	Parameters
-		code: query int
+		code: QUERY int
 
 	Method deprecated (Deprecated)
-	[GET] /example/deprecated
+	[GET, POST] /example/deprecated
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	No parameters
 
 	Method en
-	[GET] /example/en
+	[GET, POST] /example/en
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns ["SOURCE","CLASS","RUNTIME"]
 	Parameters
-		a: query ["SOURCE","CLASS","RUNTIME"]
+		a: QUERY ["SOURCE","CLASS","RUNTIME"]
 
 	Method id
-	[GET] /example/id
+	[GET, POST] /example/id
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	Parameters
-		a: query String
+		a: QUERY String
 
 	Method json
-	[GET] /example/json
+	[GET, POST] /example/json
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns oap.ws.openapi.ExampleNewWS.NewWsBean
 	Parameters
-		bean: body oap.ws.openapi.ExampleNewWS.NewWsBean
+		bean: BODY oap.ws.openapi.ExampleNewWS.NewWsBean
 
 	Method list
-	[GET] /example/list
+	[GET, POST] /example/list
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String[]
 	Parameters
-		str: body String[]
+		str: BODY String[]
 
 	Method req
-	[GET] /example/req
+	[GET, POST] /example/req
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	No parameters
 
 	Method response
-	[GET] /example/response
+	[GET, POST] /example/response
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns <http response>
 	No parameters
 
 	Method stream
-	[GET] /example/stream
+	[GET, POST] /example/stream
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String[]
 	No parameters
 
 	Method string
-	[GET] /example/string
+	[GET, POST] /example/string
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	Parameters
-		bytes: body String
+		bytes: BODY String
 
 	Method sum
-	[GET] /example/sum
+	[GET, POST] /example/sum
 	Produces application/json
 	Realm param realm
 	Permissions [ALLOWED]
 	Returns int
 	Parameters
-		realm: query String
-		a: query int
-		b: query int[]
-		c: query optional int
-		rp: query optional ["SOURCE","CLASS","RUNTIME"]
+		realm: QUERY String
+		a: QUERY int
+		b: QUERY int[]
+		c: QUERY optional int
+		rp: QUERY optional ["SOURCE","CLASS","RUNTIME"]
 
 	Method sumab
-	[GET] /example/sumab
+	[GET, POST] /example/sumab
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns int
 	Parameters
-		a: query int
-		b: query int
+		a: QUERY int
+		b: QUERY int
 
 	Method sumabopt
-	[GET] /example/sumabopt
+	[GET, POST] /example/sumabopt
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns int
 	Parameters
-		a: query int
-		b: query optional int
+		a: QUERY int
+		b: QUERY optional int
 
 	Method test
 	[GET] /example/
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns int
 	No parameters
 
@@ -180,13 +180,13 @@ Methods:
 	Permissions [SUPERADMIN]
 	Returns String
 	Parameters
-		id: path String
+		id: PATH String
 
 	Method test2
 	[GET] /example/test/sort/default
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	No parameters
 
@@ -194,20 +194,20 @@ Methods:
 	[GET] /example/test/sort={id}/test
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns String
 	Parameters
-		id: path String
+		id: PATH String
 
 	Method x
-	[GET] /example/x
+	[GET, POST] /example/x
 	Produces application/json
 	Realm param <no realm>
-	Permissions <no permissions>
+	Permissions []
 	Returns int
 	Parameters
-		i: query int
-		s: query String
+		i: QUERY int
+		s: QUERY String
 
 
 ## oap.ws.openapi.IgnoredPermissionsTestWS #####################################
@@ -413,10 +413,11 @@ Methods:
 NewWsBean
 {
 	b2: oap.ws.openapi.ExampleNewWS.NewWsBean2
-	beans: String[]
+	beans: oap.ws.openapi.ExampleNewWS.NewWsBean2[]
 	dt: LocalDateTime
 	ext: oap.ws.openapi.DynamicBeanExt
 	i: int
+	intStream: String[]
 	map: map String -> oap.ws.openapi.ExampleNewWS.NewWsBean2
 	s: String (Deprecated)
 	something: String
