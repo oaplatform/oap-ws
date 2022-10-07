@@ -33,11 +33,9 @@ import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.media.ArraySchema;
-import io.swagger.v3.oas.models.media.BinarySchema;
 import io.swagger.v3.oas.models.media.BooleanSchema;
 import io.swagger.v3.oas.models.media.ByteArraySchema;
 import io.swagger.v3.oas.models.media.DateSchema;
-import io.swagger.v3.oas.models.media.DateTimeSchema;
 import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.NumberSchema;
 import io.swagger.v3.oas.models.media.Schema;
@@ -55,7 +53,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -212,7 +209,11 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
             Iterator.class.isAssignableFrom( rawType );
     }
 
-    public Schema getSchema( String className, String fieldName ) {
+    public Schema getExtSchema( String className, String fieldName ) {
         return extensionsSchemas.get( Pair.__( className, fieldName ) );
+    }
+
+    public Schema getArraySchema( String className, String fieldName ) {
+        return collectionsSchemas.get( Pair.__( className, fieldName ) );
     }
 }

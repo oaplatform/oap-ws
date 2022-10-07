@@ -130,7 +130,8 @@ class ExampleNewWS {
         public String s;
         public LocalDateTime dt;
         public NewWsBean2 b2;
-        public Stream<String> intStream = Stream.of( "One", "Two", "Five" );
+        public Stream<String> stringStream = Stream.of( "One", "Two", "Five" );
+        public Stream<Integer> intStream = Stream.of( 1, 2, 5 );
         public Ext ext;
         public Beans beans = new Beans();
         public Map<String, NewWsBean2> map = new HashMap<>();

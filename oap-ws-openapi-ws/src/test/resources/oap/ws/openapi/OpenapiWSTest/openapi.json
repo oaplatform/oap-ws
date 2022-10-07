@@ -1034,8 +1034,18 @@
             "types" : [ "integer" ]
           },
           "intStream" : {
-            "$ref" : "#/components/schemas/StreamString",
-            "exampleSetFlag" : false
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "items" : {
+                "exampleSetFlag" : false,
+                "format" : "int32",
+                "type" : "integer",
+                "types" : [ "integer" ]
+              },
+              "type" : "array",
+              "types" : [ "array" ]
+            }
           },
           "map" : {
             "additionalProperties" : {
@@ -1059,6 +1069,19 @@
             "exampleSetFlag" : false,
             "type" : "string",
             "types" : [ "string" ]
+          },
+          "stringStream" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "items" : {
+                "exampleSetFlag" : false,
+                "type" : "string",
+                "types" : [ "string" ]
+              },
+              "type" : "array",
+              "types" : [ "array" ]
+            }
           }
         },
         "type" : "object"
@@ -2621,6 +2644,17 @@
         "types" : [ "object" ]
       },
       "Stream" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "parallel" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          }
+        },
+        "type" : "object"
+      },
+      "StreamInteger" : {
         "exampleSetFlag" : false,
         "properties" : {
           "parallel" : {
