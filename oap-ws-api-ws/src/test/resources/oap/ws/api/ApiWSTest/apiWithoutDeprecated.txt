@@ -218,6 +218,7 @@ Bean
 	dt: LocalDateTime
 	ext: oap.ws.api.ExampleWS.Bean.BeanExt
 	i: int
+	intStream: int[]
 	map: map String -> oap.ws.api.ExampleWS.Bean2
 	something: String
 }

@@ -28,17 +28,13 @@ import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import oap.ws.WebServices;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Slf4j
 public class Openapi {
 
     private final WebServices webServices;
     public ApiInfo info;
-    private final Set<String> processedClasses = new HashSet<>();
-    private Set<String> servicesWL = new HashSet<>();
 
     public Openapi( WebServices webServices ) {
         this.webServices = webServices;
@@ -49,15 +45,12 @@ public class Openapi {
         this.info = info;
     }
 
-    public Openapi( WebServices webServices, ApiInfo info, Set<String> servicesWL ) {
-        this( webServices, info );
-        this.servicesWL = servicesWL;
-    }
-
     public OpenAPI generateOpenApi() {
         OpenapiGenerator openapiGenerator = new OpenapiGenerator(
             info.title,
             info.description,
+            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON ) );
+        log.info( "OpenAPI generating '{}'...", info.title );
             new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON ) );
         openapiGenerator.beforeProcesingServices();
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
@@ -66,4 +59,6 @@ public class Openapi {
         openapiGenerator.afterProcesingServices();
         return openapiGenerator.build();
     }
+
+
 }

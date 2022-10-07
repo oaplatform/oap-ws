@@ -30,8 +30,6 @@ public interface AuthTokenProvider {
 
     List<String> getPermissions( String token );
 
-    String getUserId( String token );
-
     String getUserEmail( String token );
 
     boolean verifyToken( String token );

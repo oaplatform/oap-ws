@@ -24,201 +24,6 @@ Methods:
 		limit: QUERY int
 
 
-## oap.ws.openapi.ExampleNewWS #################################################
-Bound to example
-Methods:
-	Method bean
-	[GET, POST] /example/bean
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns oap.ws.openapi.ExampleNewWS.NewWsBean[]
-	Parameters
-		i: QUERY int
-		s: QUERY String
-
-	Method bytes
-	[GET, POST] /example/bytes
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String
-	Parameters
-		bytes: BODY byte[]
-
-	Method code
-	[GET, POST] /example/code
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns void
-	Parameters
-		code: QUERY int
-
-	Method deprecated (Deprecated)
-	[GET, POST] /example/deprecated
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String
-	No parameters
-
-	Method en
-	[GET, POST] /example/en
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns ["SOURCE","CLASS","RUNTIME"]
-	Parameters
-		a: QUERY ["SOURCE","CLASS","RUNTIME"]
-
-	Method getOapStreamOfStrings
-	[GET, POST] /example/getOapStreamOfStrings
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String[]
-	No parameters
-
-	Method getVanillaStreamOfStrings
-	[GET, POST] /example/getVanillaStreamOfStrings
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String[]
-	Parameters
-		str: BODY String[]
-
-	Method id
-	[GET, POST] /example/id
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String
-	Parameters
-		a: QUERY String
-
-	Method json
-	[GET, POST] /example/json
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns oap.ws.openapi.ExampleNewWS.NewWsBean
-	Parameters
-		bean: BODY oap.ws.openapi.ExampleNewWS.NewWsBean
-
-	Method list
-	[GET, POST] /example/list
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String[]
-	Parameters
-		str: BODY String[]
-
-	Method req
-	[GET, POST] /example/req
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String
-	No parameters
-
-	Method response
-	[GET, POST] /example/response
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns <http response>
-	No parameters
-
-	Method string
-	[GET, POST] /example/string
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String
-	Parameters
-		bytes: BODY String
-
-	Method sum
-	[GET, POST] /example/sum
-	Produces application/json
-	Realm param realm
-	Permissions [ALLOWED]
-	Returns int
-	Parameters
-		realm: QUERY String
-		a: QUERY int
-		b: QUERY int[]
-		c: QUERY optional int
-		rp: QUERY optional ["SOURCE","CLASS","RUNTIME"]
-
-	Method sumab
-	[GET, POST] /example/sumab
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns int
-	Parameters
-		a: QUERY int
-		b: QUERY int
-
-	Method sumabopt
-	[GET, POST] /example/sumabopt
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns int
-	Parameters
-		a: QUERY int
-		b: QUERY optional int
-
-	Method test
-	[GET] /example/
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns int
-	No parameters
-
-	Method test1
-	[GET] /example/test/sort/{id}
-	Produces application/json
-	Realm param SYSTEM
-	Permissions [SUPERADMIN]
-	Returns String
-	Parameters
-		id: PATH String
-
-	Method test2
-	[GET] /example/test/sort/default
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String
-	No parameters
-
-	Method testEqual
-	[GET] /example/test/sort={id}/test
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String
-	Parameters
-		id: PATH String
-
-	Method x
-	[GET, POST] /example/x
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns int
-	Parameters
-		i: QUERY int
-		s: QUERY String
-
-
 ## oap.ws.openapi.IgnoredPermissionsTestWS #####################################
 Bound to ignored-permissions
 Methods:
@@ -272,15 +77,6 @@ Methods:
 	Parameters
 		a: QUERY ["SOURCE","CLASS","RUNTIME"]
 
-	Method getStream
-	[GET, POST] /api/getStream
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns String[]
-	Parameters
-		str: BODY String[]
-
 	Method id
 	[GET, POST] /api/id
 	Produces application/json
@@ -298,6 +94,15 @@ Methods:
 	Returns oap.ws.openapi.TestWS.Bean
 	Parameters
 		bean: BODY oap.ws.openapi.TestWS.Bean
+
+	Method list
+	[GET, POST] /api/list
+	Produces application/json
+	Realm param <no realm>
+	Permissions []
+	Returns String[]
+	Parameters
+		str: BODY String[]
 
 	Method mapbean
 	[GET] /apigeneric
@@ -418,26 +223,12 @@ Methods:
 
 
 # TYPES ########################################################################
-## oap.ws.openapi.ExampleNewWS.NewWsBean #######################################
-NewWsBean
-{
-	b2: oap.ws.openapi.ExampleNewWS.NewWsBean2
-	beans: oap.ws.openapi.ExampleNewWS.NewWsBean2[]
-	dt: LocalDateTime
-	ext: oap.ws.openapi.DynamicBeanExt
-	i: int
-	intStream: String[]
-	map: map String -> oap.ws.openapi.ExampleNewWS.NewWsBean2
-	s: String (Deprecated)
-	something: String
-}
-
 ## oap.ws.openapi.TestWS.Bean ##################################################
 Bean
 {
 	b2: oap.ws.openapi.TestWS.Bean2
 	dt: LocalDateTime
-	ext: oap.json.ext.Ext
+	ext: oap.ws.openapi.DynamicBeanExt
 	i: int
 	s: String
 	something: String
@@ -460,10 +251,11 @@ OpenAPI
 	webhooks: map String -> io.swagger.v3.oas.models.PathItem
 }
 
-## oap.ws.openapi.ExampleNewWS.NewWsBean2 ######################################
-NewWsBean2
+## oap.ws.openapi.TestWS.Bean2 #################################################
+Bean2
 {
-	price: double (Deprecated)
+	overpriced: boolean (Deprecated)
+	price: double
 	x: int
 }
 
@@ -473,19 +265,6 @@ DynamicBeanExt
 	databaseType: ["STATIC","DYNAMIC"]
 	extension: String
 	score: int
-}
-
-## oap.ws.openapi.TestWS.Bean2 #################################################
-Bean2
-{
-	overpriced: boolean (Deprecated)
-	price: double
-	x: int
-}
-
-## oap.json.ext.Ext ############################################################
-Ext
-{
 }
 
 ## io.swagger.v3.oas.models.Components #########################################
