@@ -2,7 +2,6 @@
 package oap.ws.openapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.jna.platform.win32.COM.IStream;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.util.AssocList;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;

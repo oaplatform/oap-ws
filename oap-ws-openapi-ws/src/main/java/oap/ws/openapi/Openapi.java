@@ -50,8 +50,6 @@ public class Openapi {
             info.title,
             info.description,
             new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON ) );
-        log.info( "OpenAPI generating '{}'...", info.title );
-            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON ) );
         openapiGenerator.beforeProcesingServices();
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             openapiGenerator.processWebservice( ws.getValue().getClass(), ws.getKey() );
@@ -59,6 +57,4 @@ public class Openapi {
         openapiGenerator.afterProcesingServices();
         return openapiGenerator.build();
     }
-
-
 }

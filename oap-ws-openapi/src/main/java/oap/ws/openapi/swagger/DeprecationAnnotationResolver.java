@@ -46,7 +46,6 @@ import oap.json.ext.ExtDeserializer;
 import oap.util.Pair;
 import oap.util.Strings;
 import org.jetbrains.annotations.NotNull;
-import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.lang.annotation.Annotation;
@@ -149,11 +148,11 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
         schemaTo.set$id( schemaFrom.get$id() );
         if ( schemaFrom.getItems() != null ) schemaTo.setItems( schemaFrom.getItems() );
         else {
-            Type type = (( Field ) propDef.getPrimaryMember().getMember()).getGenericType();
+            Type type = ( ( Field ) propDef.getPrimaryMember().getMember() ).getGenericType();
             //oap.util.Stream<java.lang.String>
             String innerType = type.getTypeName().replaceFirst( "[^<>]++<([^<>]++)>", "$1" );
             Schema typeSchema = detectInnerSchema( innerType );
-            schemaTo.setItems( typeSchema);
+            schemaTo.setItems( typeSchema );
         }
         schemaTo.setDeprecated( schemaFrom.getDeprecated() );
 
@@ -199,14 +198,9 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
         return typeSchema;
     }
 
-    public static void main( String[] args ) {
-        String innerType = ( new DateTime()).getClass().getCanonicalName();
-        detectInnerSchema( innerType );
-    }
-
     public boolean isArrayType( Class rawType ) {
-        return Stream.class.isAssignableFrom( rawType ) ||
-            Iterator.class.isAssignableFrom( rawType );
+        return Stream.class.isAssignableFrom( rawType )
+            || Iterator.class.isAssignableFrom( rawType );
     }
 
     public Schema getExtSchema( String className, String fieldName ) {

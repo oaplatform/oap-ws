@@ -94,8 +94,6 @@ public class OpenapiGenerator {
     private String description;
     @Getter
     private final Settings settings;
-    @Setter
-    private OpenapiGenerationCallbackProcessor callbackProcessor = new OpenapiGenerationCallbackProcessor() {};
 
     public OpenapiGenerator( String title, String description, Settings settings ) {
         this.title = title;
@@ -165,12 +163,10 @@ public class OpenapiGenerator {
             var pathItem = getPathItem( pathString, paths );
             var operation = prepareOperation( method, tag );
             for( HttpServerExchange.HttpMethod httpMethod : method.methods ) {
-                callbackProcessor.doForHttpMethod( httpMethod, operation, method );
                 pathItem.operation( convertMethod( httpMethod ), operation );
             }
         }
         if( !methods.isEmpty() ) {
-            callbackProcessor.doIfWebserviceIsNotValid( methods );
             return Result.SKIPPED_DUE_TO_CLASS_HAS_NO_METHODS;
         }
         return Result.PROCESSED_OK;
@@ -288,7 +284,7 @@ public class OpenapiGenerator {
 
     private Content createContent( oap.ws.api.Info.WebMethodInfo method, Type type ) {
         Schema schema = getSchemaByReturnType( type );
-        schema.setName( method.resultType().getType() + " " + method.name + "(" + Joiner.on( "," ).join(  method.parameters().stream().map( info -> info.name  ).toList()) + ")" );
+        schema.setName( method.resultType().getType() + " " + method.name + "(" + Joiner.on( "," ).join(  method.parameters().stream().map( info -> info.name  ).toList() ) + ")" );
         return createContent( method.produces, schema );
     }
 
@@ -386,7 +382,6 @@ public class OpenapiGenerator {
             } );
         } catch( Exception ex ) {
             log.error( "Cannot process extensions in schemas", ex );
-            callbackProcessor.doIfException( ex );
         }
         api.info( createInfo( title, description ) );
     }
