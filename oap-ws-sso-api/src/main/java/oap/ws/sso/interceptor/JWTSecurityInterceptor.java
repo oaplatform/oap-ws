@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import oap.ws.InvocationContext;
 import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
-import oap.ws.sso.AbstractTokenProvider;
+import oap.ws.sso.AuthTokenProvider;
 import oap.ws.sso.SSO;
 import oap.ws.sso.User;
 import oap.ws.sso.UserProvider;
@@ -47,10 +47,10 @@ import static oap.ws.sso.WsSecurity.SYSTEM;
 @Slf4j
 public class JWTSecurityInterceptor implements Interceptor {
 
-    private final AbstractTokenProvider tokenProvider;
+    private final AuthTokenProvider tokenProvider;
     private final UserProvider userProvider;
 
-    public JWTSecurityInterceptor( AbstractTokenProvider tokenProvider, UserProvider userProvider ) {
+    public JWTSecurityInterceptor( AuthTokenProvider tokenProvider, UserProvider userProvider ) {
         this.tokenProvider = tokenProvider;
         this.userProvider = userProvider;
     }

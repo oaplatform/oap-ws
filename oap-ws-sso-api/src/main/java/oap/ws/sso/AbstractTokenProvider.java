@@ -39,7 +39,7 @@ import java.security.interfaces.RSAPublicKey;
 @Slf4j
 public abstract class AbstractTokenProvider implements AuthTokenProvider {
 
-    private final String domain;
+    protected final String domain;
 
     public AbstractTokenProvider( String domain ) {
         this.domain = domain;
