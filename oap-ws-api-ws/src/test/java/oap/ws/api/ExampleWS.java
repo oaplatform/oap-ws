@@ -144,6 +144,7 @@ class ExampleWS {
         public int i;
         @Deprecated
         public String s;
+        public Stream<Integer> intStream;
         public LocalDateTime dt;
         public Bean2 b2;
         public Ext ext;
