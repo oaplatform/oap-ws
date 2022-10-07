@@ -63,7 +63,7 @@ public abstract class AbstractTokenProvider implements AuthTokenProvider {
             Jwk jwk = provider.get( jwt.getKeyId() );
             Algorithm algorithm = Algorithm.RSA256( ( RSAPublicKey ) jwk.getPublicKey(), null );
             JWTVerifier verifier = JWT.require( algorithm )
-                .withIssuer( domain )
+                .withIssuer( domain + "/" )
                 .build();
             return verifier.verify( token );
         } catch( Exception e ) {
