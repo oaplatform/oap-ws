@@ -178,8 +178,17 @@ class OpenapiSchema {
     }
 
     public void processExtensionsInSchemas( Schema schema, String className, String fieldName ) {
-        Schema ext = converter.getSchema( className, fieldName );
-        if( ext == null ) return;
-        schema.$ref( RefUtils.constructRef( ext.getName() ) );
+        //replace Ext schema with detected dynamic one
+        Schema extension = converter.getExtSchema( className, fieldName );
+        if( extension != null ) {
+            schema.setItems( null );
+            schema.$ref( RefUtils.constructRef( extension.getName() ) );
+        }
+        //replace outer schema to array with detected inner one
+        Schema array = converter.getArraySchema( className, fieldName );
+        if ( array != null ) {
+            schema.setItems( array );
+            schema.set$ref( null );
+        }
     }
 }

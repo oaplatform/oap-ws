@@ -47,17 +47,10 @@ public class OpenapiWSTest extends Fixtures {
     }
 
     @Test
-    public void api() {
-        assertGet( httpUrl( "/system/api" ) )
-            .responded( OK, "OK", TEXT_PLAIN,
-                contentOfTestResource( getClass(), "api.txt", ofString() ) );
-    }
-
-    @Test
     public void openapi() {
         assertGet( httpUrl( "/system/openapi" ) )
-            .satisfies( r -> System.out.println( r.contentString()
-            ) )
+//            .satisfies( r -> System.out.println( r.contentString()
+//            ) )
             .respondedJson( Http.StatusCode.OK, "OK",
                 contentOfTestResource( getClass(), "openapi.json", Map.of() ) );
     }
