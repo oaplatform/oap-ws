@@ -1,10 +1,12 @@
 
 package oap.ws.openapi;
 
+import aQute.lib.base64.Base64;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.util.AssocList;
+import oap.util.Lists;
 import oap.util.Stream;
 import oap.ws.Response;
 import oap.ws.WsMethod;
@@ -92,11 +94,18 @@ class ExampleNewWS {
         exchange.setStatusCode( code );
     }
 
-    public String bytes( @WsParam( from = BODY ) byte[] bytes ) {
+    public String bytesParam( @WsParam( from = BODY ) byte[] bytes ) {
         return new String( bytes );
     }
+    public byte[] bytesResult( @WsParam( from = BODY ) String toBytes ) {
+        return Base64.decodeBase64( toBytes );
+    }
 
-    public String string( @WsParam( from = BODY ) String bytes ) {
+    public List<byte[]> listOfBytesResult( @WsParam( from = BODY ) String toBytes ) {
+        return Lists.of( Base64.decodeBase64( toBytes ), new byte[] { 0x1, 0x2, 0x3 } );
+    }
+
+    public String stringParam( @WsParam( from = BODY ) String bytes ) {
         return bytes;
     }
 

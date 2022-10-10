@@ -3966,10 +3966,10 @@
         "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
       }
     },
-    "/example/bytes" : {
+    "/example/bytesParam" : {
       "get" : {
         "description" : "",
-        "operationId" : "bytes",
+        "operationId" : "bytesParam",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -3992,7 +3992,6 @@
           "200" : {
             "content" : {
               "application/json" : {
-                "desc" : "invalid response type, should be a byte[]",
                 "exampleSetFlag" : false,
                 "schema" : {
                   "exampleSetFlag" : false,
@@ -4008,7 +4007,7 @@
       },
       "post" : {
         "description" : "",
-        "operationId" : "bytes",
+        "operationId" : "bytesParam",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -4036,6 +4035,84 @@
                   "exampleSetFlag" : false,
                   "type" : "string",
                   "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/bytesResult" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "bytesResult",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "type" : "string",
+                "types" : [ "string" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "items" : {
+                    "exampleSetFlag" : false,
+                    "format" : "byte",
+                    "type" : "string",
+                    "types" : [ "string" ]
+                  },
+                  "type" : "array",
+                  "types" : [ "array" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      },
+      "post" : {
+        "description" : "",
+        "operationId" : "bytesResult",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "type" : "string",
+                "types" : [ "string" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "items" : {
+                    "exampleSetFlag" : false,
+                    "format" : "byte",
+                    "type" : "string",
+                    "types" : [ "string" ]
+                  },
+                  "type" : "array",
+                  "types" : [ "array" ]
                 }
               }
             },
@@ -4551,6 +4628,72 @@
         "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
       }
     },
+    "/example/listOfBytesResult" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "listOfBytesResult",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "type" : "string",
+                "types" : [ "string" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "array",
+                  "types" : [ "array" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      },
+      "post" : {
+        "description" : "",
+        "operationId" : "listOfBytesResult",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "exampleSetFlag" : false,
+              "schema" : {
+                "exampleSetFlag" : false,
+                "type" : "string",
+                "types" : [ "string" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "type" : "array",
+                  "types" : [ "array" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
     "/example/req" : {
       "get" : {
         "description" : "",
@@ -4633,10 +4776,10 @@
         "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
       }
     },
-    "/example/string" : {
+    "/example/stringParam" : {
       "get" : {
         "description" : "",
-        "operationId" : "string",
+        "operationId" : "stringParam",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -4668,7 +4811,7 @@
       },
       "post" : {
         "description" : "",
-        "operationId" : "string",
+        "operationId" : "stringParam",
         "requestBody" : {
           "content" : {
             "application/json" : {
