@@ -31,10 +31,12 @@
 
 version: 2
 
-registries:
-  maven-oap:
-    type: maven-repository
-    url: https://mvn.oaplatform.org
+#registries:
+#  maven-oap:
+#    type: maven-repository
+#    url: https://mvn.oaplatform.org
+#    username: mvn
+#    password: ${{secrets.MY_ARTIFACTORY_PASSWORD}}
 
 # Maintain dependencies for Maven
 updates:
