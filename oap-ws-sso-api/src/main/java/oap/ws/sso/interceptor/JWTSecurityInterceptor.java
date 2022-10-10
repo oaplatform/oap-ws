@@ -58,9 +58,10 @@ public class JWTSecurityInterceptor implements Interceptor {
     @Override
     public Optional<Response> before( InvocationContext context ) {
         var jwtToken = SSO.getAuthentication( context.exchange );
-        if( jwtToken == null )
+        if( jwtToken == null ) {
             log.trace( "Not authenticated" );
-        else {
+            return Optional.empty();
+        } else {
             final String token = extractBearerToken( jwtToken );
             if( token == null || !tokenProvider.verifyToken( token ) ) {
                 log.trace( "Not authenticated." );
