@@ -95,16 +95,17 @@ class OpenapiSchema {
     /**
      * Returns schema object with reference to openapi components schema map
      *
-     * @param schema - object to make a ref
-     * @param map    - openapi components schema map
+     * @param schema  - object to make a ref
+     * @param map     - openapi components schema map
+     * @param asArray
      * @return schema reference if openapi components schema map already contains schema with same name
      * otherwise return schema object without changes
      */
-    public Schema createSchemaRef( Schema schema, Map<String, Schema> map ) {
+    public Schema createSchemaRef( Schema schema, Map<String, Schema> map, boolean asArray ) {
         if( schema != null
             && schema.getName() != null
             && map.containsKey( schema.getName() ) ) {
-            var result = new Schema<>();
+            var result = asArray ? new ArraySchema() : new Schema<>();
             result.$ref( RefUtils.constructRef( schema.getName() ) );
             return result;
         }
@@ -153,7 +154,7 @@ class OpenapiSchema {
             if( isCollection( rawClass ) ) {
                 var schema = new ArraySchema();
                 var genericSchema = resolveSchema( getGenericType( paramType, 0 ), method );
-                schema.setItems( createSchemaRef( genericSchema.schema, resolvedSchema.referencedSchemas ) );
+                schema.setItems( createSchemaRef( genericSchema.schema, resolvedSchema.referencedSchemas, false ) );
                 resolvedSchema.schema = schema;
                 log.debug( "Type {} resolved to {} (a collection)", type, rawClass );
             } else if( isMap( rawClass ) ) {

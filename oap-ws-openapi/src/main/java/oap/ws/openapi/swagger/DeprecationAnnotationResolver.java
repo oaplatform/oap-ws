@@ -45,6 +45,7 @@ import oap.json.ext.ExtDeserializer;
 import oap.util.Pair;
 import oap.util.Strings;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.lang.annotation.Annotation;
@@ -179,7 +180,7 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
         return schemaTo;
     }
 
-    @NotNull
+    @Nullable
     public static Schema detectInnerSchema( String innerType ) {
         Schema typeSchema = switch( innerType ) {
             case "java.lang.Integer" -> new IntegerSchema();
@@ -191,8 +192,9 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
             case "byte[]" -> new ByteArraySchema();
             case "java.util.Date" -> new DateSchema();
             case "boolean" -> new BooleanSchema();
-            default -> throw new UnsupportedOperationException( "Unknown type for schema: " + innerType );
+            default -> null;
         };
+        if( typeSchema == null ) log.debug( "Cannot inline schema for non-primitive type " + innerType );
         return typeSchema;
     }
 

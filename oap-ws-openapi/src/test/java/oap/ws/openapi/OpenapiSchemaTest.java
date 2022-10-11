@@ -80,14 +80,14 @@ public class OpenapiSchemaTest extends TestCase {
     public void testCreateSchemaRefForNull() {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        assertThat( openapiSchema.createSchemaRef( null, Map.of() ) ).isNull();
+        assertThat( openapiSchema.createSchemaRef( null, Map.of(), false ) ).isNull();
     }
 
     @Test
     public void testCreateSchemaRefForSchemaWithEmptyName() {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        assertThat( openapiSchema.createSchemaRef( new StringSchema(), Map.of() ) )
+        assertThat( openapiSchema.createSchemaRef( new StringSchema(), Map.of(), false ) )
             .isEqualTo( new StringSchema() );
     }
 
@@ -96,7 +96,7 @@ public class OpenapiSchemaTest extends TestCase {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
         var resolvedSchema = ModelConverters.getInstance().readAllAsResolvedSchema( InnerType.class );
-        assertThat( openapiSchema.createSchemaRef( resolvedSchema.schema, Map.of() ) )
+        assertThat( openapiSchema.createSchemaRef( resolvedSchema.schema, Map.of(), false ) )
             .isEqualTo( resolvedSchema.schema );
     }
 
@@ -107,7 +107,7 @@ public class OpenapiSchemaTest extends TestCase {
         var resolvedSchema = ModelConverters.getInstance().readAllAsResolvedSchema( InnerType.class );
         var expected = new io.swagger.v3.oas.models.media.Schema<>();
         expected.name( resolvedSchema.schema.getName() ).$ref( RefUtils.constructRef( resolvedSchema.schema.getName() ) );
-        assertThat( openapiSchema.createSchemaRef( resolvedSchema.schema, resolvedSchema.referencedSchemas ) )
+        assertThat( openapiSchema.createSchemaRef( resolvedSchema.schema, resolvedSchema.referencedSchemas, false ) )
             .isEqualTo( expected );
     }
 

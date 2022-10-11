@@ -222,18 +222,23 @@ public class OpenapiGenerator {
         } else if ( returnType instanceof GenericArrayType ) {
             rawType = null;
         }
+        boolean arraySchema = false;
         if ( Stream.class.equals( rawType ) ||  oap.util.Stream.class.equals( rawType ) ) {
-            // return type of Array with embedded schema
+            arraySchema = true;
+            // return type of Array with embedded schema if it's possible (for primitives)
             Schema envelop = new ArraySchema();
-            envelop.setItems( DeprecationAnnotationResolver.detectInnerSchema( underlyingType ) );
-            return envelop;
+            Schema innerSchema = DeprecationAnnotationResolver.detectInnerSchema( underlyingType );
+            if ( innerSchema != null ) {
+                envelop.setItems( innerSchema );
+                return envelop;
+            }
         }
 
         var resolvedSchema = openapiSchema.prepareSchema( returnType, api, method );
         Map<String, Schema> schemas = api.getComponents() == null
             ? Collections.emptyMap()
             : api.getComponents().getSchemas();
-        Schema reference = openapiSchema.createSchemaRef( resolvedSchema.schema, schemas );
+        Schema reference = openapiSchema.createSchemaRef( resolvedSchema.schema, schemas, arraySchema );
 
         return reference;
     }
@@ -258,7 +263,7 @@ public class OpenapiGenerator {
             ? Map.of()
             : api.getComponents().getSchemas();
         var result = new RequestBody();
-        Schema schemaRef = openapiSchema.createSchemaRef( resolvedSchema.schema, schemas );
+        Schema schemaRef = openapiSchema.createSchemaRef( resolvedSchema.schema, schemas, false );
         result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(), schemaRef ) );
         if( schemas.containsKey( resolvedSchema.schema.getName() ) )
             api.getComponents().addRequestBodies( resolvedSchema.schema.getName(), result );
