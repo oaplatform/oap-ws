@@ -210,7 +210,7 @@ public class OpenapiGenerator {
         return responses;
     }
 
-    private Schema getSchemaByReturnType( Type returnType ) {
+    private Schema getSchemaByReturnType( Type returnType, oap.ws.api.Info.WebMethodInfo method ) {
         Type rawType = returnType;
         String underlyingType = null;
         if ( returnType instanceof ParameterizedType ) {
@@ -229,7 +229,7 @@ public class OpenapiGenerator {
             return envelop;
         }
 
-        var resolvedSchema = openapiSchema.prepareSchema( returnType, api );
+        var resolvedSchema = openapiSchema.prepareSchema( returnType, api, method );
         Map<String, Schema> schemas = api.getComponents() == null
             ? Collections.emptyMap()
             : api.getComponents().getSchemas();
@@ -253,7 +253,7 @@ public class OpenapiGenerator {
     }
 
     private RequestBody createBody( oap.ws.api.Info.WebMethodParameterInfo parameter ) {
-        var resolvedSchema = openapiSchema.prepareSchema( prepareType( parameter.type() ), api );
+        var resolvedSchema = openapiSchema.prepareSchema( prepareType( parameter.type() ), api, null );
         Map<String, Schema> schemas = api.getComponents() == null
             ? Map.of()
             : api.getComponents().getSchemas();
@@ -283,7 +283,7 @@ public class OpenapiGenerator {
     }
 
     private Content createContent( oap.ws.api.Info.WebMethodInfo method, Type type ) {
-        Schema schema = getSchemaByReturnType( type );
+        Schema schema = getSchemaByReturnType( type, method );
         schema.setName( method.resultType().getType() + " " + method.name + "(" + Joiner.on( "," ).join(  method.parameters().stream().map( info -> info.name  ).toList() ) + ")" );
         return createContent( method.produces, schema );
     }

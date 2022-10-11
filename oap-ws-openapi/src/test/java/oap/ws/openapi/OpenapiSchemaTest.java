@@ -34,8 +34,10 @@ import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import junit.framework.TestCase;
 import oap.reflect.Reflect;
+import oap.ws.api.Info;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OpenapiSchemaTest extends TestCase {
+    private Info.WebMethodInfo method = null;
 
     @Test
     public void testPrepareTypeForPrimitive() {
@@ -116,7 +119,7 @@ public class OpenapiSchemaTest extends TestCase {
         OpenapiSchema openapiSchema = new OpenapiSchema();
         assertThat( openAPI.getComponents() ).isNull();
 
-        var resolvedSchema = openapiSchema.prepareSchema( InnerType.class, openAPI );
+        var resolvedSchema = openapiSchema.prepareSchema( InnerType.class, openAPI, method );
 
         assertThat( resolvedSchema.referencedSchemas ).isEqualTo( openAPI.getComponents().getSchemas() );
         assertThat( resolvedSchema.schema ).isNotNull();
@@ -129,7 +132,7 @@ public class OpenapiSchemaTest extends TestCase {
 
         assertThat( openAPI.getComponents() ).isNull();
 
-        var resolvedSchema = openapiSchema.prepareSchema( String.class, openAPI );
+        var resolvedSchema = openapiSchema.prepareSchema( String.class, openAPI, method );
         assertThat( openAPI.getComponents() ).isNull();
         assertThat( resolvedSchema.referencedSchemas ).isEmpty();
         assertThat( resolvedSchema.schema ).isNotNull();
@@ -140,7 +143,7 @@ public class OpenapiSchemaTest extends TestCase {
     public void testResolvedSchemaForInnerType() {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( InnerType.class );
+        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( InnerType.class, method );
 
         assertThat( resolvedSchema ).isNotNull();
         assertThat( resolvedSchema.schema.getProperties() ).hasSize( 9 );
@@ -151,7 +154,7 @@ public class OpenapiSchemaTest extends TestCase {
     public void testResolvedSchemaForStringType() {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( String.class );
+        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( String.class, method );
 
         assertThat( resolvedSchema ).isNotNull();
         assertThat( resolvedSchema.schema.getClass() ).isEqualTo( StringSchema.class );
@@ -161,7 +164,7 @@ public class OpenapiSchemaTest extends TestCase {
     public void testResolvedSchemaForOptionalType() {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( new TypeReference<Optional<String>>() {}.getType() );
+        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( new TypeReference<Optional<String>>() {}.getType(), method );
 
         assertThat( resolvedSchema ).isNotNull();
         assertThat( resolvedSchema.schema.getClass() ).isEqualTo( StringSchema.class );
@@ -171,7 +174,7 @@ public class OpenapiSchemaTest extends TestCase {
     public void testResolvedSchemaForListType() {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( new TypeReference<List<String>>() {}.getType() );
+        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( new TypeReference<List<String>>() {}.getType(), method );
 
         assertThat( resolvedSchema ).isNotNull();
         assertThat( resolvedSchema.schema.getClass() ).isEqualTo( ArraySchema.class );
@@ -182,7 +185,7 @@ public class OpenapiSchemaTest extends TestCase {
     public void testResolvedSchemaForComplexListType() {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( new TypeReference<Optional<List<List<String>>>>() {}.getType() );
+        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( new TypeReference<Optional<List<List<String>>>>() {}.getType(), method );
 
         assertThat( resolvedSchema ).isNotNull();
         var schema = resolvedSchema.schema;
@@ -196,7 +199,7 @@ public class OpenapiSchemaTest extends TestCase {
     public void testResolvedSchemaForComplexMapType() {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( new TypeReference<Optional<Map<String, List<String>>>>() {}.getType() );
+        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( new TypeReference<Optional<Map<String, List<String>>>>() {}.getType(), method );
 
         assertThat( resolvedSchema ).isNotNull();
         var schema = resolvedSchema.schema;

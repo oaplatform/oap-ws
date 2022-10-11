@@ -24,7 +24,6 @@
 
 package oap.ws.openapi.swagger;
 
-import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
@@ -82,7 +81,7 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                                                   Annotation[] annotations,
                                                   Schema parent ) {
         super.applyBeanValidatorAnnotations( property, annotations, parent );
-        if ( annotations == null || annotations.length == 0 ) return;
+        if( annotations == null || annotations.length == 0 ) return;
         Optional<Annotation> deprecated = Arrays.stream( annotations ).filter( anno -> anno.annotationType().equals( Deprecated.class ) ).findAny();
         deprecated.ifPresent( annotation -> {
             Deprecated anno = ( Deprecated ) annotation;
@@ -109,20 +108,19 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                               String propName,
                               Set<String> propertiesToIgnore,
                               BeanPropertyDefinition propDef ) {
-        if ( member.getClass() == AnnotatedField.class ) {
+        if( member.getClass() == AnnotatedField.class ) {
             //only for fields
             if( propDef.getPrimaryMember() != null && Ext.class.isAssignableFrom( member.getRawType() ) ) {
-                String className = propDef.getPrimaryMember().getDeclaringClass().getSimpleName();
+                Class clazz = propDef.getPrimaryMember().getDeclaringClass();
                 String fieldName = propDef.getName();
-                PropertyName propertyName = propDef.getFullName();
                 try {
                     Class<?> ext = ExtDeserializer.extensionOf( propDef.getPrimaryMember().getDeclaringClass(), propDef.getName() );
                     AnnotatedType annotatedType = new AnnotatedType( ext );
                     Schema extensionSchema = super.resolve( annotatedType, context, context.getConverters() );
-                    extensionsSchemas.put( Pair.__( className, fieldName ), extensionSchema );
-                    log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, className, ext.getCanonicalName() );
+                    extensionsSchemas.put( Pair.__( clazz.getSimpleName(), fieldName ), extensionSchema );
+                    log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, clazz.getCanonicalName(), ext.getCanonicalName() );
                 } catch( Exception ex ) {
-                    log.error( "Cannot resolve '{}.{}'. Detailed member:{}", className, fieldName, propertyName, ex );
+                    log.error( "Cannot resolve member '{}' in class '{}', reason: {}", fieldName, clazz.getCanonicalName(), ex.getMessage(), ex );
                 }
             }
             if( propDef.getPrimaryMember() != null ) {
@@ -141,12 +139,12 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
     }
 
     Schema copySchemaFields( Schema schemaFrom, BeanPropertyDefinition propDef ) {
-        if ( schemaFrom == null ) return null;
-        if ( schemaFrom instanceof ArraySchema ) return schemaFrom;
+        if( schemaFrom == null ) return null;
+        if( schemaFrom instanceof ArraySchema ) return schemaFrom;
         Schema schemaTo = new ArraySchema();
         schemaTo.setName( schemaFrom.getName() );
         schemaTo.set$id( schemaFrom.get$id() );
-        if ( schemaFrom.getItems() != null ) schemaTo.setItems( schemaFrom.getItems() );
+        if( schemaFrom.getItems() != null ) schemaTo.setItems( schemaFrom.getItems() );
         else {
             Type type = ( ( Field ) propDef.getPrimaryMember().getMember() ).getGenericType();
             //oap.util.Stream<java.lang.String>

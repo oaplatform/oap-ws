@@ -35,6 +35,7 @@ import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import oap.reflect.Reflection;
+import oap.ws.api.Info;
 import oap.ws.openapi.swagger.DeprecationAnnotationResolver;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
@@ -113,13 +114,14 @@ class OpenapiSchema {
     /**
      * Prepares schema and add all necessary elements to openapi schema map
      *
-     * @param type - Type to create openapi schema
-     * @param api  - prepared openapi object
+     * @param type   - Type to create openapi schema
+     * @param api    - prepared openapi object
+     * @param method - processing method in Web Service for information
      * @return resolved schema
      * @see io.swagger.v3.oas.models.media.Schema
      */
-    public ResolvedSchema prepareSchema( Type type, OpenAPI api ) {
-        var resolvedSchema = resolveSchema( type );
+    public ResolvedSchema prepareSchema( Type type, OpenAPI api, Info.WebMethodInfo method ) {
+        var resolvedSchema = resolveSchema( type, method );
         resolvedSchema.referencedSchemas.forEach( api::schema );
         return resolvedSchema;
     }
@@ -127,31 +129,41 @@ class OpenapiSchema {
     /**
      * Transforms type into openapi schema
      *
-     * @param type to transform
+     * @param type   to transform
+     * @param method
      * @return transformed schema
      * @see io.swagger.v3.oas.models.media.Schema
      */
-    public ResolvedSchema resolveSchema( Type type ) {
-        var resolvedSchema = converters.readAllAsResolvedSchema( type );
+    public ResolvedSchema resolveSchema( Type type, Info.WebMethodInfo method ) {
+        if ( type == null ) return null;
+        ResolvedSchema resolvedSchema = null;
+        Class rawClass = null;
+        try {
+            rawClass = TypeFactory.rawClass( type );
+            resolvedSchema = converters.readAllAsResolvedSchema( type );
+        } catch( Exception ex ) {
+            log.error( "Cannot resolve schema for type " + type.getTypeName() + " in method: " + method + ", raw class is: <"
+                + ( rawClass != null ? rawClass.getCanonicalName() : "?" ) + ">", ex );
+        }
+
         if ( resolvedSchema == null || resolvedSchema.schema != null ) {
             return resolvedSchema;
         }
         if( type instanceof ParameterizedType paramType ) {
-            var rawClass = TypeFactory.rawClass( type );
             if( isCollection( rawClass ) ) {
                 var schema = new ArraySchema();
-                var genericSchema = resolveSchema( getGenericType( paramType, 0 ) );
+                var genericSchema = resolveSchema( getGenericType( paramType, 0 ), method );
                 schema.setItems( createSchemaRef( genericSchema.schema, resolvedSchema.referencedSchemas ) );
                 resolvedSchema.schema = schema;
                 log.debug( "Type {} resolved to {} (a collection)", type, rawClass );
             } else if( isMap( rawClass ) ) {
                 var schema = new MapSchema();
-                var genericSchema = resolveSchema( getGenericType( paramType, 1 ) );
+                var genericSchema = resolveSchema( getGenericType( paramType, 1 ), method );
                 schema.setAdditionalProperties( genericSchema.schema );
                 resolvedSchema.schema = schema;
                 log.debug( "Type {} resolved to {} (a map)", type, rawClass );
             } else if( isOptional( rawClass ) ) {
-                resolvedSchema = resolveSchema( getGenericType( paramType, 0 ) );
+                resolvedSchema = resolveSchema( getGenericType( paramType, 0 ), method );
                 log.debug( "Type {} resolved to {} (an optional)", type, rawClass );
             }
         }
