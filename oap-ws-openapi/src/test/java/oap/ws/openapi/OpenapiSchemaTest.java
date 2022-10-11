@@ -36,8 +36,6 @@ import junit.framework.TestCase;
 import oap.reflect.Reflect;
 import oap.ws.api.Info;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
