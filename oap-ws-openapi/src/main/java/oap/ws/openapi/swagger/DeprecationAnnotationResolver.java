@@ -115,10 +115,14 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                 String fieldName = propDef.getName();
                 try {
                     Class<?> ext = ExtDeserializer.extensionOf( propDef.getPrimaryMember().getDeclaringClass(), propDef.getName() );
-                    AnnotatedType annotatedType = new AnnotatedType( ext );
-                    Schema extensionSchema = super.resolve( annotatedType, context, context.getConverters() );
-                    extensionsSchemas.put( Pair.__( clazz.getSimpleName(), fieldName ), extensionSchema );
-                    log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, clazz.getCanonicalName(), ext.getCanonicalName() );
+                    if ( ext != null ) {
+                        AnnotatedType annotatedType = new AnnotatedType( ext );
+                        Schema extensionSchema = super.resolve( annotatedType, context, context.getConverters() );
+                        extensionsSchemas.put( Pair.__( clazz.getSimpleName(), fieldName ), extensionSchema );
+                        log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, clazz.getCanonicalName(), ext.getCanonicalName() );
+                    } else {
+                        log.error( "Cannot resolve member '{}' in class '{}', ext is not defined", fieldName, clazz.getCanonicalName() );
+                    }
                 } catch( Exception ex ) {
                     log.error( "Cannot resolve member '{}' in class '{}', reason: {}", fieldName, clazz.getCanonicalName(), ex.getMessage(), ex );
                 }
