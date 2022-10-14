@@ -114,6 +114,7 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                 Class clazz = propDef.getPrimaryMember().getDeclaringClass();
                 String fieldName = propDef.getName();
                 try {
+                    log.debug( "Looking for '{}.{}' ...", propDef.getPrimaryMember().getDeclaringClass().getCanonicalName(), propDef.getName() );
                     Class<?> ext = ExtDeserializer.extensionOf( propDef.getPrimaryMember().getDeclaringClass(), propDef.getName() );
                     if ( ext != null ) {
                         AnnotatedType annotatedType = new AnnotatedType( ext );
