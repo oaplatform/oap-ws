@@ -221,6 +221,7 @@ SomeClass
 ## oap.ws.api.ExampleWS.Bean ###################################################
 Bean
 {
+	amazon: ["UNKNOWN","GOOGLE_PLAY","APP_STORE","AMAZON","WEB"] (Deprecated)
 	b2: oap.ws.api.ExampleWS.Bean2
 	beans: oap.ws.api.ExampleWS.Bean2[]
 	dt: LocalDateTime
@@ -229,6 +230,7 @@ Bean
 	intStream: int[]
 	map: map String -> oap.ws.api.ExampleWS.Bean2
 	s: String (Deprecated)
+	unknown: oap.dictionary.Dictionary (Deprecated)
 	something: String
 }
 
