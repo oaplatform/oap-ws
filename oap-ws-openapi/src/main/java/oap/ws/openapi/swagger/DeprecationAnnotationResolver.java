@@ -27,6 +27,7 @@ package oap.ws.openapi.swagger;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
@@ -49,10 +50,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -61,6 +67,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class DeprecationAnnotationResolver extends ModelResolver implements ModelConverter {
     private ModelConverterContext context;
+    private LinkedHashSet<String> toBeResolvedClassName = new LinkedHashSet<>();
     private Map<Pair<String, String>, Schema> extensionsSchemas = new HashMap<>();
     private Map<Pair<String, String>, Schema> collectionsSchemas = new HashMap<>();
 
@@ -73,6 +80,9 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                            ModelConverterContext context,
                            Iterator<ModelConverter> next ) {
         this.context = context;
+        if ( annotatedType.getType().getClass() != SimpleType.class ) {
+            this.toBeResolvedClassName.add( annotatedType.getType().getTypeName() );
+        }
         return super.resolve( annotatedType, context, next );
     }
 
@@ -113,13 +123,22 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
             if( propDef.getPrimaryMember() != null && Ext.class.isAssignableFrom( member.getRawType() ) ) {
                 Class clazz = propDef.getPrimaryMember().getDeclaringClass();
                 String fieldName = propDef.getName();
+                String memberClassName = clazz.getSimpleName();
                 try {
-                    log.debug( "Looking for '{}.{}' ...", propDef.getPrimaryMember().getDeclaringClass().getCanonicalName(), propDef.getName() );
-                    Class<?> ext = ExtDeserializer.extensionOf( propDef.getPrimaryMember().getDeclaringClass(), propDef.getName() );
+                    log.debug( "Looking for '{}.{}' ...", clazz.getCanonicalName(), propDef.getName() );
+                    Class<?> ext = ExtDeserializer.extensionOf( clazz, propDef.getName() );
+                    if ( ext == null && !toBeResolvedClassName.isEmpty() ) {
+                        //maybe a subclass of clazz? let's check up 'toBeResolved'
+                        log.debug( "Looking for '{}.{}' ...", toBeResolvedClassName, propDef.getName() );
+                        Class concreteClass = getConcreteClass();
+                        ext = ExtDeserializer.extensionOf( concreteClass, propDef.getName() );
+                        memberClassName = concreteClass.getSimpleName();
+                    }
                     if ( ext != null ) {
+                        Pair<String, String> key = Pair.__( memberClassName, fieldName );
                         AnnotatedType annotatedType = new AnnotatedType( ext );
                         Schema extensionSchema = super.resolve( annotatedType, context, context.getConverters() );
-                        extensionsSchemas.put( Pair.__( clazz.getSimpleName(), fieldName ), extensionSchema );
+                        extensionsSchemas.put( key, extensionSchema );
                         log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, clazz.getCanonicalName(), ext.getCanonicalName() );
                     } else {
                         log.error( "Cannot resolve member '{}' in class '{}', ext is not defined", fieldName, clazz.getCanonicalName() );
@@ -141,6 +160,17 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
             }
         }
         return super.ignore( member, xmlAccessorTypeAnnotation, propName, propertiesToIgnore, propDef );
+    }
+
+    Class getConcreteClass() throws ReflectiveOperationException {
+        Class result = null;
+        List<String> classesToCheck = new ArrayList<>( toBeResolvedClassName );
+        Collections.reverse( classesToCheck );
+        for ( String name : classesToCheck ) {
+            result = Class.forName( name );
+            if ( !result.isInterface() && !Modifier.isAbstract( result.getModifiers() ) ) break;
+        }
+        return result;
     }
 
     Schema copySchemaFields( Schema schemaFrom, BeanPropertyDefinition propDef ) {

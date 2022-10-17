@@ -25,6 +25,36 @@
       }
     },
     "schemas" : {
+      "AcmeCreativeSettings" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "format" : {
+            "_enum" : [ "VIDEO", "VIDEO_IEC", "VIDEO_PLAYABLE", "PLAYABLE" ],
+            "enum" : [ "VIDEO", "VIDEO_IEC", "VIDEO_PLAYABLE", "PLAYABLE" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "language" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "placements" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "_enum" : [ "FS", "RV", "NATIVE" ],
+              "enum" : [ "FS", "RV", "NATIVE" ],
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          }
+        },
+        "type" : "object"
+      },
       "ApiResponse" : {
         "exampleSetFlag" : false,
         "properties" : {
@@ -495,6 +525,31 @@
             "exampleSetFlag" : false,
             "type" : "string",
             "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
+      "CreativeUniversal" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "assets" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "name" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "settings" : {
+            "$ref" : "#/components/schemas/AcmeCreativeSettings",
+            "exampleSetFlag" : false
           }
         },
         "type" : "object"
@@ -4271,6 +4326,46 @@
                   "exampleSetFlag" : false,
                   "type" : "string",
                   "types" : [ "string" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      }
+    },
+    "/example/getCreativeUniversal" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "getCreativeUniversal",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreativeUniversal",
+                  "exampleSetFlag" : false
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
+      },
+      "post" : {
+        "description" : "",
+        "operationId" : "getCreativeUniversal",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreativeUniversal",
+                  "exampleSetFlag" : false
                 }
               }
             },
