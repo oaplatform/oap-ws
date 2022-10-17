@@ -115,6 +115,9 @@ class ExampleNewWS {
     public java.util.stream.Stream<String> getVanillaStreamOfStrings( @WsParam( from = BODY ) List<String> str ) {
         return new ArrayList<>( str ).stream();
     }
+    public CreativeUniversal getCreativeUniversal() {
+        return new CreativeUniversal();
+    }
 
     public Response response() {
         return null;
