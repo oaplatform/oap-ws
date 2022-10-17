@@ -24,6 +24,7 @@
 package oap.ws.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import oap.dictionary.Dictionary;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
 import oap.util.AssocList;
@@ -150,6 +151,10 @@ class ExampleWS {
         public Ext ext;
         public Beans beans = new Beans();
         public Map<String, Bean2> map = new HashMap<>();
+        @Deprecated
+        public AppStore amazon = AppStore.AMAZON;
+        @Deprecated
+        public Dictionary unknown = AppStore.UNKNOWN;
 
         public class Beans extends AssocList<String, Bean2> {
 

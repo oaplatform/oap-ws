@@ -24,17 +24,19 @@
 
 package oap.ws.openapi;
 
+import oap.http.useragent.UserAgent;
 import oap.json.ext.Ext;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 
 public class AcmeCreativeSettings extends Ext implements Serializable {
     public String language;
     public List<Placement> placements = new ArrayList<>();
     public Format format;
-
+    public AppStore appStore;
 
     public enum Format {
         VIDEO, VIDEO_IEC, VIDEO_PLAYABLE, PLAYABLE

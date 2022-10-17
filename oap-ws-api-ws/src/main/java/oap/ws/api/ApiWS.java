@@ -104,11 +104,16 @@ public class ApiWS {
         }
         result += "# TYPES " + "#".repeat( 72 ) + "\n";
         for( Reflection type : types ) {
+            if ( ignorableType( type ) ) continue;
             result += "## " + type.name() + " " + "#".repeat( Math.max( 0, 76 - type.name().length() ) ) + "\n";
             result += formatComplexType( type, types, withDeprecated ) + "\n";
             result += "\n";
         }
         return result;
+    }
+
+    private boolean ignorableType( Reflection type ) {
+        return type.assignableTo( Dictionary.class ) || type.underlying.getSuperclass() == null;
     }
 
     private String formatType( Reflection r, Types types ) {
@@ -135,7 +140,6 @@ public class ApiWS {
         if( r.assignableTo( Character.class ) ) return char.class.getSimpleName();
         if( r.assignableTo( String.class ) ) return String.class.getSimpleName();
         if( r.assignableTo( Boolean.class ) ) return Boolean.class.getSimpleName();
-        if( r.assignableTo( Dictionary.class ) ) return Dictionary.class.getSimpleName();
         if( r.isEnum() ) return join( ",", List.of( r.underlying.getEnumConstants() ), "[", "]", "\"" );
         if( r.assignableTo( Response.class ) ) return "<http response>";
         types.push( r );

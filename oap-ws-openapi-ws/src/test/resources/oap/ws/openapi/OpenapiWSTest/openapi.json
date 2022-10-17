@@ -28,6 +28,13 @@
       "AcmeCreativeSettings" : {
         "exampleSetFlag" : false,
         "properties" : {
+          "appStore" : {
+            "_enum" : [ "UNKNOWN", "GOOGLE_PLAY", "APP_STORE", "AMAZON", "WEB" ],
+            "enum" : [ "UNKNOWN", "GOOGLE_PLAY", "APP_STORE", "AMAZON", "WEB" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
           "format" : {
             "_enum" : [ "VIDEO", "VIDEO_IEC", "VIDEO_PLAYABLE", "PLAYABLE" ],
             "enum" : [ "VIDEO", "VIDEO_IEC", "VIDEO_PLAYABLE", "PLAYABLE" ],
@@ -532,6 +539,13 @@
       "CreativeUniversal" : {
         "exampleSetFlag" : false,
         "properties" : {
+          "amazon" : {
+            "_enum" : [ "UNKNOWN", "GOOGLE_PLAY", "APP_STORE", "AMAZON", "WEB" ],
+            "enum" : [ "UNKNOWN", "GOOGLE_PLAY", "APP_STORE", "AMAZON", "WEB" ],
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
           "assets" : {
             "exampleSetFlag" : false,
             "items" : {
@@ -550,6 +564,67 @@
           "settings" : {
             "$ref" : "#/components/schemas/AcmeCreativeSettings",
             "exampleSetFlag" : false
+          },
+          "unknown" : {
+            "$ref" : "#/components/schemas/Dictionary",
+            "exampleSetFlag" : false
+          }
+        },
+        "type" : "object"
+      },
+      "Dictionary" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "enabled" : {
+            "exampleSetFlag" : false,
+            "type" : "boolean",
+            "types" : [ "boolean" ]
+          },
+          "externalId" : {
+            "exampleSetFlag" : false,
+            "format" : "int32",
+            "type" : "integer",
+            "types" : [ "integer" ]
+          },
+          "id" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          },
+          "properties" : {
+            "additionalProperties" : {
+              "exampleSetFlag" : false,
+              "jsonSchema" : {
+                "type" : "object"
+              },
+              "type" : "object",
+              "types" : [ "object" ]
+            },
+            "exampleSetFlag" : false,
+            "jsonSchema" : {
+              "type" : "object"
+            },
+            "type" : "object",
+            "types" : [ "object" ]
+          },
+          "tags" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "exampleSetFlag" : false,
+              "type" : "string",
+              "types" : [ "string" ]
+            },
+            "type" : "array",
+            "types" : [ "array" ]
+          },
+          "values" : {
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/Dictionary",
+              "exampleSetFlag" : false
+            },
+            "type" : "array",
+            "types" : [ "array" ]
           }
         },
         "type" : "object"
