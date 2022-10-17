@@ -148,7 +148,6 @@ public class OpenapiGenerator {
         log.info( "Processing web-service {} implementation class '{}' ...", context, clazz.getCanonicalName() );
         if( !processedClasses.add( clazz.getCanonicalName() ) ) return Result.SKIPPED_DUE_TO_ALREADY_PROCESSED;
         oap.ws.api.Info.WebServiceInfo wsInfo = new oap.ws.api.Info.WebServiceInfo( Reflect.reflect( clazz ), context );
-//        var r = Reflect.reflect( clazz );
         var tag = createTag( wsInfo.name );
         if( uniqueTags.add( tag.getName() ) ) api.addTagsItem( tag );
         if( uniqueVersions.add( wsInfo.name ) )
@@ -239,7 +238,13 @@ public class OpenapiGenerator {
             ? Collections.emptyMap()
             : api.getComponents().getSchemas();
         Schema reference = openapiSchema.createSchemaRef( resolvedSchema.schema, schemas, arraySchema );
-
+        //check and replace Extensions schemas if any
+        if ( resolvedSchema.schema != null && resolvedSchema.schema.getProperties() != null ) {
+            resolvedSchema.schema.getProperties().forEach( ( key, value ) -> {
+                var sc = ( Schema ) value;
+                openapiSchema.processExtensionsInSchemas( sc, resolvedSchema.schema.getName(), ( String ) key );
+            } );
+        }
         return reference;
     }
 

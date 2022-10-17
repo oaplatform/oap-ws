@@ -123,18 +123,22 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
             if( propDef.getPrimaryMember() != null && Ext.class.isAssignableFrom( member.getRawType() ) ) {
                 Class clazz = propDef.getPrimaryMember().getDeclaringClass();
                 String fieldName = propDef.getName();
+                String memberClassName = clazz.getSimpleName();
                 try {
                     log.debug( "Looking for '{}.{}' ...", clazz.getCanonicalName(), propDef.getName() );
                     Class<?> ext = ExtDeserializer.extensionOf( clazz, propDef.getName() );
                     if ( ext == null && !toBeResolvedClassName.isEmpty() ) {
                         //maybe a subclass of clazz? let's check up 'toBeResolved'
                         log.debug( "Looking for '{}.{}' ...", toBeResolvedClassName, propDef.getName() );
-                        ext = ExtDeserializer.extensionOf( getConcreteClass(), propDef.getName() );
+                        Class concreteClass = getConcreteClass();
+                        ext = ExtDeserializer.extensionOf( concreteClass, propDef.getName() );
+                        memberClassName = concreteClass.getSimpleName();
                     }
                     if ( ext != null ) {
+                        Pair<String, String> key = Pair.__( memberClassName, fieldName );
                         AnnotatedType annotatedType = new AnnotatedType( ext );
                         Schema extensionSchema = super.resolve( annotatedType, context, context.getConverters() );
-                        extensionsSchemas.put( Pair.__( clazz.getSimpleName(), fieldName ), extensionSchema );
+                        extensionsSchemas.put( key, extensionSchema );
                         log.debug( "Field '{}' in class '{}' has dynamic extension with class {}", fieldName, clazz.getCanonicalName(), ext.getCanonicalName() );
                     } else {
                         log.error( "Cannot resolve member '{}' in class '{}', ext is not defined", fieldName, clazz.getCanonicalName() );
