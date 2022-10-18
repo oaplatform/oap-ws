@@ -21,7 +21,9 @@ public enum AppStore implements Dictionary {
 
     private final String title;
 
-    public final String title() {return title;}
+    public final String title() {
+        return title;
+    }
 
     AppStore( int externalId, boolean enabled, String title ) {
         this.externalId = externalId;
@@ -46,13 +48,13 @@ public enum AppStore implements Dictionary {
     }
 
     @Override
-    public Integer get( String id ) {
-        return null;
+    public String getOrDefault( int externlId, String defaultValue ) {
+        return defaultValue;
     }
 
     @Override
-    public String getOrDefault( int externlId, String defaultValue ) {
-        return defaultValue;
+    public Integer get( String id ) {
+        return null;
     }
 
     @Override
