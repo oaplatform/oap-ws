@@ -11,18 +11,20 @@ import static java.util.Collections.emptyMap;
 import static java.util.Arrays.asList;
 
 public enum AppStore implements Dictionary {
-    UNKNOWN(-1, false, "Unknown"),
-    GOOGLE_PLAY(0, true, "Google Play"),
-    APP_STORE(1, true, "Apple App Store"),
-    AMAZON(2, false, "Amazon Android Store"),
-    WEB(3, true, "Web page");
+    UNKNOWN( -1, false, "Unknown" ),
+    GOOGLE_PLAY( 0, true, "Google Play" ),
+    APP_STORE( 1, true, "Apple App Store" ),
+    AMAZON( 2, false, "Amazon Android Store" ),
+    WEB( 3, true, "Web page" );
 
     private final int externalId;
     private final boolean enabled;
 
     private final String title;
 
-    public final String title(){return title;}
+    public final String title() {
+        return title;
+    }
 
     AppStore( int externalId, boolean enabled, String title ) {
         this.externalId = externalId;
