@@ -39,7 +39,6 @@ public class WebServicesWalker {
         for( URL url : urls ) {
             log.info( "Reading config from " + url.getPath() );
             Module config = Module.CONFIGURATION.fromUrl( url );
-            log.info( "config:" + config.toString() );
             config.services.forEach( ( name, service ) -> {
                 log.info( String.format( "Service %s", name ) );
                 WsConfig wsService = null;
