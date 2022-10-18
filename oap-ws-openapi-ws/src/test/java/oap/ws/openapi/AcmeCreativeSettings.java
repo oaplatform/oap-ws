@@ -24,12 +24,10 @@
 
 package oap.ws.openapi;
 
-import oap.http.useragent.UserAgent;
 import oap.json.ext.Ext;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.List;
 
 public class AcmeCreativeSettings extends Ext implements Serializable {
