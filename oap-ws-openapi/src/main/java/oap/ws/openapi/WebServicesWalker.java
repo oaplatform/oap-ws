@@ -45,7 +45,7 @@ public class WebServicesWalker {
                 try {
                     wsService = ( WsConfig ) service.ext.get( "ws-service" );
                 } catch( Exception e ) {
-                    e.printStackTrace();
+                    log.error( "Error to get ext", e);
                 }
                 if( wsService == null ) {
                     log.debug( "Skipping bean: " + name + " as it's not a WS" );
