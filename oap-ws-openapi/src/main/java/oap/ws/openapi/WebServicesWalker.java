@@ -40,6 +40,7 @@ public class WebServicesWalker {
             log.info( "Reading config from " + url.getPath() );
             Module config = Module.CONFIGURATION.fromUrl( url );
             config.services.forEach( ( name, service ) -> {
+                log.info( String.format( "Service %s", name ) );
                 WsConfig wsService = ( WsConfig ) service.ext.get( "ws-service" );
                 if( wsService == null ) {
                     log.debug( "Skipping bean: " + name + " as it's not a WS" );
