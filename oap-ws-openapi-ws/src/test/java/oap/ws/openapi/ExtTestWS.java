@@ -29,7 +29,7 @@ public class ExtTestWS {
         return Stream.of( new CampaignInfo() );
     }
 
-    public static class CampaignInfo{
+    public static class CampaignInfo {
         public String field;
     }
 }
