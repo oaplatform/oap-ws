@@ -24,13 +24,27 @@
 
 package oap.ws.sso;
 
-import java.util.List;
+import oap.util.Pair;
+import org.testng.annotations.Test;
 
-public interface AuthTokenProvider {
+import java.util.Set;
 
-    List<String> getPermissions( String token );
+import static oap.testng.Asserts.assertString;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
-    String getUserEmail( String token );
 
-    boolean verifyToken( String token );
+public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
+
+    private JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "issuer", 100000 );
+    private JWTExtractor jwtExtractor = new BasicJWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
+
+    @Test
+    public void generateAndExtractToken() {
+        final String token = jwtTokenGenerator.generateToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
+        assertString( token ).isNotEmpty();
+        assertTrue( jwtExtractor.verifyToken( token ) );
+        assertEquals( jwtExtractor.getUserEmail( token ), "email@email.com" );
+        assertEquals( jwtExtractor.getPermissions( token, "org1" ), Set.of( "accounts:list", "accounts:create" ) );
+    }
 }

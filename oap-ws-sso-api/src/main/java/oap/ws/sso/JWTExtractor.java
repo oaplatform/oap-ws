@@ -24,24 +24,13 @@
 
 package oap.ws.sso;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-public interface User extends Serializable {
-    String getEmail();
+public interface JWTExtractor {
 
-    Optional<String> getRole( String realm );
+    List<String> getPermissions( String token, String organizationId );
 
-    Map<String, String> getRoles();
+    String getUserEmail( String token );
 
-    @JsonIgnore
-    View getView();
-
-    interface View extends Serializable {
-        String getEmail();
-    }
+    boolean verifyToken( String token );
 }

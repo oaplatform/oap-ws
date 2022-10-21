@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import oap.ws.InvocationContext;
 import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
-import oap.ws.sso.AuthTokenProvider;
+import oap.ws.sso.JWTExtractor;
 import oap.ws.sso.SSO;
 import oap.ws.sso.User;
 import oap.ws.sso.UserProvider;
@@ -40,18 +40,18 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static oap.http.Http.StatusCode.FORBIDDEN;
-import static oap.ws.sso.AbstractTokenProvider.extractBearerToken;
+import static oap.ws.sso.AbstractJWTExtractor.extractBearerToken;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 import static oap.ws.sso.WsSecurity.SYSTEM;
 
 @Slf4j
 public class JWTSecurityInterceptor implements Interceptor {
 
-    private final AuthTokenProvider tokenProvider;
+    private final JWTExtractor tokenExtractor;
     private final UserProvider userProvider;
 
-    public JWTSecurityInterceptor( AuthTokenProvider tokenProvider, UserProvider userProvider ) {
-        this.tokenProvider = tokenProvider;
+    public JWTSecurityInterceptor( JWTExtractor tokenExtractor, UserProvider userProvider ) {
+        this.tokenExtractor = tokenExtractor;
         this.userProvider = userProvider;
     }
 
@@ -63,12 +63,12 @@ public class JWTSecurityInterceptor implements Interceptor {
             return Optional.empty();
         } else {
             final String token = extractBearerToken( jwtToken );
-            if( token == null || !tokenProvider.verifyToken( token ) ) {
+            if( token == null || !tokenExtractor.verifyToken( token ) ) {
                 log.trace( "Not authenticated." );
                 return Optional.of( new Response( FORBIDDEN, "Invalid token" ) );
             }
 
-            final String email = tokenProvider.getUserEmail( token );
+            final String email = tokenExtractor.getUserEmail( token );
             User user = userProvider.getUser( email ).orElse( null );
             if( user != null ) {
                 context.session.set( SESSION_USER_KEY, user );
@@ -77,18 +77,19 @@ public class JWTSecurityInterceptor implements Interceptor {
                 log.trace( "User not found with email: " + email );
         }
 
-        final List<String> permissions =
-            jwtToken != null ? tokenProvider.getPermissions( extractBearerToken( jwtToken ) ) : null;
         Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
-        if( wss.isEmpty() )
+        if( wss.isEmpty() ) {
             return Optional.empty();
+        }
 
         log.trace( "Secure method {}", context.method );
 
         Optional<String> realm =
             SYSTEM.equals( wss.get().realm() ) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
-        if( realm.isEmpty() )
+        if( realm.isEmpty() ) {
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
+        }
+        final List<String> permissions = tokenExtractor.getPermissions( extractBearerToken( jwtToken ), realm.get() );
         if( permissions != null ) {
             if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
                 return Optional.empty();
