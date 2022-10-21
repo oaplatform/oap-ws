@@ -27,6 +27,7 @@ package oap.ws.openapi;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.util.RefUtils;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -36,6 +37,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -227,7 +229,11 @@ public class OpenapiGenerator {
             // return type of Array with embedded schema if it's possible (for primitives)
             Schema envelop = new ArraySchema();
             Schema innerSchema = DeprecationAnnotationResolver.detectInnerSchema( underlyingType );
-            if ( innerSchema != null ) {
+            if( innerSchema == null ) {
+                innerSchema = tryDetectSchema( method, underlyingType );
+                envelop.setItems( innerSchema );
+                return envelop;
+            } else {
                 envelop.setItems( innerSchema );
                 return envelop;
             }
@@ -246,6 +252,18 @@ public class OpenapiGenerator {
             } );
         }
         return reference;
+    }
+
+    private Schema tryDetectSchema( oap.ws.api.Info.WebMethodInfo method, String underlyingType ) {
+        try {
+            Schema schema = openapiSchema.prepareSchema( Class.forName( underlyingType ), api, method ).schema;
+            ObjectSchema result = new ObjectSchema();
+            result.$ref( RefUtils.constructRef( schema.getName() ) );
+            return result;
+        } catch( ClassNotFoundException e ) {
+            log.warn( "Cannot detect schema for class '{}'", underlyingType, e );
+            return null;
+        }
     }
 
     private RequestBody prepareRequestBody( List<oap.ws.api.Info.WebMethodParameterInfo> parameters ) {

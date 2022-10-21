@@ -6,6 +6,7 @@ import oap.ws.WsParam;
 import oap.ws.sso.WsSecurity;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.PATH;
@@ -22,5 +23,13 @@ public class ExtTestWS {
     @Deprecated( since = "not applicable" )
     @WsSecurity( realm = "organizationId", permissions = { "account:read", "permissions:read" } )
     public void testVoid( @WsParam( from = QUERY, description = "Required parameter, MUST be specified" ) Integer limit ) {
+    }
+
+    public Stream<CampaignInfo> campaignList() {
+        return Stream.of( new CampaignInfo() );
+    }
+
+    public static class CampaignInfo {
+        public String field;
     }
 }

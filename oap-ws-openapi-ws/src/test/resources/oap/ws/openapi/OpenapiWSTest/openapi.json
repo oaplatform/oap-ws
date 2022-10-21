@@ -294,6 +294,17 @@
         "type" : "object",
         "types" : [ "object" ]
       },
+      "CampaignInfo" : {
+        "exampleSetFlag" : false,
+        "properties" : {
+          "field" : {
+            "exampleSetFlag" : false,
+            "type" : "string",
+            "types" : [ "string" ]
+          }
+        },
+        "type" : "object"
+      },
       "Components" : {
         "exampleSetFlag" : false,
         "properties" : {
@@ -3887,6 +3898,60 @@
           }
         },
         "tags" : [ "oap.ws.openapi.TestWS" ]
+      }
+    },
+    "/apiExt/campaignList" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "campaignList",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "items" : {
+                    "$ref" : "#/components/schemas/CampaignInfo",
+                    "exampleSetFlag" : false,
+                    "type" : "object",
+                    "types" : [ "object" ]
+                  },
+                  "type" : "array",
+                  "types" : [ "array" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExtTestWS" ]
+      },
+      "post" : {
+        "description" : "",
+        "operationId" : "campaignList",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "exampleSetFlag" : false,
+                "schema" : {
+                  "exampleSetFlag" : false,
+                  "items" : {
+                    "$ref" : "#/components/schemas/CampaignInfo",
+                        "exampleSetFlag" : false,
+                    "type" : "object",
+                    "types" : [ "object" ]
+                  },
+                  "type" : "array",
+                  "types" : [ "array" ]
+                }
+              }
+            },
+            "description" : ""
+          }
+        },
+        "tags" : [ "oap.ws.openapi.ExtTestWS" ]
       }
     },
     "/apiExt/test/empty_optional_param/{id}" : {
