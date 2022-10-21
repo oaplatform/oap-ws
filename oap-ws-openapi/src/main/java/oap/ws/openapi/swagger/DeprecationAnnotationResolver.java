@@ -228,7 +228,10 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
             case "boolean" -> new BooleanSchema();
             default -> null;
         };
-        if( typeSchema == null ) log.debug( "Cannot inline schema for non-primitive type " + innerType );
+        if( typeSchema == null ) {
+            log.debug( "Cannot inline schema for non-primitive type " + innerType );
+
+        }
         return typeSchema;
     }
 
