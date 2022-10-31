@@ -24,26 +24,12 @@
 
 package oap.ws.sso;
 
-import com.auth0.jwk.Jwk;
-import com.auth0.jwk.JwkProvider;
-import com.auth0.jwk.UrlJwkProvider;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 
-import java.security.interfaces.RSAPublicKey;
-
 @Slf4j
-public abstract class AbstractTokenProvider implements AuthTokenProvider {
-
-    protected final String domain;
-
-    public AbstractTokenProvider( String domain ) {
-        this.domain = domain;
-    }
+public abstract class AbstractJWTExtractor implements JWTExtractor {
 
     @Override
     public boolean verifyToken( String token ) {
@@ -56,20 +42,7 @@ public abstract class AbstractTokenProvider implements AuthTokenProvider {
         }
     }
 
-    protected DecodedJWT decodeJWT( String token ) {
-        JwkProvider provider = new UrlJwkProvider( domain );
-        try {
-            DecodedJWT jwt = JWT.decode( token );
-            Jwk jwk = provider.get( jwt.getKeyId() );
-            Algorithm algorithm = Algorithm.RSA256( ( RSAPublicKey ) jwk.getPublicKey(), null );
-            JWTVerifier verifier = JWT.require( algorithm )
-                .withIssuer( domain + "/" )
-                .build();
-            return verifier.verify( token );
-        } catch( Exception e ) {
-            return null;
-        }
-    }
+   protected abstract DecodedJWT decodeJWT( String token );
 
     public static String extractBearerToken( String authorization ) {
         if( authorization != null && authorization.startsWith( "Bearer " ) ) {

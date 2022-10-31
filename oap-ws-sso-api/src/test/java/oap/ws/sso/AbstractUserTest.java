@@ -27,75 +27,20 @@ package oap.ws.sso;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import oap.application.testng.KernelFixture;
-import oap.testng.Fixtures;
 import oap.util.Pair;
-import oap.util.Result;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
-import static oap.io.Resources.urlOrThrow;
-import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
-import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
-import static oap.ws.sso.UserProvider.toAccessKey;
+public class AbstractUserTest {
 
-public class IntegratedTest extends Fixtures {
-    protected final KernelFixture kernelFixture;
 
-    public IntegratedTest() {
-        kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
-    }
-
-    protected TestUserProvider userProvider() {
-        return kernelFixture.service( "oap-ws-sso-test", TestUserProvider.class );
-    }
-
-    @Slf4j
-    public static class TestUserProvider implements UserProvider {
-        public final List<TestUser> users = new ArrayList<>();
-
-        public TestUser addUser( String email, String password, Pair<String, String> role ) {
-            return addUser( new TestUser( email, password, role ) );
-        }
-
-        public TestUser addUser( TestUser user ) {
-            users.add( user );
-            return user;
-        }
-
-        @Override
-        public Optional<TestUser> getUser( String email ) {
-            return users.stream().filter( u -> u.getEmail().equalsIgnoreCase( email ) ).findAny();
-        }
-
-        @Override
-        public Result<TestUser, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode ) {
-            log.trace( "authenticating {} with {}", email, password );
-            log.trace( "users {}", users );
-            return users.stream()
-                .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
-                .map( user -> {
-                    if( user.tfaEnabled ) {
-                        var tfaCheck = tfaCode.map( "proper_code"::equals ).orElse( false );
-                        return tfaCheck ? Result.<TestUser, AuthenticationFailure>success( user )
-                            : Result.<TestUser, AuthenticationFailure>failure( MFA_REQUIRED );
-                    }
-                    return Result.<TestUser, AuthenticationFailure>success( user );
-                } )
-                .findAny().orElse( Result.failure( UNAUTHENTICATED ) );
-        }
-
-        @Override
-        public Optional<TestUser> getAuthenticatedByApiKey( String accessKey, String apiKey ) {
-            return users.stream()
-                .filter( u -> u.getAccessKey().equals( accessKey ) && u.apiKey.equals( apiKey ) )
-                .findAny();
+    public static class TestSecurityRolesProvider extends AbstractSecurityRolesProvider {
+        protected TestSecurityRolesProvider() {
+            super( Map.of( "ADMIN", Set.of( "accounts:list", "accounts:create" ), "USER", Set.of( "accounts:list" ) ) );
         }
     }
 
@@ -139,10 +84,6 @@ public class IntegratedTest extends Fixtures {
         @Override
         public View getView() {
             return view;
-        }
-
-        public String getAccessKey() {
-            return toAccessKey( email );
         }
 
         public class View implements User.View {

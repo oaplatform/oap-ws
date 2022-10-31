@@ -24,23 +24,32 @@
 
 package oap.ws.sso;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Date;
 
-public interface User extends Serializable {
-    String getEmail();
+public class JwtTokenGenerator {
 
-    Optional<String> getRole( String realm );
+    private final String secret;
+    private final String issuer;
+    private final long expiration;
 
-    Map<String, String> getRoles();
-
-    @JsonIgnore
-    View getView();
-
-    interface View extends Serializable {
-        String getEmail();
+    public JwtTokenGenerator( String secret, String issuer, long expriation ) {
+        this.secret = secret;
+        this.issuer = issuer;
+        this.expiration = expriation;
     }
+
+    public String generateToken( User user ) throws JWTCreationException {
+        Algorithm algorithm = Algorithm.HMAC256( secret );
+        return JWT.create()
+            .withClaim( "user", user.getEmail() )
+            .withClaim( "roles", user.getRoles() )
+            .withIssuer( issuer )
+            .withExpiresAt( new Date( System.currentTimeMillis() + expiration ) )
+            .sign( algorithm );
+    }
+
 }
