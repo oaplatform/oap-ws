@@ -42,7 +42,7 @@ public abstract class AbstractJWTExtractor implements JWTExtractor {
         }
     }
 
-   protected abstract DecodedJWT decodeJWT( String token );
+    protected abstract DecodedJWT decodeJWT( String token );
 
     public static String extractBearerToken( String authorization ) {
         if( authorization != null && authorization.startsWith( "Bearer " ) ) {

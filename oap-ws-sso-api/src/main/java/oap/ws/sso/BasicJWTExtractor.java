@@ -49,6 +49,8 @@ public class BasicJWTExtractor extends AbstractJWTExtractor {
 
     @Override
     protected DecodedJWT decodeJWT( String token ) {
+        if( token == null )
+            return null;
         Algorithm algorithm = Algorithm.HMAC256( secret );
         JWTVerifier verifier = JWT.require( algorithm )
             .withIssuer( issuer )
@@ -59,12 +61,14 @@ public class BasicJWTExtractor extends AbstractJWTExtractor {
     @Override
     public List<String> getPermissions( String token, String organizationId ) {
         final DecodedJWT decodedJWT = decodeJWT( token );
-        final Claim tokenRoles = decodedJWT.getClaims().get( "roles" );
-        if( tokenRoles != null ) {
-            final Map<String, Object> rolesByOrganization = tokenRoles.asMap();
-            final String role = ( String ) rolesByOrganization.get( organizationId );
-            if( role != null ) {
-                return new ArrayList<>( this.roles.permissionsOf( role ) );
+        if( decodedJWT != null ) {
+            final Claim tokenRoles = decodedJWT.getClaims().get( "roles" );
+            if( tokenRoles != null ) {
+                final Map<String, Object> rolesByOrganization = tokenRoles.asMap();
+                final String role = ( String ) rolesByOrganization.get( organizationId );
+                if( role != null ) {
+                    return new ArrayList<>( this.roles.permissionsOf( role ) );
+                }
             }
         }
         return Collections.emptyList();

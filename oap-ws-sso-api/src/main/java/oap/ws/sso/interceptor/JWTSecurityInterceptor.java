@@ -40,6 +40,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static oap.http.Http.StatusCode.FORBIDDEN;
+import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.ws.sso.AbstractJWTExtractor.extractBearerToken;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 import static oap.ws.sso.WsSecurity.SYSTEM;
@@ -57,11 +58,10 @@ public class JWTSecurityInterceptor implements Interceptor {
 
     @Override
     public Optional<Response> before( InvocationContext context ) {
-        var jwtToken = SSO.getAuthentication( context.exchange );
-        if( jwtToken == null ) {
-            log.trace( "Not authenticated" );
+        if( context.session.containsKey( SESSION_USER_KEY ) )
             return Optional.empty();
-        } else {
+        var jwtToken = SSO.getAuthentication( context.exchange );
+        if( jwtToken != null ) {
             final String token = extractBearerToken( jwtToken );
             if( token == null || !tokenExtractor.verifyToken( token ) ) {
                 log.trace( "Not authenticated." );
@@ -83,6 +83,8 @@ public class JWTSecurityInterceptor implements Interceptor {
         }
 
         log.trace( "Secure method {}", context.method );
+        if( jwtToken == null )
+            return Optional.of( new Response( UNAUTHORIZED ) );
 
         Optional<String> realm =
             SYSTEM.equals( wss.get().realm() ) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
