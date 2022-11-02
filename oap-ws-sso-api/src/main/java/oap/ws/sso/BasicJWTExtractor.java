@@ -65,6 +65,9 @@ public class BasicJWTExtractor extends AbstractJWTExtractor {
             final Claim tokenRoles = decodedJWT.getClaims().get( "roles" );
             if( tokenRoles != null ) {
                 final Map<String, Object> rolesByOrganization = tokenRoles.asMap();
+                if( rolesByOrganization.get( "SSTM" ) != null ) {
+                    return new ArrayList<>( this.roles.permissionsOf( ( String ) rolesByOrganization.get( "SSTM" ) ) );
+                }
                 final String role = ( String ) rolesByOrganization.get( organizationId );
                 if( role != null ) {
                     return new ArrayList<>( this.roles.permissionsOf( role ) );
