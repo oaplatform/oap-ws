@@ -37,9 +37,9 @@ public class JwtUserAuthenticator implements Authenticator {
     private JWTExtractor jwtExtractor;
     private UserProvider userProvider;
 
-    public JwtUserAuthenticator( UserProvider userProvider, JwtTokenGenerator jwtProvider, JWTExtractor jwtExtractor ) {
+    public JwtUserAuthenticator( UserProvider userProvider, JwtTokenGenerator jwtTokenGenerator, JWTExtractor jwtExtractor ) {
         this.userProvider = userProvider;
-        this.jwtTokenGenerator = jwtProvider;
+        this.jwtTokenGenerator = jwtTokenGenerator;
         this.jwtExtractor = jwtExtractor;
     }
 

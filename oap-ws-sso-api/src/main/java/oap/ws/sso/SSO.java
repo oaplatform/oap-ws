@@ -77,4 +77,13 @@ public class SSO {
                 .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
             );
     }
+
+    public static Response notAuthenticatedResponse( int code, String reasonPhrase, String cookieDomain ) {
+        return new Response( code, reasonPhrase )
+            .withCookie( new Cookie( AUTHENTICATION_KEY, "<logged out>" )
+                .withDomain( cookieDomain )
+                .withPath( "/" )
+                .withExpires( new DateTime( 1970, 1, 1, 1, 1, UTC ) )
+            );
+    }
 }

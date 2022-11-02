@@ -36,10 +36,10 @@ public class JwtTokenGenerator {
     private final String issuer;
     private final long expiration;
 
-    public JwtTokenGenerator( String secret, String issuer, long expriation ) {
+    public JwtTokenGenerator( String secret, String issuer, long expiration ) {
         this.secret = secret;
         this.issuer = issuer;
-        this.expiration = expriation;
+        this.expiration = expiration;
     }
 
     public String generateToken( User user ) throws JWTCreationException {

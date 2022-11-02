@@ -36,7 +36,7 @@ import static oap.util.Pair.__;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 
-public class SecurityInterceptorTest extends IntegratedTest {
+public class JWTInterceptorTest extends IntegratedTest {
     @Test
     public void allowed() {
         userProvider().addUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) );

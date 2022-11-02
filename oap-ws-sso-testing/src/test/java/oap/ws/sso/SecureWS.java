@@ -26,6 +26,7 @@ package oap.ws.sso;
 
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import java.util.Optional;
 
 import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
@@ -33,7 +34,7 @@ import static oap.ws.WsParam.From.SESSION;
 public class SecureWS {
     @WsMethod( path = "/{realm}", produces = "text/plain" )
     @WsSecurity( realm = "realm", permissions = "ALLOWED" )
-    public String secure( @WsParam( from = PATH ) String realm, @WsParam( from = SESSION ) User loggedUser ) {
-        return loggedUser.getEmail();
+    public String secure( @WsParam( from = PATH ) String realm, @WsParam( from = SESSION ) Optional<User> loggedUser ) {
+        return loggedUser.get().getEmail();
     }
 }

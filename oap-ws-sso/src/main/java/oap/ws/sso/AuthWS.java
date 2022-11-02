@@ -46,6 +46,7 @@ import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
 import static oap.ws.sso.SSO.authenticatedResponse;
 import static oap.ws.sso.SSO.logoutResponse;
+import static oap.ws.sso.SSO.notAuthenticatedResponse;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 
@@ -74,8 +75,9 @@ public class AuthWS extends AbstractSecureWS {
         if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
             sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
         else if( MFA_REQUIRED.equals( result.getFailureValue() ) )
-            return new Response( BAD_REQUEST, "TFA code is incorrect or required" );
-        else return new Response( UNAUTHORIZED, "Username or password is invalid" );
+            return notAuthenticatedResponse( BAD_REQUEST, "TFA code is incorrect or required", sessionManager.cookieDomain );
+        else
+            return notAuthenticatedResponse( UNAUTHORIZED, "Username or password is invalid", sessionManager.cookieDomain );
     }
 
     @WsMethod( method = GET, path = "/logout" )
