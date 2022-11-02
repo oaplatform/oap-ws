@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static oap.ws.sso.WsSecurity.SYSTEM;
+
 public class BasicJWTExtractor extends AbstractJWTExtractor {
 
     private final String secret;
@@ -65,8 +67,8 @@ public class BasicJWTExtractor extends AbstractJWTExtractor {
             final Claim tokenRoles = decodedJWT.getClaims().get( "roles" );
             if( tokenRoles != null ) {
                 final Map<String, Object> rolesByOrganization = tokenRoles.asMap();
-                if( rolesByOrganization.get( "SSTM" ) != null ) {
-                    return new ArrayList<>( this.roles.permissionsOf( ( String ) rolesByOrganization.get( "SSTM" ) ) );
+                if( rolesByOrganization.get( SYSTEM ) != null ) {
+                    return new ArrayList<>( this.roles.permissionsOf( ( String ) rolesByOrganization.get( SYSTEM ) ) );
                 }
                 final String role = ( String ) rolesByOrganization.get( organizationId );
                 if( role != null ) {
