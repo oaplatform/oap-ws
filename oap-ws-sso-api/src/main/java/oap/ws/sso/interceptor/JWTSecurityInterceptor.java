@@ -48,11 +48,11 @@ import static oap.ws.sso.WsSecurity.SYSTEM;
 @Slf4j
 public class JWTSecurityInterceptor implements Interceptor {
 
-    private final JWTExtractor tokenExtractor;
+    private final JWTExtractor jwtExtractor;
     private final UserProvider userProvider;
 
-    public JWTSecurityInterceptor( JWTExtractor tokenExtractor, UserProvider userProvider ) {
-        this.tokenExtractor = tokenExtractor;
+    public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider ) {
+        this.jwtExtractor = jwtExtractor;
         this.userProvider = userProvider;
     }
 
@@ -63,12 +63,12 @@ public class JWTSecurityInterceptor implements Interceptor {
         var jwtToken = SSO.getAuthentication( context.exchange );
         if( jwtToken != null ) {
             final String token = extractBearerToken( jwtToken );
-            if( token == null || !tokenExtractor.verifyToken( token ) ) {
+            if( token == null || !jwtExtractor.verifyToken( token ) ) {
                 log.trace( "Not authenticated." );
                 return Optional.of( new Response( FORBIDDEN, "Invalid token" ) );
             }
 
-            final String email = tokenExtractor.getUserEmail( token );
+            final String email = jwtExtractor.getUserEmail( token );
             User user = userProvider.getUser( email ).orElse( null );
             if( user != null ) {
                 context.session.set( SESSION_USER_KEY, user );
@@ -91,7 +91,7 @@ public class JWTSecurityInterceptor implements Interceptor {
         if( realm.isEmpty() ) {
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
         }
-        final List<String> permissions = tokenExtractor.getPermissions( extractBearerToken( jwtToken ), realm.get() );
+        final List<String> permissions = jwtExtractor.getPermissions( extractBearerToken( jwtToken ), realm.get() );
         if( permissions != null ) {
             if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
                 return Optional.empty();
