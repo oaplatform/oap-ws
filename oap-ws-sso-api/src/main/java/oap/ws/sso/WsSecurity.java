@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 @Target( ElementType.METHOD )
 @Retention( RetentionPolicy.RUNTIME )
 public @interface WsSecurity {
-    String SYSTEM = "SSTM";
+    String SYSTEM = "SYSTEM";
 
     String realm() default SYSTEM;
 

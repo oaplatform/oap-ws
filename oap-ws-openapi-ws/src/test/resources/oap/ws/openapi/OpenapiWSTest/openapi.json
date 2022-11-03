@@ -5447,7 +5447,7 @@
         "security" : [ {
           "JWT" : [ ]
         }, {
-          "SSTM" : [ "SUPERADMIN" ]
+          "SYSTEM" : [ "SUPERADMIN" ]
         } ],
         "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
       }

@@ -163,7 +163,7 @@ Methods:
 	Method test1
 	[GET] /example/test/sort/{id}
 	Produces application/json
-	Realm param SSTM
+	Realm param SYSTEM
 	Permissions [SUPERADMIN]
 	Returns String
 	Parameters
