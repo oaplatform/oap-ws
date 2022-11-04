@@ -23,6 +23,7 @@
                     <artifactId>jackson-coreutils</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
