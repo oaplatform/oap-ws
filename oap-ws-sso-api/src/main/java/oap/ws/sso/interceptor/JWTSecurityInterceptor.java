@@ -58,8 +58,10 @@ public class JWTSecurityInterceptor implements Interceptor {
 
     @Override
     public Optional<Response> before( InvocationContext context ) {
-        if( context.session.containsKey( SESSION_USER_KEY ) )
+        if( context.session.containsKey( SESSION_USER_KEY ) ) {
+            log.debug( "Proceed with user in session:" + context.session.get( SESSION_USER_KEY ) );
             return Optional.empty();
+        }
         var jwtToken = SSO.getAuthentication( context.exchange );
         if( jwtToken != null ) {
             final String token = extractBearerToken( jwtToken );
