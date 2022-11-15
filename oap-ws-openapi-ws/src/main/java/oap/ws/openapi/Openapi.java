@@ -44,12 +44,15 @@ public class Openapi {
         this( webServices );
         this.info = info;
     }
-
     public OpenAPI generateOpenApi() {
+        return generateOpenApi( true );
+    }
+
+    public OpenAPI generateOpenApi( boolean skipDeprecated ) {
         OpenapiGenerator openapiGenerator = new OpenapiGenerator(
             info.title,
             info.description,
-            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON ) );
+            new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.JSON, skipDeprecated ) );
         openapiGenerator.beforeProcesingServices();
         for( Map.Entry<String, Object> ws : webServices.services.entrySet() ) {
             openapiGenerator.processWebservice( ws.getValue().getClass(), ws.getKey() );

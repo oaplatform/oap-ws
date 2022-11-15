@@ -44,12 +44,21 @@ public class OpenapiWSTest extends Fixtures {
     }
 
     @Test
-    public void openapi() {
-        assertGet( httpUrl( "/system/openapi" ) )
+    public void openapiWithDeprecated() {
+        assertGet( httpUrl( "/system/openapi?skipDeprecated=false" ) )
             .satisfies( r -> System.out.println( r.contentString()
             ) )
             .respondedJson( Http.StatusCode.OK, "OK",
                 contentOfTestResource( getClass(), "openapi.json", Map.of() ) );
+    }
+
+    @Test
+    public void openapiWithoutDeprecated() {
+        assertGet( httpUrl( "/system/openapi" ) )
+            .satisfies( r -> System.out.println( r.contentString()
+            ) )
+            .respondedJson( Http.StatusCode.OK, "OK",
+                contentOfTestResource( getClass(), "openapiWithoutDeprecated.json", Map.of() ) );
     }
 }
 

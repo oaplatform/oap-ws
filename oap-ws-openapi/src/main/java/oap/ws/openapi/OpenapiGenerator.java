@@ -105,7 +105,7 @@ public class OpenapiGenerator {
     }
 
     public OpenapiGenerator( String title, String description ) {
-        this( title, description, new Settings( Settings.OutputType.JSON ) );
+        this( title, description, new Settings( Settings.OutputType.JSON, true ) );
     }
 
     public OpenAPI build() {
@@ -158,16 +158,20 @@ public class OpenapiGenerator {
                     ? clazz.getPackage().getImplementationVersion()
                     : Strings.UNDEFINED, wsInfo.name );
         List<oap.ws.api.Info.WebMethodInfo> methods = wsInfo.methods( true );
+        boolean atLeastOneMethodProcessed = false;
         for( oap.ws.api.Info.WebMethodInfo method : methods ) {
+            if ( settings.skipDeprecated && method.deprecated ) continue;
             var paths = getPaths();
             var pathString = method.path( wsInfo );
             var pathItem = getPathItem( pathString, paths );
             var operation = prepareOperation( method, tag );
+
             for( HttpServerExchange.HttpMethod httpMethod : method.methods ) {
+                atLeastOneMethodProcessed = true;
                 pathItem.operation( convertMethod( httpMethod ), operation );
             }
         }
-        if( !methods.isEmpty() ) {
+        if( !atLeastOneMethodProcessed ) {
             return Result.SKIPPED_DUE_TO_CLASS_HAS_NO_METHODS;
         }
         return Result.PROCESSED_OK;
@@ -362,12 +366,14 @@ public class OpenapiGenerator {
     @ToString
     public static class Settings {
         /**
-         * This trigger HSON or YAML output file.
+         * This trigger JSON or YAML output file.
          */
         public final OutputType outputType;
+        public boolean skipDeprecated = true;
 
-        public Settings( OutputType outputType ) {
+        public Settings( OutputType outputType, boolean skipDeprecated ) {
             this.outputType = outputType;
+            this.skipDeprecated = skipDeprecated;
         }
 
         public enum OutputType {

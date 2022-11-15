@@ -3987,36 +3987,6 @@
         "tags" : [ "oap.ws.openapi.ExtTestWS" ]
       }
     },
-    "/apiExt/test/empty_required_param/" : {
-      "get" : {
-        "deprecated" : true,
-        "description": "This method returns nothing (Void)\n    Note: \n- security permissions: \n  - account:read\n  - permissions:read\n- realm: organizationId",
-        "operationId" : "testVoid",
-        "parameters" : [ {
-          "description" : "Required parameter, MUST be specified",
-          "in" : "query",
-          "name" : "limit",
-          "required" : true,
-          "schema" : {
-            "exampleSetFlag" : false,
-            "format" : "int32",
-            "type" : "integer",
-            "types" : [ "integer" ]
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : ""
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        }, {
-          "organizationId" : [ "account:read", "permissions:read" ]
-        } ],
-        "tags" : [ "oap.ws.openapi.ExtTestWS" ]
-      }
-    },
     "/apigeneric" : {
       "get" : {
         "description" : "",
@@ -4355,50 +4325,6 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : ""
-          }
-        },
-        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
-      }
-    },
-    "/example/deprecated" : {
-      "get" : {
-        "deprecated" : true,
-        "description" : "",
-        "operationId" : "deprecated",
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "exampleSetFlag" : false,
-                "schema" : {
-                  "exampleSetFlag" : false,
-                  "type" : "string",
-                  "types" : [ "string" ]
-                }
-              }
-            },
-            "description" : ""
-          }
-        },
-        "tags" : [ "oap.ws.openapi.ExampleNewWS" ]
-      },
-      "post" : {
-        "deprecated" : true,
-        "description" : "",
-        "operationId" : "deprecated",
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "exampleSetFlag" : false,
-                "schema" : {
-                  "exampleSetFlag" : false,
-                  "type" : "string",
-                  "types" : [ "string" ]
-                }
-              }
-            },
             "description" : ""
           }
         },

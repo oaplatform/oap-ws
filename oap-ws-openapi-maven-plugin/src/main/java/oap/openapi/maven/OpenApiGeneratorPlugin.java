@@ -39,12 +39,15 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
     @Parameter( required = true, readonly = true, defaultValue = "JSON" )
     private String outputType;
 
+    @Parameter( required = false, readonly = true, defaultValue = "true" )
+    private String skipDeprecated;
+
     @Override
     public void execute() {
         Objects.requireNonNull( outputPath );
         getLog().info( "OpenAPI generation..." );
         try {
-            var settings = new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.valueOf( outputType ) );
+            var settings = new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.valueOf( outputType ), Boolean.valueOf( skipDeprecated ) );
             var openapiGenerator = new OpenapiGenerator( "title", "", settings );
             openapiGenerator.beforeProcesingServices();
 
