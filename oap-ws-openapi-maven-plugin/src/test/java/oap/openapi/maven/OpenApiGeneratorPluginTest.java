@@ -26,8 +26,6 @@ package oap.openapi.maven;
 
 import oap.testng.Fixtures;
 import oap.testng.TestDirectoryFixture;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.testng.annotations.Test;
 
 public class OpenApiGeneratorPluginTest extends Fixtures {
