@@ -27,6 +27,9 @@ package oap.ws.openapi;
 import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import oap.ws.WsMethod;
+import oap.ws.WsParam;
+
+import java.util.Optional;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 
@@ -48,8 +51,8 @@ public class OpenapiWS {
      * @return openapi documentation
      */
     @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
-    public OpenAPI openapi() {
-        return openapi.generateOpenApi();
+    public OpenAPI openapi( @WsParam Optional<Boolean> skipDeprecated ) {
+        return openapi.generateOpenApi( skipDeprecated.orElse( true ) );
     }
 
 }
