@@ -31,18 +31,17 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.testng.annotations.Test;
 
 public class OpenApiGeneratorPluginTest extends Fixtures {
-    {
+
+    public OpenApiGeneratorPluginTest() {
         fixture( TestDirectoryFixture.FIXTURE );
     }
 
     @Test
-    public void execute() throws MojoExecutionException, MojoFailureException {
-
+    public void execute() throws Exception {
         OpenApiGeneratorPlugin mojo = new OpenApiGeneratorPlugin();
         mojo.setOutputPath( "swagger" );
         mojo.setOutputType( "JSON" );
 
         mojo.execute();
     }
-
 }

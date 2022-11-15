@@ -40,14 +40,14 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
     private String outputType;
 
     @Parameter( required = false, readonly = true, defaultValue = "true" )
-    private Boolean skipDeprecated;
+    private String skipDeprecated;
 
     @Override
     public void execute() {
         Objects.requireNonNull( outputPath );
         getLog().info( "OpenAPI generation..." );
         try {
-            var settings = new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.valueOf( outputType ), skipDeprecated );
+            var settings = new OpenapiGenerator.Settings( OpenapiGenerator.Settings.OutputType.valueOf( outputType ), Boolean.valueOf( skipDeprecated ) );
             var openapiGenerator = new OpenapiGenerator( "title", "", settings );
             openapiGenerator.beforeProcesingServices();
 
