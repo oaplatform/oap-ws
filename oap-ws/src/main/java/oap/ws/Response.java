@@ -25,6 +25,7 @@
 package oap.ws;
 
 import com.google.common.base.Preconditions;
+import io.undertow.util.Methods;
 import oap.http.Cookie;
 import oap.http.server.nio.HttpServerExchange;
 
@@ -170,8 +171,6 @@ public class Response {
     public void send( HttpServerExchange exchange ) {
         exchange.setStatusCode( code );
         if( reasonPhrase != null ) exchange.setReasonPhrase( reasonPhrase );
-        headers.put( "Access-Control-Allow-Origin", "https://adn-campaign-management.voodoo-dev.io" );
-        headers.put( "Access-Control-Allow-Methods", "GET,POST" );
         headers.forEach( exchange::setResponseHeader );
         cookies.forEach( exchange::setResponseCookie );
         if( contentType != null ) exchange.setResponseHeader( CONTENT_TYPE, contentType );
