@@ -25,7 +25,6 @@
 package oap.ws;
 
 import com.google.common.base.Preconditions;
-import io.undertow.util.Methods;
 import oap.http.Cookie;
 import oap.http.server.nio.HttpServerExchange;
 
