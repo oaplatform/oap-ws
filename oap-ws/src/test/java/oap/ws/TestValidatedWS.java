@@ -56,12 +56,22 @@ public class TestValidatedWS {
         return requiredParameter;
     }
 
+    @WsMethod( method = GET )
+    @WsValidate( "oddParamValidator" )
+    public boolean methodWithValidatorArgs( @WsParam( from = QUERY ) int oddParam ) {
+        return oddParam % 2 == 0;
+    }
+
     protected ValidationErrors brokenValidator( int requiredParameter ) {
         throw new IllegalStateException( "CausedByException" );
     }
 
     protected ValidationErrors wrongArgsValidator( int missedParam ) {
         return ValidationErrors.empty();
+    }
+
+    protected ValidationErrors oddParamValidator( int oddParam ) {
+        return oddParam % 2 == 0 ? ValidationErrors.empty() : ValidationErrors.error( "non odd param" );
     }
 
 }

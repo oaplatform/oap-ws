@@ -40,6 +40,7 @@ import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.NumberSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import oap.json.ext.Ext;
 import oap.json.ext.ExtDeserializer;
@@ -65,6 +66,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 @Slf4j
+@ToString
 public class DeprecationAnnotationResolver extends ModelResolver implements ModelConverter {
     private ModelConverterContext context;
     private LinkedHashSet<String> toBeResolvedClassName = new LinkedHashSet<>();
