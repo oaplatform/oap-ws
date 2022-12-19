@@ -39,7 +39,6 @@ import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 
 import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -115,9 +114,9 @@ public class ApiWS {
     }
 
     private boolean ignorableType( Reflection type ) {
-        return type.assignableTo( Dictionary.class ) ||
-            type.underlying.getSuperclass() == null ||
-            type.underlying == Reference.class;
+        return type.assignableTo( Dictionary.class )
+            || type.underlying.getSuperclass() == null
+            || type.underlying == Reference.class;
     }
 
     private String formatType( Reflection r, Types types ) {
