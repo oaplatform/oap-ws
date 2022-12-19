@@ -229,6 +229,7 @@ Bean
 	i: int
 	intStream: int[]
 	map: map String -> oap.ws.api.ExampleWS.Bean2
+	ref: java.lang.ref.SoftReference
 	s: String (Deprecated)
 	unknown: oap.dictionary.Dictionary (Deprecated)
 	something: String
@@ -251,5 +252,33 @@ Bean2
 BeanExt
 {
 	extension: String
+}
+
+## java.lang.ref.SoftReference #################################################
+SoftReference
+{
+	discovered: java.lang.ref.Reference
+	next: java.lang.ref.Reference
+	queue: java.lang.ref.ReferenceQueue
+	referent: long
+	timestamp: long
+	: long
+	: long
+	andClearReferencePendingList: java.lang.ref.Reference
+	fromInactiveFinalReference: long
+	enqueued: boolean
+}
+
+## java.lang.ref.ReferenceQueue ################################################
+ReferenceQueue
+{
+	head: java.lang.ref.Reference
+	lock: java.lang.ref.ReferenceQueue.Lock
+	queueLength: long
+}
+
+## java.lang.ref.ReferenceQueue.Lock ###########################################
+Lock
+{
 }
 

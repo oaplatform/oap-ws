@@ -36,10 +36,12 @@ import oap.ws.sso.WsSecurity;
 import org.joda.time.LocalDateTime;
 
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.BODY;
@@ -145,6 +147,8 @@ class ExampleWS {
         public int i;
         @Deprecated
         public String s;
+        //this causes an endless loop in ApiWs ->SoftReference -> Reference -> ReferenceQueue -> Reference -> ...
+        public SoftReference<Long> ref = new SoftReference<>( 123L );
         public Stream<Integer> intStream;
         public LocalDateTime dt;
         public Bean2 b2;
