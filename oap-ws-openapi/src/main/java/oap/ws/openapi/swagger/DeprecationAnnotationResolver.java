@@ -69,9 +69,9 @@ import java.util.stream.Stream;
 @ToString
 public class DeprecationAnnotationResolver extends ModelResolver implements ModelConverter {
     private ModelConverterContext context;
-    private LinkedHashSet<String> toBeResolvedClassName = new LinkedHashSet<>();
-    private Map<Pair<String, String>, Schema> extensionsSchemas = new HashMap<>();
-    private Map<Pair<String, String>, Schema> collectionsSchemas = new HashMap<>();
+    private final LinkedHashSet<String> toBeResolvedClassName = new LinkedHashSet<>();
+    private final Map<Pair<String, String>, Schema> extensionsSchemas = new HashMap<>();
+    private final Map<Pair<String, String>, Schema> collectionsSchemas = new HashMap<>();
 
     public DeprecationAnnotationResolver( ModelResolver modelResolver ) {
         super( modelResolver.objectMapper() );
@@ -89,10 +89,8 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
     }
 
     @Override
-    protected void applyBeanValidatorAnnotations( Schema property,
-                                                  Annotation[] annotations,
-                                                  Schema parent ) {
-        super.applyBeanValidatorAnnotations( property, annotations, parent );
+    protected void applyBeanValidatorAnnotations( Schema property, Annotation[] annotations, Schema parent, boolean applyNotNullAnnotations ) {
+        super.applyBeanValidatorAnnotations( property, annotations, parent, applyNotNullAnnotations );
         if( annotations == null || annotations.length == 0 ) return;
         Optional<Annotation> deprecated = Arrays.stream( annotations ).filter( anno -> anno.annotationType().equals( Deprecated.class ) ).findAny();
         deprecated.ifPresent( annotation -> {
