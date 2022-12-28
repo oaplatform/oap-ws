@@ -105,12 +105,12 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
     /**
      * This method is called for every property in every bean, so we use that fact to catch up extension field like
      * 'private Ext ext' to identify which exact type is there.
-     * @param member
+     * @param member field in class to analyze
      * @param xmlAccessorTypeAnnotation
      * @param propName
      * @param propertiesToIgnore
      * @param propDef
-     * @return
+     * @return true if the member needs to be ignored.
      */
     @Override
     protected boolean ignore( Annotated member,
