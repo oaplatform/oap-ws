@@ -32,5 +32,7 @@ public interface JWTExtractor {
 
     String getUserEmail( String token );
 
+    String getOrganizationId( String token );
+
     boolean verifyToken( String token );
 }

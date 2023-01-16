@@ -36,6 +36,7 @@ import oap.ws.sso.WsSecurity;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -62,6 +63,8 @@ public class JWTSecurityInterceptor implements Interceptor {
             log.debug( "Proceed with user in session:" + context.session.get( SESSION_USER_KEY ) );
             return Optional.empty();
         }
+        List<String> permissions;
+        String organization = null;
         var jwtToken = SSO.getAuthentication( context.exchange );
         if( jwtToken != null ) {
             final String token = extractBearerToken( jwtToken );
@@ -77,6 +80,7 @@ public class JWTSecurityInterceptor implements Interceptor {
                 log.trace( "set user {} into session {}", user, context.session );
             } else
                 log.trace( "User not found with email: " + email );
+            organization = jwtExtractor.getOrganizationId( token );
         }
 
         Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
@@ -93,7 +97,10 @@ public class JWTSecurityInterceptor implements Interceptor {
         if( realm.isEmpty() ) {
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
         }
-        final List<String> permissions = jwtExtractor.getPermissions( extractBearerToken( jwtToken ), realm.get() );
+        if( organization != null && !realm.get().equals( organization ) ) {
+            return Optional.of( new Response( FORBIDDEN, "realm is different from organization logged in" ) );
+        }
+        permissions = jwtExtractor.getPermissions( extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
         if( permissions != null ) {
             if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
                 return Optional.empty();
