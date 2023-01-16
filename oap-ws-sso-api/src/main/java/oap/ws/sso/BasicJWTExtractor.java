@@ -83,15 +83,19 @@ public class BasicJWTExtractor extends AbstractJWTExtractor {
     @Override
     public String getUserEmail( String token ) {
         final DecodedJWT decodedJWT = decodeJWT( token );
-        return decodedJWT.getClaims().get( "user" ).asString();
+        final Claim user = decodedJWT.getClaims().get( "user" );
+        if( user != null ) {
+            return user.asString();
+        }
+        return null;
     }
 
     @Override
     public String getOrganizationId( String token ) {
         final DecodedJWT decodedJWT = decodeJWT( token );
-        final Claim org_id = decodedJWT.getClaims().get( "org_id" );
-        if( org_id != null ) {
-            return org_id.asString();
+        final Claim orgId = decodedJWT.getClaims().get( "org_id" );
+        if( orgId != null ) {
+            return orgId.asString();
         }
         return null;
     }
