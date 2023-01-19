@@ -144,7 +144,7 @@ class OpenapiSchema {
             resolvedSchema = converters.readAllAsResolvedSchema( type );
         } catch( Exception ex ) {
             log.error( "Cannot resolve schema for type " + type.getTypeName() + " in method: " + method + ", raw class is: <"
-                + ( rawClass != null ? rawClass.getCanonicalName() : "?" ) + ">", ex );
+                + ( rawClass != null ? rawClass.getCanonicalName() : "?" ) + ">" );
         }
 
         if ( resolvedSchema == null || resolvedSchema.schema != null ) {

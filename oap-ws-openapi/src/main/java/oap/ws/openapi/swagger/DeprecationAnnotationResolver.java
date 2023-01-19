@@ -144,7 +144,7 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                         log.error( "Cannot resolve member '{}' in class '{}', ext is not defined", fieldName, clazz.getCanonicalName() );
                     }
                 } catch( Exception ex ) {
-                    log.error( "Cannot resolve member '{}' in class '{}', reason: {}", fieldName, clazz.getCanonicalName(), ex.getMessage(), ex );
+                    log.error( "Cannot resolve member '{}' in class '{}', reason: {}", fieldName, clazz.getCanonicalName(), ex.getMessage() );
                 }
             }
             if( propDef.getPrimaryMember() != null ) {
