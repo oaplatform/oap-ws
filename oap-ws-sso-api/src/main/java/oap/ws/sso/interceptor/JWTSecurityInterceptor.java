@@ -61,7 +61,6 @@ public class JWTSecurityInterceptor implements Interceptor {
     public Optional<Response> before( InvocationContext context ) {
         if( context.session.containsKey( SESSION_USER_KEY ) ) {
             log.debug( "Proceed with user in session:" + context.session.get( SESSION_USER_KEY ) );
-            return Optional.empty();
         }
         List<String> permissions;
         String organization = null;
