@@ -34,7 +34,6 @@ import oap.ws.sso.User;
 import java.util.Optional;
 
 import static oap.http.Http.StatusCode.CONFLICT;
-import static oap.http.Http.StatusCode.OK;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
