@@ -48,7 +48,6 @@ public class ApiKeyInterceptorTest extends IntegratedTest {
 
     @Test
     public void allowed() {
-        assertLogout();
         assertGet( httpUrl( "/secure/r1" ),
             __( "accessKey", user.getAccessKey() ),
             __( "apiKey", user.apiKey )
