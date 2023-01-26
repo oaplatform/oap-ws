@@ -93,6 +93,7 @@ public class AuthWSTest extends IntegratedTest {
         assertLogin( "user@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"user@admin.com\"}" );
+        assertLogout();
     }
 
     @Test
