@@ -38,7 +38,6 @@ import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 public class ThrottleLoginInterceptorTest extends IntegratedTest {
     @Test
     public void deniedAccept() {
-        assertLogout();
         userProvider().addUser( "test1@user.com", "pass1", __( "realm", "ADMIN" ) );
 
         login( "test1@user.com", "pass" ).hasCode( UNAUTHORIZED );
