@@ -33,6 +33,7 @@ import oap.testng.Fixtures;
 import oap.util.Pair;
 import oap.util.Result;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.testng.annotations.AfterMethod;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import static oap.io.Resources.urlOrThrow;
 import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
 import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
 import static oap.ws.sso.UserProvider.toAccessKey;
+import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 
 public class IntegratedTest extends Fixtures {
     protected final KernelFixture kernelFixture;
@@ -54,6 +56,11 @@ public class IntegratedTest extends Fixtures {
 
     protected TestUserProvider userProvider() {
         return kernelFixture.service( "oap-ws-sso-test", TestUserProvider.class );
+    }
+
+    @AfterMethod
+    public void afterMethod() {
+        assertLogout();
     }
 
     @Slf4j

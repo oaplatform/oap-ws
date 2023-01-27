@@ -30,6 +30,7 @@ import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
 import oap.ws.sso.JWTExtractor;
 import oap.ws.sso.SSO;
+import oap.ws.sso.SecurityRoles;
 import oap.ws.sso.User;
 import oap.ws.sso.UserProvider;
 import oap.ws.sso.WsSecurity;
@@ -43,6 +44,7 @@ import static java.lang.String.format;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.ws.sso.AbstractJWTExtractor.extractBearerToken;
+import static oap.ws.sso.SSO.ISSUER;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 import static oap.ws.sso.WsSecurity.SYSTEM;
 
@@ -51,21 +53,23 @@ public class JWTSecurityInterceptor implements Interceptor {
 
     private final JWTExtractor jwtExtractor;
     private final UserProvider userProvider;
+    private final SecurityRoles roles;
 
-    public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider ) {
+    public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider, SecurityRoles roles ) {
         this.jwtExtractor = jwtExtractor;
         this.userProvider = userProvider;
+        this.roles = roles;
     }
 
     @Override
     public Optional<Response> before( InvocationContext context ) {
-        if( context.session.containsKey( SESSION_USER_KEY ) ) {
-            log.debug( "Proceed with user in session:" + context.session.get( SESSION_USER_KEY ) );
-        }
-        List<String> permissions;
         String organization = null;
-        var jwtToken = SSO.getAuthentication( context.exchange );
-        if( jwtToken != null ) {
+        List<String> permissions;
+        String jwtToken = SSO.getAuthentication( context.exchange );
+
+        if( jwtToken != null && ( !context.session.containsKey( SESSION_USER_KEY ) || issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) ) {
+            log.debug( "Proceed with user in session:" + context.session.get( SESSION_USER_KEY ) );
+
             final String token = extractBearerToken( jwtToken );
             if( token == null || !jwtExtractor.verifyToken( token ) ) {
                 log.trace( "Not authenticated." );
@@ -73,39 +77,58 @@ public class JWTSecurityInterceptor implements Interceptor {
             }
 
             final String email = jwtExtractor.getUserEmail( token );
-            User user = userProvider.getUser( email ).orElse( null );
-            if( user != null ) {
-                context.session.set( SESSION_USER_KEY, user );
-                log.trace( "set user {} into session {}", user, context.session );
-            } else
-                log.trace( "User not found with email: " + email );
             organization = jwtExtractor.getOrganizationId( token );
-        }
 
-        Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
-        if( wss.isEmpty() ) {
-            return Optional.empty();
+            User user = userProvider.getUser( email ).orElse( null );
+            if( user == null )
+                return Optional.of( new Response( FORBIDDEN, "User not found with email: " + email ) );
+
+            context.session.set( SESSION_USER_KEY, user );
+            context.session.set( ISSUER, this.getClass().getSimpleName() );
+            log.trace( "set user {} into session {}", user, context.session );
         }
+        Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
+        if( wss.isEmpty() )
+            return Optional.empty();
 
         log.trace( "Secure method {}", context.method );
-        if( jwtToken == null )
-            return Optional.of( new Response( UNAUTHORIZED ) );
 
         Optional<String> realm =
             SYSTEM.equals( wss.get().realm() ) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
         if( realm.isEmpty() ) {
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
         }
+
         if( organization != null && !realm.get().equals( organization ) ) {
             return Optional.of( new Response( FORBIDDEN, "realm is different from organization logged in" ) );
         }
-        permissions = jwtExtractor.getPermissions( extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
-        if( permissions != null ) {
-            if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
-                return Optional.empty();
+        if( issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) {
+            permissions = jwtExtractor.getPermissions( extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
+            if( permissions != null ) {
+                if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
+                    return Optional.empty();
+            }
+            log.info( format( "Permissions required: %s, but found: %s", Arrays.toString( wss.get().permissions() ), permissions ) );
+            return Optional.of( new Response( FORBIDDEN, "user doesn't have permissions" ) );
+        } else {
+            Optional<User> u = context.session.get( SESSION_USER_KEY );
+            if( u.isEmpty() ) return Optional.of( new Response( UNAUTHORIZED ) );
+            Optional<String> role = u.flatMap( user -> user.getRole( realm.get() ) );
+            if( role.isEmpty() )
+                return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm " + realm.get() ) );
+
+            if( roles.granted( role.get(), wss.get().permissions() ) ) return Optional.empty();
+
+            return Optional.of( new Response( FORBIDDEN, "user " + u.get().getEmail() + " has no access to method "
+                + context.method.name() + " under realm " + realm.get() ) );
         }
-        log.info( format( "Permissions required: %s, but found: %s", Arrays.toString( wss.get().permissions() ), permissions ) );
-        return Optional.of( new Response( FORBIDDEN, "user doesn't have permissions" ) );
+    }
+
+    private String issuerFromContext( InvocationContext context ) {
+        if( context.session.containsKey( ISSUER ) && context.session.get( ISSUER ).isPresent() ) {
+            return context.session.get( ISSUER ).get().toString();
+        }
+        return "";
     }
 }
 
