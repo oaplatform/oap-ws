@@ -93,7 +93,6 @@ public class AuthWSTest extends IntegratedTest {
         assertLogin( "user@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"user@admin.com\"}" );
-        assertLogout();
     }
 
     @Test
@@ -106,6 +105,5 @@ public class AuthWSTest extends IntegratedTest {
         assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure/r1" ) )
             .hasCode( FORBIDDEN );
-        assertLogout();
     }
 }

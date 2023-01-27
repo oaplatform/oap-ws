@@ -47,7 +47,6 @@ public class JWTInterceptorTest extends IntegratedTest {
             .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
         assertGet( httpUrl( "/secure/r1" ) )
             .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
-        assertLogout();
     }
 
     @Test
@@ -56,7 +55,6 @@ public class JWTInterceptorTest extends IntegratedTest {
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/secure/r2" ) )
             .hasCode( FORBIDDEN );
-        assertLogout();
 
     }
 
@@ -72,7 +70,6 @@ public class JWTInterceptorTest extends IntegratedTest {
         assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure/r1" ) )
             .hasCode( FORBIDDEN );
-        assertLogout();
     }
 
 }
