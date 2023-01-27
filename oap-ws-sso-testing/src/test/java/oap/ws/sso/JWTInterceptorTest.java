@@ -34,7 +34,6 @@ import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
-import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 
 public class JWTInterceptorTest extends IntegratedTest {
     @Test
