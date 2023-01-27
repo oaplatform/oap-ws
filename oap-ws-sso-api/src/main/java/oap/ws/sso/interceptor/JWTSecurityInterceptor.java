@@ -93,6 +93,10 @@ public class JWTSecurityInterceptor implements Interceptor {
 
         log.trace( "Secure method {}", context.method );
 
+
+        if( jwtToken == null && !issuerFromContext( context ).equals( ApiKeyInterceptor.class.getSimpleName() ) )
+            return Optional.of( new Response( UNAUTHORIZED ) );
+
         Optional<String> realm =
             SYSTEM.equals( wss.get().realm() ) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
         if( realm.isEmpty() ) {
