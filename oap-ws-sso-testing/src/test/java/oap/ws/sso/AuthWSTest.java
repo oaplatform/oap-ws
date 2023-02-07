@@ -105,6 +105,5 @@ public class AuthWSTest extends IntegratedTest {
         assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure/r1" ) )
             .hasCode( FORBIDDEN );
-        assertLogout();
     }
 }

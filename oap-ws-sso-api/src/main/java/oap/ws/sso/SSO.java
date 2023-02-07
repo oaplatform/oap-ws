@@ -37,6 +37,7 @@ import static org.joda.time.DateTimeZone.UTC;
 public class SSO {
     public static final String AUTHENTICATION_KEY = "Authorization";
     public static final String SESSION_USER_KEY = "loggedUser";
+    public static final String ISSUER = "issuer";
 
     @Nullable
     public static String getAuthentication( HttpServerExchange exchange ) {

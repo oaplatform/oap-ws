@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import static oap.http.Http.StatusCode.CONFLICT;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
+import static oap.ws.sso.SSO.ISSUER;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 
 @Slf4j
@@ -61,6 +62,7 @@ public class ApiKeyInterceptor implements Interceptor {
                 User user = authentication.get().user;
                 context.session.set( SESSION_USER_KEY, user );
                 context.session.set( SESSION_API_KEY_AUTHENTICATED, true );
+                context.session.set( ISSUER, this.getClass().getSimpleName() );
                 log.trace( "set user {} into session {}", user, context.session );
                 return Optional.empty();
             } else return Optional.of( new Response( UNAUTHORIZED ) );
@@ -74,6 +76,7 @@ public class ApiKeyInterceptor implements Interceptor {
                 log.trace( "removing temporary authentication of {}", context.session.get( SESSION_USER_KEY ) );
                 context.session.remove( SESSION_USER_KEY );
                 context.session.remove( SESSION_API_KEY_AUTHENTICATED );
+                context.session.remove( ISSUER );
             }
         } );
     }
