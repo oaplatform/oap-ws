@@ -32,23 +32,36 @@ import java.util.Date;
 
 public class JwtTokenGenerator {
 
-    private final String secret;
+    private final String accessSecret;
+    private final String refreshSecret;
     private final String issuer;
-    private final long expiration;
+    private final long accessSecretExpiration;
+    private final long refreshSecretExpiration;
 
-    public JwtTokenGenerator( String secret, String issuer, long expiration ) {
-        this.secret = secret;
+    public JwtTokenGenerator( String accessSecret, String refreshSecret, String issuer, long accessSecretExpiration, long refreshSecretExpiration ) {
+        this.accessSecret = accessSecret;
+        this.refreshSecret = refreshSecret;
         this.issuer = issuer;
-        this.expiration = expiration;
+        this.accessSecretExpiration = accessSecretExpiration;
+        this.refreshSecretExpiration = refreshSecretExpiration;
     }
 
-    public String generateToken( User user ) throws JWTCreationException {
-        Algorithm algorithm = Algorithm.HMAC256( secret );
+    public String generateAccessToken( User user ) throws JWTCreationException {
+        Algorithm algorithm = Algorithm.HMAC256( accessSecret );
         return JWT.create()
             .withClaim( "user", user.getEmail() )
             .withClaim( "roles", user.getRoles() )
             .withIssuer( issuer )
-            .withExpiresAt( new Date( System.currentTimeMillis() + expiration ) )
+            .withExpiresAt( new Date( System.currentTimeMillis() + accessSecretExpiration ) )
+            .sign( algorithm );
+    }
+
+    public String generateRefreshToken( User user ) throws JWTCreationException {
+        Algorithm algorithm = Algorithm.HMAC256( refreshSecret );
+        return JWT.create()
+            .withClaim( "user", user.getEmail() )
+            .withIssuer( issuer )
+            .withExpiresAt( new Date( System.currentTimeMillis() + refreshSecretExpiration ) )
             .sign( algorithm );
     }
 

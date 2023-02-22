@@ -41,6 +41,7 @@ import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.COOKIE;
 import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
@@ -78,6 +79,15 @@ public class AuthWS extends AbstractSecureWS {
             return notAuthenticatedResponse( BAD_REQUEST, "TFA code is incorrect or required", sessionManager.cookieDomain );
         else
             return notAuthenticatedResponse( UNAUTHORIZED, "Username or password is invalid", sessionManager.cookieDomain );
+    }
+
+    @WsMethod( method = GET, path = "/refresh" )
+    public Response refreshToken( @WsParam( from = COOKIE ) String refreshToken ) {
+        var result = authenticator.refreshToken( refreshToken );
+        if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
+            sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
+        else
+            return notAuthenticatedResponse( UNAUTHORIZED, "Token is invalid", sessionManager.cookieDomain );
     }
 
     @WsMethod( method = GET, path = "/logout" )

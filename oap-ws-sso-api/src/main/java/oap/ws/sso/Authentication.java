@@ -37,12 +37,14 @@ import java.io.Serializable;
 public class Authentication implements Serializable {
     @Serial
     private static final long serialVersionUID = -2221117654361445000L;
-    public final String id;
+    public final String accessToken;
+    public final String refreshToken;
     public final User user;
     public DateTime created;
 
-    public Authentication( String id, User user ) {
-        this.id = id;
+    public Authentication( String accessToken, String refreshToken, User user ) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.user = user;
         this.created = new DateTime();
     }
@@ -51,8 +53,8 @@ public class Authentication implements Serializable {
     public View view = new View();
 
     public class View implements Serializable {
-        public String getId() {
-            return id;
+        public String getAccessToken() {
+            return accessToken;
         }
 
         public DateTime getCreated() {
