@@ -493,7 +493,7 @@
       "Cookie" : {
         "exampleSetFlag" : false,
         "properties" : {
-          "cookie" : {
+          "delegate" : {
             "$ref" : "#/components/schemas/Cookie",
             "exampleSetFlag" : false
           },
