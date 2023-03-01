@@ -80,7 +80,8 @@ public class ApiWS {
             result += "Methods:\n";
 
             for( Info.WebMethodInfo m : ws.methods( withDeprecated ) ) {
-                log.trace( "method {}", m.name );
+                log.trace( "method <{}>", m.name );
+                List<String> parameters = new ArrayList<>();
                 result += "\tMethod " + m.name
                     + ( m.deprecated ? " (Deprecated)" : "" ) + "\n";
                 if( m.description.length() > 0 )
@@ -95,9 +96,10 @@ public class ApiWS {
                 else {
                     result += "\tParameters\n";
                     for( Info.WebMethodParameterInfo p : params ) {
-                        log.trace( "parameter {}", p.name );
+                        parameters.add( p.name );
                         result += "\t\t" + p.name + ": " + p.from + " " + formatType( p.type(), types ) + "\n";
                     }
+                    log.trace( "parameters '{}'", parameters );
                 }
                 result += "\n";
             }
