@@ -69,8 +69,8 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>17.12.0.4</oap-ws.project.version>
-        <oap.deps.oap.version>17.11.0.8</oap.deps.oap.version>
+        <oap-ws.project.version>17.12.0.5</oap-ws.project.version>
+        <oap.deps.oap.version>17.11.1.2</oap.deps.oap.version>
 
         <oap.deps.assertj.version>3.23.1</oap.deps.assertj.version>
         <oap.deps.guava.version>31.1-jre</oap.deps.guava.version>
