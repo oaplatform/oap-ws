@@ -69,7 +69,13 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             Files.write( Paths.get( outputPath ), openapiGenerator.build(), settings.outputType.writer );
             getLog().info( "OpenAPI " + settings.outputType + " is written to " + outputPath );
         } catch( Exception e ) {
-            getLog().error( "OpenAPI generator plugin error", e );
+            if ( ReflectiveOperationException.class.isAssignableFrom( e.getClass() ) ) {
+                getLog().error( "OpenAPI generator plugin error: " + e.getMessage() );
+            } else if ( e.getCause() != null && ReflectiveOperationException.class.isAssignableFrom( e.getCause().getClass() ) ) {
+                getLog().error( "OpenAPI generator plugin error: " + e.getCause().getMessage() );
+            } else {
+                getLog().error( "OpenAPI generator plugin error", e );
+            }
             throw new ApplicationException( e );
         }
     }
