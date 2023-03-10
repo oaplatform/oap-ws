@@ -37,9 +37,11 @@ import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import oap.ws.sso.WsSecurity;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
@@ -61,7 +63,9 @@ public class Info {
     }
 
     private static boolean isWebMethod( Reflection.Method m ) {
-        return !m.underlying.getDeclaringClass().equals( Object.class )
+
+        return m.findAnnotation( WsMethod.class ).isPresent()
+            && !m.underlying.getDeclaringClass().equals( Object.class )
             && !m.underlying.isSynthetic()
             && !Modifier.isStatic( m.underlying.getModifiers() )
             && m.isPublic();
