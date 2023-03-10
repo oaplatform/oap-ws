@@ -64,6 +64,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -184,7 +185,7 @@ public class OpenapiGenerator {
 
         Operation operation = new Operation()
             .addTagsItem( tag.getName() )
-            .operationId( UUID.randomUUID().toString() )
+            .operationId( method.name )
             .parameters( prepareParameters( params ) )
             .description( method.description )
             .requestBody( prepareRequestBody( params ) )
