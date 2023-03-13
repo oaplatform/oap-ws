@@ -62,8 +62,7 @@ public class Info {
 
     private static boolean isWebMethod( Reflection.Method m ) {
 
-        return m.findAnnotation( WsMethod.class ).isPresent()
-            && !m.underlying.getDeclaringClass().equals( Object.class )
+        return !m.underlying.getDeclaringClass().equals( Object.class )
             && !m.underlying.isSynthetic()
             && !Modifier.isStatic( m.underlying.getModifiers() )
             && m.isPublic();

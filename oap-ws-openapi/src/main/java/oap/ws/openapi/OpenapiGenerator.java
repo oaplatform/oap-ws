@@ -184,7 +184,7 @@ public class OpenapiGenerator {
 
         Operation operation = new Operation()
             .addTagsItem( tag.getName() )
-            .operationId( UUID.randomUUID().toString() )
+            .operationId( method.name )
             .parameters( prepareParameters( params ) )
             .description( method.description )
             .requestBody( prepareRequestBody( params ) )

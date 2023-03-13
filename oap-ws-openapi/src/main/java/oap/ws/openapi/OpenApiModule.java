@@ -46,7 +46,7 @@ import java.io.StringWriter;
 public class OpenApiModule extends Module {
 
     private static final Version VERSION = VersionUtil.parseVersion(
-        "1.0.0", "io.xenoss.platform", "openapi" );
+        "3.0.3", "io.xenoss.platform", "openapi" );
 
     @Override
     public String getModuleName() {
