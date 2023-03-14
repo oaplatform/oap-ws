@@ -69,6 +69,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static oap.ws.openapi.OpenapiSchema.prepareType;
@@ -183,7 +184,7 @@ public class OpenapiGenerator {
 
         Operation operation = new Operation()
             .addTagsItem( tag.getName() )
-            .operationId( method.name )
+            .operationId( method.name + UUID.randomUUID() )
             .parameters( prepareParameters( params ) )
             .description( method.description )
             .requestBody( prepareRequestBody( params ) )
@@ -198,9 +199,6 @@ public class OpenapiGenerator {
                     + "\n- realm: " + method.realm;
                 operation.description( descriptionWithAuth );
             }
-            SecurityRequirement securityRequirement = new SecurityRequirement();
-            securityRequirement.addList( method.realm, method.permissions );
-            operation.addSecurityItem( securityRequirement );
         }
         return operation;
     }
@@ -384,7 +382,8 @@ public class OpenapiGenerator {
                     return Yaml.mapper().writeValueAsBytes( object );
                 }
             } ),
-            JSON( ".json", ContentWriter.ofJson() );
+            JSON( ".json", ContentWriter.ofJson() ),
+            JSON_OPENAPI( ".json", OpenApiContentWriter.ofOpenApiJson() );
 
             public final String fileExtension;
             public final ContentWriter<OpenAPI> writer;

@@ -61,6 +61,7 @@ public class Info {
     }
 
     private static boolean isWebMethod( Reflection.Method m ) {
+
         return !m.underlying.getDeclaringClass().equals( Object.class )
             && !m.underlying.isSynthetic()
             && !Modifier.isStatic( m.underlying.getModifiers() )

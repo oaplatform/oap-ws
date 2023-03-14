@@ -24,18 +24,33 @@
 
 package oap.ws.openapi;
 
-import oap.ws.WsMethod;
-import oap.ws.WsParam;
-import oap.ws.sso.WsSecurity;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.core.util.Json;
+import oap.io.content.ContentWriter;
+import oap.json.JsonException;
 
-import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
-import static oap.ws.WsParam.From.PATH;
+import java.io.IOException;
+import java.io.OutputStream;
 
-public class IgnoredPermissionsTestWS {
+public class OpenApiContentWriter {
 
-    @WsMethod( method = GET, path = "/test/ignored/{id}" )
-    @WsSecurity( realm = "organizationId", permissions = { "dummy:permission" } )
-    public String test( @WsParam( from = PATH ) String id ) {
-        return id;
+    static <T> ContentWriter<T> ofOpenApiJson() {
+        return new ContentWriter<T>() {
+            public byte[] write( Object object ) {
+                try {
+                    return Json.mapper().writeValueAsBytes( object );
+                } catch( JsonProcessingException e ) {
+                    throw new JsonException( e );
+                }
+            }
+
+            public void write( OutputStream os, Object object ) {
+                try {
+                    Json.mapper().writeValue( os, object );
+                } catch( IOException e ) {
+                    throw new JsonException( e );
+                }
+            }
+        };
     }
 }

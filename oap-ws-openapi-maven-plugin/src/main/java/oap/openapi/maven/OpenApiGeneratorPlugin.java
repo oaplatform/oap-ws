@@ -42,6 +42,9 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
     @Parameter( required = false, readonly = true, defaultValue = "true" )
     private String skipDeprecated;
 
+    @Parameter( required = false, readonly = true )
+    private List<String> excludeModules;
+
     @Override
     public void execute() {
         Objects.requireNonNull( outputPath );
@@ -51,7 +54,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             var openapiGenerator = new OpenapiGenerator( "title", "", settings );
             openapiGenerator.beforeProcesingServices();
 
-            var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, getLog() );
+            var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, excludeModules, getLog() );
             WebServicesWalker.walk( visitor );
 
             getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
@@ -86,5 +89,9 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
 
     void setOutputType( String outputType ) {
         this.outputType = outputType;
+    }
+
+    void setExcludeModules( List<String> excludeModules ) {
+        this.excludeModules = excludeModules;
     }
 }
