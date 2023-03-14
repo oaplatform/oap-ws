@@ -103,7 +103,7 @@ public class JWTSecurityInterceptor implements Interceptor {
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
         }
 
-        if( organization != null && !realm.get().equals( organization ) ) {
+        if( organization != null && !realm.get().equals( organization ) && !realm.get().equals( SYSTEM ) ) {
             return Optional.of( new Response( FORBIDDEN, "realm is different from organization logged in" ) );
         }
         if( issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) {

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static oap.ws.sso.WsSecurity.SYSTEM;
 
@@ -63,15 +62,15 @@ public class BasicJWTExtractor extends AbstractJWTExtractor {
 
     @Override
     public List<String> getPermissions( String token, String organizationId ) {
+        final String role;
         final DecodedJWT decodedJWT = decodeJWT( token );
         if( decodedJWT != null ) {
             final Claim tokenRoles = decodedJWT.getClaims().get( "roles" );
             if( tokenRoles != null ) {
                 final Map<String, Object> rolesByOrganization = tokenRoles.asMap();
                 if( rolesByOrganization.get( SYSTEM ) != null ) {
-                    return this.roles.roles().stream().flatMap( r -> this.roles.permissionsOf( r ).stream() ).distinct().collect( Collectors.toList() );
-                }
-                final String role = ( String ) rolesByOrganization.get( organizationId );
+                    role = ( String ) rolesByOrganization.get( SYSTEM );
+                } else role = ( String ) rolesByOrganization.get( organizationId );
                 if( role != null ) {
                     return new ArrayList<>( this.roles.permissionsOf( role ) );
                 }
