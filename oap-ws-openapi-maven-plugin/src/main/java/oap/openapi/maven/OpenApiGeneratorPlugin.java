@@ -13,7 +13,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,8 +42,8 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
     @Parameter( required = false, readonly = true, defaultValue = "true" )
     private String skipDeprecated;
 
-    @Parameter( required = false, readonly = true, defaultValue = "" )
-    private String excludeModules;
+    @Parameter( required = false, readonly = true )
+    private List<String> excludeModules;
 
     @Override
     public void execute() {
@@ -55,7 +54,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
             var openapiGenerator = new OpenapiGenerator( "title", "", settings );
             openapiGenerator.beforeProcesingServices();
 
-            var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, Arrays.asList( excludeModules.split( "," ) ), getLog() );
+            var visitor = new WebServiceVisitorForPlugin( pluginDescriptor, openapiGenerator, classpath, outputPath, excludeModules, getLog() );
             WebServicesWalker.walk( visitor );
 
             getLog().info( "Configurations (from oap-module.conf files) loaded: " + visitor.getModuleConfigurations() );
@@ -92,7 +91,7 @@ public class OpenApiGeneratorPlugin extends AbstractMojo {
         this.outputType = outputType;
     }
 
-    void setExcludeModules( String excludeModules ) {
+    void setExcludeModules( List<String> excludeModules ) {
         this.excludeModules = excludeModules;
     }
 }
