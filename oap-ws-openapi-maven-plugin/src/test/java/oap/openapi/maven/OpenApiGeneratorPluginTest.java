@@ -39,6 +39,7 @@ public class OpenApiGeneratorPluginTest extends Fixtures {
         OpenApiGeneratorPlugin mojo = new OpenApiGeneratorPlugin();
         mojo.setOutputPath( "swagger" );
         mojo.setOutputType( "JSON" );
+        mojo.setExcludeModules( "" );
 
         mojo.execute();
     }
