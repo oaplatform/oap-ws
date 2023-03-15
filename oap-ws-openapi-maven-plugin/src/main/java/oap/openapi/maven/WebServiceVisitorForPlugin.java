@@ -104,7 +104,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     public List<URL> getWebServiceUrls() {
         List<URL> urls = new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath()
             .stream()
-            .filter( url -> Stream.of( excludeModules ).noneMatch( excludeModule -> url.toString().contains( excludeModule + "/target/classes/META-INF/oap-module.conf" ) ) )
+            .filter( url -> Stream.of( excludeModules == null ? Stream.empty() : excludeModules ).noneMatch( excludeModule -> url.toString().contains( excludeModule + "/target/classes/META-INF/oap-module.conf" ) ) )
             .filter( url -> moduleConfigurations.add( url.toString() ) )
             .toList() );
         if( classpath != null && !classpath.isEmpty() ) {
