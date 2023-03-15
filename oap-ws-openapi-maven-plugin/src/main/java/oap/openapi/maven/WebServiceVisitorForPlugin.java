@@ -26,7 +26,6 @@ package oap.openapi.maven;
 
 import oap.application.module.Module;
 import oap.application.module.Service;
-import oap.util.Stream;
 import oap.ws.WsConfig;
 import oap.ws.openapi.OpenapiGenerator;
 import oap.ws.openapi.WebServiceVisitor;
@@ -42,6 +41,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -104,7 +104,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     public List<URL> getWebServiceUrls() {
         List<URL> urls = new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath()
             .stream()
-            .filter( url -> Stream.of( excludeModules == null ? Stream.empty() : excludeModules ).noneMatch( excludeModule -> url.toString().contains( excludeModule + "/target/classes/META-INF/oap-module.conf" ) ) )
+            .filter( url -> excludeModules == null || excludeModules.stream().noneMatch( element -> url.toString().contains( "/" + element + "/" ) ) )
             .filter( url -> moduleConfigurations.add( url.toString() ) )
             .toList() );
         if( classpath != null && !classpath.isEmpty() ) {
