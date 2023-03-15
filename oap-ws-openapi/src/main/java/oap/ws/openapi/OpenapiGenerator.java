@@ -69,7 +69,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static oap.ws.openapi.OpenapiSchema.prepareType;
@@ -184,7 +183,7 @@ public class OpenapiGenerator {
 
         Operation operation = new Operation()
             .addTagsItem( tag.getName() )
-            .operationId( method.name + UUID.randomUUID() )
+            .operationId( method.name )
             .parameters( prepareParameters( params ) )
             .description( method.description )
             .requestBody( prepareRequestBody( params ) )
