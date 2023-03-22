@@ -35,6 +35,7 @@ import oap.ws.interceptor.Interceptor;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class WebServices {
@@ -74,7 +75,7 @@ public class WebServices {
 
             for( var path : config.ext.path ) {
                 bind( path, config.getInstance(),
-                    config.ext.sessionAware, sessionManager, interceptors, config.ext.compression );
+                    config.ext.sessionAware, sessionManager, interceptors, config.ext.compression, config.ext.port );
             }
         }
 
@@ -82,23 +83,24 @@ public class WebServices {
             log.trace( "handler = {}", config );
 
             for( var path : config.ext.path ) {
-                bind( path, ( HttpHandler ) config.getInstance(), config.ext.compression );
+                bind( path, ( HttpHandler ) config.getInstance(), config.ext.compression, config.ext.port );
             }
         }
     }
 
-
-    public void bind( String context, Object service, boolean sessionAware,
-                      SessionManager sessionManager, List<Interceptor> interceptors, boolean compressionSupport ) {
-
+    public void bind( String context, Object service, boolean sessionAware, SessionManager sessionManager,
+                      List<Interceptor> interceptors, boolean compressionSupport, Optional<Integer> port ) {
         services.put( context, service );
-        bind( context, new WebService( service, sessionAware, sessionManager, interceptors, compressionSupport ), compressionSupport );
+        bind( context, new WebService( service, sessionAware, sessionManager, interceptors, compressionSupport ),
+            compressionSupport, port );
     }
 
     @SuppressWarnings( "checkstyle:ParameterAssignment" )
-    public void bind( String context, HttpHandler handler, boolean compressionSupport ) {
-        if( context.isEmpty() ) context = "/";
-
-        server.bind( context, handler, compressionSupport );
+    public void bind( String context, HttpHandler handler, boolean compressionSupport, Optional<Integer> port ) {
+        if( port.isPresent() ) {
+            server.bind( context.isEmpty() ? "/" : context, handler, compressionSupport, port.get() );
+        } else {
+            server.bind( context.isEmpty() ? "/" : context, handler, compressionSupport );
+        }
     }
 }
