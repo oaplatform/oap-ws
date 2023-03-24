@@ -27,7 +27,7 @@ package oap.ws.admin;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.classic.util.DefaultJoranConfigurator;
+import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,11 +45,10 @@ public class LogWS {
         log.debug( "reset" );
 
         var loggerContext = ( LoggerContext ) LoggerFactory.getILoggerFactory();
+        var ci = new ContextInitializer( loggerContext );
+        var url = ci.findURLOfDefaultConfigurationFile( true );
 
         try {
-            var jc = new DefaultJoranConfigurator();
-            jc.setContext( loggerContext );
-            var url = jc.findURLOfDefaultConfigurationFile( true );
             var configurator = new JoranConfigurator();
             configurator.setContext( loggerContext );
             loggerContext.reset();
