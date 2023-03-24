@@ -29,7 +29,7 @@
     <parent>
         <groupId>oap</groupId>
         <artifactId>oap.maven</artifactId>
-        <version>17.3.0.8</version>
+        <version>18.3.7.3</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -64,9 +64,9 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>17.10.2.0</oap-ws.project.version>
+        <oap-ws.project.version>18.10.3.0</oap-ws.project.version>
 
-        <oap.deps.oap.version>17.10.31.1</oap.deps.oap.version>
+        <oap.deps.oap.version>18.10.33.0-oap_ds-1710</oap.deps.oap.version>
 
         <oap.deps.assertj.version>3.23.1</oap.deps.assertj.version>
         <oap.deps.guava.version>31.1-jre</oap.deps.guava.version>
