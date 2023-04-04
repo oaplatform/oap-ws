@@ -27,17 +27,23 @@ package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.util.Result;
+import oap.ws.sso.jwt.JwtExtractor;
+import oap.ws.sso.jwt.JwtTokenGenerator;
+import oap.ws.sso.model.User;
 
 import java.util.Optional;
+
+import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
+import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
 
 @Slf4j
 public class JwtUserAuthenticator implements Authenticator {
 
     private JwtTokenGenerator jwtTokenGenerator;
-    private JWTExtractor jwtExtractor;
+    private JwtExtractor jwtExtractor;
     private UserProvider userProvider;
 
-    public JwtUserAuthenticator( UserProvider userProvider, JwtTokenGenerator jwtTokenGenerator, JWTExtractor jwtExtractor ) {
+    public JwtUserAuthenticator( UserProvider userProvider, JwtTokenGenerator jwtTokenGenerator, JwtExtractor jwtExtractor ) {
         this.userProvider = userProvider;
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.jwtExtractor = jwtExtractor;

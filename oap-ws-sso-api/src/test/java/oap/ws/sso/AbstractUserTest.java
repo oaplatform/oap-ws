@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import oap.util.Pair;
+import oap.ws.sso.model.User;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.HashMap;

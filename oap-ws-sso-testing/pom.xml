@@ -43,6 +43,11 @@
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
+            <artifactId>oap-ws-sso-api</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>oap-ws-sso-api-default</artifactId>
             <version>${oap-ws.project.version}</version>
         </dependency>

@@ -27,6 +27,7 @@ package oap.ws.sso;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import oap.ws.sso.model.User;
 import org.joda.time.DateTime;
 
 import java.io.Serial;

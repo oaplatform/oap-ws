@@ -25,6 +25,7 @@
 package oap.ws.sso;
 
 import oap.util.Result;
+import oap.ws.sso.model.User;
 
 import java.util.Optional;
 import java.util.function.Function;

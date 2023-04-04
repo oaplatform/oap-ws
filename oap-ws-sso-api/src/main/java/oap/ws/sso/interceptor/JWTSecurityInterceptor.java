@@ -28,10 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 import oap.ws.InvocationContext;
 import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
-import oap.ws.sso.JWTExtractor;
+import oap.ws.sso.jwt.JwtExtractor;
 import oap.ws.sso.SSO;
 import oap.ws.sso.SecurityRoles;
-import oap.ws.sso.User;
+import oap.ws.sso.model.User;
 import oap.ws.sso.UserProvider;
 import oap.ws.sso.WsSecurity;
 
@@ -43,7 +43,7 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
-import static oap.ws.sso.AbstractJWTExtractor.extractBearerToken;
+import static oap.ws.sso.jwt.AbstractJwtExtractor.extractBearerToken;
 import static oap.ws.sso.SSO.ISSUER;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 import static oap.ws.sso.WsSecurity.SYSTEM;
@@ -51,11 +51,11 @@ import static oap.ws.sso.WsSecurity.SYSTEM;
 @Slf4j
 public class JWTSecurityInterceptor implements Interceptor {
 
-    private final JWTExtractor jwtExtractor;
+    private final JwtExtractor jwtExtractor;
     private final UserProvider userProvider;
     private final SecurityRoles roles;
 
-    public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider, SecurityRoles roles ) {
+    public JWTSecurityInterceptor( JwtExtractor jwtExtractor, UserProvider userProvider, SecurityRoles roles ) {
         this.jwtExtractor = jwtExtractor;
         this.userProvider = userProvider;
         this.roles = roles;

@@ -29,7 +29,7 @@ import oap.ws.InvocationContext;
 import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
 import oap.ws.sso.Authenticator;
-import oap.ws.sso.User;
+import oap.ws.sso.model.User;
 
 import java.util.Optional;
 

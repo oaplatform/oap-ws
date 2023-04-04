@@ -1,0 +1,14 @@
+migrations:
+  account:
+    - version:
+        main: 1
+      script: /account/migrations/defaults.migration.js
+    - version:
+        main: 2
+      script: /account/migrations/password.migration.js
+    - version:
+        main: 3
+      script: /account/migrations/accounts.migration.js
+    - version:
+        main: 4
+      script: /account/migrations/users.migration.js

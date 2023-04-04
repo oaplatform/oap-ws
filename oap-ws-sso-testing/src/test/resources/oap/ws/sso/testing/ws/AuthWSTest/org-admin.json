@@ -1,0 +1,11 @@
+{
+  "banned" : false,
+  "confirmed" : true,
+  "email" : "org@admin.com",
+  "firstName" : "Joe",
+  "lastLogin" : "2023-03-27",
+  "lastName" : "Haserton",
+  "roles" : {
+    "DFLT" : "USER"
+  }
+}

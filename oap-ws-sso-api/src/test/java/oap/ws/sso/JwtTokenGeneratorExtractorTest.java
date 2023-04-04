@@ -25,6 +25,9 @@
 package oap.ws.sso;
 
 import oap.util.Pair;
+import oap.ws.sso.jwt.BasicJwtExtractor;
+import oap.ws.sso.jwt.JwtExtractor;
+import oap.ws.sso.jwt.JwtTokenGenerator;
 import org.testng.annotations.Test;
 
 import java.util.Set;
@@ -37,7 +40,7 @@ import static org.testng.Assert.assertTrue;
 public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
 
     private JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "issuer", 100000 );
-    private JWTExtractor jwtExtractor = new BasicJWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
+    private JwtExtractor jwtExtractor = new BasicJwtExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
 
     @Test
     public void generateAndExtractToken() {

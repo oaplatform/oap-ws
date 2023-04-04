@@ -1,0 +1,13 @@
+{
+  "email": "orgadmin@admin.com",
+  "firstName": "Johnny",
+  "lastName": "Walker",
+  "lastLogin": "${LAST_LOGIN}",
+  "banned": false,
+  "confirmed": true,
+  "accessKey": "${ACCESS_KEY}",
+  "apiKey": "${API_KEY}",
+  "roles" : {
+    "DFLT" : "ORGANIZATION_ADMIN"
+  }
+}

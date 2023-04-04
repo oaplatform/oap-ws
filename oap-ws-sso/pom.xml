@@ -42,10 +42,40 @@
             <version>${oap-ws.project.version}</version>
         </dependency>
         <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-api-ws</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-openapi-ws</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-sso-api-default</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${oap.deps.lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-storage</artifactId>
+            <version>${xenoss.deps.oap.storage.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-storage-mongo</artifactId>
+            <version>${xenoss.deps.oap.storage.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-mail</artifactId>
+            <version>${xenoss.deps.oap.mail.version}</version>
         </dependency>
     </dependencies>
 </project>

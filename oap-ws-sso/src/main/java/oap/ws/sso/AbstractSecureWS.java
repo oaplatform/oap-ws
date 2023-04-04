@@ -25,6 +25,7 @@
 package oap.ws.sso;
 
 import oap.http.Http;
+import oap.ws.sso.model.User;
 import oap.ws.validate.ValidationErrors;
 
 import java.util.Optional;
