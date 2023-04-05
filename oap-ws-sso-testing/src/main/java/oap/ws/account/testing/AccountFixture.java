@@ -136,7 +136,7 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
     }
 
     public AccountMailman accountMailman() {
-        return service( "oap-ws-sso", AccountMailman.class );
+        return service( "oap-ws-account", AccountMailman.class );
     }
 
     public MailQueue mailQueue() {
