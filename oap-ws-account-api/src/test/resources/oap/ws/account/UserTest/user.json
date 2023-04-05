@@ -1,0 +1,14 @@
+{
+  "accounts" : {
+    "org1" : [ "acc1", "acc2" ]
+  },
+  "banned" : false,
+  "user" : {
+    "accessKey" : "SXENLMSXMVUJ",
+    "apiKey":"${API_KEY}",
+    "confirmed" : false,
+    "email" : "email",
+    "firstName" : "John",
+    "lastName" : "Smith"
+  }
+}

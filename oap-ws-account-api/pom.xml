@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) Xenoss
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Proprietary and confidential
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>oap</groupId>
+        <artifactId>oap-ws-parent</artifactId>
+        <version>${oap-ws.project.version}</version>
+    </parent>
+
+    <artifactId>oap-ws-account-api</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-stdlib</artifactId>
+            <version>${oap.deps.oap.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.java-json-tools</groupId>
+                    <artifactId>jackson-coreutils</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-sso-api</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-sso</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${oap.deps.lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${oap.deps.assertj.version}</version>
+        </dependency>
+    </dependencies>
+    
+</project>

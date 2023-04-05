@@ -52,5 +52,15 @@
             <version>${oap.deps.lombok.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-account</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-account-api</artifactId>
+            <version>${oap-ws.project.version}</version>
+        </dependency>
     </dependencies>
 </project>

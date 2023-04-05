@@ -1,0 +1,23 @@
+<!--
+  ~ Copyright (c) Xenoss
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Proprietary and confidential
+  -->
+
+<message>
+    <subject>You've been invited</subject>
+    <body type="text/plain">
+        <![CDATA[
+Hello, $user.firstName $user.lastName,
+
+Please confirm your email following this link:
+
+$confirmUrl
+
+Cheers!
+
+--
+Xenoss
+]]>
+    </body>
+</message>
