@@ -327,7 +327,7 @@ public class OrganizationWS extends AbstractWS {
     }
 
     public static class Passwd {
-        public static final String SCHEMA = "/io/xenoss/account/passwd.schema.conf";
+        public static final String SCHEMA = "/oap/ws/account/passwd.schema.conf";
         String email;
         String password;
     }

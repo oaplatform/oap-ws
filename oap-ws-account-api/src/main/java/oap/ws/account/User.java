@@ -28,8 +28,8 @@ public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = -3371939128187130008L;
 
-    public static final String SCHEMA = "/io/xenoss/account/user.schema.conf";
-    public static final String SCHEMA_REGISTRATION = "/io/xenoss/account/user-registration.schema.conf";
+    public static final String SCHEMA = "/oap/ws/account/user.schema.conf";
+    public static final String SCHEMA_REGISTRATION = "/oap/ws/account/user-registration.schema.conf";
 
     @Id
     public String email;

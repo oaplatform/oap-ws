@@ -17,7 +17,7 @@ import java.io.Serializable;
 @ToString
 @EqualsAndHashCode
 public class Account implements Serializable {
-    public static final String SCHEMA = "/io/xenoss/account/account.schema.conf";
+    public static final String SCHEMA = "/oap/ws/account/account.schema.conf";
     @Serial
     private static final long serialVersionUID = -1598345391160039855L;
 

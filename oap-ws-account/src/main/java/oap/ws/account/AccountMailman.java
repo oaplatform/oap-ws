@@ -39,8 +39,8 @@ public class AccountMailman {
     }
 
     private void sendUserCreatedEmail( @Nonnull UserData user, @Nonnull String xmail ) {
-        Template template = Template.of( "/io/xenoss/account/mail/" + xmail )
-            .orElseGet( () -> Template.of( "/io/xenoss/account/mail/" + xmail + ".default" ).orElseThrow() );
+        Template template = Template.of( "/oap/ws/account/mail/" + xmail )
+            .orElseGet( () -> Template.of( "/oap/ws/account/mail/" + xmail + ".default" ).orElseThrow() );
         template.bind( "user", user.user );
         template.bind( "confirmUrl", confirmUrl( user ) );
         Message message = template.buildMessage();

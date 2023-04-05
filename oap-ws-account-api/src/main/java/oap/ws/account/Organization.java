@@ -16,7 +16,7 @@ import java.io.Serializable;
 @ToString
 @EqualsAndHashCode
 public class Organization implements Serializable {
-    public static final String SCHEMA = "/io/xenoss/account/organization.schema.conf";
+    public static final String SCHEMA = "/oap/ws/account/organization.schema.conf";
     @Serial
     private static final long serialVersionUID = 2685007887187110374L;
 
