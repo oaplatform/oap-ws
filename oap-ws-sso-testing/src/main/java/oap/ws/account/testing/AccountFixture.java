@@ -116,15 +116,15 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
     }
 
     public OrganizationStorage organizationStorage() {
-        return service( "oap-ws-sso", OrganizationStorage.class );
+        return service( "oap-ws-account", OrganizationStorage.class );
     }
 
     public Accounts accounts() {
-        return service( "oap-ws-sso", AccountsService.class );
+        return service( "oap-ws-account", AccountsService.class );
     }
 
     public UserStorage userStorage() {
-        return service( "oap-ws-sso", UserStorage.class );
+        return service( "oap-ws-account", UserStorage.class );
     }
 
     @Override
