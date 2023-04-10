@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.Temporal;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
@@ -45,8 +46,8 @@ import static oap.ws.sso.SSO.SESSION_USER_KEY;
 public class ThrottleLoginInterceptor implements Interceptor {
     private static final Integer DEFAULT = 5;
 
-    private final ConcurrentHashMap<String, Temporal> attemptCache = new ConcurrentHashMap<>();
-    public Integer delay;
+    private final ConcurrentMap<String, Temporal> attemptCache = new ConcurrentHashMap<>();
+    public final Integer delay;
 
     /**
      * @param delay timeout between login attempt. In seconds
@@ -62,11 +63,10 @@ public class ThrottleLoginInterceptor implements Interceptor {
     @Override
     public Optional<Response> before( InvocationContext context ) {
         var id = context.session.id;
-        if( validateId( id ) || context.session.containsKey( SESSION_USER_KEY ) ) return Optional.empty();
-        else {
-            log.trace( "Please wait {} seconds before next attempt", delay );
-            return Optional.of( new Response( FORBIDDEN, "Please wait " + delay + " seconds before next attempt" ) );
-        }
+        if( validateId( id ) || context.session.containsKey( SESSION_USER_KEY ) )
+            return Optional.empty();
+        log.trace( "Please wait {} seconds before next attempt", delay );
+        return Optional.of( new Response( FORBIDDEN, "Please wait " + delay + " seconds before next attempt" ) );
     }
 
     /**
@@ -77,18 +77,17 @@ public class ThrottleLoginInterceptor implements Interceptor {
     private synchronized boolean validateId( String id ) {
         var now = LocalDateTime.now();
         var ts = attemptCache.putIfAbsent( id, now );
-        if( ts != null ) {
-            var duration = Duration.between( ts, now );
-            if( duration.getSeconds() <= this.delay ) {
-                log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
-                attemptCache.computeIfPresent( id, ( k, v ) -> now );
-                return false;
-            } else {
-                log.trace( "{} key has expired {}", id, duration.getSeconds() );
-                attemptCache.remove( id );
-                return true;
-            }
+        if( ts == null ) {
+            return true;
         }
+        var duration = Duration.between( ts, now );
+        if( duration.getSeconds() <= this.delay ) {
+            log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
+            attemptCache.computeIfPresent( id, ( k, v ) -> now );
+            return false;
+        }
+        log.trace( "{} key has expired {}", id, duration.getSeconds() );
+        attemptCache.remove( id );
         return true;
     }
 }

@@ -77,9 +77,7 @@ public class WsParams {
 
     public static Object wrapOptional( Reflection.Parameter parameter, Object value ) throws WsClientException {
         if( parameter.type().isOptional() ) return Optional.ofNullable( value );
-
-        if( value == null ) throw new WsClientException( parameter.name() + " is required" );
-
+        if( value == null ) throw new WsClientException( parameter.type() + ":" + parameter.name() + " is required" );
         return value;
     }
 
@@ -107,26 +105,23 @@ public class WsParams {
                 if( parameter.type().isOptional() ) {
                     var bytes = exchange.readBody();
                     return bytes.length > 0 ? Optional.of( bytes ) : Optional.empty();
-                } else {
-                    var bytes = exchange.readBody();
-                    if( bytes.length <= 0 ) throw new WsClientException( "no body for " + parameter.name() );
-                    return bytes;
                 }
-            } else if( parameter.type().assignableFrom( InputStream.class ) ) {
-                return exchange.getInputStream();
-            } else {
                 var bytes = exchange.readBody();
-                if( parameter.type().isOptional() ) {
-                    if( bytes.length <= 0 ) return Optional.empty();
-
-                    return Optional.of( new String( bytes ) );
-                }
-                if( bytes.length <= 0 ) throw new WsClientException( "no body for " + parameter.name() );
-
-                return new String( bytes );
+                if( bytes.length < 1 ) throw new WsClientException( "no body defined for: " + parameter.type() + ":" + parameter.name() );
+                return bytes;
             }
+            if( parameter.type().assignableFrom( InputStream.class ) ) {
+                return exchange.getInputStream();
+            }
+            byte[] bytes = exchange.readBody();
+            if( parameter.type().isOptional() ) {
+                if( bytes.length < 1 ) return Optional.empty();
+                return Optional.of( new String( bytes ) );
+            }
+            if( bytes.length < 1 ) throw new WsClientException( "no body defined for: " + parameter.type() + ":" + parameter.name() );
+            return new String( bytes );
         } catch( IOException e ) {
-            throw new WsClientException( e.getMessage(), e );
+            throw new WsClientException( "Cannot construct from: " + parameter.type() + ":" + parameter.name(), e );
         }
     }
 
@@ -137,20 +132,16 @@ public class WsParams {
             for( var name : names ) {
                 var values = exchange.exchange.getQueryParameters().get( name );
                 if( values == null || values.isEmpty() ) continue;
-
                 return values.stream().toList();
             }
-
             return List.of();
-        } else {
-            String value = null;
-            for( var name : names ) {
-                value = exchange.getStringParameter( name );
-                if( value != null ) break;
-            }
-
-            return wrapOptional( parameter, value );
         }
+        String value = null;
+        for( var name : names ) {
+            value = exchange.getStringParameter( name );
+            if( value != null ) break;
+        }
+        return wrapOptional( parameter, value );
     }
 
     public static Object fromQuery( HttpServerExchange exchange, Reflection.Parameter parameter ) throws WsClientException {

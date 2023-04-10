@@ -29,7 +29,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 
-@ToString
+@ToString( exclude = { "password" } )
 @EqualsAndHashCode
 public class Credentials implements Serializable {
     public final String email;
