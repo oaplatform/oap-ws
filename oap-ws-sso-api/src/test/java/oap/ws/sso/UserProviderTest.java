@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Random;
 
 import static oap.testng.Asserts.assertString;
+import static org.testng.internal.junit.ArrayAsserts.assertArrayEquals;
 
 public class UserProviderTest {
     @Test
@@ -53,5 +54,6 @@ public class UserProviderTest {
         System.out.println( l1 );
         Collections.shuffle( l2, new Random( l2.size() ) );
         System.out.println( l2 );
+        assertArrayEquals( l1.toArray(), l2.toArray() );
     }
 }
