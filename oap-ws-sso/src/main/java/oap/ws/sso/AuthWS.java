@@ -74,7 +74,7 @@ public class AuthWS extends AbstractSecureWS {
         var result = authenticator.authenticate( email, password, tfaCode );
         if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
             sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
-        else if( MFA_REQUIRED.equals( result.getFailureValue() ) )
+        else if( MFA_REQUIRED == result.getFailureValue() )
             return notAuthenticatedResponse( BAD_REQUEST, "TFA code is incorrect or required", sessionManager.cookieDomain );
         else
             return notAuthenticatedResponse( UNAUTHORIZED, "Username or password is invalid", sessionManager.cookieDomain );

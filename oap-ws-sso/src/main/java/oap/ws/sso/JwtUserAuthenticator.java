@@ -28,28 +28,28 @@ package oap.ws.sso;
 import lombok.extern.slf4j.Slf4j;
 import oap.util.Result;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
 public class JwtUserAuthenticator implements Authenticator {
 
-    private JwtTokenGenerator jwtTokenGenerator;
-    private JWTExtractor jwtExtractor;
-    private UserProvider userProvider;
+    private final JwtTokenGenerator jwtTokenGenerator;
+    private final JWTExtractor jwtExtractor;
+    private final UserProvider userProvider;
 
     public JwtUserAuthenticator( UserProvider userProvider, JwtTokenGenerator jwtTokenGenerator, JWTExtractor jwtExtractor ) {
-        this.userProvider = userProvider;
-        this.jwtTokenGenerator = jwtTokenGenerator;
-        this.jwtExtractor = jwtExtractor;
+        this.userProvider = Objects.requireNonNull( userProvider );
+        this.jwtTokenGenerator = Objects.requireNonNull( jwtTokenGenerator );
+        this.jwtExtractor = Objects.requireNonNull( jwtExtractor );
     }
 
     @Override
     public Optional<Authentication> authenticate( String authId ) {
         if( jwtExtractor.verifyToken( authId ) ) {
             return userProvider.getUser( jwtExtractor.getUserEmail( authId ) ).map( user -> new Authentication( authId, user ) );
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     @Override
@@ -80,8 +80,8 @@ public class JwtUserAuthenticator implements Authenticator {
                     return new Authentication( jwt, user );
                 } catch( Exception exception ) {
                     log.error( "JWT creation failed {}", exception.getMessage() );
+                    return null;
                 }
-                return null;
             } );
     }
 

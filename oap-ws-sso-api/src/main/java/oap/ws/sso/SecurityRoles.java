@@ -26,6 +26,7 @@ package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
@@ -33,9 +34,8 @@ public class SecurityRoles {
     private final SecurityRolesProvider provider;
 
     public SecurityRoles( SecurityRolesProvider provider ) {
-        this.provider = provider;
+        this.provider = Objects.requireNonNull( provider );
     }
-
 
     public Set<String> permissionsOf( String role ) {
         return provider.permissionsOf( role );
@@ -48,5 +48,4 @@ public class SecurityRoles {
     public Set<String> roles() {
         return provider.roles();
     }
-
 }

@@ -56,8 +56,8 @@ public class JWTSecurityInterceptor implements Interceptor {
     private final SecurityRoles roles;
 
     public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider, SecurityRoles roles ) {
-        this.jwtExtractor = jwtExtractor;
-        this.userProvider = userProvider;
+        this.jwtExtractor = Objects.requireNonNull( jwtExtractor );
+        this.userProvider = Objects.requireNonNull( userProvider );
         this.roles = roles;
     }
 

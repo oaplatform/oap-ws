@@ -53,7 +53,7 @@ public class ConfigSecurityRolesProvider extends AbstractSecurityRolesProvider {
 
     private static Map<String, Set<String>> load( List<Config> configs ) {
         log.info( "configs = {}", configs );
-        HashMap<String, Set<String>> roles = new HashMap<>();
+        Map<String, Set<String>> roles = new HashMap<>();
         for( var config : configs )
             for( Map.Entry<String, Set<String>> role : config.roles.entrySet() )
                 roles.computeIfAbsent( role.getKey(), k -> new HashSet<>() ).addAll( role.getValue() );
