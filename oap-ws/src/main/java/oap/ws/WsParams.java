@@ -77,7 +77,7 @@ public class WsParams {
 
     public static Object wrapOptional( Reflection.Parameter parameter, Object value ) throws WsClientException {
         if( parameter.type().isOptional() ) return Optional.ofNullable( value );
-        if( value == null ) throw new WsClientException( parameter.type() + ":" + parameter.name() + " is required" );
+        if( value == null ) throw new WsClientException( "'" + parameter + "' is required" );
         return value;
     }
 
