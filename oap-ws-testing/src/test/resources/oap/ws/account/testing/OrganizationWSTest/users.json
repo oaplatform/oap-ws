@@ -1,0 +1,35 @@
+[
+  {
+    "banned": false,
+    "confirmed": true,
+    "email": "systemadmin@admin.com",
+    "firstName": "System",
+    "lastName": "Admin",
+    "roles": {
+      "DFLT": "ORGANIZATION_ADMIN",
+      "SYSTEM": "ADMIN"
+    }
+  },
+  {
+    "banned": false,
+    "confirmed": true,
+    "email": "xenoss@xenoss.io",
+    "firstName": "System",
+    "lastName": "Admin",
+    "roles" : {
+      "DFLT" : "ADMIN",
+      "SYSTEM" : "ADMIN"
+    }
+  },
+  {
+    "banned": false,
+    "confirmed": true,
+    "email": "orgadmin@admin.com",
+    "firstName": "Johnny",
+    "lastName": "Walker",
+    "lastLogin": "${LAST_LOGIN}",
+    "roles" : {
+      "DFLT" : "ORGANIZATION_ADMIN"
+    }
+  }
+]
