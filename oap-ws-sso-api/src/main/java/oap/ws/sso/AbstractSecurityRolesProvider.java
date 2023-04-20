@@ -40,7 +40,9 @@ public class AbstractSecurityRolesProvider implements SecurityRolesProvider {
 
     public boolean granted( String role, String... permissions ) {
         Set<String> granted = permissionsOf( role );
-        for( String permission : permissions ) if( granted.contains( permission ) ) return true;
+        for( String permission : permissions ) {
+            if( granted.contains( permission ) ) return true;
+        }
         return false;
     }
 

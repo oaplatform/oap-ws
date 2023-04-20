@@ -32,6 +32,8 @@ import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
 
+import java.util.Objects;
+
 import static org.joda.time.DateTimeZone.UTC;
 
 public class SSO {
@@ -41,7 +43,7 @@ public class SSO {
 
     @Nullable
     public static String getAuthentication( HttpServerExchange exchange ) {
-        String value = exchange.getRequestHeader( AUTHENTICATION_KEY );
+        String value = Objects.requireNonNull( exchange ).getRequestHeader( AUTHENTICATION_KEY );
         if( value != null ) return value;
         return exchange.getRequestCookieValue( AUTHENTICATION_KEY );
     }

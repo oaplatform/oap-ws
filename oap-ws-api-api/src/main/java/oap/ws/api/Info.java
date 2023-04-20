@@ -61,13 +61,11 @@ public class Info {
     }
 
     private static boolean isWebMethod( Reflection.Method m ) {
-
         return !m.underlying.getDeclaringClass().equals( Object.class )
             && !m.underlying.isSynthetic()
             && !Modifier.isStatic( m.underlying.getModifiers() )
             && m.isPublic();
     }
-
 
     @EqualsAndHashCode
     @ToString
@@ -120,8 +118,10 @@ public class Info {
                 .orElse( "/" + method.name() );
             this.methods = wsMethod.map( m -> List.of( m.method() ) ).orElse( List.of( GET, POST ) );
             this.produces = wsMethod.map( WsMethod::produces ).orElse( APPLICATION_JSON.getMimeType() );
-            this.description = wsMethod.map( m -> Strings.isUndefined( m.description() ) ? ""
-                : m.description() ).orElse( "" ).trim();
+            this.description = wsMethod
+                .filter( m -> !Strings.isUndefined( m.description() ) )
+                .map( WsMethod::description )
+                .orElse( "" ).trim();
         }
 
         public String path( WebServiceInfo ws ) {
@@ -141,10 +141,11 @@ public class Info {
         }
 
         private static boolean isWebParameter( Reflection.Parameter parameter ) {
-            return parameter.findAnnotation( WsParam.class )
-                .map( wsp -> wsp.from() != WsParam.From.SESSION )
-                .orElse( true )
-                && !parameter.type().assignableTo( HttpServerExchange.class );
+            return !parameter.type().assignableTo( HttpServerExchange.class )
+                && parameter
+                    .findAnnotation( WsParam.class )
+                    .map( wsp -> wsp.from() != WsParam.From.SESSION )
+                    .orElse( true );
         }
     }
 
