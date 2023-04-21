@@ -44,6 +44,15 @@ public class JwtUserAuthenticator implements Authenticator {
     }
 
     @Override
+    public Optional<Authentication> authenticate( String authId ) {
+        if( jwtExtractor.verifyToken( authId ) ) {
+            return userProvider.getUser( jwtExtractor.getUserEmail( authId ) ).map( user -> new Authentication( authId, null, user ) );
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Authentication> authenticate( String accessToken, String refreshToken ) {
         if( jwtExtractor.verifyToken( accessToken ) ) {
             return userProvider.getUser( jwtExtractor.getUserEmail( accessToken ) ).map( user -> new Authentication( accessToken, refreshToken, user ) );
