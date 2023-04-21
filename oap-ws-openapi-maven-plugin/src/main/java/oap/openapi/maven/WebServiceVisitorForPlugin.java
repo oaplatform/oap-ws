@@ -51,6 +51,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     private final PluginDescriptor pluginDescriptor;
     private final LinkedHashSet<String> moduleConfigurations;
     private final List<String> classpath;
+    private final List<String> excludeModules;
 
     String getOutputPath() {
         return outputPath;
@@ -71,13 +72,15 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
                                        OpenapiGenerator openapiGenerator,
                                        List<String> classpath,
                                        String outputPath,
+                                       List<String> excludeModules,
                                        Log log ) {
         this.pluginDescriptor = pluginDescriptor;
         this.openapiGenerator = openapiGenerator;
         this.log = log;
-        this.moduleConfigurations = new LinkedHashSet<>(  );
+        this.moduleConfigurations = new LinkedHashSet<>();
         this.classpath = classpath;
         this.outputPath = outputPath;
+        this.excludeModules = excludeModules;
     }
 
     @Override
@@ -90,7 +93,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     @NotNull
     @Override
     public Class<?> loadClass( Service service ) throws ClassNotFoundException {
-        if ( pluginDescriptor == null ) throw new ClassNotFoundException( "PluginDescriptor is null" );
+        if( pluginDescriptor == null ) throw new ClassNotFoundException( "PluginDescriptor is null" );
         ClassRealm realm = pluginDescriptor.getClassRealm();
         return realm.loadClass( service.implementation );
     }
@@ -100,12 +103,13 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     public List<URL> getWebServiceUrls() {
         List<URL> urls = new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath()
             .stream()
+            .filter( url -> excludeModules == null || excludeModules.stream().noneMatch( element -> url.toString().contains( "/" + element + "/" ) ) )
             .filter( url -> moduleConfigurations.add( url.toString() ) )
             .toList() );
-        if ( classpath != null && !classpath.isEmpty() ) {
+        if( classpath != null && !classpath.isEmpty() ) {
             outputPath = classpath.get( 0 ) + "/swagger";
             File file = new File( classpath.get( 0 ) + "/META-INF/oap-module.conf" );
-            if ( !Files.exists( Paths.get( file.getPath() ) ) ) {
+            if( !Files.exists( Paths.get( file.getPath() ) ) ) {
                 log.info( "File " + file.getPath() + " is missing, nothing to do" );
                 return urls;
             }
@@ -115,7 +119,7 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
             } catch( MalformedURLException e ) {
                 throw new UncheckedIOException( e );
             }
-            if ( moduleConfigurations.add( currentModuleUrl.toString() ) ) urls.add( currentModuleUrl );
+            if( moduleConfigurations.add( currentModuleUrl.toString() ) ) urls.add( currentModuleUrl );
         }
         return urls;
     }

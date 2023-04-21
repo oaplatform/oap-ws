@@ -28,6 +28,9 @@ import oap.testng.Fixtures;
 import oap.testng.TestDirectoryFixture;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class OpenApiGeneratorPluginTest extends Fixtures {
 
     public OpenApiGeneratorPluginTest() {
@@ -39,6 +42,26 @@ public class OpenApiGeneratorPluginTest extends Fixtures {
         OpenApiGeneratorPlugin mojo = new OpenApiGeneratorPlugin();
         mojo.setOutputPath( "swagger" );
         mojo.setOutputType( "JSON" );
+        mojo.setExcludeModules( new ArrayList<>() );
+
+        mojo.execute();
+    }
+
+    @Test
+    public void execute2() throws Exception {
+        OpenApiGeneratorPlugin mojo = new OpenApiGeneratorPlugin();
+        mojo.setOutputPath( "swagger" );
+        mojo.setOutputType( "JSON" );
+
+        mojo.execute();
+    }
+
+    @Test
+    public void execute3() throws Exception {
+        OpenApiGeneratorPlugin mojo = new OpenApiGeneratorPlugin();
+        mojo.setOutputPath( "swagger" );
+        mojo.setOutputType( "JSON" );
+        mojo.setExcludeModules( Arrays.asList( "oap-ws" ) );
 
         mojo.execute();
     }

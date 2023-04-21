@@ -37,7 +37,7 @@ public abstract class AbstractJWTExtractor implements JWTExtractor {
             final DecodedJWT decodedJWT = decodeJWT( token );
             return decodedJWT != null;
         } catch( JWTVerificationException e ) {
-            log.trace( "Token not valid:", e );
+            log.trace( "Token is not valid: {}", token, e );
             return false;
         }
     }

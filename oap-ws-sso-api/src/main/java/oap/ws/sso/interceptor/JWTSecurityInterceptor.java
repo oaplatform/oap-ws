@@ -56,8 +56,8 @@ public class JWTSecurityInterceptor implements Interceptor {
     private final SecurityRoles roles;
 
     public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider, SecurityRoles roles ) {
-        this.jwtExtractor = jwtExtractor;
-        this.userProvider = userProvider;
+        this.jwtExtractor = Objects.requireNonNull( jwtExtractor );
+        this.userProvider = Objects.requireNonNull( userProvider );
         this.roles = roles;
     }
 
@@ -103,7 +103,7 @@ public class JWTSecurityInterceptor implements Interceptor {
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
         }
 
-        if( organization != null && !realm.get().equals( organization ) ) {
+        if( organization != null && !realm.get().equals( organization ) && !realm.get().equals( SYSTEM ) ) {
             return Optional.of( new Response( FORBIDDEN, "realm is different from organization logged in" ) );
         }
         if( issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) {

@@ -44,6 +44,7 @@ public class ApiKeyInterceptor implements Interceptor {
     private final Authenticator authenticator;
 
     public ApiKeyInterceptor( Authenticator authenticator ) {
+        super();
         this.authenticator = authenticator;
     }
 
@@ -56,17 +57,17 @@ public class ApiKeyInterceptor implements Interceptor {
 
         if( context.session.containsKey( SESSION_USER_KEY ) )
             return Optional.of( new Response( CONFLICT, "invoking service with apiKey while logged in" ) );
-        else {
-            var authentication = authenticator.authenticateWithApiKey( accessKey, apiKey );
-            if( authentication.isPresent() ) {
-                User user = authentication.get().user;
-                context.session.set( SESSION_USER_KEY, user );
-                context.session.set( SESSION_API_KEY_AUTHENTICATED, true );
-                context.session.set( ISSUER, this.getClass().getSimpleName() );
-                log.trace( "set user {} into session {}", user, context.session );
-                return Optional.empty();
-            } else return Optional.of( new Response( UNAUTHORIZED ) );
+
+        var authentication = authenticator.authenticateWithApiKey( accessKey, apiKey );
+        if( authentication.isPresent() ) {
+            User user = authentication.get().user;
+            context.session.set( SESSION_USER_KEY, user );
+            context.session.set( SESSION_API_KEY_AUTHENTICATED, true );
+            context.session.set( ISSUER, this.getClass().getSimpleName() );
+            log.trace( "set user {} into session {}", user, context.session );
+            return Optional.empty();
         }
+        return Optional.of( new Response( UNAUTHORIZED ) );
     }
 
     @Override

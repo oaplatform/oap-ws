@@ -1,0 +1,10 @@
+{
+  "email": "user@user.com",
+  "firstName": "Johnny",
+  "lastName": "Walker",
+  "banned": false,
+  "confirmed": true,
+  "roles" : {
+    "DFLT" : "USER"
+  }
+}

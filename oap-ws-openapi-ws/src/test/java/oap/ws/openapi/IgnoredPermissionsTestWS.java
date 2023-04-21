@@ -33,7 +33,7 @@ import static oap.ws.WsParam.From.PATH;
 
 public class IgnoredPermissionsTestWS {
 
-    @WsMethod( method = GET, path = "/test/ignored" )
+    @WsMethod( method = GET, path = "/test/ignored/{id}" )
     @WsSecurity( realm = "organizationId", permissions = { "dummy:permission" } )
     public String test( @WsParam( from = PATH ) String id ) {
         return id;

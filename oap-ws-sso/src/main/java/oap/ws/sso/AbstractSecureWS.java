@@ -40,7 +40,8 @@ public abstract class AbstractSecureWS {
     }
 
     protected ValidationErrors validateUserLoggedIn( Optional<User> loggedUser ) {
-        return loggedUser.isPresent() ? empty()
+        return loggedUser.isPresent()
+            ? empty()
             : error( Http.StatusCode.UNAUTHORIZED, "not logged in" );
     }
 }

@@ -51,9 +51,7 @@ public class JsonValidatorPeer implements ValidatorPeer {
     public ValidationErrors validate( Object value, Map<Reflection.Parameter, Object> originalValues ) {
         try {
             var mapValue = Binder.json.unmarshal( Map.class, ( String ) value );
-
             var factory = getJsonSchema( originalValues );
-
             return ValidationErrors.errors( factory.validate( mapValue, validate.ignoreRequired() ) );
         } catch( JsonException e ) {
             throw new WsClientException( e.getMessage(), e );
@@ -74,7 +72,6 @@ public class JsonValidatorPeer implements ValidatorPeer {
             .map( e -> {
                 var value = e.getValue().toString();
                 log.trace( "key={}, value={}", e.getKey(), e.getValue() );
-
                 id.append( value );
                 return value;
             } )

@@ -35,7 +35,7 @@ version: 2
 #  maven-oap:
 #    type: maven-repository
 #    url: https://mvn.oaplatform.org
-#    username: mvn
+#    username: xenoss
 #    password: ${{secrets.MY_ARTIFACTORY_PASSWORD}}
 
 # Maintain dependencies for Maven
@@ -48,4 +48,4 @@ updates:
     schedule:
       interval: "monthly"
     allow:
-      - dependency-name: "oap:oap-stdlib"
+      - dependency-name: "oap:*"

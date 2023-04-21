@@ -198,9 +198,6 @@ public class OpenapiGenerator {
                     + "\n- realm: " + method.realm;
                 operation.description( descriptionWithAuth );
             }
-            SecurityRequirement securityRequirement = new SecurityRequirement();
-            securityRequirement.addList( method.realm, method.permissions );
-            operation.addSecurityItem( securityRequirement );
         }
         return operation;
     }
@@ -384,7 +381,8 @@ public class OpenapiGenerator {
                     return Yaml.mapper().writeValueAsBytes( object );
                 }
             } ),
-            JSON( ".json", ContentWriter.ofJson() );
+            JSON( ".json", ContentWriter.ofJson() ),
+            JSON_OPENAPI( ".json", OpenApiContentWriter.ofOpenApiJson() );
 
             public final String fileExtension;
             public final ContentWriter<OpenAPI> writer;
