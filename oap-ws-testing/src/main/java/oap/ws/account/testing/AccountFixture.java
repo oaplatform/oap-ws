@@ -47,7 +47,6 @@ import oap.ws.sso.AuthenticationFailure;
 import oap.ws.sso.UserProvider;
 import oap.ws.sso.testng.SecureWSFixture;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.testng.annotations.AfterMethod;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -169,8 +168,8 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         return service( "oap-ws-sso", TestUserProvider.class );
     }
 
-    @AfterMethod
-    public void afterMethod() {
+    @Override
+    public void after() {
         assertLogout();
         super.after();
     }
