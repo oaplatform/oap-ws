@@ -4360,7 +4360,6 @@
       "JWT": {
         "type": "http",
         "description": "In order to use the method you have to be authorised",
-        "name": "Bearer Authentication",
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }

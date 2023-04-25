@@ -24,6 +24,7 @@
 
 package oap.ws;
 
+import lombok.extern.slf4j.Slf4j;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.Binder;
 import oap.reflect.Reflection;
@@ -38,6 +39,7 @@ import java.util.function.Supplier;
 
 import static oap.util.Pair.__;
 
+@Slf4j
 public class InvocationContext {
     public final HttpServerExchange exchange;
     public final Session session;
@@ -85,9 +87,14 @@ public class InvocationContext {
     }
 
     private Map<Reflection.Parameter, Object> parseParameters() {
-        return BiStream.of( unparsedParameters() )
-            .map( ( key, value ) -> __( key, map( key.type(), value ) ) )
-            .toMap();
+        try {
+            return BiStream.of( unparsedParameters() )
+                .map( ( key, value ) -> __( key, map( key.type(), value ) ) )
+                .toMap();
+        } catch( Exception ex ) {
+            log.warn( "Cannot parse parameters from {}", unparsedParameters(), ex.getCause() != null ? ex.getCause() : ex );
+            throw ex;
+        }
     }
 
     @SuppressWarnings( { "unchecked", "checkstyle:ParameterAssignment" } )
@@ -109,7 +116,7 @@ public class InvocationContext {
                 return Binder.json.unmarshal( reflection, ( String ) value );
             }
         } catch( Exception e ) {
-            throw new WsClientException( e.getMessage(), e );
+            throw new WsClientException( "Cannot convert to map: " + value, e );
         }
     }
 
