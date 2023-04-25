@@ -161,15 +161,15 @@ public class OpenapiGenerator {
         boolean atLeastOneMethodProcessed = false;
         int methodNumber = 0;
         for( WebMethodInfo method : methods ) {
-            if ( settings.skipDeprecated && method.deprecated ) continue;
             methodNumber++;
+            if ( settings.skipDeprecated && method.deprecated ) continue;
             var paths = getPaths();
             var pathString = method.path( wsInfo );
             var pathItem = getPathItem( pathString, paths );
-            var operation = prepareOperation( method, tag, methodNumber );
 
             for( HttpServerExchange.HttpMethod httpMethod : method.methods ) {
                 atLeastOneMethodProcessed = true;
+                var operation = prepareOperation( method, tag, httpMethod, methodNumber );
                 pathItem.operation( convertMethod( httpMethod ), operation );
             }
         }
@@ -179,15 +179,15 @@ public class OpenapiGenerator {
         return Result.PROCESSED_OK;
     }
 
-    private Operation prepareOperation( WebMethodInfo method, Tag tag, int methodNumber ) {
+    private Operation prepareOperation( WebMethodInfo method, Tag tag, HttpServerExchange.HttpMethod httpMethod, int methodNumber ) {
         var params = method.parameters();
         var returnType = prepareType( method.resultType() );
 
         Operation operation = new Operation()
             .addTagsItem( tag.getName() )
-            .operationId( generateOperationId( method, methodNumber ) )
             .parameters( prepareParameters( params ) )
             .description( method.description )
+            .operationId( generateOperationId( method, methodNumber, httpMethod ) )
             .requestBody( prepareRequestBody( params ) )
             .responses( prepareResponse( returnType, method ) );
         if( method.deprecated ) operation.deprecated( true );
@@ -204,8 +204,9 @@ public class OpenapiGenerator {
         return operation;
     }
 
-    private String generateOperationId( WebMethodInfo method, int methodNumber ) {
-        return method.name + "#" + methodNumber;
+    private String generateOperationId( WebMethodInfo method, int methodNumber, HttpServerExchange.HttpMethod httpMethod ) {
+        if ( httpMethod == null ) return method.name + "_" + methodNumber;
+        return method.name + "_" + httpMethod.name() + "_" + methodNumber;
     }
 
     private ApiResponses prepareResponse( Type returnType, WebMethodInfo method ) {

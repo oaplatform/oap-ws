@@ -57,4 +57,3 @@ public class OpenapiWSTest extends Fixtures {
                 contentOfTestResource( getClass(), "openapiWithoutDeprecated.json", Map.of() ) );
     }
 }
-

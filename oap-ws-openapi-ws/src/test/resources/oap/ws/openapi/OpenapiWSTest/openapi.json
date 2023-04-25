@@ -32,7 +32,7 @@
           "oap.ws.openapi.ExtTestWS"
         ],
         "description": "",
-        "operationId": "campaignList",
+        "operationId": "campaignList_GET_1",
         "parameters": [],
         "responses": {
           "200": {
@@ -55,7 +55,7 @@
           "oap.ws.openapi.ExtTestWS"
         ],
         "description": "",
-        "operationId": "campaignList",
+        "operationId": "campaignList_POST_1",
         "parameters": [],
         "responses": {
           "200": {
@@ -74,13 +74,45 @@
         }
       }
     },
+    "/apiExt/test/empty_required_param/": {
+      "get": {
+        "tags": [
+          "oap.ws.openapi.ExtTestWS"
+        ],
+        "description": "This method returns nothing (Void)\n    Note: \n- security permissions: \n  - account:read\n  - permissions:read\n- realm: organizationId",
+        "operationId": "testVoid_GET_2",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Required parameter, MUST be specified",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/apiExt/test/empty_optional_param/{id}": {
       "get": {
         "tags": [
           "oap.ws.openapi.ExtTestWS"
         ],
         "description": "This method returns nothing (Void)",
-        "operationId": "testVoid",
+        "operationId": "testVoid_GET_3",
         "parameters": [
           {
             "name": "id",
@@ -108,45 +140,13 @@
         }
       }
     },
-    "/apiExt/test/empty_required_param/": {
-      "get": {
-        "tags": [
-          "oap.ws.openapi.ExtTestWS"
-        ],
-        "description": "This method returns nothing (Void)\n    Note: \n- security permissions: \n  - account:read\n  - permissions:read\n- realm: organizationId",
-        "operationId": "testVoid",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Required parameter, MUST be specified",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "deprecated": true,
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
     "/example/bean": {
       "get": {
         "tags": [
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "bean",
+        "operationId": "bean_GET_1",
         "parameters": [
           {
             "name": "i",
@@ -187,7 +187,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "bean",
+        "operationId": "bean_POST_1",
         "parameters": [
           {
             "name": "i",
@@ -230,7 +230,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "bytesParam",
+        "operationId": "bytesParam_GET_2",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -263,7 +263,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "bytesParam",
+        "operationId": "bytesParam_POST_2",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -298,7 +298,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "bytesResult",
+        "operationId": "bytesResult_GET_3",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -331,7 +331,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "bytesResult",
+        "operationId": "bytesResult_POST_3",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -366,7 +366,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "code",
+        "operationId": "code_GET_4",
         "parameters": [
           {
             "name": "code",
@@ -389,7 +389,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "code",
+        "operationId": "code_POST_4",
         "parameters": [
           {
             "name": "code",
@@ -414,7 +414,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "deprecated",
+        "operationId": "deprecated_GET_5",
         "parameters": [],
         "responses": {
           "200": {
@@ -435,7 +435,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "deprecated",
+        "operationId": "deprecated_POST_5",
         "parameters": [],
         "responses": {
           "200": {
@@ -458,7 +458,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "en",
+        "operationId": "en_GET_6",
         "parameters": [
           {
             "name": "a",
@@ -497,7 +497,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "en",
+        "operationId": "en_POST_6",
         "parameters": [
           {
             "name": "a",
@@ -538,7 +538,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "getCreativeUniversal",
+        "operationId": "getCreativeUniversal_GET_7",
         "parameters": [],
         "responses": {
           "200": {
@@ -558,7 +558,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "getCreativeUniversal",
+        "operationId": "getCreativeUniversal_POST_7",
         "parameters": [],
         "responses": {
           "200": {
@@ -580,7 +580,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "getOapStreamOfStrings",
+        "operationId": "getOapStreamOfStrings_GET_8",
         "parameters": [],
         "responses": {
           "200": {
@@ -603,7 +603,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "getOapStreamOfStrings",
+        "operationId": "getOapStreamOfStrings_POST_8",
         "parameters": [],
         "responses": {
           "200": {
@@ -628,7 +628,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "getVanillaStreamOfStrings",
+        "operationId": "getVanillaStreamOfStrings_GET_9",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -663,7 +663,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "getVanillaStreamOfStrings",
+        "operationId": "getVanillaStreamOfStrings_POST_9",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -700,7 +700,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "id",
+        "operationId": "id_GET_10",
         "parameters": [
           {
             "name": "a",
@@ -729,7 +729,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "id",
+        "operationId": "id_POST_10",
         "parameters": [
           {
             "name": "a",
@@ -760,7 +760,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "json",
+        "operationId": "json_GET_11",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -789,7 +789,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "json",
+        "operationId": "json_POST_11",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -820,7 +820,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "list",
+        "operationId": "list_GET_12",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -855,7 +855,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "list",
+        "operationId": "list_POST_12",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -892,7 +892,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "listOfBytesResult",
+        "operationId": "listOfBytesResult_GET_13",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -921,7 +921,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "listOfBytesResult",
+        "operationId": "listOfBytesResult_POST_13",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -952,7 +952,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "req",
+        "operationId": "req_GET_14",
         "parameters": [],
         "responses": {
           "200": {
@@ -972,7 +972,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "req",
+        "operationId": "req_POST_14",
         "parameters": [],
         "responses": {
           "200": {
@@ -994,7 +994,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "response",
+        "operationId": "response_GET_15",
         "parameters": [],
         "responses": {
           "200": {
@@ -1014,7 +1014,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "response",
+        "operationId": "response_POST_15",
         "parameters": [],
         "responses": {
           "200": {
@@ -1036,7 +1036,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "stringParam",
+        "operationId": "stringParam_GET_16",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -1065,7 +1065,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "stringParam",
+        "operationId": "stringParam_POST_16",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -1096,7 +1096,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "sum",
+        "operationId": "sum_GET_17",
         "parameters": [
           {
             "name": "realm",
@@ -1167,7 +1167,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "sum",
+        "operationId": "sum_POST_17",
         "parameters": [
           {
             "name": "realm",
@@ -1240,7 +1240,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "sumab",
+        "operationId": "sumab_GET_18",
         "parameters": [
           {
             "name": "a",
@@ -1280,7 +1280,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "sumab",
+        "operationId": "sumab_POST_18",
         "parameters": [
           {
             "name": "a",
@@ -1322,7 +1322,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "sumabopt",
+        "operationId": "sumabopt_GET_19",
         "parameters": [
           {
             "name": "a",
@@ -1362,7 +1362,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "sumabopt",
+        "operationId": "sumabopt_POST_19",
         "parameters": [
           {
             "name": "a",
@@ -1404,7 +1404,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "test",
+        "operationId": "test_GET_20",
         "parameters": [],
         "responses": {
           "200": {
@@ -1427,7 +1427,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "test1",
+        "operationId": "test1_GET_21",
         "parameters": [
           {
             "name": "id",
@@ -1463,7 +1463,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "test2",
+        "operationId": "test2_GET_22",
         "parameters": [],
         "responses": {
           "200": {
@@ -1485,7 +1485,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "testEqual",
+        "operationId": "testEqual_GET_23",
         "parameters": [
           {
             "name": "id",
@@ -1516,7 +1516,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "x",
+        "operationId": "x_GET_24",
         "parameters": [
           {
             "name": "i",
@@ -1555,7 +1555,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "x",
+        "operationId": "x_POST_24",
         "parameters": [
           {
             "name": "i",
@@ -1596,7 +1596,7 @@
           "oap.ws.openapi.IgnoredPermissionsTestWS"
         ],
         "description": "",
-        "operationId": "test",
+        "operationId": "test_GET_1",
         "parameters": [
           {
             "name": "id",
@@ -1632,7 +1632,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "bean",
+        "operationId": "bean_GET_1",
         "parameters": [
           {
             "name": "i",
@@ -1673,7 +1673,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "bean",
+        "operationId": "bean_POST_1",
         "parameters": [
           {
             "name": "i",
@@ -1716,7 +1716,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "bytes",
+        "operationId": "bytes_GET_2",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -1749,7 +1749,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "bytes",
+        "operationId": "bytes_POST_2",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -1784,7 +1784,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "code",
+        "operationId": "code_GET_3",
         "parameters": [
           {
             "name": "code",
@@ -1807,7 +1807,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "code",
+        "operationId": "code_POST_3",
         "parameters": [
           {
             "name": "code",
@@ -1832,7 +1832,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "en",
+        "operationId": "en_GET_4",
         "parameters": [
           {
             "name": "a",
@@ -1871,7 +1871,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "en",
+        "operationId": "en_POST_4",
         "parameters": [
           {
             "name": "a",
@@ -1912,7 +1912,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "getStream",
+        "operationId": "getStream_GET_5",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -1947,7 +1947,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "getStream",
+        "operationId": "getStream_POST_5",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -1984,7 +1984,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "id",
+        "operationId": "id_GET_6",
         "parameters": [
           {
             "name": "a",
@@ -2013,7 +2013,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "id",
+        "operationId": "id_POST_6",
         "parameters": [
           {
             "name": "a",
@@ -2044,7 +2044,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "json",
+        "operationId": "json_GET_7",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -2073,7 +2073,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "json",
+        "operationId": "json_POST_7",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -2104,7 +2104,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "mapbean",
+        "operationId": "mapbean_GET_8",
         "parameters": [],
         "responses": {
           "200": {
@@ -2132,7 +2132,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "req",
+        "operationId": "req_GET_9",
         "parameters": [],
         "responses": {
           "200": {
@@ -2152,7 +2152,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "req",
+        "operationId": "req_POST_9",
         "parameters": [],
         "responses": {
           "200": {
@@ -2174,7 +2174,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "string",
+        "operationId": "string_GET_10",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -2203,7 +2203,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "string",
+        "operationId": "string_POST_10",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -2234,7 +2234,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "sumab",
+        "operationId": "sumab_GET_11",
         "parameters": [
           {
             "name": "a",
@@ -2274,7 +2274,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "sumab",
+        "operationId": "sumab_POST_11",
         "parameters": [
           {
             "name": "a",
@@ -2316,7 +2316,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "sumabopt",
+        "operationId": "sumabopt_GET_12",
         "parameters": [
           {
             "name": "a",
@@ -2356,7 +2356,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "sumabopt",
+        "operationId": "sumabopt_POST_12",
         "parameters": [
           {
             "name": "a",
@@ -2398,7 +2398,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "Returns a simple word Two as a result.",
-        "operationId": "test",
+        "operationId": "test_GET_13",
         "parameters": [],
         "responses": {
           "200": {
@@ -2421,7 +2421,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "test1",
+        "operationId": "test1_GET_14",
         "parameters": [
           {
             "name": "id",
@@ -2457,7 +2457,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "test2",
+        "operationId": "test2_GET_15",
         "parameters": [],
         "responses": {
           "200": {
@@ -2484,7 +2484,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "testEqual",
+        "operationId": "testEqual_GET_16",
         "parameters": [
           {
             "name": "id",
@@ -2520,7 +2520,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "x",
+        "operationId": "x_GET_17",
         "parameters": [
           {
             "name": "i",
@@ -2559,7 +2559,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "x",
+        "operationId": "x_POST_17",
         "parameters": [
           {
             "name": "i",
@@ -2600,7 +2600,7 @@
           "oap.ws.api.ApiWS"
         ],
         "description": "Generates description of WS method with parameters and result",
-        "operationId": "api",
+        "operationId": "api_GET_1",
         "parameters": [
           {
             "name": "deprecated",
@@ -2631,7 +2631,7 @@
           "oap.ws.openapi.OpenapiWS"
         ],
         "description": "Generates OpenAPI 3.0 json document",
-        "operationId": "openapi",
+        "operationId": "openapi_GET_1",
         "parameters": [
           {
             "name": "skipDeprecated",
@@ -2881,15 +2881,15 @@
           "enabled": {
             "type": "boolean"
           },
-          "externalId": {
-            "type": "integer",
-            "format": "int32"
-          },
           "values": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Dictionary"
             }
+          },
+          "externalId": {
+            "type": "integer",
+            "format": "int32"
           },
           "tags": {
             "type": "array",
@@ -2914,9 +2914,6 @@
           "path": {
             "type": "string"
           },
-          "secure": {
-            "type": "boolean"
-          },
           "httpOnly": {
             "type": "boolean"
           },
@@ -2927,12 +2924,15 @@
           "sameSite": {
             "type": "boolean"
           },
-          "maxAge": {
-            "type": "integer",
-            "format": "int32"
+          "secure": {
+            "type": "boolean"
           },
           "domain": {
             "type": "string"
+          },
+          "maxAge": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
