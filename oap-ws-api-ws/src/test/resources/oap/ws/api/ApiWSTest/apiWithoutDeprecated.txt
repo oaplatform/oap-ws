@@ -144,14 +144,6 @@ Methods:
 		a: QUERY int
 		b: QUERY optional int
 
-	Method test
-	[GET] /example/
-	Produces application/json
-	Realm param <no realm>
-	Permissions []
-	Returns int
-	No parameters
-
 	Method test1
 	[GET] /example/test/sort/{id}
 	Produces application/json
@@ -177,6 +169,14 @@ Methods:
 	Returns String
 	Parameters
 		id: PATH String
+
+	Method test
+	[GET] /example/
+	Produces application/json
+	Realm param <no realm>
+	Permissions []
+	Returns int
+	No parameters
 
 	Method x
 	[GET, POST] /example/x
