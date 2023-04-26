@@ -83,7 +83,7 @@ public class Info {
         public List<WebMethodInfo> methods( boolean withDeprecated ) {
             return Stream.of( reflection.methods )
                 .filter( Info::isWebMethod )
-                .sorted( comparing( Reflection.Method::name ) )
+                .sorted( comparing( ke -> ke.name() + ke.parameters + ke.returnType().name() ) )
                 .map( WebMethodInfo::new )
                 .filter( m -> !m.deprecated || withDeprecated )
                 .toList();

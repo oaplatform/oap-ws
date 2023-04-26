@@ -157,12 +157,11 @@ public class OpenapiGenerator {
                 clazz.getPackage().getImplementationVersion() != null
                     ? clazz.getPackage().getImplementationVersion()
                     : Strings.UNDEFINED, wsInfo.name );
-        List<WebMethodInfo> methods = wsInfo.methods( true );
         boolean atLeastOneMethodProcessed = false;
         int methodNumber = 0;
+        List<WebMethodInfo> methods = wsInfo.methods( !settings.skipDeprecated );
         for( WebMethodInfo method : methods ) {
             methodNumber++;
-            if ( settings.skipDeprecated && method.deprecated ) continue;
             var paths = getPaths();
             var pathString = method.path( wsInfo );
             var pathItem = getPathItem( pathString, paths );

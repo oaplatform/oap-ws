@@ -820,7 +820,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "list_GET_12",
+        "operationId": "list_GET_13",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -855,7 +855,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "list_POST_12",
+        "operationId": "list_POST_13",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -892,7 +892,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "listOfBytesResult_GET_13",
+        "operationId": "listOfBytesResult_GET_12",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -921,7 +921,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "listOfBytesResult_POST_13",
+        "operationId": "listOfBytesResult_POST_12",
         "parameters": [],
         "requestBody": {
           "content": {
@@ -1404,7 +1404,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "test_GET_20",
+        "operationId": "test_GET_23",
         "parameters": [],
         "responses": {
           "200": {
@@ -1427,7 +1427,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "test1_GET_21",
+        "operationId": "test1_GET_20",
         "parameters": [
           {
             "name": "id",
@@ -1463,7 +1463,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "test2_GET_22",
+        "operationId": "test2_GET_21",
         "parameters": [],
         "responses": {
           "200": {
@@ -1485,7 +1485,7 @@
           "oap.ws.openapi.ExampleNewWS"
         ],
         "description": "",
-        "operationId": "testEqual_GET_23",
+        "operationId": "testEqual_GET_22",
         "parameters": [
           {
             "name": "id",
@@ -2398,7 +2398,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "Returns a simple word Two as a result.",
-        "operationId": "test_GET_13",
+        "operationId": "test_GET_16",
         "parameters": [],
         "responses": {
           "200": {
@@ -2421,7 +2421,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "test1_GET_14",
+        "operationId": "test1_GET_13",
         "parameters": [
           {
             "name": "id",
@@ -2457,7 +2457,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "test2_GET_15",
+        "operationId": "test2_GET_14",
         "parameters": [],
         "responses": {
           "200": {
@@ -2484,7 +2484,7 @@
           "oap.ws.openapi.TestWS"
         ],
         "description": "",
-        "operationId": "testEqual_GET_16",
+        "operationId": "testEqual_GET_15",
         "parameters": [
           {
             "name": "id",
