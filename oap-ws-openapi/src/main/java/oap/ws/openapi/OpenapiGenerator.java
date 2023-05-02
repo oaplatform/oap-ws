@@ -406,6 +406,10 @@ public class OpenapiGenerator {
     }
 
     public void afterProcesingServices() {
+        if ( api.getComponents().getSchemas() == null ) {
+            log.error( "There are no schemas, skipping process extensions in schemas" );
+            return;
+        }
         try {
             api.getComponents().getSchemas().forEach( ( className, parentSchema ) -> {
                 if( "object".equals( parentSchema.getType() ) && parentSchema.getProperties() != null ) {
