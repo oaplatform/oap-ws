@@ -59,6 +59,7 @@ import oap.util.Strings;
 import oap.ws.WsParam;
 import oap.ws.api.Info.WebMethodInfo;
 import oap.ws.openapi.swagger.DeprecationAnnotationResolver;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.GenericArrayType;
@@ -205,7 +206,20 @@ public class OpenapiGenerator {
 
     private String generateOperationId( WebMethodInfo method, int methodNumber, HttpServerExchange.HttpMethod httpMethod ) {
         if ( httpMethod == null ) return method.name + "_" + methodNumber;
+        if ( !Strings.isEmpty( method.path ) ) {
+            String elem = replaceUnexpectedChar( method.path );
+            return method.name + "_" + httpMethod.name() + ( Strings.isEmpty( elem ) ? "" : "_" + elem );
+        }
         return method.name + "_" + httpMethod.name() + "_" + methodNumber;
+    }
+
+    private String replaceUnexpectedChar( String text ) {
+        StringBuilder result = new StringBuilder();
+        String[] paths = text.split( "[-!/}{: +=]" );
+        for( String element : paths ) {
+            result.append( StringUtils.capitalize( element ) );
+        }
+        return result.toString();
     }
 
     private ApiResponses prepareResponse( Type returnType, WebMethodInfo method ) {
