@@ -57,7 +57,9 @@ import oap.io.content.ContentWriter;
 import oap.reflect.Reflect;
 import oap.util.Strings;
 import oap.ws.WsParam;
+import oap.ws.api.Info.WebMethodInfo;
 import oap.ws.openapi.swagger.DeprecationAnnotationResolver;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.GenericArrayType;
@@ -117,7 +119,6 @@ public class OpenapiGenerator {
     // and https://www.baeldung.com/openapi-jwt-authentication
     private void addSecuritySchema() {
         SecurityScheme securityScheme = new SecurityScheme()
-            .name( "Bearer Authentication" )
             .type( SecurityScheme.Type.HTTP ) // "apiKey", "http", "oauth2", "openIdConnect"
             .description( "In order to use the method you have to be authorised" )
             .scheme( "bearer" ) //see https://www.rfc-editor.org/rfc/rfc7235#section-5.1
@@ -157,17 +158,18 @@ public class OpenapiGenerator {
                 clazz.getPackage().getImplementationVersion() != null
                     ? clazz.getPackage().getImplementationVersion()
                     : Strings.UNDEFINED, wsInfo.name );
-        List<oap.ws.api.Info.WebMethodInfo> methods = wsInfo.methods( true );
         boolean atLeastOneMethodProcessed = false;
-        for( oap.ws.api.Info.WebMethodInfo method : methods ) {
-            if ( settings.skipDeprecated && method.deprecated ) continue;
+        int methodNumber = 0;
+        List<WebMethodInfo> methods = wsInfo.methods( !settings.skipDeprecated );
+        for( WebMethodInfo method : methods ) {
+            methodNumber++;
             var paths = getPaths();
             var pathString = method.path( wsInfo );
             var pathItem = getPathItem( pathString, paths );
-            var operation = prepareOperation( method, tag );
 
             for( HttpServerExchange.HttpMethod httpMethod : method.methods ) {
                 atLeastOneMethodProcessed = true;
+                var operation = prepareOperation( method, tag, httpMethod, methodNumber );
                 pathItem.operation( convertMethod( httpMethod ), operation );
             }
         }
@@ -177,15 +179,15 @@ public class OpenapiGenerator {
         return Result.PROCESSED_OK;
     }
 
-    private Operation prepareOperation( oap.ws.api.Info.WebMethodInfo method, Tag tag ) {
+    private Operation prepareOperation( WebMethodInfo method, Tag tag, HttpServerExchange.HttpMethod httpMethod, int methodNumber ) {
         var params = method.parameters();
         var returnType = prepareType( method.resultType() );
 
         Operation operation = new Operation()
             .addTagsItem( tag.getName() )
-            .operationId( method.name )
             .parameters( prepareParameters( params ) )
             .description( method.description )
+            .operationId( generateOperationId( method, methodNumber, httpMethod ) )
             .requestBody( prepareRequestBody( params ) )
             .responses( prepareResponse( returnType, method ) );
         if( method.deprecated ) operation.deprecated( true );
@@ -202,7 +204,25 @@ public class OpenapiGenerator {
         return operation;
     }
 
-    private ApiResponses prepareResponse( Type returnType, oap.ws.api.Info.WebMethodInfo method ) {
+    private String generateOperationId( WebMethodInfo method, int methodNumber, HttpServerExchange.HttpMethod httpMethod ) {
+        if ( httpMethod == null ) return method.name + "_" + methodNumber;
+        if ( !Strings.isEmpty( method.path ) ) {
+            String elem = replaceUnexpectedChar( method.path );
+            return method.name + "_" + httpMethod.name() + ( Strings.isEmpty( elem ) ? "" : "_" + elem );
+        }
+        return method.name + "_" + httpMethod.name() + "_" + methodNumber;
+    }
+
+    private String replaceUnexpectedChar( String text ) {
+        StringBuilder result = new StringBuilder();
+        String[] paths = text.split( "[-!/}{: +=]" );
+        for( String element : paths ) {
+            result.append( StringUtils.capitalize( element ) );
+        }
+        return result.toString();
+    }
+
+    private ApiResponses prepareResponse( Type returnType, WebMethodInfo method ) {
         var responses = new ApiResponses();
         ApiResponse response = new ApiResponse();
         response.description( "" );
@@ -212,7 +232,7 @@ public class OpenapiGenerator {
         return responses;
     }
 
-    private Schema getSchemaByReturnType( Type returnType, oap.ws.api.Info.WebMethodInfo method ) {
+    private Schema getSchemaByReturnType( Type returnType, WebMethodInfo method ) {
         Type rawType = returnType;
         String underlyingType = null;
         if ( returnType instanceof ParameterizedType ) {
@@ -255,7 +275,7 @@ public class OpenapiGenerator {
         return reference;
     }
 
-    private Schema tryDetectSchema( oap.ws.api.Info.WebMethodInfo method, String underlyingType ) {
+    private Schema tryDetectSchema( WebMethodInfo method, String underlyingType ) {
         try {
             Schema schema = openapiSchema.prepareSchema( Class.forName( underlyingType ), api, method ).schema;
             ObjectSchema result = new ObjectSchema();
@@ -311,7 +331,7 @@ public class OpenapiGenerator {
         return PathItem.HttpMethod.valueOf( method.toString() );
     }
 
-    private Content createContent( oap.ws.api.Info.WebMethodInfo method, Type type ) {
+    private Content createContent( WebMethodInfo method, Type type ) {
         Schema schema = getSchemaByReturnType( type, method );
         schema.setName( method.resultType().getType() + " " + method.name + "(" + Joiner.on( "," ).join(  method.parameters().stream().map( info -> info.name  ).toList() ) + ")" );
         return createContent( method.produces, schema );
@@ -400,6 +420,10 @@ public class OpenapiGenerator {
     }
 
     public void afterProcesingServices() {
+        if ( api.getComponents().getSchemas() == null ) {
+            log.error( "There are no schemas, skipping process extensions in schemas" );
+            return;
+        }
         try {
             api.getComponents().getSchemas().forEach( ( className, parentSchema ) -> {
                 if( "object".equals( parentSchema.getType() ) && parentSchema.getProperties() != null ) {

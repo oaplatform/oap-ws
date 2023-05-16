@@ -29,7 +29,7 @@ import static oap.ws.WsParam.From.PATH;
 class ExampleNewWS {
 
     @WsSecurity( realm = "realm", permissions = "ALLOWED" )
-    public int sum( String realm, int a, List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
+    public int sum( @WsParam String realm, int a, @WsParam List<Integer> b, Optional<Integer> c, Optional<RetentionPolicy> rp ) {
         return 0;
     }
 

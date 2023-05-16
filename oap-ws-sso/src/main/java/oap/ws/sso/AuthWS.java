@@ -42,7 +42,6 @@ import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.COOKIE;
-import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
 import static oap.ws.sso.SSO.authenticatedResponse;
@@ -65,12 +64,18 @@ public class AuthWS extends AbstractSecureWS {
     }
 
     @WsMethod( method = POST, path = "/login" )
-    public Response login( @WsParam( from = BODY ) Credentials credentials, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+    public Response login( @WsParam( from = BODY ) Credentials credentials,
+                           @WsParam( from = SESSION ) Optional<User> loggedUser,
+                           Session session ) {
         return login( credentials.email, credentials.password, Optional.ofNullable( credentials.tfaCode ), loggedUser, session );
     }
 
     @WsMethod( method = GET, path = "/login" )
-    public Response login( String email, String password, Optional<String> tfaCode, @WsParam( from = SESSION ) Optional<User> loggedUser, Session session ) {
+    public Response login( String email,
+                           String password,
+                           Optional<String> tfaCode,
+                           @WsParam( from = SESSION ) Optional<User> loggedUser,
+                           Session session ) {
         loggedUser.ifPresent( user -> logout( loggedUser, session ) );
         var result = authenticator.authenticate( email, password, tfaCode );
         if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
@@ -91,13 +96,13 @@ public class AuthWS extends AbstractSecureWS {
     }
 
     @WsMethod( method = GET, path = "/logout" )
-    public Response logout( @WsParam( from = PATH ) Optional<User> loggedUser, Session session ) {
+    public Response logout( @WsParam( from = SESSION ) Optional<User> loggedUser,
+                            Session session ) {
         loggedUser.ifPresent( user -> {
             log.debug( "Invalidating token for user [{}]", user.getEmail() );
             authenticator.invalidate( user.getEmail() );
-            session.invalidate();
-
         } );
+        session.invalidate();
         return logoutResponse( sessionManager.cookieDomain );
     }
 

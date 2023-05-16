@@ -43,7 +43,7 @@ import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
 
 public class MethodValidatorPeerParamTest extends Fixtures {
-    {
+    public MethodValidatorPeerParamTest() {
         fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
@@ -85,11 +85,11 @@ public class MethodValidatorPeerParamTest extends Fixtures {
 
     @Test
     public void validationTypeFailed() {
-        assertPost( httpUrl( "/mvpp/run/validation/ok?i=test" ), "test", Http.ContentType.TEXT_PLAIN )
+        assertPost( httpUrl( "/mvpp/run/validation/ok?i=unsupportedStringToIntCast" ), "test", Http.ContentType.TEXT_PLAIN )
             .hasCode( Http.StatusCode.BAD_REQUEST );
     }
 
-    public static class TestWS {
+    public static class Test2WS {
         @WsMethod( path = "/run/validation/default", method = POST )
         public String validationDefault(
             @WsParam( from = QUERY ) int i,
@@ -99,7 +99,7 @@ public class MethodValidatorPeerParamTest extends Fixtures {
         }
 
         @WsMethod( path = "/run/validation/ok", method = POST )
-        public String validationOk(
+        public String validationOkTestWS(
             @WsParam( from = QUERY ) @WsValidate( "validateOkInt" ) int i,
             @WsParam( from = QUERY ) @WsValidate( "validateOkOptString" ) Optional<String> optString,
             @WsParam( from = QUERY ) @WsValidate( "validateOkListString" ) List<String> listString,

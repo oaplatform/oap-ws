@@ -79,7 +79,7 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
             .respondedJson( Http.StatusCode.BAD_REQUEST, "validation failed", "{\"errors\":[\"a\",\"a5\",\"5a\"]}" );
     }
 
-    public static class TestWS {
+    public static class Test1WS {
 
         @WsMethod( path = "/run/validation/default", method = POST )
         public Response validationDefault( @WsParam( from = BODY ) String request ) {
@@ -90,7 +90,7 @@ public class MethodValidatorPeerMethodTest extends Fixtures {
 
         @WsMethod( path = "/run/validation/ok", method = POST, produces = "text/plain" )
         @WsValidate( "validateOk" )
-        public String validationOk( @WsParam( from = BODY ) String request ) {
+        public String validationOkTest1WS( @WsParam( from = BODY ) String request ) {
             return request;
         }
 
