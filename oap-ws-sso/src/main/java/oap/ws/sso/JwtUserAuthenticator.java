@@ -45,9 +45,9 @@ public class JwtUserAuthenticator implements Authenticator {
     }
 
     @Override
-    public Optional<Authentication> authenticate( String authId ) {
-        if( jwtExtractor.verifyToken( authId ) ) {
-            return userProvider.getUser( jwtExtractor.getUserEmail( authId ) ).map( user -> new Authentication( authId, user ) );
+    public Optional<Authentication> authenticate( String accessToken ) {
+        if( jwtExtractor.verifyToken( accessToken ) ) {
+            return userProvider.getUser( jwtExtractor.getUserEmail( accessToken ) ).map( user -> new Authentication( accessToken, null, user ) );
         }
         return Optional.empty();
     }
@@ -60,9 +60,10 @@ public class JwtUserAuthenticator implements Authenticator {
         }
         User user = authResult.getSuccessValue();
         try {
-            var jwt = jwtTokenGenerator.generateToken( user );
-            log.trace( "generating new authentication for user {} -> {}", user.getEmail(), jwt );
-            Authentication authentication = new Authentication( jwt, user );
+            var accessToken = jwtTokenGenerator.generateAccessToken( user );
+            var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
+            log.trace( "generating new authentication for user {} -> {}", user.getEmail(), accessToken );
+            Authentication authentication = new Authentication( accessToken, refreshToken, user );
             return Result.success( authentication );
         } catch( Exception exception ) {
             log.error( "JWT creation failed {}", exception.getMessage() );
@@ -71,13 +72,24 @@ public class JwtUserAuthenticator implements Authenticator {
     }
 
     @Override
+    public Result<Authentication, AuthenticationFailure> refreshToken( String refreshToken ) {
+        if( jwtExtractor.verifyToken( refreshToken ) ) {
+            log.trace( "generating new authentication by refreshToken {} ", refreshToken );
+            final Optional<Authentication> authentication = userProvider.getUser( jwtExtractor.getUserEmail( refreshToken ) ).map( user -> new Authentication( jwtTokenGenerator.generateAccessToken( user ), refreshToken, user ) );
+            return authentication.<Result<Authentication, AuthenticationFailure>>map( Result::success ).orElseGet( () -> Result.failure( AuthenticationFailure.UNAUTHENTICATED ) );
+        }
+        return Result.failure( AuthenticationFailure.TOKEN_NOT_VALID );
+    }
+
+    @Override
     public Optional<Authentication> authenticateTrusted( String email ) {
         return userProvider.getUser( email )
             .map( user -> {
                 try {
-                    var jwt = jwtTokenGenerator.generateToken( user );
-                    log.trace( "generating new authentication for user {} -> {}", user.getEmail(), jwt );
-                    return new Authentication( jwt, user );
+                    var accessToken = jwtTokenGenerator.generateAccessToken( user );
+                    var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
+                    log.trace( "generating new authentication for user {} -> {}", user.getEmail(), accessToken );
+                    return new Authentication( accessToken, refreshToken, user );
                 } catch( Exception exception ) {
                     log.error( "JWT creation failed {}", exception.getMessage() );
                     return null;
@@ -90,9 +102,10 @@ public class JwtUserAuthenticator implements Authenticator {
         return userProvider.getAuthenticatedByApiKey( accessKey, apiKey )
             .map( user -> {
                 try {
-                    var jwt = jwtTokenGenerator.generateToken( user );
-                    log.trace( "generating temporary authentication for user {} -> {}", user.getEmail(), jwt );
-                    return new Authentication( jwt, user );
+                    var accessToken = jwtTokenGenerator.generateAccessToken( user );
+                    var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
+                    log.trace( "generating temporary authentication for user {} -> {}", user.getEmail(), accessToken );
+                    return new Authentication( accessToken, refreshToken, user );
                 } catch( Exception exception ) {
                     log.error( "JWT creation failed {}", exception.getMessage() );
                     return null;

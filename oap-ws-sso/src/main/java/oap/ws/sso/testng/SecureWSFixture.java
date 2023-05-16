@@ -33,6 +33,7 @@ import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
+import static oap.ws.sso.SSO.REFRESH_TOKEN_KEY;
 import static org.joda.time.DateTimeZone.UTC;
 
 /**
@@ -47,6 +48,9 @@ public class SecureWSFixture {
         assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
             .hasCode( Http.StatusCode.OK )
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() )
+            .containsCookie( REFRESH_TOKEN_KEY, cookie -> assertCookie( cookie )
                 .hasPath( "/" )
                 .isHttpOnly() );
     }

@@ -36,12 +36,12 @@ import static org.testng.Assert.assertTrue;
 
 public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
 
-    private JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "issuer", 100000 );
-    private JWTExtractor jwtExtractor = new BasicJWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
+    private final JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "secret", "issuer", 100000, 100000 );
+    private final JWTExtractor jwtExtractor = new BasicJWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
 
     @Test
     public void generateAndExtractToken() {
-        final String token = jwtTokenGenerator.generateToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
+        final String token = jwtTokenGenerator.generateAccessToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
         assertString( token ).isNotEmpty();
         assertTrue( jwtExtractor.verifyToken( token ) );
         assertEquals( jwtExtractor.getUserEmail( token ), "email@email.com" );
