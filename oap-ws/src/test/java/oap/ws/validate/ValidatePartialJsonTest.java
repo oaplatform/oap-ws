@@ -41,16 +41,16 @@ import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
 
 public class ValidatePartialJsonTest extends Fixtures {
-    //todo refactor this static madness
-    private static TestBean bean;
 
-    {
-        fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
+    private KernelFixture fixture;
+
+    public ValidatePartialJsonTest() {
+        fixture = new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) );
+        fixture( fixture );
     }
 
     @Test
     public void validation1() {
-        bean = new TestBean( "id1" );
         assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"id\":1}", Http.ContentType.APPLICATION_JSON )
             .respondedJson( Http.StatusCode.OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
         assertPost( httpUrl( "/vpj/run/validation/1/id1" ), "{\"b\":[{\"element\":\"test\"}],\"id\":1}", Http.ContentType.APPLICATION_JSON )
@@ -61,7 +61,6 @@ public class ValidatePartialJsonTest extends Fixtures {
 
     @Test
     public void validation2() {
-        bean = new TestBean( "id1" );
         assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{\"id\":1}", Http.ContentType.APPLICATION_JSON )
             .respondedJson( Http.StatusCode.OK, "OK", "{\"a\":[{\"id\":1}],\"id\":\"id1\"}" );
         assertPost( httpUrl( "/vpj/run/validation/2/id1" ), "{}", Http.ContentType.APPLICATION_JSON )
@@ -72,13 +71,14 @@ public class ValidatePartialJsonTest extends Fixtures {
 
     @Test
     public void validation3() {
-        bean = new TestBean( "id1" );
         final TestBean.TestItem itemA = new TestBean.TestItem();
         itemA.id = 1;
 
         final TestBean.TestItem itemB = new TestBean.TestItem();
         itemB.id = 2;
 
+        Object obj = fixture.kernel.service( "modules.oap-ws-validate-test.test-ws-bean" ).orElseThrow();
+        TestBean bean = ( TestBean ) obj;
         bean.a.add( itemA );
         bean.a.add( itemB );
         assertPost( httpUrl( "/vpj/run/validation/3/id1/2" ), "{\"element\":\"some text\"}", Http.ContentType.APPLICATION_JSON )
@@ -87,6 +87,12 @@ public class ValidatePartialJsonTest extends Fixtures {
 
     @SuppressWarnings( "unused" )
     public static class TestWS {
+        public TestBean bean;
+
+        public TestWS( TestBean bean ) {
+            this.bean = bean;
+        }
+
         @WsMethod( path = "/run/validation/1/{id}", method = POST )
         public TestBean validation1(
             @WsParam( from = PATH ) String id,

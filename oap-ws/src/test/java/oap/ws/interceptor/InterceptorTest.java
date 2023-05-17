@@ -38,7 +38,7 @@ import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
 
 public class InterceptorTest extends Fixtures {
-    {
+    public InterceptorTest() {
         fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
@@ -51,7 +51,6 @@ public class InterceptorTest extends Fixtures {
 
     @SuppressWarnings( "unused" )
     private static class TestWS {
-
         public String text( String value ) {
             return "ok";
         }

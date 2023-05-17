@@ -39,7 +39,7 @@ import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.QUERY;
 
 public class ValidateJsonTest extends Fixtures {
-    {
+    public ValidateJsonTest() {
         fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 

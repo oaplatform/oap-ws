@@ -25,3 +25,78 @@ The simplest way to fix it is to install 'Allow-Control-Allow-Origin plugin' for
 from https://chrome.google.com/webstore/detail/moesif-orign-cors-changer/digfbfaphojjndkpccljibejjbppifbc?hl=en-US
 - make sure you've had this Chrome extension enabled and try open /swagger-ui/ again
 - Note: after using Swagger-UI switch off this Chrome extension to stay secured
+
+## interceptors/filters
+interceptors are implementing oap.ws.Interceptor and 
+interceptors is configured as below 
+~~~
+some-ws {
+    implementation = ...
+    ws-service {
+      sessionAware = true
+      interceptors = [
+        modules.full-module-name.some-interceptor
+      ]
+    }
+}
+~~~
+interceptors may catch parameters when calling like below
+~~~
+@Override
+public Optional<Response> before( InvocationContext context ) {
+    return "error".equals( context.exchange.getStringParameter( "wsMethodParameter" ) )
+        ? Optional.of( new Response( FORBIDDEN, "caused by interceptor" ) )
+        : Optional.empty();
+}
+~~~
+## processors or request-chain (workflow)
+Some service class has some workflow definition
+~~~
+public RequestWorkflow<ProcessingState> workflow; // to be shared in workflow chain
+private void initWorkflow() {
+workflow = RequestWorkflow
+            .init( new RequestHandler1( ) )
+            .next( new RequestHandler2( ) )
+            ...
+            .build()
+}
+static class RequestHandler1 extends PnioRequestHandler<Object> {
+        @Override
+        public void handle( PnioExchange<Object> pnioExchange, Object o ) throws InterruptedException, IOException {
+
+        }
+}
+static class RequestHandler2 ...
+~~~
+and ProcessingState class has at least 
+~~~
+public Object originalRequest;
+~~~
+
+## validators
+Web service parameter validators:
+- by JSON schema - WsValidateJson annotation for single parameter
+~~~
+@WsMethod
+public String checkData(
+    @WsParam( from = BODY )
+    @WsValidateJson( schema = "/schemas/data.conf" )
+    Data data 
+) {
+...
+}
+~~~
+- by calling the method for all parameters
+~~~
+    @WsMethod( method = GET, path = "addNew/{id}" )
+    @WsValidate( "dataValidator" )
+    public int serviceWithValidate( @WsParam( from = QUERY ) int requiredParameter, @WsParam( from = PATH ) String id ) {
+        return requiredParameter;
+    }
+    
+    protected ValidationErrors dataValidator( int shouldBePositive, String id ) {
+        return id.trim().length() == 0 || shouldBePositive > 0 
+        ? ValidationErrors.empty() 
+        : ValidationErrors.error( "not a positive parameter or id is empty" );
+    }
+~~~

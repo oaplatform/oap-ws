@@ -34,7 +34,7 @@ import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
 
 public class WebServicesLocalTest extends Fixtures {
-    {
+    public WebServicesLocalTest() {
         fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
@@ -45,7 +45,6 @@ public class WebServicesLocalTest extends Fixtures {
 
     @SuppressWarnings( "unused" )
     private static class TestWS {
-
         @WsMethod( path = "/text", method = GET, produces = "text/plain" )
         public String text( String value ) {
             return "ok";

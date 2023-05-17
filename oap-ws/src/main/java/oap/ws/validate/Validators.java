@@ -34,13 +34,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static oap.ws.validate.ValidatorPeer.Type.METHOD;
 import static oap.ws.validate.ValidatorPeer.Type.PARAMETER;
 
 public class Validators {
-    private static final ConcurrentHashMap<Key<Reflection.Parameter>, Validator> forParams = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Key<Reflection.Method>, Validator> forMethods = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Key<Reflection.Parameter>, Validator> forParams = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Key<Reflection.Method>, Validator> forMethods = new ConcurrentHashMap<>();
 
     public static Validator forParameter( Reflection.Method method,
                                           Reflection.Parameter parameter,

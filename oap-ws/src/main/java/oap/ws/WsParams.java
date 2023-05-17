@@ -42,11 +42,18 @@ import static java.lang.Character.toUpperCase;
 @Slf4j
 public class WsParams {
 
+    /**
+     * Helper method to transform camelCase names into Capitalized-Dash-Divided,
+     * this method is convenient for creating HTTP header names, like below
+     * xCustomHeader -> X-Custom-Header
+     * @param camelCase text
+     * @return
+     */
     @Nonnull
-    public static String uncamelHeaderName( @Nonnull String camel ) {
+    public static String uncamelHeaderName( @Nonnull String camelCase ) {
         StringBuilder result = new StringBuilder();
-        for( int i = 0; i < camel.length(); i++ ) {
-            char c = camel.charAt( i );
+        for( int i = 0; i < camelCase.length(); i++ ) {
+            char c = camelCase.charAt( i );
             if( i == 0 ) result.append( toUpperCase( c ) );
             else if( isUpperCase( c ) ) result.append( "-" ).append( c );
             else result.append( c );
