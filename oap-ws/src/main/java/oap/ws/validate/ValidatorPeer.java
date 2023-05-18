@@ -27,6 +27,19 @@ import oap.reflect.Reflection;
 
 import java.util.Map;
 
+/**
+ * This method is called when web services has its parameters checking.
+ * For example
+ *     @WsMethod
+ *     @WsValidate( "dataValidator" )
+ *     public int serviceWithValidate(
+ *          @WsParam( from = QUERY ) int requiredParameter,
+ *          @WsParam( from = PATH ) String id ) {
+ *         return requiredParameter;
+ *     }
+ *  Kernel will call 'dataValidator' method
+ */
+@FunctionalInterface
 public interface ValidatorPeer {
     ValidationErrors validate( Object value, Map<Reflection.Parameter, Object> originalValues );
 
