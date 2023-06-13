@@ -40,9 +40,9 @@ public class UserWS extends AbstractWS {
     @WsMethod( method = GET, path = "/{organizationId}/{email}", description = "Returns user with given email" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { USER_READ, MANAGE_SELF } )
     @WsValidate( { "validateOrganizationAccess", "validateSameOrganization" } )
-    public Optional<UserData.View> get( @WsParam( from = PATH ) String organizationId,
-                                    @WsParam( from = PATH ) String email,
-                                    @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<UserData.UserView> get( @WsParam( from = PATH ) String organizationId,
+                                            @WsParam( from = PATH ) String email,
+                                            @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.getUser( email )
             .map( u -> email.equals( loggedUser.user.email ) || isSystem( loggedUser )
                 ? u.secureView
