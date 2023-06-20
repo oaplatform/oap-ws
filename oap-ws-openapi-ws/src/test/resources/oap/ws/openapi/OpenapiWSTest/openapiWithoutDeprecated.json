@@ -109,14 +109,14 @@
       "Bean" : {
         "properties" : {
           "b2" : {
-            "$ref" : "#/components/schemas/Bean2"
+            "$ref" : "#/components/schemas/oap_ws_openapi_TestWS_Bean2"
           },
           "dt" : {
             "format" : "date-time",
             "type" : "string"
           },
           "ext" : {
-            "$ref" : "#/components/schemas/Ext"
+            "$ref" : "#/components/schemas/oap_json_ext_Ext"
           },
           "i" : {
             "format" : "int32",
@@ -150,7 +150,7 @@
       },
       "Beans" : {
         "items" : {
-          "$ref" : "#/components/schemas/NewWsBean2"
+          "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
         },
         "properties" : {
           "empty" : {
@@ -289,7 +289,7 @@
       "Cookie" : {
         "properties" : {
           "delegate" : {
-            "$ref" : "#/components/schemas/Cookie"
+            "$ref" : "#/components/schemas/io_undertow_server_handlers_Cookie"
           },
           "domain" : {
             "type" : "string"
@@ -342,7 +342,7 @@
             "$ref" : "#/components/schemas/AcmeCreativeSettings"
           },
           "unknown" : {
-            "$ref" : "#/components/schemas/Dictionary"
+            "$ref" : "#/components/schemas/oap_dictionary_Dictionary"
           }
         },
         "type" : "object"
@@ -373,7 +373,7 @@
           },
           "values" : {
             "items" : {
-              "$ref" : "#/components/schemas/Dictionary"
+              "$ref" : "#/components/schemas/oap_dictionary_Dictionary"
             },
             "type" : "array"
           }
@@ -655,11 +655,11 @@
       "NewWsBean" : {
         "properties" : {
           "b2" : {
-            "$ref" : "#/components/schemas/NewWsBean2"
+            "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
           },
           "beans" : {
             "items" : {
-              "$ref" : "#/components/schemas/NewWsBean2"
+              "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
             },
             "properties" : {
               "empty" : {
@@ -690,7 +690,7 @@
           },
           "map" : {
             "additionalProperties" : {
-              "$ref" : "#/components/schemas/NewWsBean2"
+              "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
             },
             "type" : "object"
           },
@@ -1121,7 +1121,7 @@
           },
           "cookies" : {
             "items" : {
-              "$ref" : "#/components/schemas/Cookie"
+              "$ref" : "#/components/schemas/oap_http_Cookie"
             },
             "type" : "array"
           },
@@ -1644,6 +1644,239 @@
           },
           "wrapped" : {
             "type" : "boolean"
+          }
+        },
+        "type" : "object"
+      },
+      "io_undertow_server_handlers_Cookie" : {
+        "properties" : {
+          "comment" : {
+            "type" : "string"
+          },
+          "discard" : {
+            "type" : "boolean"
+          },
+          "domain" : {
+            "type" : "string"
+          },
+          "expires" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "httpOnly" : {
+            "type" : "boolean"
+          },
+          "maxAge" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "sameSite" : {
+            "type" : "boolean"
+          },
+          "sameSiteMode" : {
+            "type" : "string"
+          },
+          "secure" : {
+            "type" : "boolean"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "version" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "oap_dictionary_Dictionary" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "externalId" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "properties" : {
+            "additionalProperties" : {
+              "type" : "object"
+            },
+            "type" : "object"
+          },
+          "tags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "values" : {
+            "items" : {
+              "$ref" : "#/components/schemas/oap_dictionary_Dictionary"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "oap_http_Cookie" : {
+        "properties" : {
+          "delegate" : {
+            "$ref" : "#/components/schemas/io_undertow_server_handlers_Cookie"
+          },
+          "domain" : {
+            "type" : "string"
+          },
+          "expires" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "httpOnly" : {
+            "type" : "boolean"
+          },
+          "maxAge" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "sameSite" : {
+            "type" : "boolean"
+          },
+          "secure" : {
+            "type" : "boolean"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "oap_json_ext_Ext" : {
+        "type" : "object"
+      },
+      "oap_util_Stream" : {
+        "properties" : {
+          "parallel" : {
+            "type" : "boolean"
+          }
+        },
+        "type" : "object"
+      },
+      "oap_ws_openapi_ExampleNewWS_NewWsBean" : {
+        "properties" : {
+          "b2" : {
+            "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
+          },
+          "beans" : {
+            "items" : {
+              "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
+            },
+            "properties" : {
+              "empty" : {
+                "type" : "boolean"
+              }
+            },
+            "type" : "array"
+          },
+          "dt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "ext" : {
+            "$ref" : "#/components/schemas/oap_json_ext_Ext"
+          },
+          "i" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "intStream" : {
+            "$ref" : "#/components/schemas/oap_util_Stream"
+          },
+          "map" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
+            },
+            "type" : "object"
+          },
+          "s" : {
+            "deprecated" : true,
+            "type" : "string"
+          },
+          "something" : {
+            "type" : "string"
+          },
+          "stringStream" : {
+            "$ref" : "#/components/schemas/oap_util_Stream"
+          }
+        },
+        "type" : "object"
+      },
+      "oap_ws_openapi_ExampleNewWS_NewWsBean2" : {
+        "properties" : {
+          "price" : {
+            "deprecated" : true,
+            "format" : "double",
+            "type" : "number"
+          },
+          "x" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "oap_ws_openapi_TestWS_Bean" : {
+        "properties" : {
+          "b2" : {
+            "$ref" : "#/components/schemas/oap_ws_openapi_TestWS_Bean2"
+          },
+          "dt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "ext" : {
+            "$ref" : "#/components/schemas/oap_json_ext_Ext"
+          },
+          "i" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "s" : {
+            "type" : "string"
+          },
+          "something" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "oap_ws_openapi_TestWS_Bean2" : {
+        "properties" : {
+          "overpriced" : {
+            "deprecated" : true,
+            "type" : "boolean"
+          },
+          "price" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "x" : {
+            "format" : "int32",
+            "type" : "integer"
           }
         },
         "type" : "object"

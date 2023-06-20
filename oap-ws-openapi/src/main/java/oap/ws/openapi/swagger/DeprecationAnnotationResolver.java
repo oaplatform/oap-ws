@@ -82,10 +82,22 @@ public class DeprecationAnnotationResolver extends ModelResolver implements Mode
                            ModelConverterContext context,
                            Iterator<ModelConverter> next ) {
         this.context = context;
+        String canonName = null;
         if ( annotatedType.getType().getClass() != SimpleType.class ) {
             this.toBeResolvedClassName.add( annotatedType.getType().getTypeName() );
+        } else {
+            canonName = ((SimpleType)annotatedType.getType()).getRawClass().getCanonicalName();
         }
-        return super.resolve( annotatedType, context, next );
+        Schema resolved = super.resolve( annotatedType, context, next );
+        if ( canonName != null &&
+             resolved != null &&
+             "object".equals( resolved.getType() ) &&
+             !canonName.startsWith( "io.swagger." ) &&
+             !"java.lang.Object".equals( canonName )
+        ) {
+            resolved.setName( canonName.replace( '.', '_' ) );
+        }
+        return resolved;
     }
 
     @Override

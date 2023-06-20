@@ -142,6 +142,7 @@ class OpenapiSchema {
         try {
             rawClass = TypeFactory.rawClass( type );
             resolvedSchema = converters.readAllAsResolvedSchema( type );
+//            resolvedSchema.schema.setName( rawClass.getCanonicalName().replace( ".", "_" ) );
         } catch( Exception ex ) {
             log.error( "Cannot resolve schema for type " + type.getTypeName() + " in method: " + method + ", raw class is: <"
                 + ( rawClass != null ? rawClass.getCanonicalName() : "?" ) + ">" );

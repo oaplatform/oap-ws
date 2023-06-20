@@ -40,6 +40,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -138,14 +139,20 @@ public class OpenapiSchemaTest extends TestCase {
 
     @SuppressWarnings( "unchecked" )
     @Test
-    public void testResolvedSchemaForInnerType() {
+    public void testResolvedSchemaForInnerType() throws ClassNotFoundException {
         OpenapiSchema openapiSchema = new OpenapiSchema();
 
-        ResolvedSchema resolvedSchema = openapiSchema.resolveSchema( InnerType.class, method );
+        var resolvedSchema1 = openapiSchema.resolveSchema( OpenapiSchemaTest.InnerTypeSecond.class, method );
+        var resolvedSchema2 = openapiSchema.resolveSchema( OuterTypeSuper.InnerTypeSecond.class, method );
+        var resolvedSchema3 = openapiSchema.resolveSchema( Class.forName( "oap.ws.openapi.InnerTypeSecond" ), method );
 
-        assertThat( resolvedSchema ).isNotNull();
-        assertThat( resolvedSchema.schema.getProperties() ).hasSize( 9 );
-        assertThat( resolvedSchema.schema.getName() ).isEqualTo( "InnerType" );
+        assertThat( resolvedSchema1 ).isNotNull();
+        assertThat( resolvedSchema1.schema.getName() ).isEqualTo( "oap_ws_openapi_OpenapiSchemaTest_InnerTypeSecond" );
+        assertThat( resolvedSchema1.schema.getProperties() ).hasSize( 5 );
+        assertThat( resolvedSchema2.schema.getName() ).isEqualTo( "oap_ws_openapi_OuterTypeSuper_InnerTypeSecond" );
+        assertThat( resolvedSchema2.schema.getProperties() ).hasSize( 1 );
+        assertThat( resolvedSchema3.schema.getName() ).isEqualTo( "oap_ws_openapi_InnerTypeSecond" );
+        assertThat( resolvedSchema3.schema.getProperties() ).hasSize( 1 );
     }
 
     @Test
@@ -205,6 +212,18 @@ public class OpenapiSchemaTest extends TestCase {
         var properties = schema.getAdditionalProperties();
         assertThat( properties.getClass() ).isEqualTo( ArraySchema.class );
         assertThat( ( ( ArraySchema ) properties ).getItems().getClass() ).isEqualTo( StringSchema.class );
+    }
+
+    public static class InnerTypeSuper extends OuterTypeSuper {
+        Set<Integer> ages = Set.of( 16, 30, 45, 64 );
+    }
+
+    public static class InnerTypeSecond extends InnerTypeSuper {
+        public String innerTypeSecond1 = "schema name should distinguish same class name";
+        public int a;
+        public int[] b;
+        public String str;
+        public Map<String, ApiInfo> map;
     }
 
     @SuppressWarnings( "unused" )
