@@ -147,11 +147,11 @@ public class OpenapiSchemaTest extends TestCase {
         var resolvedSchema3 = openapiSchema.resolveSchema( Class.forName( "oap.ws.openapi.InnerTypeSecond" ), method );
 
         assertThat( resolvedSchema1 ).isNotNull();
-        assertThat( resolvedSchema1.schema.getName() ).isEqualTo( "oap_ws_openapi_OpenapiSchemaTest_InnerTypeSecond" );
+        assertThat( resolvedSchema1.schema.getName() ).isEqualTo( "InnerTypeSecond" );
         assertThat( resolvedSchema1.schema.getProperties() ).hasSize( 5 );
-        assertThat( resolvedSchema2.schema.getName() ).isEqualTo( "oap_ws_openapi_OuterTypeSuper_InnerTypeSecond" );
+        assertThat( resolvedSchema2.schema.getName() ).isEqualTo( "InnerTypeSecond" );
         assertThat( resolvedSchema2.schema.getProperties() ).hasSize( 1 );
-        assertThat( resolvedSchema3.schema.getName() ).isEqualTo( "oap_ws_openapi_InnerTypeSecond" );
+        assertThat( resolvedSchema3.schema.getName() ).isEqualTo( "InnerTypeSecond" );
         assertThat( resolvedSchema3.schema.getProperties() ).hasSize( 1 );
     }
 
