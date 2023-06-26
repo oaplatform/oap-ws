@@ -6,5 +6,6 @@
   "lastName": "Smith",
   "roles" : {
     "XNSS" : "ORGANIZATION_ADMIN"
-  }
+  },
+  "tfaEnabled" : false
 }

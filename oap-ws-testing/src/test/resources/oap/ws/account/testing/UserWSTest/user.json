@@ -6,5 +6,7 @@
   "confirmed": true,
   "roles" : {
     "DFLT" : "USER"
-  }
+  },
+  "tfaEnabled" : false
 }
+

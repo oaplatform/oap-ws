@@ -33,7 +33,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
     private static final long serialVersionUID = -3371939128187130008L;
 
     @JsonIgnore
-    public final UserView view = new UserView();
+    public final View view = new View();
     @JsonIgnore
     public final SecureView secureView = new SecureView();
 
@@ -78,7 +78,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
 
     @JsonIgnore
     @Override
-    public UserView getView() {
+    public View getView() {
         return view;
     }
 
@@ -150,7 +150,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
         return this;
     }
 
-    public class UserView implements oap.ws.sso.User.View {
+    public class View implements oap.ws.sso.User.View {
         public String getEmail() {
             return user.email;
         }
@@ -179,6 +179,11 @@ public class UserData implements oap.ws.sso.User, Serializable {
             return user.confirmed;
         }
 
+        public boolean isTfaEnabled() {
+            return user.tfaEnabled;
+        }
+
+
         @JsonFormat( shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" )
         public DateTime getLastLogin() {
             return lastLogin;
@@ -189,7 +194,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
         }
     }
 
-    public class SecureView extends UserView {
+    public class SecureView extends View {
         public String getApiKey() {
             return user.apiKey;
         }

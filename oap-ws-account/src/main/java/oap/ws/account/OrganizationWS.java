@@ -98,13 +98,13 @@ public class OrganizationWS extends AbstractWS {
     @WsMethod( method = GET, path = "/{organizationId}" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ORGANIZATION_READ } )
     @WsValidate( "validateOrganizationAccess" )
-    public Optional<OrganizationData.OrganizationView> get( @WsParam( from = PATH ) String organizationId, @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<OrganizationData.View> get( @WsParam( from = PATH ) String organizationId, @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.getOrganization( organizationId ).map( data -> data.view );
     }
 
     @WsMethod( method = GET, path = "/" )
     @WsValidate( { "validateUserLoggedIn" } )
-    public List<OrganizationData.OrganizationView> list( @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
+    public List<OrganizationData.View> list( @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
         return Stream.of( accounts.getOrganizations() )
             .filter( o -> canAccessOrganization( loggedUser.get(), o.organization.id ) )
             .map( o -> o.view )
@@ -114,9 +114,9 @@ public class OrganizationWS extends AbstractWS {
     @WsMethod( method = POST, path = "/{organizationId}/accounts" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ACCOUNT_STORE } )
     @WsValidate( { "validateOrganizationAccess" } )
-    public Optional<OrganizationData.OrganizationView> storeAccount( @WsParam( from = PATH ) String organizationId,
-                                                                     @WsParam( from = BODY ) @WsValidateJson( schema = Account.SCHEMA ) Account account,
-                                                                     @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<OrganizationData.View> storeAccount( @WsParam( from = PATH ) String organizationId,
+                                                         @WsParam( from = BODY ) @WsValidateJson( schema = Account.SCHEMA ) Account account,
+                                                         @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.storeAccount( organizationId, account ).map( o -> o.view );
     }
 
@@ -142,18 +142,18 @@ public class OrganizationWS extends AbstractWS {
 
     @WsMethod( method = POST, path = "/{organizationId}/users/{email}/accounts/add" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ACCOUNT_ADD } )
-    public Optional<UserData.UserView> addAccountsToUser( @WsParam( from = PATH ) String organizationId,
-                                                          @WsParam( from = PATH ) String email,
-                                                          @WsParam( from = QUERY ) String accountId,
-                                                          @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<UserData.View> addAccountsToUser( @WsParam( from = PATH ) String organizationId,
+                                                      @WsParam( from = PATH ) String email,
+                                                      @WsParam( from = QUERY ) String accountId,
+                                                      @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.addAccountToUser( email, organizationId, accountId ).map( u -> u.view );
     }
 
     @WsMethod( method = GET, path = "/{organizationId}/users" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ORGANIZATION_LIST_USERS } )
     @WsValidate( { "validateOrganizationAccess" } )
-    public List<UserData.UserView> users( @WsParam( from = PATH ) String organizationId,
-                                          @WsParam( from = SESSION ) UserData loggedUser ) {
+    public List<UserData.View> users( @WsParam( from = PATH ) String organizationId,
+                                      @WsParam( from = SESSION ) UserData loggedUser ) {
         return Stream.of( accounts.getUsers( organizationId ) )
             .map( u -> u.view )
             .toList();
@@ -162,10 +162,10 @@ public class OrganizationWS extends AbstractWS {
     @WsMethod( method = POST, path = "/{organizationId}/users" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ORGANIZATION_STORE_USER } )
     @WsValidate( { "validateOrganizationAccess", "validateUsersOrganization", "validateAdminRole", "validateUserRoleNotEmpty", "validateUserRegistered" } )
-    public UserData.UserView storeUser( @WsParam( from = PATH ) String organizationId,
-                                        @WsValidateJson( schema = User.SCHEMA ) @WsParam( from = BODY ) User user,
-                                        @WsParam( from = QUERY ) Optional<String> role,
-                                        @WsParam( from = SESSION ) UserData loggedUser ) {
+    public UserData.View storeUser( @WsParam( from = PATH ) String organizationId,
+                                    @WsValidateJson( schema = User.SCHEMA ) @WsParam( from = BODY ) User user,
+                                    @WsParam( from = QUERY ) Optional<String> role,
+                                    @WsParam( from = SESSION ) UserData loggedUser ) {
         if( user.create ) {
             UserData userCreated = accounts.createUser( user, role.map( r -> new HashMap<>( Map.of( organizationId, r ) ) ).orElse( null ) );
             mailman.sendInvitedEmail( userCreated );
@@ -177,8 +177,8 @@ public class OrganizationWS extends AbstractWS {
 
     @WsMethod( method = POST, path = "/register" )
     @WsValidate( "validateUserRegistered" )
-    public UserData.UserView register( @WsValidateJson( schema = User.SCHEMA_REGISTRATION ) @WsParam( from = BODY ) User user,
-                                       @WsParam( from = QUERY ) String organizationName ) {
+    public UserData.View register( @WsValidateJson( schema = User.SCHEMA_REGISTRATION ) @WsParam( from = BODY ) User user,
+                                   @WsParam( from = QUERY ) String organizationName ) {
         OrganizationData organizationData = accounts.storeOrganization( new Organization( organizationName ) );
         final String orgId = organizationData.organization.id;
         UserData userCreated = accounts.createUser( user, new HashMap<>( Map.of( orgId, ORGANIZATION_ADMIN ) ) );
@@ -189,9 +189,9 @@ public class OrganizationWS extends AbstractWS {
     @WsMethod( method = POST, path = "/{organizationId}/users/passwd" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ORGANIZATION_USER_PASSWD, USER_PASSWD } )
     @WsValidate( { "validateOrganizationAccess", "validatePasswdOrganization", "validateUserAccess" } )
-    public Optional<UserData.UserView> passwd( @WsParam( from = PATH ) String organizationId,
-                                               @WsParam( from = BODY ) @WsValidateJson( schema = Passwd.SCHEMA ) Passwd passwd,
-                                               @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<UserData.View> passwd( @WsParam( from = PATH ) String organizationId,
+                                           @WsParam( from = BODY ) @WsValidateJson( schema = Passwd.SCHEMA ) Passwd passwd,
+                                           @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.passwd( passwd.email, passwd.password ).map( u -> u.view );
     }
 
@@ -209,9 +209,9 @@ public class OrganizationWS extends AbstractWS {
     @WsMethod( method = GET, path = "/{organizationId}/users/ban/{email}" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { BAN_USER } )
     @WsValidate( { "validateAdminBanAccess" } )
-    public Optional<UserData.UserView> ban( @WsParam( from = PATH ) String organizationId,
-                                            @WsParam( from = PATH ) String email,
-                                            @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<UserData.View> ban( @WsParam( from = PATH ) String organizationId,
+                                        @WsParam( from = PATH ) String email,
+                                        @WsParam( from = SESSION ) UserData loggedUser ) {
 
 
         return accounts.ban( email, true ).map( u -> u.view );
@@ -219,17 +219,17 @@ public class OrganizationWS extends AbstractWS {
 
     @WsMethod( method = GET, path = "/{organizationId}/users/delete/{email}" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ACCOUNT_DELETE } )
-    public Optional<UserData.UserView> delete( @WsParam( from = PATH ) String organizationId,
-                                               @WsParam( from = PATH ) String email,
-                                               @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<UserData.View> delete( @WsParam( from = PATH ) String organizationId,
+                                           @WsParam( from = PATH ) String email,
+                                           @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.delete( email ).map( u -> u.view );
     }
 
     @WsMethod( method = GET, path = "/{organizationId}/users/unban/{email}" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { UNBAN_USER } )
-    public Optional<UserData.UserView> unban( @WsParam( from = PATH ) String organizationId,
-                                              @WsParam( from = PATH ) String email,
-                                              @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<UserData.View> unban( @WsParam( from = PATH ) String organizationId,
+                                          @WsParam( from = PATH ) String email,
+                                          @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.ban( email, false ).map( u -> u.view );
     }
 
@@ -251,29 +251,27 @@ public class OrganizationWS extends AbstractWS {
     }
 
 
-    @WsMethod( method = GET, path = "/users/tfa/{email}", description = "Generate QR code string for Google Authenticator" )
+    @WsMethod( method = GET, path = "/users/tfa/{email}", description = "Generate authorization link for Google Authenticator" )
     @WsValidate( { "validateUserLoggedIn" } )
     public Response generateTfaCode( @WsParam( from = PATH ) String email,
                                      @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
-        final Optional<UserData> user = accounts.getUser( email );
-        if( user.isPresent() ) {
-            final Boolean loggedSameUser = user.map( u -> email.equals( loggedUser.get().user.email ) ).stream().findFirst().orElse( false );
-            if( !user.get().user.tfaEnabled ) {
-                Response.notFound().withReasonPhrase( "Tfa not enabled" );
-            } else if( loggedSameUser ) {
-                final String code = getGoogleAuthenticatorCode( user.get().user );
-                return Response.ok().withBody( Base64.getEncoder().encodeToString( code.getBytes() ) );
-            }
+        Optional<UserData> user = accounts.getUser(email);
+
+        if (user.isPresent() && email.equals(loggedUser.map(u -> u.user.email).orElse(null))) {
+            String code = getGoogleAuthenticatorCode(user.get().user);
+            String encodedCode = Base64.getEncoder().encodeToString(code.getBytes());
+            return Response.ok().withBody(encodedCode);
         }
+
         return Response.notFound();
     }
 
     @WsMethod( method = POST, path = "/{organizationId}/assign" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ASSIGN_ROLE } )
-    public Optional<UserData.UserView> assignRole( @WsParam( from = PATH ) String organizationId,
-                                                   @WsParam( from = QUERY ) String email,
-                                                   @WsParam( from = QUERY ) String role,
-                                                   @WsParam( from = SESSION ) UserData loggedUser ) {
+    public Optional<UserData.View> assignRole( @WsParam( from = PATH ) String organizationId,
+                                               @WsParam( from = QUERY ) String email,
+                                               @WsParam( from = QUERY ) String role,
+                                               @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.assignRole( email, organizationId, role ).map( u -> u.view );
     }
 

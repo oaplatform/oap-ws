@@ -31,7 +31,7 @@ public class OrganizationData implements Serializable {
     public Organization organization;
     public Accounts accounts = new Accounts();
     @JsonIgnore
-    public OrganizationView view = new OrganizationView();
+    public View view = new View();
 
     @JsonCreator
     public OrganizationData( Organization organization ) {
@@ -63,7 +63,7 @@ public class OrganizationData implements Serializable {
         }
     }
 
-    public class OrganizationView implements Serializable {
+    public class View implements Serializable {
         @Serial
         private static final long serialVersionUID = 9049298204022935855L;
 

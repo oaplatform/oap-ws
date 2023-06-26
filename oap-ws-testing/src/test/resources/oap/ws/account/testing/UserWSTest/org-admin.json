@@ -9,5 +9,7 @@
   "apiKey": "${API_KEY}",
   "roles" : {
     "DFLT" : "ORGANIZATION_ADMIN"
-  }
+  },
+  "tfaEnabled" : false
 }
+

@@ -5,5 +5,7 @@
   "firstName" : "Joe",
   "lastLogin": "${LAST_LOGIN}",
   "lastName" : "Epstein",
-  "roles": { "DFLT": "USER"}
+  "roles": { "DFLT": "USER"},
+  "tfaEnabled" : false
 }
+

@@ -17,6 +17,7 @@ import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import static oap.storage.Storage.Lock.SERIALIZED;
@@ -39,30 +40,28 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
     }
 
     @Override
-    public Result<? extends oap.ws.sso.User, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode ) {
-        final Optional<UserData> authenticated = get( email );
-        authenticated
-            .filter( u -> {
-                boolean result = u.authenticate( password );
-                log.debug( "authenticating {}, banned = {}, confirmed = {} => {}", email, u.banned, u.user.confirmed, result );
-                return result;
-            } ).map( userData -> {
-                if( userData.user.tfaEnabled ) {
-                    var tfaCheck = tfaCode.map( code -> getTOTPCode( userData.user.getSecretKey() ).equals( code ) ).orElse( false );
-                    return tfaCheck ? Result.<oap.ws.account.User, AuthenticationFailure>success( userData.user )
-                        : Result.<UserData, AuthenticationFailure>failure( MFA_REQUIRED );
-                }
-                return null;
-            } );
+    public Result<? extends User, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode ) {
+        Optional<UserData> authenticated = get( email )
+            .filter( u -> u.authenticate( password ) );
+
         if( authenticated.isPresent() ) {
-            update( email, user -> {
-                user.lastLogin = DateTime.now( UTC );
-                return user;
-            } );
-            return Result.success( authenticated.get() );
+            UserData userData = authenticated.get();
+            if( !userData.user.tfaEnabled ) {
+                update( email, user -> {
+                    user.lastLogin = DateTime.now( UTC );
+                    return user;
+                } );
+                return Result.success( userData );
+            } else {
+                boolean tfaCheck = tfaCode.map( code -> getTOTPCode( userData.user.getSecretKey() ).equals( code ) )
+                    .orElse( false );
+                return tfaCheck ? Result.success( userData ) : Result.failure( MFA_REQUIRED );
+            }
         }
+
         return Result.failure( UNAUTHENTICATED );
     }
+
 
     @Override
     public Optional<? extends User> getAuthenticatedByApiKey( String accessKey, String apiKey ) {

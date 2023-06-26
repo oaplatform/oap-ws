@@ -10,5 +10,7 @@
   "roles" : {
     "DFLT" : "ADMIN",
     "SYSTEM" : "ADMIN"
-  }
+  },
+  "tfaEnabled" : false
 }
+
