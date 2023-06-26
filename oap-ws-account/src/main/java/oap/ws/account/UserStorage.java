@@ -6,17 +6,21 @@
 
 package oap.ws.account;
 
+import de.taimos.totp.TOTP;
 import lombok.extern.slf4j.Slf4j;
 import oap.id.Identifier;
 import oap.storage.MemoryStorage;
 import oap.util.Result;
 import oap.ws.sso.AuthenticationFailure;
 import oap.ws.sso.User;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
 
 import java.util.Optional;
 
 import static oap.storage.Storage.Lock.SERIALIZED;
+import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
 import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
 import static org.joda.time.DateTimeZone.UTC;
 
@@ -36,11 +40,19 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
 
     @Override
     public Result<? extends oap.ws.sso.User, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode ) {
-        var authenticated = get( email )
+        final Optional<UserData> authenticated = get( email );
+        authenticated
             .filter( u -> {
                 boolean result = u.authenticate( password );
                 log.debug( "authenticating {}, banned = {}, confirmed = {} => {}", email, u.banned, u.user.confirmed, result );
                 return result;
+            } ).map( userData -> {
+                if( userData.user.tfaEnabled ) {
+                    var tfaCheck = tfaCode.map( code -> getTOTPCode( userData.user.getSecretKey() ).equals( code ) ).orElse( false );
+                    return tfaCheck ? Result.<oap.ws.account.User, AuthenticationFailure>success( userData.user )
+                        : Result.<UserData, AuthenticationFailure>failure( MFA_REQUIRED );
+                }
+                return null;
             } );
         if( authenticated.isPresent() ) {
             update( email, user -> {
@@ -59,5 +71,12 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
 
     public void deleteAllPermanently() {
         for( var user : this ) memory.removePermanently( user.user.email );
+    }
+
+    private static String getTOTPCode( String secretKey ) {
+        Base32 base32 = new Base32();
+        byte[] bytes = base32.decode( secretKey );
+        String hexKey = Hex.encodeHexString( bytes );
+        return TOTP.getOTP( hexKey );
     }
 }

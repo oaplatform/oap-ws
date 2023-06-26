@@ -16,11 +16,13 @@ import oap.json.ext.Ext;
 import oap.util.Hash;
 import oap.util.Strings;
 import oap.ws.sso.UserProvider;
+import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.annotation.Nonnull;
 import java.io.Serial;
 import java.io.Serializable;
+import java.security.SecureRandom;
 
 @ToString( exclude = { "password", "create" } )
 @EqualsAndHashCode
@@ -41,6 +43,8 @@ public class User implements Serializable {
     public String apiKey = RandomStringUtils.random( 30, true, true );
     @JsonProperty( access = JsonProperty.Access.WRITE_ONLY )
     public boolean create;
+    public boolean tfaEnabled;
+    public String secretKey = generateSecretKey();
 
     @JsonCreator
     public User( String email ) {
@@ -54,6 +58,16 @@ public class User implements Serializable {
         this.confirm( confirmed );
         this.encryptPassword( password );
     }
+
+    public User( String email, String firstName, String lastName, String password, boolean confirmed, boolean tfaEnabled ) {
+        this( email );
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.confirm( confirmed );
+        this.encryptPassword( password );
+        this.tfaEnabled = tfaEnabled;
+    }
+
 
     public User( String email, String firstName, String lastName ) {
         this( email, firstName, lastName, null, false );
@@ -101,6 +115,10 @@ public class User implements Serializable {
         return this.apiKey;
     }
 
+    public String getSecretKey() {
+        return this.secretKey;
+    }
+
     public boolean hasPassword() {
         return password != null;
     }
@@ -112,11 +130,18 @@ public class User implements Serializable {
 
 
     public static String organizationFromEmail( String email ) {
-        return Strings.substringAfter( "@", email );
+        return Strings.substringAfter( email, "@" );
     }
 
     public String organizationName() {
         return organizationFromEmail( email );
     }
 
+    private static String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes( bytes );
+        Base32 base32 = new Base32();
+        return base32.encodeToString( bytes );
+    }
 }
