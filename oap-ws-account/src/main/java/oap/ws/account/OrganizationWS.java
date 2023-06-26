@@ -23,6 +23,7 @@ import org.apache.http.client.utils.URIBuilder;
 
 import javax.annotation.Nonnull;
 import java.net.URI;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.QUERY;
 import static oap.ws.WsParam.From.SESSION;
+import static oap.ws.account.utils.TfaUtils.getGoogleAuthenticatorCode;
 import static oap.ws.sso.WsSecurity.SYSTEM;
 import static oap.ws.validate.ValidationErrors.empty;
 import static oap.ws.validate.ValidationErrors.error;
@@ -246,6 +248,24 @@ public class OrganizationWS extends AbstractWS {
 
         UserData userConfirmed = accounts.confirm( email ).orElse( null );
         return userConfirmed != null ? Response.redirect( redirect ) : Response.notFound();
+    }
+
+
+    @WsMethod( method = GET, path = "/users/tfa/{email}", description = "Generate QR code string for Google Authenticator" )
+    @WsValidate( { "validateUserLoggedIn" } )
+    public Response generateTfaCode( @WsParam( from = PATH ) String email,
+                                     @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
+        final Optional<UserData> user = accounts.getUser( email );
+        if( user.isPresent() ) {
+            final Boolean loggedSameUser = user.map( u -> email.equals( loggedUser.get().user.email ) ).stream().findFirst().orElse( false );
+            if( !user.get().user.tfaEnabled ) {
+                Response.notFound().withReasonPhrase( "Tfa not enabled" );
+            } else if( loggedSameUser ) {
+                final String code = getGoogleAuthenticatorCode( user.get().user );
+                return Response.ok().withBody( Base64.getEncoder().encodeToString( code.getBytes() ) );
+            }
+        }
+        return Response.notFound();
     }
 
     @WsMethod( method = POST, path = "/{organizationId}/assign" )

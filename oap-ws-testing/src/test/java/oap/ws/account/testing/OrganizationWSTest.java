@@ -20,6 +20,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
+import java.util.Base64;
 import java.util.Map;
 
 import static oap.http.Http.StatusCode.FORBIDDEN;
@@ -489,5 +490,20 @@ public class OrganizationWSTest extends Fixtures {
         accountFixture.assertLogin( userData.user.email, "pass123" );
         assertGet( accountFixture.httpUrl( "/organizations/" + DEFAULT_ORGANIZATION_ID + "/users/apikey/" + "jga@test.com" ) )
             .hasCode( FORBIDDEN );
+    }
+
+    @Test
+    public void generateTfaAuthorization() {
+        UserData user = accountFixture.accounts().createUser( new User( "user@test-company.com", "Johnny", "Walker",
+            "pass", true, true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) );
+        accountFixture.assertLogin( user.user.email, "pass" );
+        assertGet( accountFixture.httpUrl( "/organizations/users/tfa/" + user.user.email ) )
+            .isOk().satisfies( response -> {
+                byte[] decodedBytes = Base64.getDecoder().decode( response.content() );
+                String decodedString = new String( decodedBytes );
+                assertThat( decodedString.contains( "test-company.com" ) );
+                assertThat( decodedString.contains( "user@test-company.com" ) );
+                assertThat( decodedString.contains( "secretKey" ) );
+            } );
     }
 }
