@@ -70,7 +70,6 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
     public static final String SYSTEM_ORGANIZATION_ADMIN_EMAIL = "systemadmin@admin.com";
     public static final String DEFAULT_ADMIN_EMAIL = "xenoss@xenoss.io";
     public static final User ORG_ADMIN_USER = new User( "org@admin.com", "Joe", "Haserton", DEFAULT_PASSWORD, true );
-//    public static final User ORG_ADMIN_USER_TFA = new User( "org@admin.com", "Joe", "Haserton", DEFAULT_PASSWORD, true, true );
     public static final User REGULAR_USER = new User( "user@admin.com", "Joe", "Epstein", DEFAULT_PASSWORD, true );
 
     private static final String PREFIX = "ACCOUNT_FIXTURE_";
@@ -193,15 +192,15 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         }
 
         @Override
-        public Result<TestUser, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode ) {
+        public Result<TestUser, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> mfaCode ) {
             log.trace( "authenticating {} with {}", email, password );
             log.trace( "users {}", users );
             return users.stream()
                 .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
                 .map( user -> {
-                    if( user.tfaEnabled ) {
-                        var tfaCheck = tfaCode.map( "proper_code"::equals ).orElse( false );
-                        return tfaCheck ? Result.<TestUser, AuthenticationFailure>success( user )
+                    if( user.mfaEnabled ) {
+                        var mfaCheck = mfaCode.map( "proper_code"::equals ).orElse( false );
+                        return mfaCheck ? Result.<TestUser, AuthenticationFailure>success( user )
                             : Result.<TestUser, AuthenticationFailure>failure( MFA_REQUIRED );
                     }
                     return Result.<TestUser, AuthenticationFailure>success( user );
@@ -223,7 +222,7 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         public final String email;
         public final String password;
         public final Map<String, String> roles = new HashMap<>();
-        public final boolean tfaEnabled;
+        public final boolean mfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
         public final View view = new View();
@@ -232,11 +231,11 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
             this( email, password, role, false );
         }
 
-        public TestUser( String email, String password, Pair<String, String> role, boolean tfaEnabled ) {
+        public TestUser( String email, String password, Pair<String, String> role, boolean mfaEnabled ) {
             this.email = email;
             this.password = password;
             this.roles.put( role._1, role._2 );
-            this.tfaEnabled = tfaEnabled;
+            this.mfaEnabled = mfaEnabled;
         }
 
         @Override

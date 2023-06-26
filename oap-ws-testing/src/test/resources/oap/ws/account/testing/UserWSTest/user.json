@@ -7,6 +7,6 @@
   "roles" : {
     "DFLT" : "USER"
   },
-  "tfaEnabled" : false
+  "mfaEnabled" : false
 }
 

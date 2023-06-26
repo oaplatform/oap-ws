@@ -17,7 +17,6 @@ import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import static oap.storage.Storage.Lock.SERIALIZED;
@@ -46,7 +45,7 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
 
         if( authenticated.isPresent() ) {
             UserData userData = authenticated.get();
-            if( !userData.user.tfaEnabled ) {
+            if( !userData.user.mfaEnabled ) {
                 update( email, user -> {
                     user.lastLogin = DateTime.now( UTC );
                     return user;

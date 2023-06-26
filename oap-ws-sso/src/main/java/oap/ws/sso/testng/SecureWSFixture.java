@@ -64,7 +64,7 @@ public class SecureWSFixture {
                 .isHttpOnly() );
     }
 
-    public static void assertTfaRequiredLogin( String login, String password, int port ) {
+    public static void assertMfaRequiredLogin( String login, String password, int port ) {
         assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
             .hasCode( Http.StatusCode.BAD_REQUEST )
             .hasReason( "TFA code is incorrect or required" );

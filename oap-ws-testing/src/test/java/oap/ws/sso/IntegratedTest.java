@@ -82,15 +82,15 @@ public class IntegratedTest extends Fixtures {
         }
 
         @Override
-        public Result<TestUser, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode ) {
+        public Result<TestUser, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> mfaCode ) {
             log.trace( "authenticating {} with {}", email, password );
             log.trace( "users {}", users );
             return users.stream()
                 .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
                 .map( user -> {
-                    if( user.tfaEnabled ) {
-                        var tfaCheck = tfaCode.map( "proper_code"::equals ).orElse( false );
-                        return tfaCheck ? Result.<TestUser, AuthenticationFailure>success( user )
+                    if( user.mfaEnabled ) {
+                        var mfaCheck = mfaCode.map( "proper_code"::equals ).orElse( false );
+                        return mfaCheck ? Result.<TestUser, AuthenticationFailure>success( user )
                             : Result.<TestUser, AuthenticationFailure>failure( MFA_REQUIRED );
                     }
                     return Result.<TestUser, AuthenticationFailure>success( user );
@@ -112,7 +112,7 @@ public class IntegratedTest extends Fixtures {
         public final String email;
         public final String password;
         public final Map<String, String> roles = new HashMap<>();
-        public final boolean tfaEnabled;
+        public final boolean mfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
         public final View view = new View();
@@ -121,11 +121,11 @@ public class IntegratedTest extends Fixtures {
             this( email, password, role, false );
         }
 
-        public TestUser( String email, String password, Pair<String, String> role, boolean tfaEnabled ) {
+        public TestUser( String email, String password, Pair<String, String> role, boolean mfaEnabled ) {
             this.email = email;
             this.password = password;
             this.roles.put( role._1, role._2 );
-            this.tfaEnabled = tfaEnabled;
+            this.mfaEnabled = mfaEnabled;
         }
 
         @Override

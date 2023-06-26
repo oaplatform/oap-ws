@@ -179,8 +179,8 @@ public class UserData implements oap.ws.sso.User, Serializable {
             return user.confirmed;
         }
 
-        public boolean isTfaEnabled() {
-            return user.tfaEnabled;
+        public boolean isMfaEnabled() {
+            return user.mfaEnabled;
         }
 
 

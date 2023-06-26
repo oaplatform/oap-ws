@@ -7,5 +7,5 @@
   "roles" : {
     "XNSS" : "ORGANIZATION_ADMIN"
   },
-  "tfaEnabled" : false
+  "mfaEnabled" : false
 }

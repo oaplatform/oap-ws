@@ -251,7 +251,7 @@ public class OrganizationWS extends AbstractWS {
     }
 
 
-    @WsMethod( method = GET, path = "/users/tfa/{email}", description = "Generate authorization link for Google Authenticator" )
+    @WsMethod( method = GET, path = "/users/mfa/{email}", description = "Generate authorization link for Google Authenticator" )
     @WsValidate( { "validateUserLoggedIn" } )
     public Response generateTfaCode( @WsParam( from = PATH ) String email,
                                      @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {

@@ -40,7 +40,7 @@ import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
-import static oap.ws.sso.testng.SecureWSFixture.assertTfaRequiredLogin;
+import static oap.ws.sso.testng.SecureWSFixture.assertMfaRequiredLogin;
 
 public class AuthWSTest extends IntegratedTest {
     @Test
@@ -52,32 +52,32 @@ public class AuthWSTest extends IntegratedTest {
     }
 
     @Test
-    public void loginTfaRequired() {
+    public void loginMfaRequired() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
-        assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
+        assertMfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
             .hasCode( UNAUTHORIZED );
     }
 
     @Test
-    public void loginTfa() {
+    public void loginMfa() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
-        assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
+        assertMfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertLogin( "admin@admin.com", "pass", "proper_code", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"admin@admin.com\"}" );
     }
 
     @Test
-    public void loginTfaWrongCode() {
+    public void loginMfaWrongCode() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
         assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/login" ),
-            "{  \"email\": \"admin@admin.com\",  \"password\": \"pass\", \"tfaCode\": \"wrong_code\"}" )
+            "{  \"email\": \"admin@admin.com\",  \"password\": \"pass\", \"mfaCode\": \"wrong_code\"}" )
             .hasCode( BAD_REQUEST )
-            .hasReason( "TFA code is incorrect or required" );
+            .hasReason( "MFA code is incorrect or required" );
     }
 
     @Test
