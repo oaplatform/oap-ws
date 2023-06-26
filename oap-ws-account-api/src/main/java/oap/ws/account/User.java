@@ -43,7 +43,7 @@ public class User implements Serializable {
     public String apiKey = RandomStringUtils.random( 30, true, true );
     @JsonProperty( access = JsonProperty.Access.WRITE_ONLY )
     public boolean create;
-    public boolean tfaEnabled;
+    public boolean mfaEnabled;
     public String secretKey = generateSecretKey();
 
     @JsonCreator
@@ -65,7 +65,7 @@ public class User implements Serializable {
         this.lastName = lastName;
         this.confirm( confirmed );
         this.encryptPassword( password );
-        this.tfaEnabled = tfaEnabled;
+        this.mfaEnabled = tfaEnabled;
     }
 
 

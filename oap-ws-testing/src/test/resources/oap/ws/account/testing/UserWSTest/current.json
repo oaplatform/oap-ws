@@ -11,6 +11,6 @@
     "DFLT" : "ADMIN",
     "SYSTEM" : "ADMIN"
   },
-  "tfaEnabled" : false
+  "mfaEnabled" : false
 }
 

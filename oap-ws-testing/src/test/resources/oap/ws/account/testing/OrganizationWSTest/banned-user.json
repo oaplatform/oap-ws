@@ -6,6 +6,6 @@
   "lastLogin": "${LAST_LOGIN}",
   "lastName" : "Epstein",
   "roles": { "DFLT": "USER"},
-  "tfaEnabled" : false
+  "mfaEnabled" : false
 }
 

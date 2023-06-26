@@ -10,6 +10,6 @@
   "roles" : {
     "DFLT" : "ORGANIZATION_ADMIN"
   },
-  "tfaEnabled" : false
+  "mfaEnabled" : false
 }
 

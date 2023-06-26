@@ -251,16 +251,16 @@ public class OrganizationWS extends AbstractWS {
     }
 
 
-    @WsMethod( method = GET, path = "/users/tfa/{email}", description = "Generate authorization link for Google Authenticator" )
+    @WsMethod( method = GET, path = "/users/mfa/{email}", description = "Generate authorization link for Google Authenticator" )
     @WsValidate( { "validateUserLoggedIn" } )
     public Response generateTfaCode( @WsParam( from = PATH ) String email,
                                      @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
-        Optional<UserData> user = accounts.getUser(email);
+        Optional<UserData> user = accounts.getUser( email );
 
-        if (user.isPresent() && email.equals(loggedUser.map(u -> u.user.email).orElse(null))) {
-            String code = getGoogleAuthenticatorCode(user.get().user);
-            String encodedCode = Base64.getEncoder().encodeToString(code.getBytes());
-            return Response.ok().withBody(encodedCode);
+        if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
+            String code = getGoogleAuthenticatorCode( user.get().user );
+            String encodedCode = Base64.getEncoder().encodeToString( code.getBytes() );
+            return Response.ok().withBody( encodedCode );
         }
 
         return Response.notFound();
