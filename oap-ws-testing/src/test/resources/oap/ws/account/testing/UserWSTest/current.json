@@ -11,6 +11,7 @@
     "DFLT" : "ADMIN",
     "SYSTEM" : "ADMIN"
   },
+  "secretKey" : "CIQREMSCLEJSEERYOBRBIIYSAUJHEFJE",
   "mfaEnabled" : false
 }
 

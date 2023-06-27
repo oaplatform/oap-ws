@@ -10,6 +10,7 @@
   "roles" : {
     "DFLT" : "ORGANIZATION_ADMIN"
   },
+  "secretKey" : "CIQREMSCLEJSEERYOBRBIIYSAUJHEFJE",
   "mfaEnabled" : false
 }
 
