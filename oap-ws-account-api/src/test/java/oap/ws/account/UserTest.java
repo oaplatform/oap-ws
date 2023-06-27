@@ -27,9 +27,8 @@ public class UserTest {
         user.addAccount( "org1", "acc2" );
         user.addAccount( "org1", "acc2" );
         String json = Binder.json.marshal( user );
-        System.out.println( json );
         assertJson( json ).isStructurallyEqualTo( contentOfTestResource( getClass(), "user.json", Map.of(
-            "API_KEY", user.user.apiKey
+            "API_KEY", user.user.apiKey, "SECRET_KEY", user.user.secretKey
         ) ) );
         assertThat( Binder.json.unmarshal( UserData.class, json ) ).isEqualTo( user );
     }
@@ -41,9 +40,8 @@ public class UserTest {
         user.addAccount( "org1", "acc1" );
         user.addAccount( "org1", "acc2" );
         String json = Binder.json.marshal( user.secureView );
-        System.out.println( json );
         assertJson( json ).isStructurallyEqualTo( contentOfTestResource( getClass(), "secure-view.json", Map.of(
-            "API_KEY", user.user.apiKey
+            "API_KEY", user.user.apiKey, "SECRET_KEY", user.user.secretKey
         ) ) );
     }
 

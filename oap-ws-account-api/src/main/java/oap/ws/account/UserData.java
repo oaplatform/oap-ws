@@ -202,5 +202,9 @@ public class UserData implements oap.ws.sso.User, Serializable {
         public String getAccessKey() {
             return user.getAccessKey();
         }
+
+        public String getSecretKey() {
+            return user.getSecretKey();
+        }
     }
 }

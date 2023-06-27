@@ -5,10 +5,12 @@
   "banned" : false,
   "user" : {
     "accessKey" : "SXENLMSXMVUJ",
-    "apiKey":"${API_KEY}",
+    "apiKey" : "${API_KEY}",
     "confirmed" : false,
     "email" : "email",
     "firstName" : "John",
-    "lastName" : "Smith"
+    "lastName" : "Smith",
+    "mfaEnabled" : false,
+    "secretKey" : "${SECRET_KEY}"
   }
 }

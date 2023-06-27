@@ -8,5 +8,7 @@
   "email" : "email",
   "firstName" : "John",
   "lastName" : "Smith",
-  "confirmed" : false
+  "confirmed" : false,
+  "mfaEnabled"  : false,
+  "secretKey":"${SECRET_KEY}"
 }
