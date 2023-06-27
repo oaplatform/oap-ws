@@ -17,10 +17,8 @@ import oap.ws.account.UserData;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
-import java.util.random.RandomGenerator;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static oap.http.testng.HttpAsserts.assertGet;
