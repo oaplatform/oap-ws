@@ -77,7 +77,7 @@ public class AuthWSTest extends IntegratedTest {
         assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/login" ),
             "{  \"email\": \"admin@admin.com\",  \"password\": \"pass\", \"mfaCode\": \"wrong_code\"}" )
             .hasCode( BAD_REQUEST )
-            .hasReason( "MFA code is incorrect or required" );
+            .hasReason( "TFA code is incorrect or required" );
     }
 
     @Test
