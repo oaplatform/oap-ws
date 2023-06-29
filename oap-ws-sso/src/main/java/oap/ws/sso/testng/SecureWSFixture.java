@@ -64,10 +64,17 @@ public class SecureWSFixture {
                 .isHttpOnly() );
     }
 
-    public static void assertMfaRequiredLogin( String login, String password, int port ) {
+    public static void assertTfaRequiredLogin( String login, String password, int port ) {
         assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
             .hasCode( Http.StatusCode.BAD_REQUEST )
-            .hasReason( "TFA code is incorrect or required" );
+            .hasReason( "TFA code is required" );
+    }
+
+    public static void assertWrongTfaLogin( String login, String password, String tfaCode, int port ) {
+        assertPost( httpUrl( port, "/auth/login" ),
+            String.format( "{  \"email\": \"%s\",  \"password\": \"%s\", \"tfaCode\": \"%s\"}", login, password, tfaCode ) )
+            .hasCode( Http.StatusCode.BAD_REQUEST )
+            .hasReason( "TFA code is incorrect" );
     }
 
     public static void assertLogout() {

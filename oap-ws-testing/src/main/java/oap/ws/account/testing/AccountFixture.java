@@ -58,8 +58,9 @@ import java.util.concurrent.TimeUnit;
 import static oap.io.Resources.urlOrThrow;
 import static oap.ws.account.Roles.ADMIN;
 import static oap.ws.account.Roles.ORGANIZATION_ADMIN;
-import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
+import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
 import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
+import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
 import static oap.ws.sso.UserProvider.toAccessKey;
 
 public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
@@ -163,111 +164,10 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         return HttpAsserts.httpUrl( defaultHttpPort(), url );
     }
 
-    public TestUserProvider userProvider() {
-        return service( "oap-ws-sso", TestUserProvider.class );
-    }
-
     @Override
     public void after() {
         assertLogout();
         super.after();
     }
 
-    @Slf4j
-    public static class TestUserProvider implements UserProvider {
-        public final List<TestUser> users = new ArrayList<>();
-
-        public TestUser addUser( String email, String password, Pair<String, String> role ) {
-            return addUser( new TestUser( email, password, role ) );
-        }
-
-        public TestUser addUser( TestUser user ) {
-            users.add( user );
-            return user;
-        }
-
-        @Override
-        public Optional<TestUser> getUser( String email ) {
-            return users.stream().filter( u -> u.getEmail().equalsIgnoreCase( email ) ).findAny();
-        }
-
-        @Override
-        public Result<TestUser, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> mfaCode ) {
-            log.trace( "authenticating {} with {}", email, password );
-            log.trace( "users {}", users );
-            return users.stream()
-                .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
-                .map( user -> {
-                    if( user.mfaEnabled ) {
-                        var mfaCheck = mfaCode.map( "proper_code"::equals ).orElse( false );
-                        return mfaCheck ? Result.<TestUser, AuthenticationFailure>success( user )
-                            : Result.<TestUser, AuthenticationFailure>failure( MFA_REQUIRED );
-                    }
-                    return Result.<TestUser, AuthenticationFailure>success( user );
-                } )
-                .findAny().orElse( Result.failure( UNAUTHENTICATED ) );
-        }
-
-        @Override
-        public Optional<TestUser> getAuthenticatedByApiKey( String accessKey, String apiKey ) {
-            return users.stream()
-                .filter( u -> u.getAccessKey().equals( accessKey ) && u.apiKey.equals( apiKey ) )
-                .findAny();
-        }
-    }
-
-    @ToString
-    @EqualsAndHashCode
-    public static class TestUser implements oap.ws.sso.User {
-        public final String email;
-        public final String password;
-        public final Map<String, String> roles = new HashMap<>();
-        public final boolean mfaEnabled;
-        public final String apiKey = RandomStringUtils.random( 10, true, true );
-        @JsonIgnore
-        public final View view = new View();
-
-        public TestUser( String email, String password, Pair<String, String> role ) {
-            this( email, password, role, false );
-        }
-
-        public TestUser( String email, String password, Pair<String, String> role, boolean mfaEnabled ) {
-            this.email = email;
-            this.password = password;
-            this.roles.put( role._1, role._2 );
-            this.mfaEnabled = mfaEnabled;
-        }
-
-        @Override
-        public String getEmail() {
-            return email;
-        }
-
-        @Override
-        public Optional<String> getRole( String realm ) {
-            return Optional.ofNullable( roles.get( realm ) );
-        }
-
-        @Override
-        public Map<String, String> getRoles() {
-            return roles;
-        }
-
-        @Override
-        public View getView() {
-            return view;
-        }
-
-        public String getAccessKey() {
-            return toAccessKey( email );
-        }
-
-        public class View implements oap.ws.sso.User.View {
-            @Override
-            public String getEmail() {
-                return TestUser.this.getEmail();
-            }
-        }
-
-    }
 }

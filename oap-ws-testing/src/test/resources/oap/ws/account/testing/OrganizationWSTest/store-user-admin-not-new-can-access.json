@@ -9,5 +9,5 @@
     "2",
     "3"
   ],
-  "mfaEnabled" : false
+  "tfaEnabled" : false
 }

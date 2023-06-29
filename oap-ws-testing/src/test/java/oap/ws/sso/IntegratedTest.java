@@ -32,6 +32,7 @@ import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import oap.util.Pair;
 import oap.util.Result;
+import oap.ws.account.testing.AccountFixture;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.annotations.AfterMethod;
 
@@ -42,8 +43,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import static oap.io.Resources.urlOrThrow;
-import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
+import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
 import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
+import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
 import static oap.ws.sso.UserProvider.toAccessKey;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 
@@ -88,10 +90,11 @@ public class IntegratedTest extends Fixtures {
             return users.stream()
                 .filter( u -> u.getEmail().equalsIgnoreCase( email ) && u.password.equals( password ) )
                 .map( user -> {
-                    if( user.mfaEnabled ) {
+                    if( user.tfaEnabled ) {
+                        if( mfaCode.isEmpty() ) return Result.<TestUser, AuthenticationFailure>failure( TFA_REQUIRED );
                         var mfaCheck = mfaCode.map( "proper_code"::equals ).orElse( false );
                         return mfaCheck ? Result.<TestUser, AuthenticationFailure>success( user )
-                            : Result.<TestUser, AuthenticationFailure>failure( MFA_REQUIRED );
+                            : Result.<TestUser, AuthenticationFailure>failure( WRONG_TFA_CODE );
                     }
                     return Result.<TestUser, AuthenticationFailure>success( user );
                 } )
@@ -112,7 +115,7 @@ public class IntegratedTest extends Fixtures {
         public final String email;
         public final String password;
         public final Map<String, String> roles = new HashMap<>();
-        public final boolean mfaEnabled;
+        public final boolean tfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
         public final View view = new View();
@@ -121,11 +124,11 @@ public class IntegratedTest extends Fixtures {
             this( email, password, role, false );
         }
 
-        public TestUser( String email, String password, Pair<String, String> role, boolean mfaEnabled ) {
+        public TestUser( String email, String password, Pair<String, String> role, boolean tfaEnabled ) {
             this.email = email;
             this.password = password;
             this.roles.put( role._1, role._2 );
-            this.mfaEnabled = mfaEnabled;
+            this.tfaEnabled = tfaEnabled;
         }
 
         @Override

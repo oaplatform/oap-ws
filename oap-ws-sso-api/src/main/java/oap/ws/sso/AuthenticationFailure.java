@@ -25,5 +25,5 @@
 package oap.ws.sso;
 
 public enum AuthenticationFailure {
-    MFA_REQUIRED, UNAUTHENTICATED, TOKEN_NOT_VALID
+    TFA_REQUIRED, UNAUTHENTICATED, TOKEN_NOT_VALID, WRONG_TFA_CODE
 }

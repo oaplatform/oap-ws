@@ -43,7 +43,8 @@ import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.COOKIE;
 import static oap.ws.WsParam.From.SESSION;
-import static oap.ws.sso.AuthenticationFailure.MFA_REQUIRED;
+import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
+import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
 import static oap.ws.sso.SSO.authenticatedResponse;
 import static oap.ws.sso.SSO.logoutResponse;
 import static oap.ws.sso.SSO.notAuthenticatedResponse;
@@ -73,16 +74,18 @@ public class AuthWS extends AbstractSecureWS {
     @WsMethod( method = GET, path = "/login" )
     public Response login( String email,
                            String password,
-                           Optional<String> tfaCode,
+                           @WsParam( from = BODY ) Optional<String> tfaCode,
                            @WsParam( from = SESSION ) Optional<User> loggedUser,
                            Session session ) {
         loggedUser.ifPresent( user -> logout( loggedUser, session ) );
         var result = authenticator.authenticate( email, password, tfaCode );
         if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
             sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
-        else if( MFA_REQUIRED == result.getFailureValue() )
-            return notAuthenticatedResponse( BAD_REQUEST, "TFA code is incorrect or required", sessionManager.cookieDomain );
-        else
+        else if( TFA_REQUIRED == result.getFailureValue() )
+            return notAuthenticatedResponse( BAD_REQUEST, "TFA code is required", sessionManager.cookieDomain );
+        else if( WRONG_TFA_CODE == result.getFailureValue() ) {
+            return notAuthenticatedResponse( BAD_REQUEST, "TFA code is incorrect", sessionManager.cookieDomain );
+        } else
             return notAuthenticatedResponse( UNAUTHORIZED, "Username or password is invalid", sessionManager.cookieDomain );
     }
 
