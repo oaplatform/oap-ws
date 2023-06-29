@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.random.RandomGenerator;
 
 @ToString( exclude = { "password", "create" } )
 @EqualsAndHashCode
@@ -44,6 +45,7 @@ public class User implements Serializable {
     @JsonProperty( access = JsonProperty.Access.WRITE_ONLY )
     public boolean create;
     public boolean tfaEnabled;
+    public static RandomGenerator random = new SecureRandom();
     public String secretKey = generateSecretKey();
 
     @JsonCreator
@@ -139,7 +141,6 @@ public class User implements Serializable {
     }
 
     private static String generateSecretKey() {
-        SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[20];
         random.nextBytes( bytes );
         Base32 base32 = new Base32();

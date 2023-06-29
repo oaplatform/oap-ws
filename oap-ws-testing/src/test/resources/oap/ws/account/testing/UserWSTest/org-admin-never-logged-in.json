@@ -6,10 +6,10 @@
   "confirmed": true,
   "accessKey": "${ACCESS_KEY}",
   "apiKey": "${API_KEY}",
-  "roles" : {
-    "DFLT" : "ORGANIZATION_ADMIN"
+  "roles": {
+    "DFLT": "ORGANIZATION_ADMIN"
   },
-  "secretKey" : "${SECRET_KEY}",
-  "tfaEnabled" : false
+  "secretKey": "${SECRET_KEY}",
+  "tfaEnabled": false
 }
 

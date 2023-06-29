@@ -18,6 +18,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import java.util.Map;
+import java.util.Random;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static oap.http.testng.HttpAsserts.assertGet;
@@ -31,13 +32,24 @@ import static oap.ws.account.testing.OrganizationWSTest.TODAY;
 
 public class UserWSTest extends Fixtures {
     protected final AccountFixture accountFixture;
+    private byte[] randomBytes = new byte[] {
+        0x12, 0x21, 0x12, 0x32, 0x42,
+        0x59, 0x13, 0x22, 0x12, 0x38,
+        0x70, 0x62, 0x14, 0x23, 0x12,
+        0x05, 0x12, 0x72, 0x15, 0x24,
+    };
 
     public UserWSTest() {
         fixture( new TestDirectoryFixture() );
         fixture( new MongoFixture() );
         accountFixture = fixture( new AccountFixture() );
+        User.random = new Random() {
+            @Override
+            public void nextBytes( byte[] bytes ) {
+                System.arraycopy( randomBytes, 0, bytes, 0, 20 );
+            }
+        };
     }
-
 
     @AfterMethod
     public void afterMethod() {
