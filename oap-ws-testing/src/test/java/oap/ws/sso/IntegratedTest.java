@@ -32,7 +32,6 @@ import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import oap.util.Pair;
 import oap.util.Result;
-import oap.ws.account.testing.AccountFixture;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.annotations.AfterMethod;
 

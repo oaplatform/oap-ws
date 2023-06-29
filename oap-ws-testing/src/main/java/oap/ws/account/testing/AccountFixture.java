@@ -24,15 +24,9 @@
 
 package oap.ws.account.testing;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.AbstractKernelFixture;
 import oap.http.testng.HttpAsserts;
 import oap.mail.MailQueue;
-import oap.util.Pair;
-import oap.util.Result;
 import oap.ws.account.Account;
 import oap.ws.account.AccountMailman;
 import oap.ws.account.Accounts;
@@ -43,25 +37,14 @@ import oap.ws.account.OrganizationStorage;
 import oap.ws.account.User;
 import oap.ws.account.UserData;
 import oap.ws.account.UserStorage;
-import oap.ws.sso.AuthenticationFailure;
-import oap.ws.sso.UserProvider;
 import oap.ws.sso.testng.SecureWSFixture;
-import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static oap.io.Resources.urlOrThrow;
 import static oap.ws.account.Roles.ADMIN;
 import static oap.ws.account.Roles.ORGANIZATION_ADMIN;
-import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
-import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
-import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
-import static oap.ws.sso.UserProvider.toAccessKey;
 
 public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
     public static final String DEFAULT_PASSWORD = "Xenoss123";
