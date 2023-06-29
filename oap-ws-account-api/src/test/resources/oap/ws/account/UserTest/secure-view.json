@@ -9,6 +9,6 @@
   "firstName" : "John",
   "lastName" : "Smith",
   "confirmed" : false,
-  "mfaEnabled"  : false,
+  "tfaEnabled"  : false,
   "secretKey":"${SECRET_KEY}"
 }

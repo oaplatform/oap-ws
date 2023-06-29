@@ -7,11 +7,11 @@
   "confirmed": true,
   "accessKey": "${ACCESS_KEY}",
   "apiKey": "${API_KEY}",
-  "roles" : {
-    "DFLT" : "ADMIN",
-    "SYSTEM" : "ADMIN"
+  "roles": {
+    "DFLT": "ADMIN",
+    "SYSTEM": "ADMIN"
   },
-  "secretKey" : "CIQREMSCLEJSEERYOBRBIIYSAUJHEFJE",
-  "mfaEnabled" : false
+  "secretKey": "${SECRET_KEY}",
+  "tfaEnabled": false
 }
 

@@ -6,10 +6,10 @@
 
 package oap.ws.account;
 
-import oap.ws.account.ws.AbstractWS;
 import lombok.extern.slf4j.Slf4j;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import oap.ws.account.ws.AbstractWS;
 import oap.ws.sso.SecurityRoles;
 import oap.ws.sso.WsSecurity;
 import oap.ws.validate.ValidationErrors;
@@ -18,12 +18,12 @@ import oap.ws.validate.WsValidate;
 import java.net.HttpURLConnection;
 import java.util.Optional;
 
-import static oap.ws.account.OrganizationWS.ORGANIZATION_ID;
-import static oap.ws.account.Permissions.MANAGE_SELF;
-import static oap.ws.account.Permissions.USER_READ;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
+import static oap.ws.account.OrganizationWS.ORGANIZATION_ID;
+import static oap.ws.account.Permissions.MANAGE_SELF;
+import static oap.ws.account.Permissions.USER_READ;
 
 @Slf4j
 public class UserWS extends AbstractWS {

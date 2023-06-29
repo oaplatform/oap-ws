@@ -24,7 +24,10 @@
 
 package oap.ws.account.utils;
 
+import de.taimos.totp.TOTP;
 import oap.ws.account.User;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Hex;
 
 import java.net.URLEncoder;
 
@@ -37,5 +40,12 @@ public class TfaUtils {
             + URLEncoder.encode( user.organizationName() + ":" + user.email, UTF_8 ).replace( "+", "%20" )
             + "?secret=" + URLEncoder.encode( user.secretKey, UTF_8 ).replace( "+", "%20" )
             + "&issuer=" + URLEncoder.encode( user.organizationName(), UTF_8 ).replace( "+", "%20" );
+    }
+
+    public static String getTOTPCode( String secretKey ) {
+        Base32 base32 = new Base32();
+        byte[] bytes = base32.decode( secretKey );
+        String hexKey = Hex.encodeHexString( bytes );
+        return TOTP.getOTP( hexKey );
     }
 }

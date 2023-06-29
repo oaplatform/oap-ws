@@ -44,7 +44,7 @@ public class User implements Serializable {
     public String apiKey = RandomStringUtils.random( 30, true, true );
     @JsonProperty( access = JsonProperty.Access.WRITE_ONLY )
     public boolean create;
-    public boolean mfaEnabled;
+    public boolean tfaEnabled;
     public static RandomGenerator random = new SecureRandom();
     public String secretKey = generateSecretKey();
 
@@ -67,7 +67,7 @@ public class User implements Serializable {
         this.lastName = lastName;
         this.confirm( confirmed );
         this.encryptPassword( password );
-        this.mfaEnabled = tfaEnabled;
+        this.tfaEnabled = tfaEnabled;
     }
 
 
@@ -83,9 +83,10 @@ public class User implements Serializable {
         return email;
     }
 
-    public User update( String firstName, String lastName, Ext ext ) {
+    public User update( String firstName, String lastName, boolean tfaEnabled, Ext ext ) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.tfaEnabled = tfaEnabled;
         this.ext = ext;
         return this;
     }

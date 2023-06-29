@@ -493,11 +493,11 @@ public class OrganizationWSTest extends Fixtures {
     }
 
     @Test
-    public void generateMfaAuthorizationLink() {
+    public void generateTfaAuthorizationLink() {
         final String email = "john@test.com";
         accountFixture.userStorage().store( new UserData( new User( email, "John", "Smith", "pass123", true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) ) );
         accountFixture.assertLogin( email, "pass123" );
-        assertGet( accountFixture.httpUrl( "/organizations/users/mfa/" + email ) )
+        assertGet( accountFixture.httpUrl( "/organizations/users/tfa/" + email ) )
             .isOk().satisfies( response -> {
                 byte[] decodedBytes = Base64.getDecoder().decode( response.content() );
                 String decodedString = new String( decodedBytes );

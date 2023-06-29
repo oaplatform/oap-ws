@@ -6,6 +6,7 @@
 
 package oap.ws.account;
 
+import oap.ws.account.utils.TfaUtils;
 import oap.ws.account.ws.AbstractWS;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -171,7 +172,7 @@ public class OrganizationWS extends AbstractWS {
             mailman.sendInvitedEmail( userCreated );
             return userCreated.view;
         }
-        return accounts.updateUser( user.email, u -> u.update( user.firstName, user.lastName, user.ext ) )
+        return accounts.updateUser( user.email, u -> u.update( user.firstName, user.lastName, user.tfaEnabled, user.ext ) )
             .orElseThrow().view;
     }
 
@@ -251,7 +252,7 @@ public class OrganizationWS extends AbstractWS {
     }
 
 
-    @WsMethod( method = GET, path = "/users/mfa/{email}", description = "Generate authorization link for Google Authenticator" )
+    @WsMethod( method = GET, path = "/users/tfa/{email}", description = "Generate authorization link for Google Authenticator" )
     @WsValidate( { "validateUserLoggedIn" } )
     public Response generateTfaCode( @WsParam( from = PATH ) String email,
                                      @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
@@ -263,6 +264,20 @@ public class OrganizationWS extends AbstractWS {
             return Response.ok().withBody( encodedCode );
         }
 
+        return Response.notFound();
+    }
+
+    @WsMethod( method = GET, path = "/users/tfa/{email}/{tfacode}/validate", description = "Validate first tfa code from Google Authenticator" )
+    @WsValidate( { "validateUserLoggedIn" } )
+    public Response validateTfaCode( @WsParam( from = PATH ) String email,
+                                     @WsParam( from = PATH ) String tfaCode,
+                                     @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
+        Optional<UserData> user = accounts.getUser( email );
+
+        if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
+            final boolean tfaValid = TfaUtils.getTOTPCode( loggedUser.get().user.getSecretKey() ).equals( tfaCode );
+            return tfaValid ? Response.ok() : Response.notFound().withReasonPhrase( "TFA code is incorrect" );
+        }
         return Response.notFound();
     }
 

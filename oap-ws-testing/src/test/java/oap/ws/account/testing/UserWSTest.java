@@ -66,7 +66,8 @@ public class UserWSTest extends Fixtures {
             .respondedJson( contentOfTestResource( getClass(), "current.json", Map.of(
                 "LAST_LOGIN", TODAY,
                 "ACCESS_KEY", admin.user.getAccessKey(),
-                "API_KEY", admin.user.apiKey
+                "API_KEY", admin.user.apiKey,
+                "SECRET_KEY", admin.user.secretKey
             ) ) );
     }
 
@@ -77,7 +78,8 @@ public class UserWSTest extends Fixtures {
         assertGet( accountFixture.httpUrl( "/user/" + DEFAULT_ORGANIZATION_ID + "/" + organizationAdmin.user.email ) )
             .respondedJson( contentOfTestResource( getClass(), "org-admin-never-logged-in.json", Map.of(
                 "ACCESS_KEY", organizationAdmin.getAccessKey(),
-                "API_KEY", organizationAdmin.user.apiKey
+                "API_KEY", organizationAdmin.user.apiKey,
+                "SECRET_KEY", organizationAdmin.user.secretKey
             ) ) );
         accountFixture.assertLogout();
         accountFixture.assertOrgAdminLogin();
@@ -85,14 +87,14 @@ public class UserWSTest extends Fixtures {
             .respondedJson( contentOfTestResource( getClass(), "org-admin.json", Map.of(
                 "LAST_LOGIN", TODAY,
                 "ACCESS_KEY", organizationAdmin.getAccessKey(),
-                "API_KEY", organizationAdmin.user.apiKey
+                "API_KEY", organizationAdmin.user.apiKey,
+                "SECRET_KEY", organizationAdmin.user.secretKey
             ) ) );
         accountFixture.assertLogout();
     }
 
     @Test
     public void noSecureData() {
-        UserData organizationAdmin = accountFixture.userStorage().get( DEFAULT_ORGANIZATION_ADMIN_EMAIL ).orElseThrow();
         UserData user = accountFixture.accounts().createUser( new User( "user@user.com", "Johnny", "Walker",
             "pass", true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) );
         accountFixture.assertOrgAdminLogin();

@@ -29,18 +29,17 @@ import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
 import org.testng.annotations.Test;
 
 import static oap.http.Http.ContentType.TEXT_PLAIN;
-import static oap.http.Http.StatusCode.BAD_REQUEST;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.OK;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.testng.HttpAsserts.assertGet;
-import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
 import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
-import static oap.ws.sso.testng.SecureWSFixture.assertMfaRequiredLogin;
+import static oap.ws.sso.testng.SecureWSFixture.assertTfaRequiredLogin;
+import static oap.ws.sso.testng.SecureWSFixture.assertWrongTfaLogin;
 
 public class AuthWSTest extends IntegratedTest {
     @Test
@@ -55,7 +54,7 @@ public class AuthWSTest extends IntegratedTest {
     public void loginMfaRequired() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
-        assertMfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
+        assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
             .hasCode( UNAUTHORIZED );
     }
@@ -64,7 +63,7 @@ public class AuthWSTest extends IntegratedTest {
     public void loginMfa() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
-        assertMfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
+        assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
         assertLogin( "admin@admin.com", "pass", "proper_code", getTestHttpPort().orElse( 80 ) );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"admin@admin.com\"}" );
@@ -74,10 +73,10 @@ public class AuthWSTest extends IntegratedTest {
     public void loginMfaWrongCode() {
         kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ), true ) );
-        assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/login" ),
-            "{  \"email\": \"admin@admin.com\",  \"password\": \"pass\", \"mfaCode\": \"wrong_code\"}" )
-            .hasCode( BAD_REQUEST )
-            .hasReason( "TFA code is incorrect or required" );
+        assertTfaRequiredLogin( "admin@admin.com", "pass", getTestHttpPort().orElse( 80 ) );
+        assertWrongTfaLogin( "admin@admin.com", "pass", "wrong_code", getTestHttpPort().orElse( 80 ) );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .hasCode( UNAUTHORIZED );
     }
 
     @Test

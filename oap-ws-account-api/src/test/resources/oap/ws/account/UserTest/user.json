@@ -10,7 +10,7 @@
     "email" : "email",
     "firstName" : "John",
     "lastName" : "Smith",
-    "mfaEnabled" : false,
+    "tfaEnabled" : false,
     "secretKey" : "${SECRET_KEY}"
   }
 }

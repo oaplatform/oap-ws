@@ -5,11 +5,11 @@
     "email": "systemadmin@admin.com",
     "firstName": "System",
     "lastName": "Admin",
-    "mfaEnabled" : false,
     "roles": {
       "DFLT": "ORGANIZATION_ADMIN",
       "SYSTEM": "ADMIN"
-    }
+    },
+    "tfaEnabled" : false
   },
   {
     "banned": false,
@@ -17,11 +17,11 @@
     "email": "xenoss@xenoss.io",
     "firstName": "System",
     "lastName": "Admin",
-    "mfaEnabled" : false,
     "roles" : {
       "DFLT" : "ADMIN",
       "SYSTEM" : "ADMIN"
-    }
+    },
+    "tfaEnabled" : false
   },
   {
     "banned": false,
@@ -30,9 +30,9 @@
     "firstName": "Johnny",
     "lastName": "Walker",
     "lastLogin": "${LAST_LOGIN}",
-    "mfaEnabled" : false,
     "roles" : {
       "DFLT" : "ORGANIZATION_ADMIN"
-    }
+    },
+    "tfaEnabled" : false
   }
 ]
