@@ -95,7 +95,6 @@ public class UserWSTest extends Fixtures {
 
     @Test
     public void noSecureData() {
-        UserData organizationAdmin = accountFixture.userStorage().get( DEFAULT_ORGANIZATION_ADMIN_EMAIL ).orElseThrow();
         UserData user = accountFixture.accounts().createUser( new User( "user@user.com", "Johnny", "Walker",
             "pass", true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) );
         accountFixture.assertOrgAdminLogin();
