@@ -5,7 +5,6 @@
     "email": "systemadmin@admin.com",
     "firstName": "System",
     "lastName": "Admin",
-    "mfaEnabled" : false,
     "roles": {
       "DFLT": "ORGANIZATION_ADMIN",
       "SYSTEM": "ADMIN"
@@ -18,7 +17,6 @@
     "email": "xenoss@xenoss.io",
     "firstName": "System",
     "lastName": "Admin",
-    "mfaEnabled" : false,
     "roles" : {
       "DFLT" : "ADMIN",
       "SYSTEM" : "ADMIN"
@@ -32,7 +30,6 @@
     "firstName": "Johnny",
     "lastName": "Walker",
     "lastLogin": "${LAST_LOGIN}",
-    "mfaEnabled" : false,
     "roles" : {
       "DFLT" : "ORGANIZATION_ADMIN"
     },
