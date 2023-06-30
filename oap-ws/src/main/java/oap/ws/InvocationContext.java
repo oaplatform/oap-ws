@@ -112,11 +112,14 @@ public class InvocationContext {
                 // what is this for? I sincerelly hope there is a test for it.
                 if( !( value instanceof String ) && Collection.class.isAssignableFrom( reflection.underlying ) )
                     value = Binder.json.marshal( value );
-                if( reflection.underlying.isInstance( value ) ) return value;
+                if( reflection.underlying.isInstance( value ) ) {
+                    return value;
+                }
                 return Binder.json.unmarshal( reflection, ( String ) value );
             }
         } catch( Exception e ) {
-            throw new WsClientException( "Cannot convert to map: " + value, e );
+            log.error( "Cannot map/deserialize {} into {}", value, reflection.underlying, e );
+            throw new WsClientException( "Cannot map/deserialize " + value + " into " + reflection.underlying, e );
         }
     }
 
