@@ -33,19 +33,15 @@
         <version>${oap-ws.project.version}</version>
     </parent>
 
-    <artifactId>oap-ws-testing</artifactId>
+    <artifactId>oap-ws-account-social</artifactId>
+
+    <properties>
+        <maven.compiler.source>18</maven.compiler.source>
+        <maven.compiler.target>18</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>oap-ws-sso</artifactId>
-            <version>${oap-ws.project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>oap-ws-sso-api-default</artifactId>
-            <version>${oap-ws.project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -53,20 +49,41 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-ws-account</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${oap.deps.slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-ws-account-api</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <groupId>com.restfb</groupId>
+            <artifactId>restfb</artifactId>
+            <version>${oap.deps.com.restfb}</version>
         </dependency>
         <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-ws-sso</artifactId>
-            <version>${oap-ws.project.version}</version>
-            <scope>test</scope>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>${oap.deps.google.api-client}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-jackson</artifactId>
+            <version>${oap.deps.google.http-client}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client-jetty</artifactId>
+            <version>${oap.deps.google.oauth-client}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>auth0</artifactId>
+            <version>${oap.deps.auth0.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>3.19.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
+
 </project>

@@ -24,15 +24,92 @@
 
 package oap.ws.sso;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-public interface JWTExtractor {
+import static oap.ws.sso.WsSecurity.SYSTEM;
 
-    List<String> getPermissions( String token, String organizationId );
+@Slf4j
+public class JWTExtractor {
 
-    String getUserEmail( String token );
+    private final String secret;
+    private final String issuer;
+    private final SecurityRoles roles;
 
-    String getOrganizationId( String token );
+    public JWTExtractor( String secret, String issuer, SecurityRoles roles ) {
+        this.secret = secret;
+        this.issuer = issuer;
+        this.roles = roles;
+    }
 
-    boolean verifyToken( String token );
+    protected DecodedJWT decodeJWT( String token ) {
+        if( token == null )
+            return null;
+        Algorithm algorithm = Algorithm.HMAC256( secret );
+        JWTVerifier verifier = JWT.require( algorithm )
+            .withIssuer( issuer )
+            .build();
+        return verifier.verify( token );
+    }
+
+    public boolean verifyToken( String token ) {
+        try {
+            final DecodedJWT decodedJWT = decodeJWT( token );
+            return decodedJWT != null;
+        } catch( JWTVerificationException e ) {
+            log.trace( "Token is not valid: {}", token, e );
+            return false;
+        }
+    }
+
+    public static String extractBearerToken( String authorization ) {
+        if( authorization != null && authorization.startsWith( "Bearer " ) ) {
+            return authorization.substring( "Bearer ".length() );
+        }
+        return authorization;
+    }
+
+    public List<String> getPermissions( String token, String organizationId ) {
+        final DecodedJWT decodedJWT = decodeJWT( token );
+        if( decodedJWT == null ) {
+            return Collections.emptyList();
+        }
+        final Claim tokenRoles = decodedJWT.getClaims().get( "roles" );
+        if( tokenRoles == null ) {
+            return Collections.emptyList();
+        }
+        Map<String, Object> rolesByOrganization = tokenRoles.asMap();
+        final String role;
+        if( rolesByOrganization.get( SYSTEM ) != null ) {
+            role = ( String ) rolesByOrganization.get( SYSTEM );
+        } else {
+            role = ( String ) rolesByOrganization.get( organizationId );
+        }
+        if( role != null ) {
+            return new ArrayList<>( this.roles.permissionsOf( role ) );
+        }
+        return Collections.emptyList();
+    }
+
+    public String getUserEmail( String token ) {
+        final DecodedJWT decodedJWT = decodeJWT( token );
+        final Claim user = decodedJWT.getClaims().get( "user" );
+        return user != null ? user.asString() : null;
+    }
+
+    public String getOrganizationId( String token ) {
+        final DecodedJWT decodedJWT = decodeJWT( token );
+        final Claim orgId = decodedJWT.getClaims().get( "org_id" );
+        return orgId != null ? orgId.asString() : null;
+    }
 }

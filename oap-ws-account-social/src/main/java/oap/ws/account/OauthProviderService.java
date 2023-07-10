@@ -22,29 +22,13 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
-
-import oap.util.Pair;
-import org.testng.annotations.Test;
-
-import java.util.Set;
-
-import static oap.testng.Asserts.assertString;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+package oap.ws.account;
 
 
-public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
+import java.util.Optional;
 
-    private final JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "secret", "issuer", 100000, 100000 );
-    private final JWTExtractor jwtExtractor = new JWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
+public interface OauthProviderService {
 
-    @Test
-    public void generateAndExtractToken() {
-        final String token = jwtTokenGenerator.generateAccessToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
-        assertString( token ).isNotEmpty();
-        assertTrue( jwtExtractor.verifyToken( token ) );
-        assertEquals( jwtExtractor.getUserEmail( token ), "email@email.com" );
-        assertEquals( jwtExtractor.getPermissions( token, "org1" ), Set.of( "accounts:list", "accounts:create" ) );
-    }
+    Optional<TokenInfo> getTokenInfo( String accessToken );
+
 }

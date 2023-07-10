@@ -22,29 +22,31 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
-
-import oap.util.Pair;
-import org.testng.annotations.Test;
-
-import java.util.Set;
-
-import static oap.testng.Asserts.assertString;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+package oap.ws.account;
 
 
-public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
+import com.restfb.DefaultFacebookClient;
+import com.restfb.FacebookClient;
+import com.restfb.Parameter;
+import com.restfb.Version;
+import com.restfb.exception.FacebookException;
+import lombok.extern.slf4j.Slf4j;
 
-    private final JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "secret", "issuer", 100000, 100000 );
-    private final JWTExtractor jwtExtractor = new JWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
+import java.util.Optional;
+@Slf4j
+public class FacebookProvider implements OauthProviderService {
+    private static final String FACEBOOK_FIELDS = "name,first_name,last_name,email";
 
-    @Test
-    public void generateAndExtractToken() {
-        final String token = jwtTokenGenerator.generateAccessToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
-        assertString( token ).isNotEmpty();
-        assertTrue( jwtExtractor.verifyToken( token ) );
-        assertEquals( jwtExtractor.getUserEmail( token ), "email@email.com" );
-        assertEquals( jwtExtractor.getPermissions( token, "org1" ), Set.of( "accounts:list", "accounts:create" ) );
+    public Optional<TokenInfo> getTokenInfo( String accessToken ) {
+
+        FacebookClient facebookClient = new DefaultFacebookClient( accessToken, Version.LATEST );
+        try {
+            com.restfb.types.User fbUser = facebookClient.fetchObject( "me", com.restfb.types.User.class,
+                Parameter.with( "fields", FACEBOOK_FIELDS ) );
+            return Optional.of( new TokenInfo( fbUser.getEmail(), fbUser.getFirstName(), fbUser.getLastName() ) );
+        } catch( FacebookException e ) {
+            log.error( "Failed to extract user from facebook token", e );
+            throw e;
+        }
     }
 }

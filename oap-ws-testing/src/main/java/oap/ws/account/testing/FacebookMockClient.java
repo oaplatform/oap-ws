@@ -22,32 +22,16 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws.account.testing;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import lombok.extern.slf4j.Slf4j;
+import oap.ws.account.OauthProviderService;
+import oap.ws.account.TokenInfo;
 
-@Slf4j
-public abstract class AbstractJWTExtractor implements JWTExtractor {
+import java.util.Optional;
 
+public class FacebookMockClient implements OauthProviderService {
     @Override
-    public boolean verifyToken( String token ) {
-        try {
-            final DecodedJWT decodedJWT = decodeJWT( token );
-            return decodedJWT != null;
-        } catch( JWTVerificationException e ) {
-            log.trace( "Token is not valid: {}", token, e );
-            return false;
-        }
-    }
-
-    protected abstract DecodedJWT decodeJWT( String token );
-
-    public static String extractBearerToken( String authorization ) {
-        if( authorization != null && authorization.startsWith( "Bearer " ) ) {
-            return authorization.substring( "Bearer ".length() );
-        }
-        return authorization;
+    public Optional<TokenInfo> getTokenInfo( String accessToken ) {
+        return Optional.of( new TokenInfo( "newuser@user.com", "John", "Smith" ) );
     }
 }

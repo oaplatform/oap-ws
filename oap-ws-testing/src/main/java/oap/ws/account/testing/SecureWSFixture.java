@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso.testng;
+package oap.ws.account.testing;
 
 import oap.http.Http;
 import org.joda.time.DateTime;
@@ -32,6 +32,8 @@ import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
+import static oap.io.content.ContentReader.ofString;
+import static oap.testng.Asserts.contentOfTestResource;
 import static oap.ws.sso.SSO.AUTHENTICATION_KEY;
 import static oap.ws.sso.SSO.REFRESH_TOKEN_KEY;
 import static org.joda.time.DateTimeZone.UTC;
@@ -87,5 +89,37 @@ public class SecureWSFixture {
             .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
                 .hasValue( "<logged out>" )
                 .expiresAt( new DateTime( 1970, 1, 1, 1, 1, UTC ) ) );
+    }
+
+    public static void assertLoginWithFBToken() {
+        assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/oauth/login" ), contentOfTestResource( SecureWSFixture.class, "token-credentials.json", ofString() ), Http.ContentType.APPLICATION_JSON )
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() )
+            .containsCookie( REFRESH_TOKEN_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() );
+    }
+
+    public static void assertLoginWithFBTokenWithTfa() {
+        assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/oauth/login" ), contentOfTestResource( SecureWSFixture.class, "token-tfa-credentials.json", ofString() ), Http.ContentType.APPLICATION_JSON )
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() )
+            .containsCookie( REFRESH_TOKEN_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() );
+    }
+
+    public static void assertLoginWithFBTokenWithTfaRequired() {
+        assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/oauth/login" ), contentOfTestResource( SecureWSFixture.class, "token-credentials.json", ofString() ), Http.ContentType.APPLICATION_JSON )
+            .hasCode( Http.StatusCode.BAD_REQUEST )
+            .hasReason( "TFA code is required" );
+    }
+
+    public static void assertLoginWithFBTokenWithWrongTfa() {
+        assertPost( httpUrl( getTestHttpPort().orElse( 80 ), "/auth/oauth/login" ), contentOfTestResource( SecureWSFixture.class, "token-wrong-tfa-credentials.json", ofString() ), Http.ContentType.APPLICATION_JSON )
+            .hasCode( Http.StatusCode.BAD_REQUEST )
+            .hasReason( "TFA code is incorrect" );
     }
 }

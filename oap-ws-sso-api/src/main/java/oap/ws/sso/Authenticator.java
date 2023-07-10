@@ -30,9 +30,9 @@ import java.util.Optional;
 
 public interface Authenticator {
 
-    Optional<Authentication> authenticate( String accessToken );
-
     Result<Authentication, AuthenticationFailure> authenticate( String email, String password, Optional<String> tfaCode );
+
+    Result<Authentication, AuthenticationFailure> authenticate( String email, Optional<String> tfaCode );
 
     Result<Authentication, AuthenticationFailure> refreshToken( String refreshToken );
 

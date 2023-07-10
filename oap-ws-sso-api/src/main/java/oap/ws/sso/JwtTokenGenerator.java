@@ -64,5 +64,4 @@ public class JwtTokenGenerator {
             .withExpiresAt( new Date( System.currentTimeMillis() + refreshSecretExpiration ) )
             .sign( algorithm );
     }
-
 }

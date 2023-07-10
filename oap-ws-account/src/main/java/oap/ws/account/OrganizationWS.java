@@ -6,6 +6,7 @@
 
 package oap.ws.account;
 
+import oap.json.ext.Ext;
 import oap.ws.account.utils.TfaUtils;
 import oap.ws.account.ws.AbstractWS;
 import lombok.SneakyThrows;
@@ -68,16 +69,18 @@ public class OrganizationWS extends AbstractWS {
 
     public static final String ORGANIZATION_ID = "organizationId";
     private final Accounts accounts;
+    private final OauthService oauthService;
     private final AccountMailman mailman;
     private final String confirmUrlFinish;
     private final boolean selfRegistrationEnabled;
 
-    public OrganizationWS( Accounts accounts, AccountMailman mailman, SecurityRoles roles, String confirmUrlFinish, boolean selfRegistrationEnabled ) {
+    public OrganizationWS( Accounts accounts, AccountMailman mailman, SecurityRoles roles, String confirmUrlFinish, boolean selfRegistrationEnabled, OauthService oauthService ) {
         super( roles );
         this.accounts = accounts;
         this.mailman = mailman;
         this.confirmUrlFinish = confirmUrlFinish;
         this.selfRegistrationEnabled = selfRegistrationEnabled;
+        this.oauthService = oauthService;
     }
 
     @WsMethod( method = POST, path = "/{organizationId}" )
@@ -185,6 +188,23 @@ public class OrganizationWS extends AbstractWS {
         UserData userCreated = accounts.createUser( user, new HashMap<>( Map.of( orgId, ORGANIZATION_ADMIN ) ) );
         mailman.sendRegisteredEmail( userCreated );
         return userCreated.view;
+    }
+
+
+    @WsMethod( method = POST, path = "/register/oauth" )
+    @WsValidate( "validateUserRegistered" )
+    public Optional<UserData.View> register( @WsParam( from = QUERY ) String organizationName, String externalOauthToken, OauthProvider source, Ext ext ) {
+        OrganizationData organizationData = accounts.storeOrganization( new Organization( organizationName ) );
+        final String orgId = organizationData.organization.id;
+        final Optional<TokenInfo> tokenInfo = oauthService.getOauthProvider( source ).getTokenInfo( externalOauthToken );
+        if( tokenInfo.isPresent() ) {
+            final User user = new User( tokenInfo.get().email, tokenInfo.get().firstName, tokenInfo.get().lastName, null, true, false );
+            user.ext = ext;
+            UserData userCreated = accounts.createUser( user, new HashMap<>( Map.of( orgId, ORGANIZATION_ADMIN ) ) );
+            mailman.sendRegisteredEmail( userCreated );
+            return Optional.of( userCreated.view );
+        }
+        return Optional.empty();
     }
 
     @WsMethod( method = POST, path = "/{organizationId}/users/passwd" )

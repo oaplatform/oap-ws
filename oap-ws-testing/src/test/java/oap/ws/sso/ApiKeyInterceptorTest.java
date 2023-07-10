@@ -34,7 +34,7 @@ import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
-import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
+import static oap.ws.account.testing.SecureWSFixture.assertLogin;
 
 public class ApiKeyInterceptorTest extends IntegratedTest {
 

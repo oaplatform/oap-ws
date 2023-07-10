@@ -26,9 +26,11 @@ package oap.ws.sso;
 
 
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import static oap.http.Http.ContentType.TEXT_PLAIN;
+import static oap.http.Http.StatusCode.BAD_REQUEST;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.OK;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
@@ -36,10 +38,14 @@ import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
-import static oap.ws.sso.testng.SecureWSFixture.assertLogin;
-import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
-import static oap.ws.sso.testng.SecureWSFixture.assertTfaRequiredLogin;
-import static oap.ws.sso.testng.SecureWSFixture.assertWrongTfaLogin;
+import static oap.ws.account.testing.SecureWSFixture.assertLogin;
+import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBToken;
+import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithTfaRequired;
+import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithTfa;
+import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithWrongTfa;
+import static oap.ws.account.testing.SecureWSFixture.assertLogout;
+import static oap.ws.account.testing.SecureWSFixture.assertTfaRequiredLogin;
+import static oap.ws.account.testing.SecureWSFixture.assertWrongTfaLogin;
 
 public class AuthWSTest extends IntegratedTest {
     @Test
@@ -104,5 +110,41 @@ public class AuthWSTest extends IntegratedTest {
         assertLogin( "user@user.com", "pass" );
         assertGet( httpUrl( "/secure/r1" ) )
             .hasCode( FORBIDDEN );
+    }
+
+    @Test
+    public void loginWithExternalToken() {
+        userProvider().addUser( new TestUser( "newuser@user.com", null, __( "r1", "USER" ) ) );
+        assertLoginWithFBToken();
+        assertGet( httpUrl( "/secure/r1" ) )
+            .hasCode( FORBIDDEN );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .respondedJson( "{\"email\":\"newuser@user.com\"}" );
+    }
+
+    @Test
+    public void loginWithExternalTokenWithTfa() {
+        userProvider().addUser( new TestUser( "newuser@user.com", null, __( "r1", "USER" ), true ) );
+        assertLoginWithFBTokenWithTfa();
+        assertGet( httpUrl( "/secure/r1" ) )
+            .hasCode( FORBIDDEN );
+        assertGet( httpUrl( "/auth/whoami" ) )
+            .respondedJson( "{\"email\":\"newuser@user.com\"}" );
+    }
+
+    @Test
+    public void loginWithExternalTokenWithTfaRequired() {
+        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
+
+        userProvider().addUser( new TestUser( "newuser@user.com", null, __( "r1", "USER" ), true ) );
+        assertLoginWithFBTokenWithTfaRequired();
+    }
+
+    @Test
+    public void loginWithExternalTokenWithWrongTfa() throws InterruptedException {
+        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
+
+        userProvider().addUser( new TestUser( "newuser@user.com", null, __( "r1", "USER" ), true ) );
+        assertLoginWithFBTokenWithWrongTfa();
     }
 }

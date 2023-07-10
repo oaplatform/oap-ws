@@ -36,11 +36,6 @@
             <version>${oap-ws.project.version}</version>
         </dependency>
         <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-ws-sso</artifactId>
-            <version>${oap-ws.project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${oap.deps.lombok.version}</version>

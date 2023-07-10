@@ -34,6 +34,8 @@ public interface UserProvider {
 
     Result<? extends User, AuthenticationFailure> getAuthenticated( String email, String password, Optional<String> tfaCode );
 
+    Result<? extends User, AuthenticationFailure> getAuthenticated( String email, Optional<String> tfaCode );
+
     Optional<? extends User> getAuthenticatedByApiKey( String accessKey, String apiKey );
 
     //eliminating most used letters in english from source
