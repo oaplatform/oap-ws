@@ -26,11 +26,9 @@ package oap.ws.sso;
 
 
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import static oap.http.Http.ContentType.TEXT_PLAIN;
-import static oap.http.Http.StatusCode.BAD_REQUEST;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.OK;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
@@ -40,8 +38,8 @@ import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
 import static oap.ws.account.testing.SecureWSFixture.assertLogin;
 import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBToken;
-import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithTfaRequired;
 import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithTfa;
+import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithTfaRequired;
 import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithWrongTfa;
 import static oap.ws.account.testing.SecureWSFixture.assertLogout;
 import static oap.ws.account.testing.SecureWSFixture.assertTfaRequiredLogin;

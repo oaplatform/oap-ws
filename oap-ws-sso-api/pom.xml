@@ -74,12 +74,6 @@
         </dependency>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-ws-sso</artifactId>
-            <version>${oap-ws.project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
             <artifactId>oap-ws-account-social</artifactId>
             <version>${oap-ws.project.version}</version>
             <scope>compile</scope>

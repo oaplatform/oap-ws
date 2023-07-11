@@ -44,7 +44,6 @@ import java.util.Optional;
 
 import static oap.io.Resources.urlOrThrow;
 import static oap.ws.account.testing.SecureWSFixture.assertLogout;
-import static oap.ws.account.utils.TfaUtils.getTOTPCode;
 import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
 import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
 import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
