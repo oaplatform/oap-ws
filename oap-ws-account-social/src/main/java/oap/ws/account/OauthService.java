@@ -24,7 +24,6 @@
 
 package oap.ws.account;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class OauthService {
