@@ -28,8 +28,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OauthService {
+    private Map<OauthProvider, OauthProviderService> providers;
 
-    public Map<OauthProvider, OauthProviderService> providers = new HashMap<>();
+    public OauthService( Map<OauthProvider, OauthProviderService> providers ) {
+        this.providers = providers;
+    }
 
     public OauthProviderService getOauthProvider( OauthProvider source ) {
         return providers.get( source );
