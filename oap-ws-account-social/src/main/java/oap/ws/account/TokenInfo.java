@@ -22,29 +22,14 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws.account;
 
-import oap.util.Pair;
-import org.testng.annotations.Test;
+import lombok.AllArgsConstructor;
 
-import java.util.Set;
+@AllArgsConstructor
+public class TokenInfo {
 
-import static oap.testng.Asserts.assertString;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-
-
-public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
-
-    private final JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "secret", "issuer", 100000, 100000 );
-    private final JWTExtractor jwtExtractor = new JWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
-
-    @Test
-    public void generateAndExtractToken() {
-        final String token = jwtTokenGenerator.generateAccessToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
-        assertString( token ).isNotEmpty();
-        assertTrue( jwtExtractor.verifyToken( token ) );
-        assertEquals( jwtExtractor.getUserEmail( token ), "email@email.com" );
-        assertEquals( jwtExtractor.getPermissions( token, "org1" ), Set.of( "accounts:list", "accounts:create" ) );
-    }
+    public String email;
+    public String firstName;
+    public String lastName;
 }

@@ -27,6 +27,7 @@ package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.util.Result;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -45,30 +46,37 @@ public class JwtUserAuthenticator implements Authenticator {
     }
 
     @Override
-    public Optional<Authentication> authenticate( String accessToken ) {
-        if( jwtExtractor.verifyToken( accessToken ) ) {
-            return userProvider.getUser( jwtExtractor.getUserEmail( accessToken ) ).map( user -> new Authentication( accessToken, null, user ) );
-        }
-        return Optional.empty();
+    public Result<Authentication, AuthenticationFailure> authenticate( String email, String password, Optional<String> tfaCode ) {
+        var authResult = userProvider.getAuthenticated( email, password, tfaCode );
+        return getAuthenticationTokens( authResult );
     }
 
     @Override
-    public Result<Authentication, AuthenticationFailure> authenticate( String email, String password, Optional<String> tfaCode ) {
-        var authResult = userProvider.getAuthenticated( email, password, tfaCode );
+    public Result<Authentication, AuthenticationFailure> authenticate( String email, Optional<String> tfaCode ) {
+        var authResult = userProvider.getAuthenticated( email, tfaCode );
+        return getAuthenticationTokens( authResult );
+    }
+
+    private Result<Authentication, AuthenticationFailure> getAuthenticationTokens( Result<? extends User, AuthenticationFailure> authResult ) {
         if( !authResult.isSuccess() ) {
             return Result.failure( authResult.getFailureValue() );
         }
         User user = authResult.getSuccessValue();
         try {
-            var accessToken = jwtTokenGenerator.generateAccessToken( user );
-            var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
-            log.trace( "generating new authentication for user {} -> {}", user.getEmail(), accessToken );
-            Authentication authentication = new Authentication( accessToken, refreshToken, user );
+            Authentication authentication = generateTokens( user );
             return Result.success( authentication );
         } catch( Exception exception ) {
             log.error( "JWT creation failed {}", exception.getMessage() );
         }
         return null;
+    }
+
+    @NotNull
+    private Authentication generateTokens( User user ) {
+        var accessToken = jwtTokenGenerator.generateAccessToken( user );
+        var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
+        log.trace( "generating authentication for user {} -> {}", user.getEmail(), accessToken );
+        return new Authentication( accessToken, refreshToken, user );
     }
 
     @Override
@@ -86,10 +94,7 @@ public class JwtUserAuthenticator implements Authenticator {
         return userProvider.getUser( email )
             .map( user -> {
                 try {
-                    var accessToken = jwtTokenGenerator.generateAccessToken( user );
-                    var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
-                    log.trace( "generating new authentication for user {} -> {}", user.getEmail(), accessToken );
-                    return new Authentication( accessToken, refreshToken, user );
+                    return generateTokens( user );
                 } catch( Exception exception ) {
                     log.error( "JWT creation failed {}", exception.getMessage() );
                     return null;
@@ -102,10 +107,7 @@ public class JwtUserAuthenticator implements Authenticator {
         return userProvider.getAuthenticatedByApiKey( accessKey, apiKey )
             .map( user -> {
                 try {
-                    var accessToken = jwtTokenGenerator.generateAccessToken( user );
-                    var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
-                    log.trace( "generating temporary authentication for user {} -> {}", user.getEmail(), accessToken );
-                    return new Authentication( accessToken, refreshToken, user );
+                    return generateTokens( user );
                 } catch( Exception exception ) {
                     log.error( "JWT creation failed {}", exception.getMessage() );
                     return null;

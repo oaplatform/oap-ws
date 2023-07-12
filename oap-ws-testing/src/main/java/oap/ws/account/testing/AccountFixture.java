@@ -37,7 +37,6 @@ import oap.ws.account.OrganizationStorage;
 import oap.ws.account.User;
 import oap.ws.account.UserData;
 import oap.ws.account.UserStorage;
-import oap.ws.sso.testng.SecureWSFixture;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;

@@ -25,6 +25,8 @@
 package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
+import oap.ws.account.OauthService;
+import oap.ws.account.TokenInfo;
 import oap.http.Http;
 import oap.ws.Response;
 import oap.ws.Session;
@@ -58,10 +60,17 @@ public class AuthWS extends AbstractSecureWS {
     private final Authenticator authenticator;
     private final SessionManager sessionManager;
 
-    public AuthWS( SecurityRoles roles, Authenticator authenticator, SessionManager sessionManager ) {
+    private final OauthService oauthService;
+
+    public AuthWS( SecurityRoles roles, Authenticator authenticator, SessionManager sessionManager, OauthService oauthService ) {
         super( roles );
         this.authenticator = authenticator;
         this.sessionManager = sessionManager;
+        this.oauthService = oauthService;
+    }
+
+    public AuthWS( SecurityRoles roles, Authenticator authenticator, SessionManager sessionManager ) {
+        this( roles, authenticator, sessionManager, null );
     }
 
     @WsMethod( method = POST, path = "/login" )
@@ -87,6 +96,26 @@ public class AuthWS extends AbstractSecureWS {
             return notAuthenticatedResponse( BAD_REQUEST, "TFA code is incorrect", sessionManager.cookieDomain );
         } else
             return notAuthenticatedResponse( UNAUTHORIZED, "Username or password is invalid", sessionManager.cookieDomain );
+    }
+
+    @WsMethod( method = POST, path = "/oauth/login" )
+    public Response login( @WsParam( from = BODY ) TokenCredentials credentials,
+                           @WsParam( from = SESSION ) Optional<User> loggedUser,
+                           Session session ) {
+        loggedUser.ifPresent( user -> logout( loggedUser, session ) );
+        final Optional<TokenInfo> tokenInfo = oauthService.getOauthProvider( credentials.source ).getTokenInfo( credentials.accessToken );
+        if( tokenInfo.isPresent() ) {
+            var result = authenticator.authenticate( tokenInfo.get().email, credentials.tfaCode );
+            if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
+                sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
+            else if( TFA_REQUIRED == result.getFailureValue() )
+                return notAuthenticatedResponse( BAD_REQUEST, "TFA code is required", sessionManager.cookieDomain );
+            else if( WRONG_TFA_CODE == result.getFailureValue() ) {
+                return notAuthenticatedResponse( BAD_REQUEST, "TFA code is incorrect", sessionManager.cookieDomain );
+            } else
+                return notAuthenticatedResponse( UNAUTHORIZED, "User not found", sessionManager.cookieDomain );
+        }
+        return notAuthenticatedResponse( UNAUTHORIZED, "Token is empty", sessionManager.cookieDomain );
     }
 
     @WsMethod( method = GET, path = "/refresh" )

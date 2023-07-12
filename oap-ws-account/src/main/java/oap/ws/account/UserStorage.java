@@ -42,6 +42,16 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
         Optional<UserData> authenticated = get( email )
             .filter( u -> u.authenticate( password ) );
 
+        return getAuthenticationResult( email, tfaCode, authenticated );
+    }
+
+    @Override
+    public Result<? extends User, AuthenticationFailure> getAuthenticated( String email, Optional<String> tfaCode ) {
+        Optional<UserData> authenticated = get( email );
+        return getAuthenticationResult( email, tfaCode, authenticated );
+    }
+
+    private Result<? extends User, AuthenticationFailure> getAuthenticationResult( String email, Optional<String> tfaCode, Optional<UserData> authenticated ) {
         if( authenticated.isPresent() ) {
             UserData userData = authenticated.get();
             if( !userData.user.tfaEnabled ) {
@@ -59,7 +69,6 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
                 return tfaCheck ? Result.success( userData ) : Result.failure( WRONG_TFA_CODE );
             }
         }
-
         return Result.failure( UNAUTHENTICATED );
     }
 

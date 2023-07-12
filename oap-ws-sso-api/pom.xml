@@ -72,6 +72,12 @@
             <artifactId>jwks-rsa</artifactId>
             <version>${oap.deps.jwks.version}</version>
         </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-account-social</artifactId>
+            <version>${oap-ws.project.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 

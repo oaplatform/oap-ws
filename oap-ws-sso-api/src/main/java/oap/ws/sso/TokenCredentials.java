@@ -24,27 +24,23 @@
 
 package oap.ws.sso;
 
-import oap.util.Pair;
-import org.testng.annotations.Test;
+import lombok.EqualsAndHashCode;
+import oap.ws.account.OauthProvider;
+import org.codehaus.jackson.annotate.JsonCreator;
 
-import java.util.Set;
+import java.io.Serializable;
+import java.util.Optional;
 
-import static oap.testng.Asserts.assertString;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+@EqualsAndHashCode
+public class TokenCredentials implements Serializable {
+    public final String accessToken;
+    public final OauthProvider source;
+    public Optional<String> tfaCode;
 
-
-public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
-
-    private final JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "secret", "issuer", 100000, 100000 );
-    private final JWTExtractor jwtExtractor = new JWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
-
-    @Test
-    public void generateAndExtractToken() {
-        final String token = jwtTokenGenerator.generateAccessToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
-        assertString( token ).isNotEmpty();
-        assertTrue( jwtExtractor.verifyToken( token ) );
-        assertEquals( jwtExtractor.getUserEmail( token ), "email@email.com" );
-        assertEquals( jwtExtractor.getPermissions( token, "org1" ), Set.of( "accounts:list", "accounts:create" ) );
+    @JsonCreator
+    public TokenCredentials( String accessToken, OauthProvider source, Optional<String> tfaCode ) {
+        this.accessToken = accessToken;
+        this.source = source;
+        this.tfaCode = tfaCode;
     }
 }

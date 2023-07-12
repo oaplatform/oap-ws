@@ -32,6 +32,7 @@ import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
 import oap.util.Pair;
 import oap.util.Result;
+import oap.ws.account.UserData;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.annotations.AfterMethod;
 
@@ -42,11 +43,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import static oap.io.Resources.urlOrThrow;
+import static oap.ws.account.testing.SecureWSFixture.assertLogout;
 import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
 import static oap.ws.sso.AuthenticationFailure.UNAUTHENTICATED;
 import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
 import static oap.ws.sso.UserProvider.toAccessKey;
-import static oap.ws.sso.testng.SecureWSFixture.assertLogout;
 
 public class IntegratedTest extends Fixtures {
     protected final KernelFixture kernelFixture;
@@ -80,6 +81,33 @@ public class IntegratedTest extends Fixtures {
         @Override
         public Optional<TestUser> getUser( String email ) {
             return users.stream().filter( u -> u.getEmail().equalsIgnoreCase( email ) ).findAny();
+        }
+
+        private Result<? extends User, AuthenticationFailure> getAuthenticationResult( Optional<String> tfaCode, Optional<UserData> authenticated ) {
+            if( authenticated.isPresent() ) {
+                UserData userData = authenticated.get();
+                if( !userData.user.tfaEnabled ) {
+                    return Result.success( userData );
+                } else {
+                    if( tfaCode.isEmpty() ) {
+                        return Result.failure( TFA_REQUIRED );
+                    }
+                    boolean tfaCheck = tfaCode.map( "proper_code"::equals )
+                        .orElse( false );
+                    return tfaCheck ? Result.success( userData ) : Result.failure( WRONG_TFA_CODE );
+                }
+            }
+            return Result.failure( UNAUTHENTICATED );
+        }
+
+        @Override
+        public Result<? extends User, AuthenticationFailure> getAuthenticated( String email, Optional<String> tfaCode ) {
+            final Optional<TestUser> user = users.stream().filter( u -> u.getEmail().equalsIgnoreCase( email ) ).findAny();
+            UserData userData = null;
+            if( user.isPresent() ) {
+                userData = new UserData( new oap.ws.account.User( user.get().email, "", "", null, true, user.get().tfaEnabled ), user.get().roles );
+            }
+            return getAuthenticationResult( tfaCode, Optional.ofNullable( userData ) );
         }
 
         @Override

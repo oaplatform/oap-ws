@@ -43,7 +43,6 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
-import static oap.ws.sso.AbstractJWTExtractor.extractBearerToken;
 import static oap.ws.sso.SSO.ISSUER;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
 import static oap.ws.sso.WsSecurity.SYSTEM;
@@ -70,7 +69,7 @@ public class JWTSecurityInterceptor implements Interceptor {
         if( jwtToken != null && ( !context.session.containsKey( SESSION_USER_KEY ) || issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) ) {
             log.debug( "Proceed with user in session:" + context.session.get( SESSION_USER_KEY ) );
 
-            final String token = extractBearerToken( jwtToken );
+            final String token = JWTExtractor.extractBearerToken( jwtToken );
             if( token == null || !jwtExtractor.verifyToken( token ) ) {
                 log.trace( "Not authenticated." );
                 return Optional.of( new Response( FORBIDDEN, "Invalid token" ) );
@@ -107,7 +106,7 @@ public class JWTSecurityInterceptor implements Interceptor {
             return Optional.of( new Response( FORBIDDEN, "realm is different from organization logged in" ) );
         }
         if( issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) {
-            permissions = jwtExtractor.getPermissions( extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
+            permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
             if( permissions != null ) {
                 if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
                     return Optional.empty();
