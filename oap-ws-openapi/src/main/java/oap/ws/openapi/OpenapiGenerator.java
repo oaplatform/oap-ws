@@ -309,7 +309,7 @@ public class OpenapiGenerator {
         var result = new RequestBody();
         Schema schemaRef = openapiSchema.createSchemaRef( resolvedSchema.schema, schemas, false );
         result.setContent( createContent( ContentType.APPLICATION_JSON.getMimeType(), schemaRef ) );
-        if( schemas.containsKey( resolvedSchema.schema.getName() ) )
+        if( resolvedSchema.schema != null && resolvedSchema.schema.getName() != null && schemas.containsKey( resolvedSchema.schema.getName() ) )
             api.getComponents().addRequestBodies( resolvedSchema.schema.getName(), result );
 
         return result;
