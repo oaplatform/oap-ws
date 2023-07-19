@@ -9,7 +9,7 @@
     <artifactId>oap-ws-sso</artifactId>
 
     <properties>
-        <commons-codec.version>1.16.0</commons-codec.version>
+        <commons-codec.version>1.15</commons-codec.version>
         <totp.version>1.0</totp.version>
     </properties>
 
