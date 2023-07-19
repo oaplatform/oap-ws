@@ -80,7 +80,7 @@
         <oap.deps.slf4j.version>2.0.7</oap.deps.slf4j.version>
         <oap.deps.logback.version>1.4.5</oap.deps.logback.version>
         <oap.deps.httpcomponents.version>4.4.16</oap.deps.httpcomponents.version>
-        <oap.deps.lombok.version>1.18.28</oap.deps.lombok.version>
+        <oap.deps.lombok.version>1.18.24</oap.deps.lombok.version>
         <oap.deps.swagger.version>2.2.15</oap.deps.swagger.version>
         <oap.deps.jwt.version>4.4.0</oap.deps.jwt.version>
         <oap.deps.jwks.version>0.22.0</oap.deps.jwks.version>
