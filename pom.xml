@@ -69,7 +69,7 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>18.13.0.40</oap-ws.project.version>
+        <oap-ws.project.version>18.13.0.41</oap-ws.project.version>
         <oap.deps.oap.version>18.11.5.25</oap.deps.oap.version>
 
         <oap.deps.mail.version>18.6.1.10</oap.deps.mail.version>
@@ -85,7 +85,7 @@
         <oap.deps.jwt.version>4.4.0</oap.deps.jwt.version>
         <oap.deps.jwks.version>0.22.0</oap.deps.jwks.version>
         <oap.deps.com.restfb>2023.7.1</oap.deps.com.restfb>
-        <oap.deps.google.api-client>1.32.1</oap.deps.google.api-client>
+        <oap.deps.google.api-client>1.35.2</oap.deps.google.api-client>
         <oap.deps.google.oauth-client>1.32.1</oap.deps.google.oauth-client>
         <oap.deps.google.http-client>1.15.0-rc</oap.deps.google.http-client>
         <oap.deps.auth0.version>1.42.0</oap.deps.auth0.version>
