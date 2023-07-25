@@ -109,5 +109,6 @@
         <oap.deps.maven-plugin-annotations.version>3.9.0</oap.deps.maven-plugin-annotations.version>
         <oap.deps.versions-maven-plugin.version>2.11.0</oap.deps.versions-maven-plugin.version>
         <oap.deps.plexus-component-metadata.version>2.1.1</oap.deps.plexus-component-metadata.version>
+        <oap.deps.com.amazonaws.version>1.12.512</oap.deps.com.amazonaws.version>
     </properties>
 </project>
