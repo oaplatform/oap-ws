@@ -27,7 +27,7 @@ package oap.ws.account;
 import java.util.Map;
 
 public class OauthService {
-    private Map<OauthProvider, OauthProviderService> providers;
+    private final Map<OauthProvider, OauthProviderService> providers;
 
     public OauthService( Map<OauthProvider, OauthProviderService> providers ) {
         this.providers = providers;

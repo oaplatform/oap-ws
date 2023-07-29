@@ -25,5 +25,5 @@
 package oap.ws.account;
 
 public enum OauthProvider {
-    GOOGLE, FACEBOOK, AUTH0
+    GOOGLE, FACEBOOK, AUTH0, COGNITO
 }
