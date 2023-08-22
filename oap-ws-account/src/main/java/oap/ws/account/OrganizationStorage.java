@@ -34,10 +34,10 @@ public class OrganizationStorage extends MemoryStorage<String, OrganizationData>
     }
 
     /**
-     * @param defaultOrganizationId default organization id
-     * @param defaultOrganizationName default organization name
+     * @param defaultOrganizationId          default organization id
+     * @param defaultOrganizationName        default organization name
      * @param defaultOrganizationDescription default organization description
-     * @param defaultOrganizationReadOnly if true, the storage modifies the default organization to the default values on startup
+     * @param defaultOrganizationReadOnly    if true, the storage modifies the default organization to the default values on startup
      */
     public OrganizationStorage( String defaultOrganizationId,
                                 String defaultOrganizationName,
@@ -63,7 +63,7 @@ public class OrganizationStorage extends MemoryStorage<String, OrganizationData>
         }, () -> {
             var defaultOrganization = new Organization( defaultOrganizationId, defaultOrganizationName, defaultOrganizationDescription );
             return new OrganizationData( defaultOrganization );
-        });
+        } );
     }
 
     public void deleteAllPermanently() {
