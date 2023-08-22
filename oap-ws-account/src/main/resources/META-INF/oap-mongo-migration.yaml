@@ -1,14 +1,2 @@
 migrations:
-  account:
-    - version:
-        main: 1
-      script: /oap/ws/account/migrations/defaults.migration.js
-    - version:
-        main: 2
-      script: /oap/ws/account/migrations/password.migration.js
-    - version:
-        main: 3
-      script: /oap/ws/account/migrations/accounts.migration.js
-    - version:
-        main: 4
-      script: /oap/ws/account/migrations/users.migration.js
+  account: []

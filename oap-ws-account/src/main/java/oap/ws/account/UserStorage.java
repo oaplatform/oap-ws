@@ -8,12 +8,16 @@ package oap.ws.account;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.id.Identifier;
+import oap.json.Binder;
+import oap.reflect.TypeRef;
 import oap.storage.MemoryStorage;
+import oap.system.Env;
 import oap.util.Result;
 import oap.ws.sso.AuthenticationFailure;
 import oap.ws.sso.User;
 import org.joda.time.DateTime;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static oap.storage.Storage.Lock.SERIALIZED;
@@ -26,10 +30,73 @@ import static org.joda.time.DateTimeZone.UTC;
 @Slf4j
 public class UserStorage extends MemoryStorage<String, UserData> implements oap.ws.sso.UserProvider {
 
+    public static final String DEFAULT_USER_EMAIL = "xenoss@xenoss.io";
+    public static final String DEFAULT_USER_PASSWORD = "Xenoss123";
+    public static final String DEFAULT_USER_FIRST_NAME = "System";
+    public static final String DEFAULT_USER_LAST_NAME = "Admin";
+    public static final String DEFAULT_USER_ROLES = "{\"DFLT\": \"ADMIN\", \"SYSTEM\": \"ADMIN\"}";
+    public static final String DEFAULT_USER_READONLY = "true";
+    private final String defaultUserEmail;
+    private final String defaultUserPassword;
+    private final String defaultUserFirstName;
+    private final String defaultUserLastName;
+    private final Map<String, String> defaultUserRoles;
+    private final boolean defaultUserReadOnly;
+
     public UserStorage() {
+        this(
+            Env.get( "DEFAULT_USER_EMAIL", DEFAULT_USER_EMAIL ),
+            Env.get( "DEFAULT_USER_PASSWORD", DEFAULT_USER_PASSWORD ),
+            Env.get( "DEFAULT_USER_FIRST_NAME", DEFAULT_USER_FIRST_NAME ),
+            Env.get( "DEFAULT_USER_LAST_NAME", DEFAULT_USER_LAST_NAME ),
+            Binder.hocon.unmarshal( new TypeRef<Map<String, String>>() {}, Env.get( "DEFAULT_USER_ROLES", DEFAULT_USER_ROLES ) ),
+            Boolean.parseBoolean( Env.get( "DEFAULT_USER_READONLY", DEFAULT_USER_READONLY ) )
+        );
+    }
+
+    /**
+     * @param defaultUserEmail            default user email
+     * @param defaultUserPassword         default user password
+     * @param defaultUserFirstName        default user first name
+     * @param defaultUserLastName         default user last name
+     * @param defaultUserRoles            default user roles map ( hocon/json format )
+     * @param defaultUserReadOnly if true, the storage modifies the default user to the default values on startup
+     */
+    public UserStorage( String defaultUserEmail,
+                        String defaultUserPassword,
+                        String defaultUserFirstName,
+                        String defaultUserLastName,
+                        Map<String, String> defaultUserRoles,
+                        boolean defaultUserReadOnly ) {
         super( Identifier.<UserData>forId( u -> u.user.email, ( o, id ) -> o.user.email = id )
             .suggestion( u -> u.user.email )
             .build(), SERIALIZED );
+
+        this.defaultUserEmail = defaultUserEmail;
+        this.defaultUserPassword = defaultUserPassword;
+        this.defaultUserFirstName = defaultUserFirstName;
+        this.defaultUserLastName = defaultUserLastName;
+        this.defaultUserRoles = defaultUserRoles;
+        this.defaultUserReadOnly = defaultUserReadOnly;
+    }
+
+    public void start() {
+        update( defaultUserEmail, u -> {
+            if( defaultUserReadOnly ) {
+                u.user.email = defaultUserEmail;
+                u.user.encryptPassword( defaultUserEmail );
+                u.user.firstName = defaultUserFirstName;
+                u.user.lastName = defaultUserLastName;
+                u.user.confirm( true );
+                u.roles.clear();
+                u.roles.putAll( defaultUserRoles );
+            }
+
+            return u;
+        }, () -> {
+            var user = new oap.ws.account.User( defaultUserEmail, defaultUserFirstName, defaultUserLastName, defaultUserPassword, true );
+            return new UserData( user, defaultUserRoles );
+        } );
     }
 
     @Override
