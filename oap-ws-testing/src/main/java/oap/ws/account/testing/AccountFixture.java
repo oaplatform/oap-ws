@@ -147,7 +147,7 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         return HttpAsserts.httpUrl( defaultHttpPort(), url );
     }
 
-    public AccountFixture withDefaultSystemAdmin( String email, String password, String firstName, String lastName, Map<String,String> roles, boolean ro ) {
+    public AccountFixture withDefaultSystemAdmin( String email, String password, String firstName, String lastName, Map<String, String> roles, boolean ro ) {
         define( "DEFAULT_SYSTEM_ADMIN_EMAIL", email );
         define( "DEFAULT_SYSTEM_ADMIN_PASSWORD", password );
         define( "DEFAULT_SYSTEM_ADMIN_FIRST_NAME", firstName );
