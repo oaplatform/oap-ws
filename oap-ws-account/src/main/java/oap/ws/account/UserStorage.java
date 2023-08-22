@@ -55,12 +55,12 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
     }
 
     /**
-     * @param defaultUserEmail            default user email
-     * @param defaultUserPassword         default user password
-     * @param defaultUserFirstName        default user first name
-     * @param defaultUserLastName         default user last name
-     * @param defaultUserRoles            default user roles map ( hocon/json format )
-     * @param defaultUserReadOnly if true, the storage modifies the default user to the default values on startup
+     * @param defaultUserEmail     default user email
+     * @param defaultUserPassword  default user password
+     * @param defaultUserFirstName default user first name
+     * @param defaultUserLastName  default user last name
+     * @param defaultUserRoles     default user roles map ( hocon/json format )
+     * @param defaultUserReadOnly  if true, the storage modifies the default user to the default values on startup
      */
     public UserStorage( String defaultUserEmail,
                         String defaultUserPassword,
@@ -81,7 +81,7 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
     }
 
     public void start() {
-        log.info("default email {} firstName {} lastName {} roles {} ro {}",
+        log.info( "default email {} firstName {} lastName {} roles {} ro {}",
             defaultUserEmail, defaultUserFirstName, defaultUserLastName, defaultUserRoles, defaultUserReadOnly );
 
         update( defaultUserEmail, u -> {
