@@ -69,11 +69,11 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>18.13.0.44</oap-ws.project.version>
+        <oap-ws.project.version>18.13.1.0</oap-ws.project.version>
         <oap.deps.oap.version>18.11.5.25</oap.deps.oap.version>
 
         <oap.deps.mail.version>18.6.1.10</oap.deps.mail.version>
-        <oap.deps.storage.version>18.10.2.14</oap.deps.storage.version>
+        <oap.deps.storage.version>18.10.3.0-fix_mongo_memory_database_name-509</oap.deps.storage.version>
 
         <oap.deps.assertj.version>3.24.2</oap.deps.assertj.version>
         <oap.deps.guava.version>32.1.1-jre</oap.deps.guava.version>
