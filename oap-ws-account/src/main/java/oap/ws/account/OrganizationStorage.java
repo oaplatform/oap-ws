@@ -56,7 +56,7 @@ public class OrganizationStorage extends MemoryStorage<String, OrganizationData>
     }
 
     public void start() {
-        log.info("id {} name {} description {} ro {}",
+        log.info( "id {} name {} description {} ro {}",
             defaultOrganizationId, defaultOrganizationName, defaultOrganizationDescription, defaultOrganizationReadOnly );
 
         update( defaultOrganizationId, d -> {
