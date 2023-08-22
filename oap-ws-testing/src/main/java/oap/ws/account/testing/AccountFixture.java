@@ -152,8 +152,17 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         define( "DEFAULT_SYSTEM_ADMIN_PASSWORD", password );
         define( "DEFAULT_SYSTEM_ADMIN_FIRST_NAME", firstName );
         define( "DEFAULT_SYSTEM_ADMIN_LAST_NAME", lastName );
-        define( "DEFAULT_SYSTEM_ADMIN_ROLES", Binder.json.marshal( roles ) );
+        define( "DEFAULT_SYSTEM_ADMIN_ROLES", "json(" + Binder.json.marshal( roles ) + ")" );
         define( "DEFAULT_SYSTEM_READ_ONLY", ro );
+
+        return this;
+    }
+
+    public AccountFixture withDefaultOrganization( String id, String name, String description, boolean ro ) {
+        define( "DEFAULT_ORGANIZATION_ID", id );
+        define( "DEFAULT_ORGANIZATION_NAME", name );
+        define( "DEFAULT_ORGANIZATION_DESCRIPTION", description );
+        define( "DEFAULT_ORGANIZATION_READ_ONLY", ro );
 
         return this;
     }
