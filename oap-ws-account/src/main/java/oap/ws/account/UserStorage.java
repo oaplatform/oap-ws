@@ -34,7 +34,7 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
     public static final String DEFAULT_USER_PASSWORD = "Xenoss123";
     public static final String DEFAULT_USER_FIRST_NAME = "System";
     public static final String DEFAULT_USER_LAST_NAME = "Admin";
-    public static final String DEFAULT_USER_ROLES = "{\"DFLT\": \"ADMIN\", \"SYSTEM\": \"ADMIN\"}";
+    public static final String DEFAULT_USER_ROLES = "{DFLT: ADMIN, SYSTEM: ADMIN}";
     public static final String DEFAULT_USER_READONLY = "true";
     private final String defaultUserEmail;
     private final String defaultUserPassword;
@@ -49,7 +49,7 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
             Env.get( "DEFAULT_USER_PASSWORD", DEFAULT_USER_PASSWORD ),
             Env.get( "DEFAULT_USER_FIRST_NAME", DEFAULT_USER_FIRST_NAME ),
             Env.get( "DEFAULT_USER_LAST_NAME", DEFAULT_USER_LAST_NAME ),
-            Binder.hocon.unmarshal( new TypeRef<Map<String, String>>() {}, Env.get( "DEFAULT_USER_ROLES", DEFAULT_USER_ROLES ) ),
+            Binder.hoconWithoutSystemProperties.unmarshal( new TypeRef<>() {}, Env.get( "DEFAULT_USER_ROLES", DEFAULT_USER_ROLES ) ),
             Boolean.parseBoolean( Env.get( "DEFAULT_USER_READONLY", DEFAULT_USER_READONLY ) )
         );
     }
