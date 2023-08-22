@@ -36,69 +36,58 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
     public static final String DEFAULT_USER_LAST_NAME = "Admin";
     public static final String DEFAULT_USER_ROLES = "{DFLT: ADMIN, SYSTEM: ADMIN}";
     public static final String DEFAULT_USER_READONLY = "true";
-    private final String defaultUserEmail;
-    private final String defaultUserPassword;
-    private final String defaultUserFirstName;
-    private final String defaultUserLastName;
-    private final Map<String, String> defaultUserRoles;
-    private final boolean defaultUserReadOnly;
-
-    public UserStorage() {
-        this(
-            Env.get( "DEFAULT_USER_EMAIL", DEFAULT_USER_EMAIL ),
-            Env.get( "DEFAULT_USER_PASSWORD", DEFAULT_USER_PASSWORD ),
-            Env.get( "DEFAULT_USER_FIRST_NAME", DEFAULT_USER_FIRST_NAME ),
-            Env.get( "DEFAULT_USER_LAST_NAME", DEFAULT_USER_LAST_NAME ),
-            Binder.hoconWithoutSystemProperties.unmarshal( new TypeRef<>() {}, Env.get( "DEFAULT_USER_ROLES", DEFAULT_USER_ROLES ) ),
-            Boolean.parseBoolean( Env.get( "DEFAULT_USER_READONLY", DEFAULT_USER_READONLY ) )
-        );
-    }
+    private final String defaultSystemAdminEmail;
+    private final String defaultSystemAdminPassword;
+    private final String defaultSystemAdminFirstName;
+    private final String defaultSystemAdminLastName;
+    private final Map<String, String> defaultSystemAdminRoles;
+    private final boolean defaultSystemAdminReadOnly;
 
     /**
-     * @param defaultUserEmail     default user email
-     * @param defaultUserPassword  default user password
-     * @param defaultUserFirstName default user first name
-     * @param defaultUserLastName  default user last name
-     * @param defaultUserRoles     default user roles map ( hocon/json format )
-     * @param defaultUserReadOnly  if true, the storage modifies the default user to the default values on startup
+     * @param defaultSystemAdminEmail     default user email
+     * @param defaultSystemAdminPassword  default user password
+     * @param defaultSystemAdminFirstName default user first name
+     * @param defaultSystemAdminLastName  default user last name
+     * @param defaultSystemAdminRoles     default user roles map ( hocon/json format )
+     * @param defaultSystemAdminReadOnly  if true, the storage modifies the default user to the default values on startup
      */
-    public UserStorage( String defaultUserEmail,
-                        String defaultUserPassword,
-                        String defaultUserFirstName,
-                        String defaultUserLastName,
-                        Map<String, String> defaultUserRoles,
-                        boolean defaultUserReadOnly ) {
+    public UserStorage( String defaultSystemAdminEmail,
+                        String defaultSystemAdminPassword,
+                        String defaultSystemAdminFirstName,
+                        String defaultSystemAdminLastName,
+                        Map<String, String> defaultSystemAdminRoles,
+                        boolean defaultSystemAdminReadOnly ) {
         super( Identifier.<UserData>forId( u -> u.user.email, ( o, id ) -> o.user.email = id )
             .suggestion( u -> u.user.email )
             .build(), SERIALIZED );
 
-        this.defaultUserEmail = defaultUserEmail;
-        this.defaultUserPassword = defaultUserPassword;
-        this.defaultUserFirstName = defaultUserFirstName;
-        this.defaultUserLastName = defaultUserLastName;
-        this.defaultUserRoles = defaultUserRoles;
-        this.defaultUserReadOnly = defaultUserReadOnly;
+        this.defaultSystemAdminEmail = defaultSystemAdminEmail;
+        this.defaultSystemAdminPassword = defaultSystemAdminPassword;
+        this.defaultSystemAdminFirstName = defaultSystemAdminFirstName;
+        this.defaultSystemAdminLastName = defaultSystemAdminLastName;
+        this.defaultSystemAdminRoles = defaultSystemAdminRoles;
+        this.defaultSystemAdminReadOnly = defaultSystemAdminReadOnly;
     }
 
     public void start() {
         log.info( "default email {} firstName {} lastName {} roles {} ro {}",
-            defaultUserEmail, defaultUserFirstName, defaultUserLastName, defaultUserRoles, defaultUserReadOnly );
+            defaultSystemAdminEmail, defaultSystemAdminFirstName, defaultSystemAdminLastName, defaultSystemAdminRoles, defaultSystemAdminReadOnly );
 
-        update( defaultUserEmail, u -> {
-            if( defaultUserReadOnly ) {
-                u.user.email = defaultUserEmail;
-                u.user.encryptPassword( defaultUserEmail );
-                u.user.firstName = defaultUserFirstName;
-                u.user.lastName = defaultUserLastName;
+        update( defaultSystemAdminEmail, u -> {
+            if( defaultSystemAdminReadOnly ) {
+                u.user.email = defaultSystemAdminEmail;
+                u.user.encryptPassword( defaultSystemAdminPassword );
+                u.user.firstName = defaultSystemAdminFirstName;
+                u.user.lastName = defaultSystemAdminLastName;
                 u.user.confirm( true );
                 u.roles.clear();
-                u.roles.putAll( defaultUserRoles );
+                u.roles.putAll( defaultSystemAdminRoles );
             }
 
             return u;
         }, () -> {
-            var user = new oap.ws.account.User( defaultUserEmail, defaultUserFirstName, defaultUserLastName, defaultUserPassword, true );
-            return new UserData( user, defaultUserRoles );
+            var user = new oap.ws.account.User( defaultSystemAdminEmail, defaultSystemAdminFirstName, defaultSystemAdminLastName, defaultSystemAdminPassword, true );
+            return new UserData( user, defaultSystemAdminRoles );
         } );
     }
 

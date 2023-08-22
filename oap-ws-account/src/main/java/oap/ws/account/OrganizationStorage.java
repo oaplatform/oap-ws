@@ -16,24 +16,10 @@ import static oap.storage.Storage.Lock.SERIALIZED;
 
 @Slf4j
 public class OrganizationStorage extends MemoryStorage<String, OrganizationData> {
-
-    public static final String DEFAULT_ORGANIZATION_ID = "DFLT";
-    public static final String DEFAULT_ORGANIZATION_NAME = "Default";
-    public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Default organization";
-    public static final String DEFAULT_ORGANIZATION_READONLY = "true";
     private final String defaultOrganizationId;
     private final String defaultOrganizationName;
     private final String defaultOrganizationDescription;
     private final boolean defaultOrganizationReadOnly;
-
-    public OrganizationStorage() {
-        this(
-            Env.get( "DEFAULT_ORGANIZATION_ID", DEFAULT_ORGANIZATION_ID ),
-            Env.get( "DEFAULT_ORGANIZATION_NAME", DEFAULT_ORGANIZATION_NAME ),
-            Env.get( "DEFAULT_ORGANIZATION_DESCRIPTION", DEFAULT_ORGANIZATION_DESCRIPTION ),
-            Boolean.parseBoolean( Env.get( "DEFAULT_ORGANIZATION_READONLY", DEFAULT_ORGANIZATION_READONLY ) )
-        );
-    }
 
     /**
      * @param defaultOrganizationId          default organization id
