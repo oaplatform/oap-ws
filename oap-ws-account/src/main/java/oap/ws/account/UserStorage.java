@@ -81,6 +81,9 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
     }
 
     public void start() {
+        log.info("default email {} firstName {} lastName {} roles {} ro {}",
+            defaultUserEmail, defaultUserFirstName, defaultUserLastName, defaultUserRoles, defaultUserReadOnly );
+
         update( defaultUserEmail, u -> {
             if( defaultUserReadOnly ) {
                 u.user.email = defaultUserEmail;

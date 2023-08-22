@@ -7,12 +7,14 @@
 package oap.ws.account;
 
 
+import lombok.extern.slf4j.Slf4j;
 import oap.id.Identifier;
 import oap.storage.MemoryStorage;
 import oap.system.Env;
 
 import static oap.storage.Storage.Lock.SERIALIZED;
 
+@Slf4j
 public class OrganizationStorage extends MemoryStorage<String, OrganizationData> {
 
     public static final String DEFAULT_ORGANIZATION_ID = "DFLT";
@@ -54,6 +56,9 @@ public class OrganizationStorage extends MemoryStorage<String, OrganizationData>
     }
 
     public void start() {
+        log.info("id {} name {} description {} ro {}",
+            defaultOrganizationId, defaultOrganizationName, defaultOrganizationDescription, defaultOrganizationReadOnly );
+
         update( defaultOrganizationId, d -> {
             if( defaultOrganizationReadOnly ) {
                 d.organization.name = defaultOrganizationName;
