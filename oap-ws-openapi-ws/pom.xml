@@ -27,17 +27,17 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-ws-openapi</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-ws-sso-api</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-ws-api-ws</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

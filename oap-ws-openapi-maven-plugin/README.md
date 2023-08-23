@@ -8,7 +8,7 @@
  <plugin>
                 <groupId>oap</groupId>
                 <artifactId>oap-ws-openapi-maven-plugin</artifactId>
-                <version>${oap-ws.project.version}</version>
+                <version>${project.parent.version}</version>
                 <executions>
                     <execution>
                         <goals>
