@@ -73,7 +73,7 @@
         <oap.deps.oap.version>18.11.5.25</oap.deps.oap.version>
 
         <oap.deps.mail.version>18.6.1.10</oap.deps.mail.version>
-        <oap.deps.storage.version>18.10.3.0-fix_mongo_memory_database_name-512</oap.deps.storage.version>
+        <oap.deps.storage.version>18.10.3.0_fix_mongo_memory_database_name_514</oap.deps.storage.version>
 
         <oap.deps.assertj.version>3.24.2</oap.deps.assertj.version>
         <oap.deps.guava.version>32.1.1-jre</oap.deps.guava.version>
