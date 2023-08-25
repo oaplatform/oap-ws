@@ -26,6 +26,7 @@ package oap.ws.account.testing;
 
 import oap.application.testng.AbstractKernelFixture;
 import oap.http.testng.HttpAsserts;
+import oap.json.Binder;
 import oap.mail.MailQueue;
 import oap.ws.account.Account;
 import oap.ws.account.AccountMailman;
@@ -144,6 +145,26 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
 
     public String httpUrl( String url ) {
         return HttpAsserts.httpUrl( defaultHttpPort(), url );
+    }
+
+    public AccountFixture withDefaultSystemAdmin( String email, String password, String firstName, String lastName, Map<String, String> roles, boolean ro ) {
+        define( "DEFAULT_SYSTEM_ADMIN_EMAIL", email );
+        define( "DEFAULT_SYSTEM_ADMIN_PASSWORD", password );
+        define( "DEFAULT_SYSTEM_ADMIN_FIRST_NAME", firstName );
+        define( "DEFAULT_SYSTEM_ADMIN_LAST_NAME", lastName );
+        define( "DEFAULT_SYSTEM_ADMIN_ROLES", "json(" + Binder.json.marshal( roles ) + ")" );
+        define( "DEFAULT_SYSTEM_READ_ONLY", ro );
+
+        return this;
+    }
+
+    public AccountFixture withDefaultOrganization( String id, String name, String description, boolean ro ) {
+        define( "DEFAULT_ORGANIZATION_ID", id );
+        define( "DEFAULT_ORGANIZATION_NAME", name );
+        define( "DEFAULT_ORGANIZATION_DESCRIPTION", description );
+        define( "DEFAULT_ORGANIZATION_READ_ONLY", ro );
+
+        return this;
     }
 
     @Override

@@ -8,6 +8,9 @@
     <logger name="org" level="DEBUG" additivity="false"/>
     <logger name="javax.management" level="WARN" additivity="false"/>
     <logger name="oap" level="TRACE"/>
+    <logger name="de" level="INFO"/>
+    <logger name="io" level="INFO"/>
+    <logger name="o.application" level="INFO"/>
 
     <root level="TRACE">
         <appender-ref ref="STDOUT"/>

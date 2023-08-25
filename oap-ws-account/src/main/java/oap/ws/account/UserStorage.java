@@ -14,6 +14,7 @@ import oap.ws.sso.AuthenticationFailure;
 import oap.ws.sso.User;
 import org.joda.time.DateTime;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static oap.storage.Storage.Lock.SERIALIZED;
@@ -26,10 +27,65 @@ import static org.joda.time.DateTimeZone.UTC;
 @Slf4j
 public class UserStorage extends MemoryStorage<String, UserData> implements oap.ws.sso.UserProvider {
 
-    public UserStorage() {
+    public static final String DEFAULT_USER_EMAIL = "xenoss@xenoss.io";
+    public static final String DEFAULT_USER_PASSWORD = "Xenoss123";
+    public static final String DEFAULT_USER_FIRST_NAME = "System";
+    public static final String DEFAULT_USER_LAST_NAME = "Admin";
+    public static final String DEFAULT_USER_ROLES = "{DFLT: ADMIN, SYSTEM: ADMIN}";
+    public static final String DEFAULT_USER_READONLY = "true";
+    private final String defaultSystemAdminEmail;
+    private final String defaultSystemAdminPassword;
+    private final String defaultSystemAdminFirstName;
+    private final String defaultSystemAdminLastName;
+    private final Map<String, String> defaultSystemAdminRoles;
+    private final boolean defaultSystemAdminReadOnly;
+
+    /**
+     * @param defaultSystemAdminEmail     default user email
+     * @param defaultSystemAdminPassword  default user password
+     * @param defaultSystemAdminFirstName default user first name
+     * @param defaultSystemAdminLastName  default user last name
+     * @param defaultSystemAdminRoles     default user roles map ( hocon/json format )
+     * @param defaultSystemAdminReadOnly  if true, the storage modifies the default user to the default values on startup
+     */
+    public UserStorage( String defaultSystemAdminEmail,
+                        String defaultSystemAdminPassword,
+                        String defaultSystemAdminFirstName,
+                        String defaultSystemAdminLastName,
+                        Map<String, String> defaultSystemAdminRoles,
+                        boolean defaultSystemAdminReadOnly ) {
         super( Identifier.<UserData>forId( u -> u.user.email, ( o, id ) -> o.user.email = id )
             .suggestion( u -> u.user.email )
             .build(), SERIALIZED );
+
+        this.defaultSystemAdminEmail = defaultSystemAdminEmail;
+        this.defaultSystemAdminPassword = defaultSystemAdminPassword;
+        this.defaultSystemAdminFirstName = defaultSystemAdminFirstName;
+        this.defaultSystemAdminLastName = defaultSystemAdminLastName;
+        this.defaultSystemAdminRoles = defaultSystemAdminRoles;
+        this.defaultSystemAdminReadOnly = defaultSystemAdminReadOnly;
+    }
+
+    public void start() {
+        log.info( "default email {} firstName {} lastName {} roles {} ro {}",
+            defaultSystemAdminEmail, defaultSystemAdminFirstName, defaultSystemAdminLastName, defaultSystemAdminRoles, defaultSystemAdminReadOnly );
+
+        update( defaultSystemAdminEmail, u -> {
+            if( defaultSystemAdminReadOnly ) {
+                u.user.email = defaultSystemAdminEmail;
+                u.user.encryptPassword( defaultSystemAdminPassword );
+                u.user.firstName = defaultSystemAdminFirstName;
+                u.user.lastName = defaultSystemAdminLastName;
+                u.user.confirm( true );
+                u.roles.clear();
+                u.roles.putAll( defaultSystemAdminRoles );
+            }
+
+            return u;
+        }, () -> {
+            var user = new oap.ws.account.User( defaultSystemAdminEmail, defaultSystemAdminFirstName, defaultSystemAdminLastName, defaultSystemAdminPassword, true );
+            return new UserData( user, defaultSystemAdminRoles );
+        } );
     }
 
     @Override

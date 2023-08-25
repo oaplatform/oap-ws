@@ -39,12 +39,12 @@
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>oap-ws-sso</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>oap-ws-sso-api-default</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -55,17 +55,17 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-ws-account</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-ws-account-api</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-ws-sso</artifactId>
-            <version>${oap-ws.project.version}</version>
+            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
