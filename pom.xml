@@ -76,7 +76,7 @@
         <oap.deps.storage.version>18.10.3.0</oap.deps.storage.version>
 
         <oap.deps.assertj.version>3.24.2</oap.deps.assertj.version>
-        <oap.deps.guava.version>32.1.1-jre</oap.deps.guava.version>
+        <oap.deps.guava.version>32.1.2-jre</oap.deps.guava.version>
         <oap.deps.slf4j.version>2.0.7</oap.deps.slf4j.version>
         <oap.deps.logback.version>1.4.11</oap.deps.logback.version>
         <oap.deps.httpcomponents.version>4.4.16</oap.deps.httpcomponents.version>
