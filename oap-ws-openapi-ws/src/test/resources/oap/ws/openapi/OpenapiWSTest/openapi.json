@@ -373,7 +373,7 @@
           },
           "values" : {
             "items" : {
-              "$ref" : "#/components/schemas/oap_dictionary_Dictionary"
+              "$ref" : "#/components/schemas/Dictionary"
             },
             "type" : "array"
           }
@@ -491,6 +491,17 @@
       },
       "Header" : {
         "properties" : {
+          "content" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/MediaType"
+            },
+            "properties" : {
+              "empty" : {
+                "type" : "boolean"
+              }
+            },
+            "type" : "object"
+          },
           "deprecated" : {
             "type" : "boolean"
           },
@@ -599,6 +610,7 @@
             "additionalProperties" : {
               "$ref" : "#/components/schemas/Header"
             },
+            "deprecated" : true,
             "type" : "object"
           },
           "operationId" : {
@@ -751,6 +763,7 @@
               },
               "extensions" : {
                 "additionalProperties" : {
+                  "deprecated" : true,
                   "type" : "object"
                 },
                 "deprecated" : true,
@@ -1197,7 +1210,13 @@
           "format" : {
             "type" : "string"
           },
+          "get$dynamicAnchor" : {
+            "type" : "string"
+          },
           "get$ref" : {
+            "type" : "string"
+          },
+          "get$vocabulary" : {
             "type" : "string"
           },
           "items" : {
@@ -1341,7 +1360,13 @@
           "format" : {
             "type" : "string"
           },
+          "get$dynamicAnchor" : {
+            "type" : "string"
+          },
           "get$ref" : {
+            "type" : "string"
+          },
+          "get$vocabulary" : {
             "type" : "string"
           },
           "items" : {
@@ -1395,6 +1420,12 @@
           "pattern" : {
             "type" : "string"
           },
+          "properties" : {
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Schema"
+            },
+            "type" : "object"
+          },
           "readOnly" : {
             "type" : "boolean"
           },
@@ -1432,6 +1463,7 @@
           },
           "extensions" : {
             "additionalProperties" : {
+              "deprecated" : true,
               "type" : "object"
             },
             "deprecated" : true,
@@ -1521,6 +1553,7 @@
               },
               "extensions" : {
                 "additionalProperties" : {
+                  "deprecated" : true,
                   "type" : "object"
                 },
                 "deprecated" : true,
@@ -1567,6 +1600,7 @@
           },
           "extensions" : {
             "additionalProperties" : {
+              "deprecated" : true,
               "type" : "object"
             },
             "deprecated" : true,
@@ -1721,7 +1755,7 @@
           },
           "values" : {
             "items" : {
-              "$ref" : "#/components/schemas/oap_dictionary_Dictionary"
+              "$ref" : "#/components/schemas/Dictionary"
             },
             "type" : "array"
           }
