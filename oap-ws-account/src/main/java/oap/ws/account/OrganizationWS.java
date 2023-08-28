@@ -70,7 +70,7 @@ public class OrganizationWS extends AbstractWS {
     public static final String ORGANIZATION_ID = "organizationId";
     protected final Accounts accounts;
     private final OauthService oauthService;
-    private final AccountMailman mailman;
+    protected final AccountMailman mailman;
     private final String confirmUrlFinish;
     private final boolean selfRegistrationEnabled;
 
