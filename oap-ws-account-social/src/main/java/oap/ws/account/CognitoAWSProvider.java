@@ -44,13 +44,12 @@ public class CognitoAWSProvider implements OauthProviderService {
 
     private final CognitoIdentityProviderClient identityProviderClient;
 
-    public CognitoAWSProvider() {
+    public CognitoAWSProvider( String region ) {
         this.identityProviderClient = CognitoIdentityProviderClient.builder()
-            .region( Region.EU_NORTH_1 )
+            .region( Region.of( region ) )
             .credentialsProvider( ProfileCredentialsProvider.create() )
             .build();
     }
-
 
     @Override
     public Optional<TokenInfo> getTokenInfo( String accessToken ) {
@@ -85,9 +84,8 @@ public class CognitoAWSProvider implements OauthProviderService {
     private Optional<String> getIfPresent( JsonObject object, String field ) {
         final JsonElement obj = object.get( field );
         if( obj != null ) {
-            return Optional.of( obj.getAsString() );
-        } else {
-            return Optional.empty();
+            return Optional.ofNullable( obj.getAsString() );
         }
+        return Optional.empty();
     }
 }
