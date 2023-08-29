@@ -79,16 +79,20 @@ public class JWTSecurityInterceptor implements Interceptor {
             organization = jwtExtractor.getOrganizationId( token );
 
             User user = userProvider.getUser( email ).orElse( null );
-            if( user == null )
+            if( user == null ) {
+                log.trace( "User not found with email: {}", email );
                 return Optional.of( new Response( FORBIDDEN, "User not found with email: " + email ) );
+            }
 
             context.session.set( SESSION_USER_KEY, user );
             context.session.set( ISSUER, this.getClass().getSimpleName() );
             log.trace( "set user {} into session {}", user, context.session );
         }
         Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
-        if( wss.isEmpty() )
+        if( wss.isEmpty() ) {
+            log.trace( "WsSecurity not found" );
             return Optional.empty();
+        }
 
         log.trace( "Secure method {}", context.method );
 
@@ -113,6 +117,7 @@ public class JWTSecurityInterceptor implements Interceptor {
             permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
             if( permissions != null ) {
                 if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) ) {
+                    log.trace( "permissions: {} wss {}", permissions, wss.get().permissions() );
                     return Optional.empty();
                 }
             }
@@ -127,7 +132,10 @@ public class JWTSecurityInterceptor implements Interceptor {
                 return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm " + realm.get() ) );
             }
 
-            if( roles.granted( role.get(), wss.get().permissions() ) ) return Optional.empty();
+            if( roles.granted( role.get(), wss.get().permissions() ) ) {
+                log.trace( "roles.granted ({}, {}) -> false", role.get(), wss.get().permissions() );
+                return Optional.empty();
+            }
 
             log.trace( "user {} has no access to method {} under realm {}",
                 u.get().getEmail(), context.method.name(), realm.get() );
