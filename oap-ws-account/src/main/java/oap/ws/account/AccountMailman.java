@@ -6,6 +6,7 @@
 
 package oap.ws.account;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import oap.mail.MailAddress;
 import oap.mail.Mailman;
@@ -15,8 +16,9 @@ import oap.mail.Template;
 import javax.annotation.Nonnull;
 
 @Slf4j
+@Getter
 public class AccountMailman {
-    protected final Mailman mailman;
+    private final Mailman mailman;
     private final String fromPersonal;
     private final String fromEmail;
     private final String confirmUrl;
