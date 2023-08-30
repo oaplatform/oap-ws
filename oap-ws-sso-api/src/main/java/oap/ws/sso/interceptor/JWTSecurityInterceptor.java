@@ -79,37 +79,47 @@ public class JWTSecurityInterceptor implements Interceptor {
             organization = jwtExtractor.getOrganizationId( token );
 
             User user = userProvider.getUser( email ).orElse( null );
-            if( user == null )
+            if( user == null ) {
+                log.trace( "User not found with email: {}", email );
                 return Optional.of( new Response( FORBIDDEN, "User not found with email: " + email ) );
+            }
 
             context.session.set( SESSION_USER_KEY, user );
             context.session.set( ISSUER, this.getClass().getSimpleName() );
             log.trace( "set user {} into session {}", user, context.session );
         }
         Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
-        if( wss.isEmpty() )
+        if( wss.isEmpty() ) {
+            log.trace( "WsSecurity not found" );
             return Optional.empty();
+        }
 
         log.trace( "Secure method {}", context.method );
 
 
-        if( jwtToken == null && !issuerFromContext( context ).equals( ApiKeyInterceptor.class.getSimpleName() ) )
+        if( jwtToken == null && !issuerFromContext( context ).equals( ApiKeyInterceptor.class.getSimpleName() ) ) {
+            log.trace( "Not authenticated! jwsToken {} issuerFromContext {}", jwtToken, issuerFromContext( context ) );
             return Optional.of( new Response( UNAUTHORIZED ) );
+        }
 
         Optional<String> realm =
             SYSTEM.equals( wss.get().realm() ) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
         if( realm.isEmpty() ) {
+            log.trace( "realm is not passed" );
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
         }
 
         if( organization != null && !realm.get().equals( organization ) && !realm.get().equals( SYSTEM ) ) {
+            log.trace( "realm is different from organization logged in" );
             return Optional.of( new Response( FORBIDDEN, "realm is different from organization logged in" ) );
         }
         if( issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) {
             permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
             if( permissions != null ) {
-                if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) )
+                if( Arrays.stream( wss.get().permissions() ).anyMatch( permissions::contains ) ) {
+                    log.trace( "permissions: {} wss {}", permissions, wss.get().permissions() );
                     return Optional.empty();
+                }
             }
             log.info( format( "Permissions required: %s, but found: %s", Arrays.toString( wss.get().permissions() ), permissions ) );
             return Optional.of( new Response( FORBIDDEN, "user doesn't have permissions" ) );
@@ -117,11 +127,18 @@ public class JWTSecurityInterceptor implements Interceptor {
             Optional<User> u = context.session.get( SESSION_USER_KEY );
             if( u.isEmpty() ) return Optional.of( new Response( UNAUTHORIZED ) );
             Optional<String> role = u.flatMap( user -> user.getRole( realm.get() ) );
-            if( role.isEmpty() )
+            if( role.isEmpty() ) {
+                log.trace( "user doesn't have access to realm {}", realm.get() );
                 return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm " + realm.get() ) );
+            }
 
-            if( roles.granted( role.get(), wss.get().permissions() ) ) return Optional.empty();
+            if( roles.granted( role.get(), wss.get().permissions() ) ) {
+                log.trace( "roles.granted ({}, {}) -> false", role.get(), wss.get().permissions() );
+                return Optional.empty();
+            }
 
+            log.trace( "user {} has no access to method {} under realm {}",
+                u.get().getEmail(), context.method.name(), realm.get() );
             return Optional.of( new Response( FORBIDDEN, "user " + u.get().getEmail() + " has no access to method "
                 + context.method.name() + " under realm " + realm.get() ) );
         }
