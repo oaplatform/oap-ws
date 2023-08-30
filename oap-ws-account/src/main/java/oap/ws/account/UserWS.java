@@ -29,12 +29,10 @@ import static oap.ws.account.Permissions.USER_READ;
 public class UserWS extends AbstractWS {
 
     protected Accounts accounts;
-    protected OrganizationWS organizationWS;
 
-    public UserWS( SecurityRoles roles, Accounts accounts, OrganizationWS organizationWS ) {
+    public UserWS( SecurityRoles roles, Accounts accounts ) {
         super( roles );
         this.accounts = accounts;
-        this.organizationWS = organizationWS;
     }
 
     @WsMethod( method = GET, path = "/{organizationId}/{email}", description = "Returns user with given email" )

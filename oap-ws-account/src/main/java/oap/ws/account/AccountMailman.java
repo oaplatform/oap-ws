@@ -17,14 +17,12 @@ import javax.annotation.Nonnull;
 @Slf4j
 public class AccountMailman {
     private final Mailman mailman;
-    private final Accounts accounts;
     private final String fromPersonal;
     private final String fromEmail;
     private final String confirmUrl;
 
-    public AccountMailman( @Nonnull Mailman mailman, @Nonnull Accounts accounts, @Nonnull String fromPersonal, @Nonnull String fromEmail, @Nonnull String confirmUrl ) {
+    public AccountMailman( @Nonnull Mailman mailman, @Nonnull String fromPersonal, @Nonnull String fromEmail, @Nonnull String confirmUrl ) {
         this.mailman = mailman;
-        this.accounts = accounts;
         this.fromPersonal = fromPersonal;
         this.fromEmail = fromEmail;
         this.confirmUrl = confirmUrl;
