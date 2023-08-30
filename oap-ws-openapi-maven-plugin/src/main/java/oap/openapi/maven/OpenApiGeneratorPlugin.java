@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * mvn oap:openapi-maven-plugin:17.11.2.11:openapi
+ * mvn oap:oap-ws-openapi-maven-plugin:18.13.1.5:openapi
  */
 
 @Mojo(
