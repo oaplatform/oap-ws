@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 
 @Slf4j
 public class AccountMailman {
-    private final Mailman mailman;
+    protected final Mailman mailman;
     private final String fromPersonal;
     private final String fromEmail;
     private final String confirmUrl;
