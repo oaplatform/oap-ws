@@ -6,16 +6,16 @@
 
 package oap.ws.account;
 
-import oap.json.ext.Ext;
-import oap.ws.account.utils.TfaUtils;
-import oap.ws.account.ws.AbstractWS;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import oap.http.Http;
+import oap.json.ext.Ext;
 import oap.util.Stream;
 import oap.ws.Response;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import oap.ws.account.utils.TfaUtils;
+import oap.ws.account.ws.AbstractWS;
 import oap.ws.sso.SecurityRoles;
 import oap.ws.sso.WsSecurity;
 import oap.ws.validate.ValidationErrors;
@@ -32,6 +32,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static oap.http.Http.StatusCode.FORBIDDEN;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
+import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.PATH;
+import static oap.ws.WsParam.From.QUERY;
+import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.account.Permissions.ACCOUNT_ADD;
 import static oap.ws.account.Permissions.ACCOUNT_DELETE;
 import static oap.ws.account.Permissions.ACCOUNT_LIST;
@@ -51,13 +58,6 @@ import static oap.ws.account.Permissions.USER_APIKEY;
 import static oap.ws.account.Permissions.USER_PASSWD;
 import static oap.ws.account.Roles.ADMIN;
 import static oap.ws.account.Roles.ORGANIZATION_ADMIN;
-import static oap.http.Http.StatusCode.FORBIDDEN;
-import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
-import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
-import static oap.ws.WsParam.From.BODY;
-import static oap.ws.WsParam.From.PATH;
-import static oap.ws.WsParam.From.QUERY;
-import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.account.utils.TfaUtils.getGoogleAuthenticatorCode;
 import static oap.ws.sso.WsSecurity.SYSTEM;
 import static oap.ws.validate.ValidationErrors.empty;
