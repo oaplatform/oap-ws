@@ -290,12 +290,12 @@ public class OrganizationWS extends AbstractWS {
     @WsMethod( method = GET, path = "/users/tfa/{email}/{tfacode}/validate", description = "Validate first tfa code from Google Authenticator" )
     @WsValidate( { "validateUserLoggedIn" } )
     public Response validateTfaCode( @WsParam( from = PATH ) String email,
-                                     @WsParam( from = PATH ) String tfaCode,
+                                     @WsParam( from = PATH ) String tfacode,
                                      @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
         Optional<UserData> user = accounts.getUser( email );
 
         if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
-            final boolean tfaValid = TfaUtils.getTOTPCode( loggedUser.get().user.getSecretKey() ).equals( tfaCode );
+            final boolean tfaValid = TfaUtils.getTOTPCode( loggedUser.get().user.getSecretKey() ).equals( tfacode );
             return tfaValid ? Response.ok() : Response.notFound().withReasonPhrase( "TFA code is incorrect" );
         }
         return Response.notFound();
