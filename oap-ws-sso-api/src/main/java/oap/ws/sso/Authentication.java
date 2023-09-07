@@ -57,6 +57,10 @@ public class Authentication implements Serializable {
             return accessToken;
         }
 
+        public String getRefreshToken() {
+            return refreshToken;
+        }
+
         public DateTime getCreated() {
             return created;
         }
