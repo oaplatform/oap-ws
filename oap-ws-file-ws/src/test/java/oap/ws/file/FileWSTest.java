@@ -41,7 +41,8 @@ import static oap.testng.Asserts.urlOfTestResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileWSTest extends Fixtures {
-    {
+
+    public FileWSTest() {
         fixture( oap.testng.TestDirectoryFixture.FIXTURE );
         fixture( new KernelFixture( urlOfTestResource( getClass(), "application.test.conf" ) ) );
     }
@@ -67,5 +68,4 @@ public class FileWSTest extends Fixtures {
         assertGet( httpUrl( "/file?path=test.txt&bucket=b1" ) )
             .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "b1test" );
     }
-
 }
