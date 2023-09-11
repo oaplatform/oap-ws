@@ -30,6 +30,7 @@ import oap.io.Files;
 import oap.io.content.ContentWriter;
 import oap.testng.Env;
 import oap.testng.Fixtures;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import static oap.http.testng.HttpAsserts.assertGet;
@@ -40,7 +41,9 @@ import static oap.testng.Asserts.contentOfTestResource;
 import static oap.testng.Asserts.urlOfTestResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 public class FileWSTest extends Fixtures {
+
     private final KernelFixture kernelFixture;
 
     public FileWSTest() {

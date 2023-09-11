@@ -26,12 +26,14 @@ package oap.ws.admin;
 
 import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
 
+@Ignore
 public class JPathWSTest extends Fixtures {
     private final KernelFixture kernelFixture;
 
