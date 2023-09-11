@@ -35,7 +35,7 @@ import static oap.io.Resources.urlOrThrow;
 public class JPathWSTest extends Fixtures {
     private final KernelFixture kernelFixture;
 
-    public JPathWSTest() {
+    {
         kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
     }
 
