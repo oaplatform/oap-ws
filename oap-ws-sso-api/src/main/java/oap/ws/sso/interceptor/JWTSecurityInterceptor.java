@@ -125,7 +125,7 @@ public class JWTSecurityInterceptor implements Interceptor {
             }
             String requiredPermissions = Arrays.toString( wssPermissions );
             log.warn( format( "Permissions required: %s, but found: %s", requiredPermissions, permissions ) );
-            return Optional.of( new Response( FORBIDDEN, "user doesn't have required permissions: {}, user permissions: {}", requiredPermissions, permissions ) );
+            return Optional.of( new Response( FORBIDDEN, "user doesn't have required permissions: '" + requiredPermissions + "', user permissions: '" + permissions + "'" ) );
         } else {
             if( sessionUserKey.isEmpty() ) {
                 return Optional.of( new Response( UNAUTHORIZED, "no user in session" ) );
@@ -133,7 +133,7 @@ public class JWTSecurityInterceptor implements Interceptor {
             Optional<String> role = sessionUserKey.flatMap( user -> user.getRole( realmString ) );
             if( role.isEmpty() ) {
                 log.warn( "user doesn't have access to realm {}", realmString );
-                return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm " + realmString ) );
+                return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm '" + realmString + "'" ) );
             }
 
             if( roles.granted( role.get(), wssPermissions ) ) {
