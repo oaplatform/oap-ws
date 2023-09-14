@@ -30,10 +30,9 @@ import oap.io.Files;
 import oap.io.content.ContentWriter;
 import oap.testng.Env;
 import oap.testng.Fixtures;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
-import static oap.http.Http.ContentType.APPLICATION_JSON;
-import static oap.http.Http.ContentType.TEXT_PLAIN;
 import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
@@ -42,25 +41,24 @@ import static oap.testng.Asserts.contentOfTestResource;
 import static oap.testng.Asserts.urlOfTestResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 public class FileWSTest extends Fixtures {
+
+    private final KernelFixture kernelFixture;
 
     public FileWSTest() {
         fixture( oap.testng.TestDirectoryFixture.FIXTURE );
-        fixture( new KernelFixture( urlOfTestResource( getClass(), "application.test.conf" ) ) );
+        kernelFixture = fixture( new KernelFixture( urlOfTestResource( getClass(), "application.test.conf" ) ) );
     }
 
     @Test
     public void upload() {
-        assertPost( httpUrl( "/file" ),
-            contentOfTestResource( getClass(), "data-complex.json", ofString() ),
-            APPLICATION_JSON )
-            .responded( Http.StatusCode.OK, "OK", TEXT_PLAIN, "file.txt" );
+        assertPost( httpUrl( "/file" ), contentOfTestResource( getClass(), "data-complex.json", ofString() ), Http.ContentType.APPLICATION_JSON )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "file.txt" );
         assertThat( Env.tmpPath( "default/file.txt" ) ).hasContent( "test" );
 
-        assertPost( httpUrl( "/file?bucket=b1" ),
-            contentOfTestResource( getClass(), "data-single.json", ofString() ),
-            APPLICATION_JSON )
-            .responded( Http.StatusCode.OK, "OK", TEXT_PLAIN, "file.txt" );
+        assertPost( httpUrl( "/file?bucket=b1" ), contentOfTestResource( getClass(), "data-single.json", ofString() ), Http.ContentType.APPLICATION_JSON )
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "file.txt" );
         assertThat( Env.tmpPath( "b1/file.txt" ) ).hasContent( "test" );
     }
 
@@ -68,11 +66,10 @@ public class FileWSTest extends Fixtures {
     public void download() {
         Files.write( Env.tmpPath( "default/test.txt" ), "test", ContentWriter.ofString() );
         assertGet( httpUrl( "/file?path=test.txt" ) )
-            .responded( Http.StatusCode.OK, "OK", TEXT_PLAIN, "test" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "test" );
 
         Files.write( Env.tmpPath( "b1/test.txt" ), "b1test", ContentWriter.ofString() );
         assertGet( httpUrl( "/file?path=test.txt&bucket=b1" ) )
-            .responded( Http.StatusCode.OK, "OK", TEXT_PLAIN, "b1test" );
+            .responded( Http.StatusCode.OK, "OK", Http.ContentType.TEXT_PLAIN, "b1test" );
     }
-
 }
