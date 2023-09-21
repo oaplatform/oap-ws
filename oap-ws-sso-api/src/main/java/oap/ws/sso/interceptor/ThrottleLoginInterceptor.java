@@ -25,6 +25,7 @@
 package oap.ws.sso.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
+import oap.util.Dates;
 import oap.ws.InvocationContext;
 import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
@@ -44,15 +45,17 @@ import static oap.ws.sso.SSO.SESSION_USER_KEY;
  */
 @Slf4j
 public class ThrottleLoginInterceptor implements Interceptor {
-    private static final Integer DEFAULT = 5;
+    private static final long DEFAULT = Dates.s( 5 );
 
     private final ConcurrentMap<String, Temporal> attemptCache = new ConcurrentHashMap<>();
-    public Integer delay;
+    public long delay;
 
     /**
      * @param delay timeout between login attempt. In seconds
      */
-    public ThrottleLoginInterceptor( Integer delay ) {
+    public ThrottleLoginInterceptor( long delay ) {
+        log.info( "delay {}", Dates.durationToString( delay ) );
+
         this.delay = delay;
     }
 
@@ -81,7 +84,7 @@ public class ThrottleLoginInterceptor implements Interceptor {
             return true;
         }
         var duration = Duration.between( ts, now );
-        if( duration.getSeconds() <= this.delay ) {
+        if( duration.toMillis() <= this.delay ) {
             log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
             attemptCache.computeIfPresent( id, ( k, v ) -> now );
             return false;
