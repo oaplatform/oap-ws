@@ -127,7 +127,10 @@ public class AccountsService implements Accounts {
     public void permanentlyDeleteOrganization( String organizationId ) {
         log.debug( "permanentlyDeleteOrganization {}", organizationId );
 
-        userStorage.select().filter( ud -> ud.accounts.containsKey( organizationId ) ).forEach( ud -> {
+        userStorage
+            .select()
+            .filter( ud -> ud.accounts.containsKey( organizationId ) || ud.roles.containsKey( organizationId ) )
+            .forEach( ud -> {
             if( ud.accounts.size() == 1 ) {
                 userStorage.delete( ud.getEmail() );
             } else {

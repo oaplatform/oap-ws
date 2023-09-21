@@ -24,7 +24,6 @@
 
 package oap.ws.account;
 
-import lombok.extern.slf4j.Slf4j;
 import oap.ws.WsMethod;
 import oap.ws.account.ws.AbstractWS;
 import oap.ws.sso.SecurityRoles;
@@ -34,7 +33,6 @@ import oap.ws.validate.WsValidate;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.DELETE;
 import static oap.ws.account.Permissions.ORGANIZATION_UPDATE;
 
-@Slf4j
 public class AdminWS extends AbstractWS {
     private final Accounts accounts;
 
@@ -47,8 +45,6 @@ public class AdminWS extends AbstractWS {
     @WsSecurity( realm = OrganizationWS.ORGANIZATION_ID, permissions = { ORGANIZATION_UPDATE } )
     @WsValidate( "validateOrganizationAccess" )
     public void deleteOrganization( String organizationId ) {
-        log.info( "organization {}", organizationId );
-
         accounts.permanentlyDeleteOrganization( organizationId );
     }
 }
