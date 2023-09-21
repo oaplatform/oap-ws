@@ -25,25 +25,17 @@
 package oap.ws.account;
 
 import oap.ws.WsMethod;
-import oap.ws.account.ws.AbstractWS;
-import oap.ws.sso.SecurityRoles;
-import oap.ws.sso.WsSecurity;
-import oap.ws.validate.WsValidate;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.DELETE;
-import static oap.ws.account.Permissions.ORGANIZATION_UPDATE;
 
-public class AdminWS extends AbstractWS {
+public class AdminWS {
     private final Accounts accounts;
 
-    public AdminWS( Accounts accounts, SecurityRoles roles ) {
-        super( roles );
+    public AdminWS( Accounts accounts ) {
         this.accounts = accounts;
     }
 
     @WsMethod( method = DELETE, path = "/organizations/{organizationId}" )
-    @WsSecurity( realm = OrganizationWS.ORGANIZATION_ID, permissions = { ORGANIZATION_UPDATE } )
-    @WsValidate( "validateOrganizationAccess" )
     public void deleteOrganization( String organizationId ) {
         accounts.permanentlyDeleteOrganization( organizationId );
     }
