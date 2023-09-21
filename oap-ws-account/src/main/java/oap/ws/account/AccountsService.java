@@ -123,6 +123,7 @@ public class AccountsService implements Accounts {
         return userStorage.update( email, UserData::refreshApikey );
     }
 
+    @SuppressWarnings( "checkstyle:UnnecessaryParentheses" )
     @Override
     public void permanentlyDeleteOrganization( String organizationId ) {
         log.debug( "permanentlyDeleteOrganization {}", organizationId );
