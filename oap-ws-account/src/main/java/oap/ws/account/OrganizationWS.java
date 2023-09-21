@@ -89,6 +89,8 @@ public class OrganizationWS extends AbstractWS {
     public Organization store( @WsParam( from = PATH ) String organizationId,
                                @WsValidateJson( schema = Organization.SCHEMA ) @WsParam( from = BODY ) Organization organization,
                                @WsParam( from = SESSION ) UserData loggedUser ) {
+
+        log.debug( "store id {} organization {}", organizationId, organization );
         return accounts.storeOrganization( organization ).organization;
     }
 
@@ -96,6 +98,8 @@ public class OrganizationWS extends AbstractWS {
     @WsSecurity( permissions = { ORGANIZATION_STORE } )
     public Organization store( @WsValidateJson( schema = Organization.SCHEMA ) @WsParam( from = BODY ) Organization organization,
                                @WsParam( from = SESSION ) UserData loggedUser ) {
+        log.debug( "store organization {}", organization );
+
         return accounts.storeOrganization( organization ).organization;
     }
 

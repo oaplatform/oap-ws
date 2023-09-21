@@ -22,33 +22,23 @@
  * SOFTWARE.
  */
 
-package oap.ws.sso;
+package oap.ws.account;
 
-import oap.http.testng.HttpAsserts;
-import oap.util.Dates;
-import org.testng.annotations.Test;
+import oap.ws.WsMethod;
+import oap.ws.WsParam;
 
-import static oap.http.Http.StatusCode.FORBIDDEN;
-import static oap.http.Http.StatusCode.UNAUTHORIZED;
-import static oap.http.testng.HttpAsserts.assertPost;
-import static oap.http.testng.HttpAsserts.httpUrl;
-import static oap.http.testng.HttpAsserts.reset;
-import static oap.util.Pair.__;
+import static oap.http.server.nio.HttpServerExchange.HttpMethod.DELETE;
+import static oap.ws.WsParam.From.PATH;
 
-public class ThrottleLoginInterceptorTest extends IntegratedTest {
-    @Test
-    public void deniedAccept() {
-        Dates.setTimeFixed( 2023, 9, 21, 20, 8, 0 );
-        reset();
-        userProvider().addUser( "test1@user.com", "pass1", __( "realm", "ADMIN" ) );
+public class AdminWS {
+    private final Accounts accounts;
 
-        login( "test1@user.com", "pass" ).hasCode( UNAUTHORIZED );
-        login( "test1@user.com", "pass1" ).hasCode( FORBIDDEN ).hasReason( "Please wait 5s before next attempt" );
-        Dates.incFixed( Dates.s( 7 ) );
-        login( "test1@user.com", "pass1" ).isOk();
+    public AdminWS( Accounts accounts ) {
+        this.accounts = accounts;
     }
 
-    public HttpAsserts.HttpAssertion login( String login, String password ) {
-        return assertPost( httpUrl( "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" );
+    @WsMethod( method = DELETE, path = "/organizations/{organizationId}" )
+    public void deleteOrganization( @WsParam( from = PATH ) String organizationId ) {
+        accounts.permanentlyDeleteOrganization( organizationId );
     }
 }

@@ -42,6 +42,8 @@ public class AccountsService implements Accounts {
 
     @Override
     public Optional<OrganizationData> storeAccount( String organizationId, Account account ) {
+        log.debug( "storeAccount organizationId {} account {}", organizationId, account );
+
         return organizationStorage.update( organizationId, o -> {
             o.addOrUpdateAccount( account );
             return o;
@@ -62,6 +64,8 @@ public class AccountsService implements Accounts {
 
     @Override
     public Optional<UserData> updateUser( String email, Consumer<User> update ) {
+        log.debug( "updateUser email {}", email );
+
         return userStorage.update( email, u -> {
             update.accept( u.user );
             return u;
@@ -87,6 +91,8 @@ public class AccountsService implements Accounts {
 
     @Override
     public UserData createUser( User user, Map<String, String> roles ) {
+        log.debug( "createUser user {} roles {}", user, roles );
+
         if( userStorage.get( user.email ).isPresent() )
             throw new IllegalArgumentException( "user: " + user.email + " is already registered" );
         user.encryptPassword( user.password );
@@ -108,12 +114,40 @@ public class AccountsService implements Accounts {
     @Override
     public Optional<UserData> addAccountToUser( String email, String organizationId, String accountId ) {
         log.debug( "add account: {} to user: {} in organization: {}", accountId, email, organizationId );
+
         return userStorage.update( email, u -> u.addAccount( organizationId, accountId ) );
     }
 
     @Override
     public Optional<UserData> refreshApikey( String email ) {
         log.debug( "refresh apikey to user: {}", email );
+
         return userStorage.update( email, UserData::refreshApikey );
+    }
+
+    @SuppressWarnings( "checkstyle:UnnecessaryParentheses" )
+    @Override
+    public void permanentlyDeleteOrganization( String organizationId ) {
+        log.debug( "permanentlyDeleteOrganization {}", organizationId );
+
+        userStorage
+            .select()
+            .filter( ud -> ud.accounts.containsKey( organizationId ) || ud.roles.containsKey( organizationId ) )
+            .forEach( ud -> {
+                if( ( ud.accounts.containsKey( organizationId ) && ud.accounts.size() == 1 )
+                    || ( ud.roles.containsKey( organizationId ) && ud.roles.size() == 1 ) ) {
+                    log.trace( "permanentlyDeleteOrganization#delete user {}", ud.getEmail() );
+                    userStorage.delete( ud.getEmail() );
+                } else {
+                    log.trace( "permanentlyDeleteOrganization#update user {}", ud.getEmail() );
+                    userStorage.update( ud.getEmail(), d -> {
+                        d.accounts.remove( organizationId );
+                        d.roles.remove( organizationId );
+                        return d;
+                    } );
+                }
+            } );
+
+        organizationStorage.delete( organizationId );
     }
 }
