@@ -29,16 +29,16 @@ import oap.util.Dates;
 import oap.ws.InvocationContext;
 import oap.ws.Response;
 import oap.ws.interceptor.Interceptor;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.temporal.Temporal;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.ws.sso.SSO.SESSION_USER_KEY;
+import static org.joda.time.DateTimeZone.UTC;
 
 /**
  * The main purpose of ThrottleLoginInterceptor is to prevent users from brut-forcing our login endpoints
@@ -47,7 +47,7 @@ import static oap.ws.sso.SSO.SESSION_USER_KEY;
 public class ThrottleLoginInterceptor implements Interceptor {
     private static final long DEFAULT = Dates.s( 5 );
 
-    private final ConcurrentMap<String, Temporal> attemptCache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, DateTime> attemptCache = new ConcurrentHashMap<>();
     public long delay;
 
     /**
@@ -68,8 +68,8 @@ public class ThrottleLoginInterceptor implements Interceptor {
         var id = context.session.id;
         if( validateId( id ) || context.session.containsKey( SESSION_USER_KEY ) )
             return Optional.empty();
-        log.trace( "Please wait {} seconds before next attempt", delay );
-        return Optional.of( new Response( FORBIDDEN, "Please wait " + delay + " seconds before next attempt" ) );
+        log.trace( "Please wait {} before next attempt", Dates.durationToString( delay ) );
+        return Optional.of( new Response( FORBIDDEN, "Please wait " + Dates.durationToString( delay ) + " before next attempt" ) );
     }
 
     /**
@@ -78,18 +78,18 @@ public class ThrottleLoginInterceptor implements Interceptor {
      * @param id user session id
      */
     private synchronized boolean validateId( String id ) {
-        var now = LocalDateTime.now();
+        var now = DateTime.now( UTC );
         var ts = attemptCache.putIfAbsent( id, now );
         if( ts == null ) {
             return true;
         }
-        var duration = Duration.between( ts, now );
-        if( duration.toMillis() <= this.delay ) {
-            log.trace( "{} is too short period has passed since previous attempt", duration.getSeconds() );
+        var duration = new Duration( ts, now );
+        if( duration.getMillis() <= this.delay ) {
+            log.trace( "{} is too short period has passed since previous attempt", Dates.durationToString( duration.getMillis() ) );
             attemptCache.computeIfPresent( id, ( k, v ) -> now );
             return false;
         }
-        log.trace( "{} key has expired {}", id, duration.getSeconds() );
+        log.trace( "{} key has expired {}", id, Dates.durationToString( duration.getMillis() ) );
         attemptCache.remove( id );
         return true;
     }

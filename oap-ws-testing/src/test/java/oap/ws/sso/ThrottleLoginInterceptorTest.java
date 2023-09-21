@@ -24,8 +24,8 @@
 
 package oap.ws.sso;
 
-import oap.concurrent.Threads;
 import oap.http.testng.HttpAsserts;
+import oap.util.Dates;
 import org.testng.annotations.Test;
 
 import static oap.http.Http.StatusCode.FORBIDDEN;
@@ -38,12 +38,13 @@ import static oap.util.Pair.__;
 public class ThrottleLoginInterceptorTest extends IntegratedTest {
     @Test
     public void deniedAccept() {
+        Dates.setTimeFixed( 2023, 9, 21, 20, 8, 0 );
         reset();
         userProvider().addUser( "test1@user.com", "pass1", __( "realm", "ADMIN" ) );
 
         login( "test1@user.com", "pass" ).hasCode( UNAUTHORIZED );
-        login( "test1@user.com", "pass1" ).hasCode( FORBIDDEN ).hasReason( "Please wait 5 seconds before next attempt" );
-        Threads.sleepSafely( 1000 * 7 );
+        login( "test1@user.com", "pass1" ).hasCode( FORBIDDEN ).hasReason( "Please wait 5s before next attempt" );
+        Dates.incFixed( Dates.s( 7 ) );
         login( "test1@user.com", "pass1" ).isOk();
     }
 
