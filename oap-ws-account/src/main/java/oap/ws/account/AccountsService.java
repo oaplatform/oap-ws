@@ -42,6 +42,8 @@ public class AccountsService implements Accounts {
 
     @Override
     public Optional<OrganizationData> storeAccount( String organizationId, Account account ) {
+        log.debug( "storeAccount organizationId {} account {}", organizationId, account );
+
         return organizationStorage.update( organizationId, o -> {
             o.addOrUpdateAccount( account );
             return o;
@@ -62,6 +64,8 @@ public class AccountsService implements Accounts {
 
     @Override
     public Optional<UserData> updateUser( String email, Consumer<User> update ) {
+        log.debug( "updateUser email {}", email );
+
         return userStorage.update( email, u -> {
             update.accept( u.user );
             return u;
@@ -87,6 +91,8 @@ public class AccountsService implements Accounts {
 
     @Override
     public UserData createUser( User user, Map<String, String> roles ) {
+        log.debug( "createUser user {} roles {}", user, roles );
+
         if( userStorage.get( user.email ).isPresent() )
             throw new IllegalArgumentException( "user: " + user.email + " is already registered" );
         user.encryptPassword( user.password );
