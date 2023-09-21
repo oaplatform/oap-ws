@@ -25,8 +25,10 @@
 package oap.ws.account;
 
 import oap.ws.WsMethod;
+import oap.ws.WsParam;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.DELETE;
+import static oap.ws.WsParam.From.PATH;
 
 public class AdminWS {
     private final Accounts accounts;
@@ -36,7 +38,7 @@ public class AdminWS {
     }
 
     @WsMethod( method = DELETE, path = "/organizations/{organizationId}" )
-    public void deleteOrganization( String organizationId ) {
+    public void deleteOrganization( @WsParam( from = PATH ) String organizationId ) {
         accounts.permanentlyDeleteOrganization( organizationId );
     }
 }
