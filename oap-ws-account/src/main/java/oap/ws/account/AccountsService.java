@@ -116,4 +116,22 @@ public class AccountsService implements Accounts {
         log.debug( "refresh apikey to user: {}", email );
         return userStorage.update( email, UserData::refreshApikey );
     }
+
+    @Override
+    public void permanentlyDeleteOrganization( String organizationId ) {
+        log.debug( "permanentlyDeleteOrganization {}", organizationId );
+
+        userStorage.select().filter( ud -> ud.accounts.containsKey( organizationId ) ).forEach( ud -> {
+            if( ud.accounts.size() == 1 ) {
+                userStorage.delete( ud.getEmail() );
+            } else {
+                userStorage.update( ud.getEmail(), d -> {
+                    d.accounts.remove( organizationId );
+                    return d;
+                } );
+            }
+        } );
+
+        organizationStorage.delete( organizationId );
+    }
 }
