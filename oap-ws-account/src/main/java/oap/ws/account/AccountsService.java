@@ -131,15 +131,17 @@ public class AccountsService implements Accounts {
             .select()
             .filter( ud -> ud.accounts.containsKey( organizationId ) || ud.roles.containsKey( organizationId ) )
             .forEach( ud -> {
-            if( ud.accounts.size() == 1 ) {
-                userStorage.delete( ud.getEmail() );
-            } else {
-                userStorage.update( ud.getEmail(), d -> {
-                    d.accounts.remove( organizationId );
-                    return d;
-                } );
-            }
-        } );
+                if( ( ud.accounts.containsKey( organizationId ) && ud.accounts.size() == 1 )
+                    || ( ud.roles.containsKey( organizationId ) && ud.roles.size() == 1 ) ) {
+                    userStorage.delete( ud.getEmail() );
+                } else {
+                    userStorage.update( ud.getEmail(), d -> {
+                        d.accounts.remove( organizationId );
+                        d.roles.remove( organizationId );
+                        return d;
+                    } );
+                }
+            } );
 
         organizationStorage.delete( organizationId );
     }
