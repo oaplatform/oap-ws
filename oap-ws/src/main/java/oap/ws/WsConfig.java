@@ -29,6 +29,7 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 
 @EqualsAndHashCode
 @ToString
@@ -39,4 +40,5 @@ public class WsConfig {
     public LinkedHashSet<String> path = new LinkedHashSet<>();
     public boolean sessionAware;
     public boolean compression = true;
+    public Optional<Integer> port = Optional.empty();
 }
