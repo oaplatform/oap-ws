@@ -114,12 +114,14 @@ public class AccountsService implements Accounts {
     @Override
     public Optional<UserData> addAccountToUser( String email, String organizationId, String accountId ) {
         log.debug( "add account: {} to user: {} in organization: {}", accountId, email, organizationId );
+
         return userStorage.update( email, u -> u.addAccount( organizationId, accountId ) );
     }
 
     @Override
     public Optional<UserData> refreshApikey( String email ) {
         log.debug( "refresh apikey to user: {}", email );
+
         return userStorage.update( email, UserData::refreshApikey );
     }
 
@@ -134,8 +136,10 @@ public class AccountsService implements Accounts {
             .forEach( ud -> {
                 if( ( ud.accounts.containsKey( organizationId ) && ud.accounts.size() == 1 )
                     || ( ud.roles.containsKey( organizationId ) && ud.roles.size() == 1 ) ) {
+                    log.trace( "permanentlyDeleteOrganization#delete user {}", ud.getEmail() );
                     userStorage.delete( ud.getEmail() );
                 } else {
+                    log.trace( "permanentlyDeleteOrganization#update user {}", ud.getEmail() );
                     userStorage.update( ud.getEmail(), d -> {
                         d.accounts.remove( organizationId );
                         d.roles.remove( organizationId );
