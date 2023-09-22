@@ -30,6 +30,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.testng.Fixtures;
+import oap.testng.SystemTimerFixture;
 import oap.util.Pair;
 import oap.util.Result;
 import oap.ws.account.UserData;
@@ -54,6 +55,7 @@ public class IntegratedTest extends Fixtures {
 
     public IntegratedTest() {
         kernelFixture = fixture( new KernelFixture( urlOrThrow( getClass(), "/application.test.conf" ) ) );
+        fixture( SystemTimerFixture.FIXTURE );
     }
 
     protected TestUserProvider userProvider() {
