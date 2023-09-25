@@ -150,4 +150,9 @@ public class AccountsService implements Accounts {
 
         organizationStorage.permanentlyDelete( organizationId );
     }
+
+    @Override
+    public void permanentlyDeleteUser( String email ) {
+        userStorage.permanentlyDelete( email );
+    }
 }
