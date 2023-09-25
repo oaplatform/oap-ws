@@ -153,6 +153,8 @@ public class AccountsService implements Accounts {
 
     @Override
     public void permanentlyDeleteUser( String email ) {
+        log.debug( "permanentlyDeleteUser {}", email );
+
         userStorage.permanentlyDelete( email );
     }
 }
