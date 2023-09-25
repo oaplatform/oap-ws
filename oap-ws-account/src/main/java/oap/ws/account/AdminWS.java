@@ -29,7 +29,6 @@ import oap.ws.WsParam;
 
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.DELETE;
 import static oap.ws.WsParam.From.PATH;
-import static oap.ws.WsParam.From.QUERY;
 
 public class AdminWS {
     private final Accounts accounts;
@@ -43,8 +42,8 @@ public class AdminWS {
         accounts.permanentlyDeleteOrganization( organizationId );
     }
 
-    @WsMethod( method = DELETE, path = "/users?email={email}" )
-    public void deleteUser( @WsParam( from = QUERY ) String email ) {
+    @WsMethod( method = DELETE, path = "/users/{email}" )
+    public void deleteUser( @WsParam( from = PATH ) String email ) {
         accounts.permanentlyDeleteUser( email );
     }
 }
