@@ -26,6 +26,7 @@ package oap.ws.sso;
 
 import oap.http.testng.HttpAsserts;
 import oap.util.Dates;
+import org.joda.time.DateTimeUtils;
 import org.testng.annotations.Test;
 
 import static oap.http.Http.StatusCode.FORBIDDEN;
@@ -38,7 +39,7 @@ import static oap.util.Pair.__;
 public class ThrottleLoginInterceptorTest extends IntegratedTest {
     @Test
     public void deniedAccept() {
-        Dates.setTimeFixed( 2023, 9, 21, 20, 8, 0 );
+        Dates.setTimeFixed( DateTimeUtils.currentTimeMillis() );
         reset();
         userProvider().addUser( "test1@user.com", "pass1", __( "realm", "ADMIN" ) );
 
