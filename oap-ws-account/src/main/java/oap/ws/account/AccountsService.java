@@ -137,7 +137,7 @@ public class AccountsService implements Accounts {
                 if( ( ud.accounts.containsKey( organizationId ) && ud.accounts.size() == 1 )
                     || ( ud.roles.containsKey( organizationId ) && ud.roles.size() == 1 ) ) {
                     log.trace( "permanentlyDeleteOrganization#delete user {}", ud.getEmail() );
-                    userStorage.delete( ud.getEmail() );
+                    userStorage.permanentlyDelete( ud.getEmail() );
                 } else {
                     log.trace( "permanentlyDeleteOrganization#update user {}", ud.getEmail() );
                     userStorage.update( ud.getEmail(), d -> {
@@ -148,6 +148,13 @@ public class AccountsService implements Accounts {
                 }
             } );
 
-        organizationStorage.delete( organizationId );
+        organizationStorage.permanentlyDelete( organizationId );
+    }
+
+    @Override
+    public void permanentlyDeleteUser( String email ) {
+        log.debug( "permanentlyDeleteUser {}", email );
+
+        userStorage.permanentlyDelete( email );
     }
 }

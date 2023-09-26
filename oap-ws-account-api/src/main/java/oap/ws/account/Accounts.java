@@ -43,4 +43,6 @@ public interface Accounts {
     Optional<UserData> refreshApikey( String email );
 
     void permanentlyDeleteOrganization( String organizationId );
+
+    void permanentlyDeleteUser( String email );
 }
