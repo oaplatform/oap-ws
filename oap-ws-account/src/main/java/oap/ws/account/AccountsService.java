@@ -157,4 +157,25 @@ public class AccountsService implements Accounts {
 
         userStorage.permanentlyDelete( email );
     }
+
+    @Override
+    public void permanentlyDeleteAll() {
+        var users = userStorage.select()
+            .filter( u -> !userStorage.defaultSystemAdminEmail.equals( u.user.email ) )
+            .map( u -> u.user.email )
+            .toList();
+
+        for( var user : users ) {
+            userStorage.permanentlyDelete( user );
+        }
+
+        var organizations = organizationStorage.select()
+            .filter( o -> !organizationStorage.defaultOrganizationId.equals( o.organization.id ) )
+            .map( o -> o.organization.id )
+            .toList();
+
+        for( var organization : organizations ) {
+            organizationStorage.permanentlyDelete( organization );
+        }
+    }
 }

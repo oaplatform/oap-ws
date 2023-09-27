@@ -45,4 +45,6 @@ public interface Accounts {
     void permanentlyDeleteOrganization( String organizationId );
 
     void permanentlyDeleteUser( String email );
+
+    void permanentlyDeleteAll();
 }
