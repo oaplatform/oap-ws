@@ -42,6 +42,11 @@ public class AdminWS {
         accounts.permanentlyDeleteOrganization( organizationId );
     }
 
+    @WsMethod( method = DELETE, path = "/all" )
+    public void deleteAll() {
+        accounts.permanentlyDeleteAll();
+    }
+
     @WsMethod( method = DELETE, path = "/users/{email}" )
     public void deleteUser( @WsParam( from = PATH ) String email ) {
         accounts.permanentlyDeleteUser( email );

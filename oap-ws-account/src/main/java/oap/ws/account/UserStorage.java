@@ -26,19 +26,12 @@ import static org.joda.time.DateTimeZone.UTC;
 
 @Slf4j
 public class UserStorage extends MemoryStorage<String, UserData> implements oap.ws.sso.UserProvider {
-
-    public static final String DEFAULT_USER_EMAIL = "xenoss@xenoss.io";
-    public static final String DEFAULT_USER_PASSWORD = "Xenoss123";
-    public static final String DEFAULT_USER_FIRST_NAME = "System";
-    public static final String DEFAULT_USER_LAST_NAME = "Admin";
-    public static final String DEFAULT_USER_ROLES = "{DFLT: ADMIN, SYSTEM: ADMIN}";
-    public static final String DEFAULT_USER_READONLY = "true";
-    private final String defaultSystemAdminEmail;
-    private final String defaultSystemAdminPassword;
-    private final String defaultSystemAdminFirstName;
-    private final String defaultSystemAdminLastName;
-    private final Map<String, String> defaultSystemAdminRoles;
-    private final boolean defaultSystemAdminReadOnly;
+    public final String defaultSystemAdminEmail;
+    public final String defaultSystemAdminPassword;
+    public final String defaultSystemAdminFirstName;
+    public final String defaultSystemAdminLastName;
+    public final Map<String, String> defaultSystemAdminRoles;
+    public final boolean defaultSystemAdminReadOnly;
 
     /**
      * @param defaultSystemAdminEmail     default user email

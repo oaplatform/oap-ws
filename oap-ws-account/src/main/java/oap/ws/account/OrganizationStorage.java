@@ -15,10 +15,10 @@ import static oap.storage.Storage.Lock.SERIALIZED;
 
 @Slf4j
 public class OrganizationStorage extends MemoryStorage<String, OrganizationData> {
-    private final String defaultOrganizationId;
-    private final String defaultOrganizationName;
-    private final String defaultOrganizationDescription;
-    private final boolean defaultOrganizationReadOnly;
+    public final String defaultOrganizationId;
+    public final String defaultOrganizationName;
+    public final String defaultOrganizationDescription;
+    public final boolean defaultOrganizationReadOnly;
 
     /**
      * @param defaultOrganizationId          default organization id
