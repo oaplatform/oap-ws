@@ -80,21 +80,13 @@ public class JWTExtractor {
         return authorization;
     }
 
-    String getTokenInfo( String token ) {
-        if( token == null || token.length() < 10 ) return token;
-        return token.substring( 0, 4 ) + "***" + token.substring( token.length() - 4, token.length() );
-    }
-
     public List<String> getPermissions( String token, String organizationId ) {
-        log.info( "Getting permissions for " + organizationId + ", token: " + getTokenInfo( token ) + "..." );
         final DecodedJWT decodedJWT = decodeJWT( token );
         if( decodedJWT == null ) {
-            log.info( "\nToken: " + getTokenInfo( token ) + " Perms(1): EMPTY" );
             return Collections.emptyList();
         }
         final Claim tokenRoles = decodedJWT.getClaims().get( "roles" );
         if( tokenRoles == null ) {
-            log.info( "\nToken: " + getTokenInfo( token ) + " Perms(2): EMPTY" );
             return Collections.emptyList();
         }
         Map<String, Object> rolesByOrganization = tokenRoles.asMap();
@@ -104,12 +96,9 @@ public class JWTExtractor {
         } else {
             role = ( String ) rolesByOrganization.get( organizationId );
         }
-        log.info( "\nToken: " + getTokenInfo( token ) + " \nRole: " + role + "\nRolesByOrganization:" + rolesByOrganization + "\n"
-            + ( role != null ? "Perms: " + roles.permissionsOf( role ) : "Perms(3): EMPTY" ) );
         if( role != null ) {
             return new ArrayList<>( roles.permissionsOf( role ) );
         }
-        log.info( "\nToken: " + getTokenInfo( token ) + " Perms(4): EMPTY" );
         return Collections.emptyList();
     }
 
