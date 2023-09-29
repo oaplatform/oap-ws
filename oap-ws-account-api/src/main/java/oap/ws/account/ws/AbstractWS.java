@@ -33,7 +33,7 @@ public abstract class AbstractWS extends AbstractSecureWS {
     protected ValidationErrors validateAccountAccess( UserData loggedUser, String organizationId, String accountId ) {
         return canAccessAccount( loggedUser, organizationId, accountId )
             ? empty()
-            : error( Http.StatusCode.FORBIDDEN, "%s cannot access account %s of organization %s", loggedUser.user.email, accountId, organizationId );
+            : error( Http.StatusCode.FORBIDDEN, "User (%s) cannot access account %s of organization %s", loggedUser.user.email, accountId, organizationId );
     }
 
     protected ValidationErrors validateSecurityDisabled() {
