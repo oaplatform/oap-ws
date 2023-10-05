@@ -91,7 +91,6 @@ public class JWTSecurityInterceptor implements Interceptor {
         }
         Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
         if( wss.isEmpty() ) {
-            log.trace( "@WsSecurity annotation not found for method: {}", context.method.name() );
             return Optional.empty();
         }
 
