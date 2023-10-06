@@ -118,8 +118,8 @@ public class AuthWS extends AbstractSecureWS {
         return notAuthenticatedResponse( UNAUTHORIZED, "Token is empty", sessionManager.cookieDomain );
     }
 
-    @WsMethod( method = GET, path = "/refresh" )
-    public Response refreshToken( @WsParam( from = COOKIE ) String refreshToken ) {
+    @WsMethod( method = POST, path = "/refresh" )
+    public Response refreshToken( @WsParam( from = BODY ) String refreshToken ) {
         var result = authenticator.refreshToken( refreshToken );
         if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
             sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
