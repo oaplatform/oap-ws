@@ -36,6 +36,7 @@ import oap.ws.sso.UserProvider;
 import oap.ws.sso.WsSecurity;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -62,6 +63,7 @@ public class JWTSecurityInterceptor implements Interceptor {
     @Override
     public Optional<Response> before( InvocationContext context ) {
         String organization = null;
+        List<String> permissions;
         String jwtToken = SSO.getAuthentication( context.exchange );
 
         Optional<User> sessionUserKey = context.session.get( SESSION_USER_KEY );
@@ -85,7 +87,7 @@ public class JWTSecurityInterceptor implements Interceptor {
 
             context.session.set( SESSION_USER_KEY, user );
             context.session.set( ISSUER, this.getClass().getSimpleName() );
-            log.trace( "set {} into session '{}'", getUserInfo( sessionUserKey ), context.session.id );
+            log.trace( "set user '{}' into session '{}'", user, context.session.id );
         }
         Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
         if( wss.isEmpty() ) {
@@ -97,7 +99,7 @@ public class JWTSecurityInterceptor implements Interceptor {
 
         if( jwtToken == null && !issuerFromContext( context ).equals( ApiKeyInterceptor.class.getSimpleName() ) ) {
             log.warn( "Not authenticated! jwsToken {} issuerFromContext {}", jwtToken, issuerFromContext( context ) );
-            return Optional.of( new Response( UNAUTHORIZED, "jwtToken is null" ) );
+            return Optional.of( new Response( UNAUTHORIZED, jwtToken == null ? "jwtToken is null" : "Not desired interceptor: " + issuerFromContext( context ) ) );
         }
 
         String realmFromWss = wss.get().realm();
@@ -116,40 +118,33 @@ public class JWTSecurityInterceptor implements Interceptor {
         }
         String[] wssPermissions = wss.get().permissions();
         if( issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) {
-            var permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
+            permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
             if( permissions != null && Arrays.stream( wssPermissions ).anyMatch( permissions::contains ) ) {
-                log.trace( "permissions: {} wssPerms {}", permissions, wssPermissions );
-                // OK, user permission match required ones
+                log.trace( "permissions: {} wss {}", permissions, wssPermissions );
                 return Optional.empty();
             }
             String requiredPermissions = Arrays.toString( wssPermissions );
             log.warn( format( "Permissions required: %s, but found: %s", requiredPermissions, permissions ) );
-            return Optional.of( new Response( FORBIDDEN, getUserInfo( sessionUserKey ) + " doesn't have required permissions: '" + requiredPermissions + "', user permissions: '" + permissions + "'" ) );
+            return Optional.of( new Response( FORBIDDEN, "user doesn't have required permissions: '" + requiredPermissions + "', user permissions: '" + permissions + "'" ) );
         } else {
             if( sessionUserKey.isEmpty() ) {
                 return Optional.of( new Response( UNAUTHORIZED, "no user in session" ) );
             }
             Optional<String> role = sessionUserKey.flatMap( user -> user.getRole( realmString ) );
             if( role.isEmpty() ) {
-                log.warn( getUserInfo( sessionUserKey ) + " doesn't have access to realm {}", realmString );
-                return Optional.of( new Response( FORBIDDEN, getUserInfo( sessionUserKey ) + " doesn't have access to realm '" + realmString + "'" ) );
+                log.warn( "user doesn't have access to realm {}", realmString );
+                return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm '" + realmString + "'" ) );
             }
 
             if( roles.granted( role.get(), wssPermissions ) ) {
                 log.trace( "roles.granted ({}, {}) -> false", role.get(), wssPermissions );
-                // OK, user role matches required one
                 return Optional.empty();
             }
 
-            log.warn( "{} has no access to method: {} under realm: {}", getUserInfo( sessionUserKey ), context.method.name(), realmString );
-            return Optional.of( new Response( FORBIDDEN, getUserInfo( sessionUserKey ) + " has no access to method: "
-                + context.method.name() + " under realm: " + realmString ) );
+            log.warn( "user {} has no access to method {} under realm {}", sessionUserKey.get().getEmail(), context.method.name(), realmString );
+            return Optional.of( new Response( FORBIDDEN, "user " + sessionUserKey.get().getEmail() + " has no access to method "
+                + context.method.name() + " under realm " + realmString ) );
         }
-    }
-
-    String getUserInfo( Optional<User> sessionUser ) {
-        if ( sessionUser == null || sessionUser.isEmpty() ) return "User";
-        return "User (" + sessionUser.get().getEmail() + ")";
     }
 
     private String issuerFromContext( InvocationContext context ) {
