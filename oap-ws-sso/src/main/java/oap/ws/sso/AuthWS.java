@@ -43,6 +43,7 @@ import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
 import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
@@ -117,8 +118,8 @@ public class AuthWS extends AbstractSecureWS {
         return notAuthenticatedResponse( UNAUTHORIZED, "Token is empty", sessionManager.cookieDomain );
     }
 
-    @WsMethod( method = POST, path = "/refresh" )
-    public Response refreshToken( @WsParam( from = BODY ) String refreshToken ) {
+    @WsMethod( method = GET, path = "/refresh/{refreshToken}" )
+    public Response refreshToken( @WsParam( from = PATH ) String refreshToken ) {
         var result = authenticator.refreshToken( refreshToken );
         if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
             sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
