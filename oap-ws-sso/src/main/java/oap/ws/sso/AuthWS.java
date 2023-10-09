@@ -25,14 +25,14 @@
 package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
+import oap.ws.account.OauthService;
+import oap.ws.account.TokenInfo;
 import oap.http.Http;
 import oap.ws.Response;
 import oap.ws.Session;
 import oap.ws.SessionManager;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
-import oap.ws.account.OauthService;
-import oap.ws.account.TokenInfo;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.WsValidate;
 
@@ -43,6 +43,7 @@ import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
+import static oap.ws.WsParam.From.COOKIE;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
 import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
@@ -117,8 +118,8 @@ public class AuthWS extends AbstractSecureWS {
         return notAuthenticatedResponse( UNAUTHORIZED, "Token is empty", sessionManager.cookieDomain );
     }
 
-    @WsMethod( method = POST, path = "/refresh" )
-    public Response refreshToken( @WsParam( from = BODY ) String refreshToken ) {
+    @WsMethod( method = GET, path = "/refresh" )
+    public Response refreshToken( @WsParam( from = COOKIE ) String refreshToken ) {
         var result = authenticator.refreshToken( refreshToken );
         if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
             sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
