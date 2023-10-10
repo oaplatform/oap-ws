@@ -132,7 +132,7 @@ public class OpenapiGenerator {
 
     public enum Result {
         PROCESSED_OK( "processed." ),
-        SKIPPED_DUE_TO_ANNOTATED_TO_IGNORE( "has already been processed." ),
+        SKIPPED_DUE_TO_ANNOTATED_TO_IGNORE( "has been annotated with @OpenapiIgnore." ),
         SKIPPED_DUE_TO_ALREADY_PROCESSED( "has already been processed." ),
         SKIPPED_DUE_TO_CLASS_HAS_NO_METHODS( "skipped due to class does not contain any public method" );
 
