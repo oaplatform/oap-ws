@@ -35,6 +35,7 @@ import oap.util.Strings;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import oap.ws.openapi.OpenapiIgnore;
 import oap.ws.sso.WsSecurity;
 
 import java.lang.reflect.Modifier;
@@ -146,6 +147,10 @@ public class Info {
                     .findAnnotation( WsParam.class )
                     .map( wsp -> wsp.from() != WsParam.From.SESSION )
                     .orElse( true );
+        }
+
+        public boolean shouldBeIgnored() {
+            return method.isAnnotatedWith( OpenapiIgnore.class );
         }
     }
 

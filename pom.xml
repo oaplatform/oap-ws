@@ -69,7 +69,7 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>18.13.8</oap-ws.project.version>
+        <oap-ws.project.version>18.13.9</oap-ws.project.version>
         <oap.deps.oap.version>18.11.10.1979</oap.deps.oap.version>
 
         <oap.deps.mail.version>18.6.2.182</oap.deps.mail.version>
@@ -81,7 +81,7 @@
         <oap.deps.logback.version>1.4.11</oap.deps.logback.version>
         <oap.deps.httpcomponents.version>4.4.16</oap.deps.httpcomponents.version>
         <oap.deps.lombok.version>1.18.28</oap.deps.lombok.version>
-        <oap.deps.swagger.version>2.2.15</oap.deps.swagger.version>
+        <oap.deps.swagger.version>2.2.16</oap.deps.swagger.version>
         <oap.deps.jwt.version>4.4.0</oap.deps.jwt.version>
         <oap.deps.jwks.version>0.22.0</oap.deps.jwks.version>
         <oap.deps.com.restfb>2023.7.1</oap.deps.com.restfb>

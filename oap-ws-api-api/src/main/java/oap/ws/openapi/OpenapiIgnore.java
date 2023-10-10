@@ -21,45 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package oap.ws.openapi;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import lombok.extern.slf4j.Slf4j;
-import oap.ws.WsMethod;
-import oap.ws.WsParam;
-import oap.ws.validate.ValidationErrors;
-import oap.ws.validate.WsValidate;
 
-import java.util.Optional;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
-
-/**
- * Web service for openapi documentation
- */
-@Slf4j
-public class OpenapiWS {
-
-    private final Openapi openapi;
-
-    public OpenapiWS( Openapi openapi ) {
-        this.openapi = openapi;
-    }
-
-    /**
-     * Generates openapi documentation for all web services in appropriate oap-module.conf
-     *
-     * @return openapi documentation
-     */
-    @WsMethod( path = "/", method = GET, description = "Generates OpenAPI 3.0 json document" )
-    @WsValidate( { "isValid" } )
-    public OpenAPI openapi( @WsParam Optional<Boolean> skipDeprecated ) {
-        return openapi.generateOpenApi( skipDeprecated.orElse( true ) );
-    }
-
-    @OpenapiIgnore
-    public ValidationErrors isValid( Optional<Boolean> skipDeprecated ) {
-        return ValidationErrors.empty();
-    }
+@Retention( RetentionPolicy.RUNTIME )
+@Target( { ElementType.TYPE, ElementType.METHOD } )
+public @interface OpenapiIgnore {
 }
