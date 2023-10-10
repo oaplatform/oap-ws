@@ -29,6 +29,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * This annotation is supposed to be used with WS class or method in order to mark them
+ * as ignored for generation OpenAPI file.
+ * Note: protected methods in any WS classes are also ignored
+ */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( { ElementType.TYPE, ElementType.METHOD } )
 public @interface OpenapiIgnore {
