@@ -1928,7 +1928,7 @@
   "info" : {
     "description" : "Test description",
     "title" : "Test title",
-    "version" : "UNDEFINED (oap.ws.openapi.ExtTestWS, oap.ws.openapi.ExampleNewWS, oap.ws.openapi.IgnoredPermissionsTestWS, oap.ws.openapi.TestWS, oap.ws.api.ApiWS, oap.ws.openapi.OpenapiWS)"
+    "version" : "UNDEFINED (oap.ws.openapi.ExtTestWS, oap.ws.openapi.ExampleNewWS, oap.ws.openapi.IgnoredPermissionsTestWS, oap.ws.openapi.TestWS, oap.ws.openapi.OpenapiWS)"
   },
   "openapi" : "3.0.3",
   "paths" : {
@@ -4123,33 +4123,6 @@
         "tags" : [ "oap.ws.openapi.IgnoredPermissionsTestWS" ]
       }
     },
-    "/system/api/" : {
-      "get" : {
-        "description" : "Generates description of WS method with parameters and result",
-        "operationId" : "api_GET",
-        "parameters" : [ {
-          "in" : "query",
-          "name" : "deprecated",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            },
-            "description" : ""
-          }
-        },
-        "tags" : [ "oap.ws.api.ApiWS" ]
-      }
-    },
     "/system/openapi/" : {
       "get" : {
         "description" : "Generates OpenAPI 3.0 json document",
@@ -4186,8 +4159,6 @@
     "name" : "oap.ws.openapi.IgnoredPermissionsTestWS"
   }, {
     "name" : "oap.ws.openapi.TestWS"
-  }, {
-    "name" : "oap.ws.api.ApiWS"
   }, {
     "name" : "oap.ws.openapi.OpenapiWS"
   } ]
