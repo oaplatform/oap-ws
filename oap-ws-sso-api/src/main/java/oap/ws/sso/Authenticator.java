@@ -41,4 +41,6 @@ public interface Authenticator {
     Optional<Authentication> authenticateWithApiKey( String accessKey, String apiKey );
 
     void invalidate( String email );
+
+    Result<Authentication, AuthenticationFailure> authenticateWithActiveOrgId( String jwtToken, String organizationId );
 }

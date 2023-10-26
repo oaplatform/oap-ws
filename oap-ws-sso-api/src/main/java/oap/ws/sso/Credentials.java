@@ -35,6 +35,7 @@ public class Credentials implements Serializable {
     public final String email;
     public final String password;
     public final String tfaCode;
+    public String orgId;
 
     public Credentials( String email, String password, String tfaCode ) {
         this.email = email;

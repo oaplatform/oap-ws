@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.ws.sso.SSO.ISSUER;
@@ -67,12 +66,13 @@ public class JWTSecurityInterceptor implements Interceptor {
         String jwtToken = SSO.getAuthentication( context.exchange );
 
         Optional<User> sessionUserKey = context.session.get( SESSION_USER_KEY );
-        if( jwtToken != null && ( sessionUserKey.isEmpty() || issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) ) {
+        String issuerName = this.getClass().getSimpleName();
+
+        if( jwtToken != null && ( sessionUserKey.isEmpty() || issuerFromContext( context ).equals( issuerName ) ) ) {
             log.debug( "Proceed with user {} in session: {}", sessionUserKey, context.session.id );
 
             final String token = JWTExtractor.extractBearerToken( jwtToken );
             if( token == null || !jwtExtractor.verifyToken( token ) ) {
-                log.warn( "Not authenticated. Token {}", token );
                 return Optional.of( new Response( FORBIDDEN, "Invalid token: " + token ) );
             }
 
@@ -81,50 +81,39 @@ public class JWTSecurityInterceptor implements Interceptor {
 
             User user = userProvider.getUser( email ).orElse( null );
             if( user == null ) {
-                log.warn( "User not found with email: {}", email );
                 return Optional.of( new Response( FORBIDDEN, "User not found with email: " + email ) );
             }
-
             context.session.set( SESSION_USER_KEY, user );
-            context.session.set( ISSUER, this.getClass().getSimpleName() );
-            log.trace( "set user '{}' into session '{}'", user, context.session.id );
+            context.session.set( ISSUER, issuerName );
         }
         Optional<WsSecurity> wss = context.method.findAnnotation( WsSecurity.class );
         if( wss.isEmpty() ) {
-            log.trace( "@WsSecurity annotation not found for method: {}", context.method.name() );
             return Optional.empty();
         }
 
         log.trace( "Secure method {}", context.method );
 
         if( jwtToken == null && !issuerFromContext( context ).equals( ApiKeyInterceptor.class.getSimpleName() ) ) {
-            log.warn( "Not authenticated! jwsToken {} issuerFromContext {}", jwtToken, issuerFromContext( context ) );
-            return Optional.of( new Response( UNAUTHORIZED, jwtToken == null ? "jwtToken is null" : "Not desired interceptor: " + issuerFromContext( context ) ) );
+            return Optional.of( new Response( UNAUTHORIZED, "jwtToken is null" ) );
         }
 
-        String realmFromWss = wss.get().realm();
-        Optional<String> realm = SYSTEM.equals( realmFromWss )
-            ? Optional.of( SYSTEM )
-            : context.getParameter( realmFromWss );
+        Optional<String> realm =
+            SYSTEM.equals( wss.get().realm() ) ? Optional.of( SYSTEM ) : context.getParameter( wss.get().realm() );
         if( realm.isEmpty() ) {
-            log.warn( "realm is not passed" );
             return Optional.of( new Response( FORBIDDEN, "realm is not passed" ) );
         }
 
         String realmString = realm.get();
         if( organization != null && !realmString.equals( organization ) && !realmString.equals( SYSTEM ) ) {
-            log.warn( "realm organization '{}' does not coincide organization '{}' logged in", realmString, organization );
-            return Optional.of( new Response( FORBIDDEN, "realm organization '" + realmString + "' does not coincide organization '" + organization + "' logged in" ) );
+            return Optional.of( new Response( FORBIDDEN, "realm is different from organization logged in" ) );
         }
         String[] wssPermissions = wss.get().permissions();
-        if( issuerFromContext( context ).equals( this.getClass().getSimpleName() ) ) {
-            permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), Objects.requireNonNullElseGet( organization, realm::get ) );
+        if( issuerFromContext( context ).equals( issuerName ) ) {
+            permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), organization );
             if( permissions != null && Arrays.stream( wssPermissions ).anyMatch( permissions::contains ) ) {
-                log.trace( "permissions: {} wss {}", permissions, wssPermissions );
                 return Optional.empty();
             }
             String requiredPermissions = Arrays.toString( wssPermissions );
-            log.warn( format( "Permissions required: %s, but found: %s", requiredPermissions, permissions ) );
             return Optional.of( new Response( FORBIDDEN, "user doesn't have required permissions: '" + requiredPermissions + "', user permissions: '" + permissions + "'" ) );
         } else {
             if( sessionUserKey.isEmpty() ) {
@@ -132,27 +121,20 @@ public class JWTSecurityInterceptor implements Interceptor {
             }
             Optional<String> role = sessionUserKey.flatMap( user -> user.getRole( realmString ) );
             if( role.isEmpty() ) {
-                log.warn( "user doesn't have access to realm {}", realmString );
                 return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm '" + realmString + "'" ) );
             }
 
             if( roles.granted( role.get(), wssPermissions ) ) {
-                log.trace( "roles.granted ({}, {}) -> false", role.get(), wssPermissions );
                 return Optional.empty();
             }
-
-            log.warn( "user {} has no access to method {} under realm {}", sessionUserKey.get().getEmail(), context.method.name(), realmString );
             return Optional.of( new Response( FORBIDDEN, "user " + sessionUserKey.get().getEmail() + " has no access to method "
                 + context.method.name() + " under realm " + realmString ) );
         }
     }
 
     private String issuerFromContext( InvocationContext context ) {
-        Optional<Object> issuer = context.session.get( ISSUER );
-        if( issuer.isPresent() ) {
-            return issuer.get().toString();
-        }
-        return "";
+        return context.session.get( ISSUER ).map( Object::toString ).orElse( "" );
     }
 }
+
 
