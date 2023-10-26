@@ -132,6 +132,7 @@ public class OpenapiGenerator {
 
     public enum Result {
         PROCESSED_OK( "processed." ),
+        SKIPPED_DUE_TO_ANNOTATED_TO_IGNORE( "has been annotated with @OpenapiIgnore." ),
         SKIPPED_DUE_TO_ALREADY_PROCESSED( "has already been processed." ),
         SKIPPED_DUE_TO_CLASS_HAS_NO_METHODS( "skipped due to class does not contain any public method" );
 
@@ -150,6 +151,7 @@ public class OpenapiGenerator {
     public Result processWebservice( Class<?> clazz, String context ) {
         log.info( "Processing web-service {} implementation class '{}' ...", context, clazz.getCanonicalName() );
         if( !processedClasses.add( clazz.getCanonicalName() ) ) return Result.SKIPPED_DUE_TO_ALREADY_PROCESSED;
+        if( clazz.isAnnotationPresent( OpenapiIgnore.class ) ) return Result.SKIPPED_DUE_TO_ANNOTATED_TO_IGNORE;
         oap.ws.api.Info.WebServiceInfo wsInfo = new oap.ws.api.Info.WebServiceInfo( Reflect.reflect( clazz ), context );
         var tag = createTag( wsInfo.name );
         if( uniqueTags.add( tag.getName() ) ) api.addTagsItem( tag );
@@ -162,6 +164,9 @@ public class OpenapiGenerator {
         int methodNumber = 0;
         List<WebMethodInfo> methods = wsInfo.methods( !settings.skipDeprecated );
         for( WebMethodInfo method : methods ) {
+            if( method.shouldBeIgnored() ) {
+                continue;
+            }
             methodNumber++;
             var paths = getPaths();
             var pathString = method.path( wsInfo );
