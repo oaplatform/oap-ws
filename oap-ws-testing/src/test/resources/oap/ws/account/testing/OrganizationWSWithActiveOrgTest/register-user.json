@@ -1,0 +1,8 @@
+{
+  "create": true,
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "vk@xenoss.io",
+  "organization": "xenoss.io",
+  "password": "pass"
+}

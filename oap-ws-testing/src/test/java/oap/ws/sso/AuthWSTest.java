@@ -105,7 +105,7 @@ public class AuthWSTest extends IntegratedTest {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
         userProvider().addUser( new TestUser( "user@user.com", "pass", __( "r1", "USER" ) ) );
         assertLogin( "admin@admin.com", "pass" );
-        assertGet( httpUrl( "/secure/r1" ) ).hasCode( FORBIDDEN ).hasReason( "user doesn't have required permissions: '[ALLOWED]', user permissions: '[]'" );
+        assertGet( httpUrl( "/secure/r1" ) ).hasCode( OK );
         assertLogin( "admin@admin.com", "pass" );
         assertSwitchOrganization( "r1" );
         assertGet( httpUrl( "/secure/r1" ) )

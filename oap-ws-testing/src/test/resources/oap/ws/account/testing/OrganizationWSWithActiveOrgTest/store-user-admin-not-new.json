@@ -1,0 +1,9 @@
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "newadmin@admins.com",
+  "roles": {
+    "XNSS": "ADMIN"
+  },
+  "tfaEnabled" : false
+}
