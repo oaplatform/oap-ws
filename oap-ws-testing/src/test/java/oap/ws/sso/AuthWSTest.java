@@ -124,7 +124,7 @@ public class AuthWSTest extends IntegratedTest {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", Map.of( "r1", "ADMIN", "r2", "USER" ) ) );
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "auth/switch/r3" ) ).hasCode( FORBIDDEN ).hasReason( "User doesn't belong to organization" );
-        Thread.sleep( 5000L ); 
+        Thread.sleep( 5000L );
     }
 
     @Test
