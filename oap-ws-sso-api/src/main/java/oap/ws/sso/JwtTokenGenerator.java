@@ -55,6 +55,16 @@ public class JwtTokenGenerator {
             .withExpiresAt( new Date( System.currentTimeMillis() + accessSecretExpiration ) )
             .sign( algorithm );
     }
+    public String generateAccessTokenWithActiveOrgId( User user, String activeOrganization ) throws JWTCreationException {
+        Algorithm algorithm = Algorithm.HMAC256( accessSecret );
+        return JWT.create()
+            .withClaim( "user", user.getEmail() )
+            .withClaim( "roles", user.getRoles() )
+            .withClaim( "org_id", activeOrganization )
+            .withIssuer( issuer )
+            .withExpiresAt( new Date( System.currentTimeMillis() + accessSecretExpiration ) )
+            .sign( algorithm );
+    }
 
     public String generateRefreshToken( User user ) throws JWTCreationException {
         Algorithm algorithm = Algorithm.HMAC256( refreshSecret );

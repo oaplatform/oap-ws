@@ -1,0 +1,13 @@
+{
+  "canAccessAnyAccount": true,
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "newadmin2@admins.com",
+  "role": "ADMIN",
+  "accounts": [
+    "1",
+    "2",
+    "3"
+  ],
+  "tfaEnabled" : false
+}

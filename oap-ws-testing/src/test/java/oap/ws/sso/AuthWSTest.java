@@ -28,7 +28,8 @@ package oap.ws.sso;
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
 import org.testng.annotations.Test;
 
-import static oap.http.Http.ContentType.TEXT_PLAIN;
+import java.util.Map;
+
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.OK;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
@@ -42,6 +43,7 @@ import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithT
 import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithTfaRequired;
 import static oap.ws.account.testing.SecureWSFixture.assertLoginWithFBTokenWithWrongTfa;
 import static oap.ws.account.testing.SecureWSFixture.assertLogout;
+import static oap.ws.account.testing.SecureWSFixture.assertSwitchOrganization;
 import static oap.ws.account.testing.SecureWSFixture.assertTfaRequiredLogin;
 import static oap.ws.account.testing.SecureWSFixture.assertWrongTfaLogin;
 
@@ -99,15 +101,30 @@ public class AuthWSTest extends IntegratedTest {
     }
 
     @Test
-    public void relogin() {
+    public void loginAndTryToReachOrganization() {
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
         userProvider().addUser( new TestUser( "user@user.com", "pass", __( "r1", "USER" ) ) );
         assertLogin( "admin@admin.com", "pass" );
+        assertGet( httpUrl( "/secure/r1" ) ).hasCode( OK );
+        assertLogin( "admin@admin.com", "pass" );
+        assertSwitchOrganization( "r1" );
         assertGet( httpUrl( "/secure/r1" ) )
-            .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
-        assertLogin( "user@user.com", "pass" );
-        assertGet( httpUrl( "/secure/r1" ) )
-            .hasCode( FORBIDDEN );
+            .hasCode( OK );
+    }
+
+    @Test
+    public void loginThenUseSpecificOrganization() {
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", Map.of( "r1", "ADMIN", "r2", "USER" ) ) );
+        assertLogin( "admin@admin.com", "pass" );
+        assertSwitchOrganization( "r2" );
+    }
+
+    @Test
+    public void loginThenUseWrongOrganization() throws InterruptedException {
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", Map.of( "r1", "ADMIN", "r2", "USER" ) ) );
+        assertLogin( "admin@admin.com", "pass" );
+        assertGet( httpUrl( "auth/switch/r3" ) ).hasCode( FORBIDDEN ).hasReason( "User doesn't belong to organization" );
+        Thread.sleep( 5000L );
     }
 
     @Test

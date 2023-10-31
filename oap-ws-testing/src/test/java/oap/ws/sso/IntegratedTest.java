@@ -143,7 +143,7 @@ public class IntegratedTest extends Fixtures {
     public static class TestUser implements User {
         public final String email;
         public final String password;
-        public final Map<String, String> roles = new HashMap<>();
+        public Map<String, String> roles = new HashMap<>();
         public final boolean tfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
         @JsonIgnore
@@ -151,6 +151,13 @@ public class IntegratedTest extends Fixtures {
 
         public TestUser( String email, String password, Pair<String, String> role ) {
             this( email, password, role, false );
+        }
+
+        public TestUser( String email, String password, Map<String, String> roles ) {
+            this.email = email;
+            this.password = password;
+            this.roles = roles;
+            this.tfaEnabled = false;
         }
 
         public TestUser( String email, String password, Pair<String, String> role, boolean tfaEnabled ) {

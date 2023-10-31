@@ -1,0 +1,11 @@
+{
+  "banned": false,
+  "confirmed": false,
+  "email": "vk@xenoss.io",
+  "firstName": "John",
+  "lastName": "Smith",
+  "roles" : {
+    "XNSS" : "ORGANIZATION_ADMIN"
+  },
+  "tfaEnabled" : false
+}

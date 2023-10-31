@@ -35,6 +35,7 @@ import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
 import static oap.ws.account.testing.SecureWSFixture.assertLogin;
+import static oap.ws.account.testing.SecureWSFixture.assertSwitchOrganization;
 
 public class ApiKeyInterceptorTest extends IntegratedTest {
 
@@ -74,6 +75,7 @@ public class ApiKeyInterceptorTest extends IntegratedTest {
     @Test
     public void conflict() {
         assertLogin( "admin@admin.com", "pass" );
+        assertSwitchOrganization( "r1" );
         assertGet( httpUrl( "/secure/r1" ) )
             .hasCode( OK );
         assertGet( httpUrl( "/secure/r1" ),

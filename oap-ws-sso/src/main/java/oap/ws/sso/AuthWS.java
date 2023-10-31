@@ -39,13 +39,17 @@ import oap.ws.validate.WsValidate;
 import java.util.Optional;
 
 import static oap.http.Http.StatusCode.BAD_REQUEST;
+import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.COOKIE;
+import static oap.ws.WsParam.From.PATH;
 import static oap.ws.WsParam.From.SESSION;
 import static oap.ws.sso.AuthenticationFailure.TFA_REQUIRED;
+import static oap.ws.sso.AuthenticationFailure.TOKEN_NOT_VALID;
+import static oap.ws.sso.AuthenticationFailure.WRONG_ORGANIZATION;
 import static oap.ws.sso.AuthenticationFailure.WRONG_TFA_CODE;
 import static oap.ws.sso.SSO.authenticatedResponse;
 import static oap.ws.sso.SSO.logoutResponse;
@@ -116,6 +120,24 @@ public class AuthWS extends AbstractSecureWS {
                 return notAuthenticatedResponse( UNAUTHORIZED, "User not found", sessionManager.cookieDomain );
         }
         return notAuthenticatedResponse( UNAUTHORIZED, "Token is empty", sessionManager.cookieDomain );
+    }
+
+    @SuppressWarnings( "ParameterName" )
+    @WsMethod( method = GET, path = "/switch/{organizationId}" )
+    public Response switchOrganization( @WsParam( from = PATH ) String organizationId,
+                                        @WsParam( from = SESSION ) Optional<User> loggedUser,
+                                        @WsParam( from = COOKIE ) String Authorization,
+                                        Session session ) {
+        loggedUser.ifPresent( user -> logout( loggedUser, session ) );
+        var result = authenticator.authenticateWithActiveOrgId( Authorization, organizationId );
+        if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
+            sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
+        else if( WRONG_ORGANIZATION == result.getFailureValue() )
+            return notAuthenticatedResponse( FORBIDDEN, "User doesn't belong to organization", sessionManager.cookieDomain );
+        else if( TOKEN_NOT_VALID == result.getFailureValue() ) {
+            return notAuthenticatedResponse( BAD_REQUEST, "Token is not valid", sessionManager.cookieDomain );
+        } else
+            return notAuthenticatedResponse( UNAUTHORIZED, "User not found", sessionManager.cookieDomain );
     }
 
     @WsMethod( method = GET, path = "/refresh" )

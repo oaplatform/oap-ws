@@ -87,10 +87,16 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
 
     public void assertOrgAdminLogin() {
         assertLogin( DEFAULT_ORGANIZATION_ADMIN_EMAIL, DEFAULT_PASSWORD );
+        SecureWSFixture.assertSwitchOrganization( DEFAULT_ORGANIZATION_ID, defaultHttpPort() );
     }
 
     public void assertLogin( String login, String password ) {
         SecureWSFixture.assertLogin( login, password, defaultHttpPort() );
+    }
+
+    public void assertLoginIntoOrg( String login, String password, String orgId ) {
+        SecureWSFixture.assertLogin( login, password, defaultHttpPort() );
+        SecureWSFixture.assertSwitchOrganization( orgId, defaultHttpPort() );
     }
 
     public void assertLogout() {
@@ -172,5 +178,4 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         assertLogout();
         super.after();
     }
-
 }

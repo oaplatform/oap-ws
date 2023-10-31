@@ -34,12 +34,14 @@ import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
 import static oap.ws.account.testing.SecureWSFixture.assertLogin;
+import static oap.ws.account.testing.SecureWSFixture.assertSwitchOrganization;
 
 public class JWTInterceptorTest extends IntegratedTest {
     @Test
     public void allowed() {
         userProvider().addUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) );
         assertLogin( "admin@admin.com", "pass" );
+        assertSwitchOrganization( "r1" );
         assertGet( httpUrl( "/secure/r1" ) )
             .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
         assertGet( httpUrl( "/secure/r1" ) )
@@ -52,6 +54,16 @@ public class JWTInterceptorTest extends IntegratedTest {
     public void wrongRealm() {
         userProvider().addUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) );
         assertLogin( "admin@admin.com", "pass" );
+        assertGet( httpUrl( "/secure/r2" ) )
+            .hasCode( FORBIDDEN );
+
+    }
+
+    @Test
+    public void wrongRealmWithOrganizationLoggedIn() {
+        userProvider().addUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) );
+        assertLogin( "admin@admin.com", "pass" );
+        assertSwitchOrganization( "r1" );
         assertGet( httpUrl( "/secure/r2" ) )
             .hasCode( FORBIDDEN );
 

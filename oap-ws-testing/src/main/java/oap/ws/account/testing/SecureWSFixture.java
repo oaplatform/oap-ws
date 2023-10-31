@@ -66,6 +66,28 @@ public class SecureWSFixture {
                 .isHttpOnly() );
     }
 
+    public static void assertSwitchOrganization( String orgId, int port ) {
+        assertGet( httpUrl( port, "auth/switch/" + orgId ) ).
+            hasCode( Http.StatusCode.OK )
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() )
+            .containsCookie( REFRESH_TOKEN_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() );
+    }
+
+    public static void assertSwitchOrganization( String orgId ) {
+        assertGet( httpUrl( "auth/switch/" + orgId ) ).
+            hasCode( Http.StatusCode.OK )
+            .containsCookie( AUTHENTICATION_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() )
+            .containsCookie( REFRESH_TOKEN_KEY, cookie -> assertCookie( cookie )
+                .hasPath( "/" )
+                .isHttpOnly() );
+    }
+
     public static void assertTfaRequiredLogin( String login, String password, int port ) {
         assertPost( httpUrl( port, "/auth/login" ), "{  \"email\": \"" + login + "\",  \"password\": \"" + password + "\"}" )
             .hasCode( Http.StatusCode.BAD_REQUEST )

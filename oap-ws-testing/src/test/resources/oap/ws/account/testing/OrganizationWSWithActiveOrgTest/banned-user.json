@@ -1,0 +1,11 @@
+{
+  "banned": ${BANNED},
+  "confirmed": true,
+  "email" : "user@admin.com",
+  "firstName" : "Joe",
+  "lastLogin": "${LAST_LOGIN}",
+  "lastName" : "Epstein",
+  "roles": { "DFLT": "USER"},
+  "tfaEnabled" : false
+}
+

@@ -27,7 +27,6 @@ package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
 import oap.util.Result;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -57,6 +56,24 @@ public class JwtUserAuthenticator implements Authenticator {
         return getAuthenticationTokens( authResult );
     }
 
+    public Result<Authentication, AuthenticationFailure> authenticateWithActiveOrgId( String jwtToken, String orgId ) {
+        if( jwtExtractor.verifyToken( jwtToken ) ) {
+            log.trace( "generating new authentication token with active organization {} ", orgId );
+            var user = userProvider.getUser( jwtExtractor.getUserEmail( jwtToken ) );
+            if( user.isEmpty() ) {
+                return Result.failure( AuthenticationFailure.UNAUTHENTICATED );
+            }
+            return user.filter( u -> validateUserAcess( u, orgId ) )
+                .map( u -> getAuthenticationTokens( u, orgId ) )
+                .orElse( Result.failure( AuthenticationFailure.WRONG_ORGANIZATION ) );
+        }
+        return Result.failure( AuthenticationFailure.TOKEN_NOT_VALID );
+    }
+
+    private boolean validateUserAcess( User user, String orgId ) {
+        return user.getRoles().containsKey( orgId );
+    }
+
     private Result<Authentication, AuthenticationFailure> getAuthenticationTokens( Result<? extends User, AuthenticationFailure> authResult ) {
         if( !authResult.isSuccess() ) {
             return Result.failure( authResult.getFailureValue() );
@@ -71,9 +88,25 @@ public class JwtUserAuthenticator implements Authenticator {
         return null;
     }
 
-    @NotNull
+    private Result<Authentication, AuthenticationFailure> getAuthenticationTokens( User user, String orgId ) {
+        try {
+            Authentication authentication = generateTokenWithOrgId( user, orgId );
+            return Result.success( authentication );
+        } catch( Exception exception ) {
+            log.error( "JWT creation failed {}", exception.getMessage() );
+        }
+        return null;
+    }
+
     private Authentication generateTokens( User user ) {
         var accessToken = jwtTokenGenerator.generateAccessToken( user );
+        var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
+        log.trace( "generating authentication for user {} -> {}", user.getEmail(), accessToken );
+        return new Authentication( accessToken, refreshToken, user );
+    }
+
+    private Authentication generateTokenWithOrgId( User user, String activeOrgId ) {
+        var accessToken = jwtTokenGenerator.generateAccessTokenWithActiveOrgId( user, activeOrgId );
         var refreshToken = jwtTokenGenerator.generateRefreshToken( user );
         log.trace( "generating authentication for user {} -> {}", user.getEmail(), accessToken );
         return new Authentication( accessToken, refreshToken, user );
