@@ -52,10 +52,19 @@ public class JWTSecurityInterceptor implements Interceptor {
     private final JWTExtractor jwtExtractor;
     private final UserProvider userProvider;
     private final SecurityRoles roles;
+    private boolean useOrganizationLogin = false;
 
     public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider, SecurityRoles roles ) {
         this.jwtExtractor = Objects.requireNonNull( jwtExtractor );
         this.userProvider = Objects.requireNonNull( userProvider );
+        this.roles = roles;
+        this.useOrganizationLogin = false;
+    }
+
+    public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider, SecurityRoles roles, boolean useOrganizationLogin ) {
+        this.jwtExtractor = Objects.requireNonNull( jwtExtractor );
+        this.userProvider = Objects.requireNonNull( userProvider );
+        this.useOrganizationLogin = useOrganizationLogin;
         this.roles = roles;
     }
 
@@ -109,7 +118,8 @@ public class JWTSecurityInterceptor implements Interceptor {
         }
         String[] wssPermissions = wss.get().permissions();
         if( issuerFromContext( context ).equals( issuerName ) ) {
-            permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), organization );
+            final String orgParam = useOrganizationLogin ? organization : realm.orElse( null );
+            permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), orgParam );
             if( permissions != null && Arrays.stream( wssPermissions ).anyMatch( permissions::contains ) ) {
                 return Optional.empty();
             }

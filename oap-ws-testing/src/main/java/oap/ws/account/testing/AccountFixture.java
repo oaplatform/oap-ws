@@ -178,5 +178,4 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         assertLogout();
         super.after();
     }
-
 }

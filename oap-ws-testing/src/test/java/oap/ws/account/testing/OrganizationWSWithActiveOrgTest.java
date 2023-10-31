@@ -1,7 +1,25 @@
 /*
- * Copyright (c) Xenoss
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
+ * The MIT License (MIT)
+ *
+ * Copyright (c) Open Application Platform Authors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package oap.ws.account.testing;
@@ -43,15 +61,15 @@ import static oap.ws.validate.testng.ValidationAssertion.assertValidation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.joda.time.DateTimeZone.UTC;
 
-public class OrganizationWSTest extends Fixtures {
+public class OrganizationWSWithActiveOrgTest extends Fixtures {
     public static final String TODAY = DateTimeFormat.forPattern( "yyyy-MM-dd" ).print( DateTime.now( UTC ) );
 
     protected final AccountFixture accountFixture;
 
-    public OrganizationWSTest() {
+    public OrganizationWSWithActiveOrgTest() {
         fixture( new TestDirectoryFixture() );
         fixture( new MongoFixture() );
-        accountFixture = fixture( new AccountFixture() );
+        accountFixture = fixture( new AccountFixture().withConfResource( AccountFixture.class, "/application-account.fixture-org.conf" ) );
     }
 
     @AfterMethod
@@ -60,20 +78,10 @@ public class OrganizationWSTest extends Fixtures {
     }
 
     @Test
-    public void store() {
-        OrganizationData data = accountFixture.accounts().storeOrganization( new Organization( "test", "test" ) );
-        accountFixture.assertSystemAdminLogin();
-        assertPost( accountFixture.httpUrl( "/organizations/" + data.organization.id ), "{\"id\":\"" + data.organization.id + "\", \"name\":\"newname\"}", Http.ContentType.APPLICATION_JSON )
-            .hasCode( OK );
-        assertThat( accountFixture.organizationStorage().get( data.organization.id ) ).isPresent().get()
-            .satisfies( d -> assertString( d.organization.name ).isEqualTo( "newname" ) );
-    }
-
-    @Test
     public void storeOrgAdmin() {
         OrganizationData data = accountFixture.accounts().storeOrganization( new Organization( "test", "test" ) );
         UserData user = accountFixture.userStorage().store( new UserData( ORG_ADMIN_USER, Map.of( data.organization.id, ORGANIZATION_ADMIN ) ) );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLoginIntoOrg( user.user.email, DEFAULT_PASSWORD, data.organization.id );
         assertPost( accountFixture.httpUrl( "/organizations/" + data.organization.id ), "{\"id\":\"" + data.organization.id + "\", \"name\":\"newname\"}", Http.ContentType.APPLICATION_JSON )
             .hasCode( OK );
         assertThat( accountFixture.organizationStorage().get( data.organization.id ) ).isPresent().get()
@@ -84,7 +92,7 @@ public class OrganizationWSTest extends Fixtures {
     public void getOrgAdmin() {
         OrganizationData data = accountFixture.organizationStorage().store( new OrganizationData( new Organization( "test", "test" ) ) );
         UserData user = accountFixture.userStorage().store( new UserData( ORG_ADMIN_USER, Map.of( data.organization.id, ORGANIZATION_ADMIN ) ) );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLoginIntoOrg( user.user.email, DEFAULT_PASSWORD, data.organization.id );
         assertGet( accountFixture.httpUrl( "/organizations/" + data.organization.id ) )
             .respondedJson( OK, "OK", "{\"description\":\"test\", \"id\":\"TST\", \"name\":\"test\"}" );
     }
@@ -115,7 +123,7 @@ public class OrganizationWSTest extends Fixtures {
     public void storeAccountOrgAdmin() {
         OrganizationData data = accountFixture.accounts().storeOrganization( new Organization( "test", "test" ) );
         UserData user = accountFixture.userStorage().store( new UserData( ORG_ADMIN_USER, Map.of( data.organization.id, ORGANIZATION_ADMIN ) ) );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLoginIntoOrg( user.user.email, DEFAULT_PASSWORD, data.organization.id );
         assertPost( accountFixture.httpUrl( "/organizations/" + data.organization.id + "/accounts" ), "{\"name\":\"acc1\"}", Http.ContentType.APPLICATION_JSON )
             .hasCode( OK );
         assertThat( data.accounts ).containsOnly( new Account( "CC1", "acc1" ) );
@@ -127,7 +135,7 @@ public class OrganizationWSTest extends Fixtures {
         accountFixture.accounts().storeAccount( data.organization.id, new Account( "acc2", "acc2" ) );
         accountFixture.accounts().storeAccount( data.organization.id, new Account( "acc1", "acc1" ) );
         UserData user = accountFixture.userStorage().store( new UserData( ORG_ADMIN_USER, Map.of( data.organization.id, ORGANIZATION_ADMIN ) ) );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLoginIntoOrg( user.user.email, DEFAULT_PASSWORD, data.organization.id );
         assertGet( accountFixture.httpUrl( "/organizations/" + data.organization.id + "/accounts" ) )
             .respondedJson( OK, "OK", "[{\"id\":\"acc2\", \"name\":\"acc2\"}, {\"id\":\"acc1\", \"name\":\"acc1\"}]" );
     }
@@ -141,7 +149,7 @@ public class OrganizationWSTest extends Fixtures {
         UserData user = new UserData( REGULAR_USER, Map.of( data.organization.id, USER ) );
         user.addAccount( data.organization.id, "acc1" );
         accountFixture.userStorage().store( user );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLoginIntoOrg( user.user.email, DEFAULT_PASSWORD, data.organization.id );
         assertGet( accountFixture.httpUrl( "/organizations/" + data.organization.id + "/accounts" ) )
             .respondedJson( OK, "OK", "[{\"id\":\"acc1\", \"name\":\"acc1\"}]" );
     }
@@ -157,7 +165,7 @@ public class OrganizationWSTest extends Fixtures {
         UserData user = new UserData( REGULAR_USER, Map.of( data.organization.id, USER ) );
         user.addAccount( data.organization.id, "acc1" );
         accountFixture.userStorage().store( user );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLoginIntoOrg( user.user.email, DEFAULT_PASSWORD, data.organization.id );
         assertGet( accountFixture.httpUrl( "/organizations/" + data.organization.id + "/accounts/" + account1.id ) )
             .respondedJson( OK, "OK", "{\"id\":\"acc1\", \"name\":\"acc1\"}" );
         assertGet( accountFixture.httpUrl( "/organizations/" + data.organization.id + "/accounts/" + account2.id ) )
@@ -170,7 +178,7 @@ public class OrganizationWSTest extends Fixtures {
     public void account404() {
         OrganizationData data = accountFixture.accounts().storeOrganization( new Organization( "test", "test" ) );
         UserData user = accountFixture.userStorage().store( new UserData( ORG_ADMIN_USER, Map.of( data.organization.id, ORGANIZATION_ADMIN ) ) );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLoginIntoOrg( user.user.email, DEFAULT_PASSWORD, data.organization.id );
         assertPost( accountFixture.httpUrl( "/organizations/" + data.organization.id + "/accounts" ), "{\"id\":\"acc1\", \"name\":\"acc1\"}", Http.ContentType.APPLICATION_JSON )
             .hasCode( OK );
         assertThat( data.accounts ).containsOnly( new Account( "acc1", "acc1" ) );
@@ -226,7 +234,7 @@ public class OrganizationWSTest extends Fixtures {
                 + "&email=vk%40xenoss.io" + "&passwd=true" );
         assertPost( accountFixture.httpUrl( "/organizations/" + DEFAULT_ORGANIZATION_ID + "/users/passwd?accessKey=" + user.getAccessKey() + "&apiKey=" + user.user.apiKey ), "{\"email\": \"vk@xenoss.io\", \"password\": \"pass\"}" )
             .hasCode( OK );
-        accountFixture.assertLogin( userEmail, "pass" );
+        accountFixture.assertLoginIntoOrg( userEmail, "pass", DEFAULT_ORGANIZATION_ID );
         accountFixture.assertLogout();
     }
 
@@ -249,7 +257,7 @@ public class OrganizationWSTest extends Fixtures {
             .hasCode( Http.StatusCode.FOUND )
             .containsHeader( "Location", "http://xenoss.io?apiKey=" + user.user.apiKey + "&accessKey=" + user.getAccessKey()
                 + "&email=vk%40xenoss.io" + "&passwd=false" );
-        accountFixture.assertLogin( user.user.email, "pass" );
+        accountFixture.assertLoginIntoOrg( user.user.email, "pass", "XNSS" );
         accountFixture.assertLogout();
     }
 
@@ -297,7 +305,7 @@ public class OrganizationWSTest extends Fixtures {
     public void passwd() {
         var email = "newuser@gmail.com";
         accountFixture.userStorage().store( new UserData( new User( "newuser@gmail.com", "John", "Smith", "pass123", true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) ) );
-        accountFixture.assertLogin( email, "pass123" );
+        accountFixture.assertLoginIntoOrg( email, "pass123", DEFAULT_ORGANIZATION_ID );
         assertPost( accountFixture.httpUrl( "/organizations/hackit/users/passwd" ), "{\"email\": \"" + email + "\", \"password\": \"newpass\"}" )
             .hasCode( Http.StatusCode.FORBIDDEN );
         assertPost( accountFixture.httpUrl( "/organizations/" + DEFAULT_ORGANIZATION_ID + "/users/passwd" ), "{\"email\": \"" + DEFAULT_ORGANIZATION_ADMIN_EMAIL + "\", \"password\": \"newpass\"}" )
