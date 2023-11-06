@@ -316,7 +316,7 @@ public class OrganizationWS extends AbstractWS {
         Optional<UserData> user = accounts.getUser( email );
 
         if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
-            return accounts.updateUser( email, u -> u.updateDefaultOrganization( organizationId ) ).map( u -> u.view );
+            return accounts.updateUser( email, u -> u.defaultOrganization = organizationId ).map( u -> u.view );
         }
         return Optional.empty();
     }
@@ -324,12 +324,12 @@ public class OrganizationWS extends AbstractWS {
     @WsMethod( method = GET, path = "/users/{email}/default-account/{accountId}", description = "Validate first tfa code from Google Authenticator" )
     @WsValidate( { "validateUserLoggedIn" } )
     public Optional<UserData.View> changeDefaultAccount( @WsParam( from = PATH ) String email,
-                                                              @WsParam( from = PATH ) String accountId,
-                                                              @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
+                                                         @WsParam( from = PATH ) String accountId,
+                                                         @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
         Optional<UserData> user = accounts.getUser( email );
 
         if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
-            return accounts.updateUser( email, u -> u.updateDefaultAccount( accountId ) ).map( u -> u.view );
+            return accounts.updateUser( email, u -> u.defaultAccount = accountId ).map( u -> u.view );
         }
         return Optional.empty();
     }

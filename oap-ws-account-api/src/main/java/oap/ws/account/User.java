@@ -59,7 +59,7 @@ public class User implements Serializable {
         this( email );
         this.firstName = firstName;
         this.lastName = lastName;
-        this.confirm( confirmed );
+        this.confirmed = confirmed;
         this.encryptPassword( password );
     }
 
@@ -67,7 +67,7 @@ public class User implements Serializable {
         this( email );
         this.firstName = firstName;
         this.lastName = lastName;
-        this.confirm( confirmed );
+        this.confirmed = confirmed;
         this.encryptPassword( password );
         this.tfaEnabled = tfaEnabled;
     }
@@ -93,28 +93,12 @@ public class User implements Serializable {
         return this;
     }
 
-    public User updateDefaultAccount( String defaultAccount ) {
-        this.defaultAccount = defaultAccount;
-        return this;
-    }
-
-    public User updateDefaultOrganization( String defaultOrganization ) {
-        this.defaultOrganization = defaultOrganization;
-        return this;
-    }
-
-    public User encryptPassword( String password ) {
+    public void encryptPassword( String password ) {
         this.password = password != null ? encrypt( password ) : null;
-        return this;
     }
 
     public boolean passwordMatches( @Nonnull String password ) {
         return this.password != null && this.password.equals( encrypt( password ) );
-    }
-
-    public User confirm( boolean status ) {
-        this.confirmed = status;
-        return this;
     }
 
     public boolean isConfirmed() {
@@ -125,9 +109,8 @@ public class User implements Serializable {
         return UserProvider.toAccessKey( email );
     }
 
-    public String refreshApiKey() {
+    public void refreshApiKey() {
         this.apiKey = org.apache.commons.lang.RandomStringUtils.random( 30, true, true );
-        return this.apiKey;
     }
 
     public String getSecretKey() {

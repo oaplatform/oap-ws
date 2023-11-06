@@ -76,11 +76,13 @@ public class UserData implements oap.ws.sso.User, Serializable {
         return roles;
     }
 
+    @JsonIgnore
     @Override
     public String getDefaultOrganization() {
         return user.defaultOrganization;
     }
 
+    @JsonIgnore
     @Override
     public String getDefaultAccount() {
         return user.defaultAccount;
@@ -159,7 +161,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
     }
 
     public UserData confirm( boolean status ) {
-        this.user.confirm( status );
+        this.user.confirmed = status;
         return this;
     }
 
