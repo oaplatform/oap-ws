@@ -42,6 +42,8 @@ import static oap.ws.account.testing.AccountFixture.REGULAR_USER;
 import static oap.ws.validate.testng.ValidationAssertion.assertValidation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.joda.time.DateTimeZone.UTC;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class OrganizationWSTest extends Fixtures {
     public static final String TODAY = DateTimeFormat.forPattern( "yyyy-MM-dd" ).print( DateTime.now( UTC ) );
@@ -506,4 +508,22 @@ public class OrganizationWSTest extends Fixtures {
                 assertThat( decodedString.contains( "secretKey" ) );
             } );
     }
+
+    @Test
+    public void changeDefaultAccountUser() {
+        OrganizationData data = accountFixture.accounts().storeOrganization( new Organization( "test", "test" ) );
+        accountFixture.accounts().storeAccount( data.organization.id, new Account( "acc2", "acc2" ) );
+        accountFixture.accounts().storeAccount( data.organization.id, new Account( "acc1", "acc1" ) );
+        accountFixture.organizationStorage().store( data );
+        UserData user = new UserData( REGULAR_USER, Map.of( data.organization.id, USER ) );
+        user.addAccount( data.organization.id, "acc1" );
+        accountFixture.userStorage().store( user );
+        assertEquals( "acc1", accountFixture.userStorage().getUser( REGULAR_USER.email ).get().getDefaultAccount() );
+        user.addAccount( data.organization.id, "acc2" );
+        assertEquals( "acc1", accountFixture.userStorage().getUser( REGULAR_USER.email ).get().getDefaultAccount() );
+        accountFixture.assertLogin( REGULAR_USER.email, DEFAULT_PASSWORD );
+        assertGet( accountFixture.httpUrl( "/organizations/users/" + REGULAR_USER.email + "/default-account/acc2" ) );
+        assertEquals( "acc2", accountFixture.userStorage().getUser( REGULAR_USER.email ).get().getDefaultAccount() );
+    }
+
 }

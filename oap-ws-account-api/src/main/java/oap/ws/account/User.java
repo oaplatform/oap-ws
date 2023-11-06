@@ -45,6 +45,8 @@ public class User implements Serializable {
     @JsonProperty( access = JsonProperty.Access.WRITE_ONLY )
     public boolean create;
     public boolean tfaEnabled;
+    public String defaultOrganization;
+    public String defaultAccount;
     public static RandomGenerator random = new SecureRandom();
     public String secretKey = generateSecretKey();
 
@@ -88,6 +90,16 @@ public class User implements Serializable {
         this.lastName = lastName;
         this.tfaEnabled = tfaEnabled;
         this.ext = ext;
+        return this;
+    }
+
+    public User updateDefaultAccount( String defaultAccount ) {
+        this.defaultAccount = defaultAccount;
+        return this;
+    }
+
+    public User updateDefaultOrganization( String defaultOrganization ) {
+        this.defaultOrganization = defaultOrganization;
         return this;
     }
 

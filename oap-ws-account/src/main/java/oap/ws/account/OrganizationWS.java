@@ -174,6 +174,7 @@ public class OrganizationWS extends AbstractWS {
                                     @WsValidateJson( schema = User.SCHEMA ) @WsParam( from = BODY ) User user,
                                     @WsParam( from = QUERY ) Optional<String> role,
                                     @WsParam( from = SESSION ) UserData loggedUser ) {
+        user.defaultOrganization = organizationId;
         if( user.create ) {
             UserData userCreated = accounts.createUser( user, role.map( r -> new HashMap<>( Map.of( organizationId, r ) ) ).orElse( null ) );
             mailman.sendInvitedEmail( userCreated );
@@ -189,6 +190,7 @@ public class OrganizationWS extends AbstractWS {
                                    @WsParam( from = QUERY ) String organizationName ) {
         OrganizationData organizationData = accounts.storeOrganization( new Organization( organizationName ) );
         final String orgId = organizationData.organization.id;
+        user.defaultOrganization = orgId;
         UserData userCreated = accounts.createUser( user, new HashMap<>( Map.of( orgId, ORGANIZATION_ADMIN ) ) );
         mailman.sendRegisteredEmail( userCreated );
         return userCreated.view;
@@ -204,6 +206,7 @@ public class OrganizationWS extends AbstractWS {
         if( tokenInfo.isPresent() ) {
             final User user = new User( tokenInfo.get().email, tokenInfo.get().firstName, tokenInfo.get().lastName, null, true, false );
             user.ext = ext;
+            user.defaultOrganization = orgId;
             UserData userCreated = accounts.createUser( user, new HashMap<>( Map.of( orgId, ORGANIZATION_ADMIN ) ) );
             mailman.sendRegisteredEmail( userCreated );
             return Optional.of( userCreated.view );
@@ -303,6 +306,32 @@ public class OrganizationWS extends AbstractWS {
             return tfaValid ? Response.ok() : Response.notFound().withReasonPhrase( "TFA code is incorrect" );
         }
         return Response.notFound();
+    }
+
+    @WsMethod( method = GET, path = "/users/{email}/default-org/{organizationId}", description = "Validate first tfa code from Google Authenticator" )
+    @WsValidate( { "validateUserLoggedIn" } )
+    public Optional<UserData.View> changeDefaultOrganization( @WsParam( from = PATH ) String email,
+                                                              @WsParam( from = PATH ) String organizationId,
+                                                              @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
+        Optional<UserData> user = accounts.getUser( email );
+
+        if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
+            return accounts.updateUser( email, u -> u.updateDefaultOrganization( organizationId ) ).map( u -> u.view );
+        }
+        return Optional.empty();
+    }
+
+    @WsMethod( method = GET, path = "/users/{email}/default-account/{accountId}", description = "Validate first tfa code from Google Authenticator" )
+    @WsValidate( { "validateUserLoggedIn" } )
+    public Optional<UserData.View> changeDefaultAccount( @WsParam( from = PATH ) String email,
+                                                              @WsParam( from = PATH ) String accountId,
+                                                              @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
+        Optional<UserData> user = accounts.getUser( email );
+
+        if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
+            return accounts.updateUser( email, u -> u.updateDefaultAccount( accountId ) ).map( u -> u.view );
+        }
+        return Optional.empty();
     }
 
     @WsMethod( method = POST, path = "/{organizationId}/assign" )
