@@ -4,6 +4,7 @@
   "lastName": "Walker",
   "banned": false,
   "confirmed": true,
+  "defaultOrganization" : "DFLT",
   "accessKey": "${ACCESS_KEY}",
   "apiKey": "${API_KEY}",
   "roles": {
