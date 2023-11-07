@@ -71,9 +71,7 @@ public class JWTSecurityInterceptor implements Interceptor {
     @Override
     public Optional<Response> before( InvocationContext context ) {
         String organization = null;
-        List<String> permissions;
         String jwtToken = SSO.getAuthentication( context.exchange );
-
         Optional<User> sessionUserKey = context.session.get( SESSION_USER_KEY );
         String issuerName = this.getClass().getSimpleName();
 
@@ -99,10 +97,7 @@ public class JWTSecurityInterceptor implements Interceptor {
         if( wss.isEmpty() ) {
             return Optional.empty();
         }
-
-        log.trace( "Secure method {}", context.method );
-
-        if( jwtToken == null && !issuerFromContext( context ).equals( ApiKeyInterceptor.class.getSimpleName() ) ) {
+        if( jwtToken == null && !isApiKeyInterceptor( issuerName, context ) ) {
             return Optional.of( new Response( UNAUTHORIZED, "jwtToken is null" ) );
         }
 
@@ -113,37 +108,63 @@ public class JWTSecurityInterceptor implements Interceptor {
         }
 
         String realmString = realm.get();
-        if( organization != null && !realmString.equals( organization ) && !realmString.equals( SYSTEM ) ) {
+        if( hasRealmMismatchError( organization, useOrganizationLogin, realmString ) ) {
             return Optional.of( new Response( FORBIDDEN, "realm is different from organization logged in" ) );
         }
         String[] wssPermissions = wss.get().permissions();
-        if( issuerFromContext( context ).equals( issuerName ) ) {
-            final String orgParam = useOrganizationLogin ? organization : realm.orElse( null );
-            permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), orgParam );
-            if( permissions != null && Arrays.stream( wssPermissions ).anyMatch( permissions::contains ) ) {
-                return Optional.empty();
-            }
-            String requiredPermissions = Arrays.toString( wssPermissions );
-            return Optional.of( new Response( FORBIDDEN, "user doesn't have required permissions: '" + requiredPermissions + "', user permissions: '" + permissions + "'" ) );
+        if( isIssuerValid( issuerName, context ) ) {
+            return handleIssuerValid( jwtToken, organization, realmString, wssPermissions );
         } else {
-            if( sessionUserKey.isEmpty() ) {
-                return Optional.of( new Response( UNAUTHORIZED, "no user in session" ) );
-            }
-            Optional<String> role = sessionUserKey.flatMap( user -> user.getRole( realmString ) );
-            if( role.isEmpty() ) {
-                return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm '" + realmString + "'" ) );
-            }
-
-            if( roles.granted( role.get(), wssPermissions ) ) {
-                return Optional.empty();
-            }
-            return Optional.of( new Response( FORBIDDEN, "user " + sessionUserKey.get().getEmail() + " has no access to method "
-                + context.method.name() + " under realm " + realmString ) );
+            return handleIssuerInvalid( sessionUserKey, realmString, wssPermissions, context );
         }
     }
 
     private String issuerFromContext( InvocationContext context ) {
         return context.session.get( ISSUER ).map( Object::toString ).orElse( "" );
+    }
+
+    private boolean hasRealmMismatchError( String organization, boolean useOrganizationLogin, String realmString ) {
+        boolean organizationNotNull = organization != null;
+        boolean realmNotEqualOrganization = !realmString.equals( organization );
+        boolean realmNotEqualSystem = !SYSTEM.equals( realmString );
+        boolean organizationNotEqualSystem = !SYSTEM.equals( organization );
+
+        return organizationNotNull && useOrganizationLogin
+            && realmNotEqualOrganization
+            && realmNotEqualSystem
+            && organizationNotEqualSystem;
+    }
+
+    private boolean isApiKeyInterceptor( String issuerName, InvocationContext context ) {
+        return issuerFromContext( context ).equals( ApiKeyInterceptor.class.getSimpleName() );
+    }
+
+    private boolean isIssuerValid( String issuerName, InvocationContext context ) {
+        return issuerFromContext( context ).equals( issuerName );
+    }
+
+    private Optional<Response> handleIssuerValid( String jwtToken, String organization, String realm, String[] wssPermissions ) {
+        final String orgParam = useOrganizationLogin ? organization : realm;
+        List<String> permissions = jwtExtractor.getPermissions( JWTExtractor.extractBearerToken( jwtToken ), orgParam );
+        if( permissions != null && Arrays.stream( wssPermissions ).anyMatch( permissions::contains ) ) {
+            return Optional.empty();
+        }
+        String requiredPermissions = Arrays.toString( wssPermissions );
+        return Optional.of( new Response( FORBIDDEN, "user doesn't have required permissions: '" + requiredPermissions + "', user permissions: '" + permissions + "'" ) );
+    }
+
+    private Optional<Response> handleIssuerInvalid( Optional<User> sessionUserKey, String realmString, String[] wssPermissions, InvocationContext context ) {
+        if( sessionUserKey.isEmpty() ) {
+            return Optional.of( new Response( UNAUTHORIZED, "no user in session" ) );
+        }
+        Optional<String> role = sessionUserKey.flatMap( user -> user.getRole( realmString ) );
+        if( role.isEmpty() ) {
+            return Optional.of( new Response( FORBIDDEN, "user doesn't have access to realm '" + realmString + "'" ) );
+        }
+        if( roles.granted( role.get(), wssPermissions ) ) {
+            return Optional.empty();
+        }
+        return Optional.of( new Response( FORBIDDEN, "user " + sessionUserKey.get().getEmail() + " has no access to method " + context.method.name() + " under realm " + realmString ) );
     }
 }
 

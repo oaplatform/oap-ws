@@ -1,6 +1,7 @@
 {
   "banned": false,
   "confirmed": false,
+  "defaultOrganization" : "XNSS",
   "email": "vk@xenoss.io",
   "firstName": "John",
   "lastName": "Smith",

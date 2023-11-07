@@ -18,6 +18,7 @@ import oap.ws.account.UserData;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Base64;
@@ -331,8 +332,9 @@ public class OrganizationWSTest extends Fixtures {
 
     @Test
     public void ban() {
-        var user = accountFixture.userStorage().store( new UserData( REGULAR_USER, Map.of( DEFAULT_ORGANIZATION_ID, USER ) ) );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        final String email = "user@admin.com";
+        var user = accountFixture.userStorage().store( new UserData( new User( email, "Joe", "Epstein", "pass123", true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) ) );
+        accountFixture.assertLogin( email, "pass123" );
         accountFixture.assertLogout();
         accountFixture.assertOrgAdminLogin();
         assertGet( accountFixture.httpUrl( "/organizations/" + DEFAULT_ORGANIZATION_ID + "/users/ban/" + user.user.email ) )
@@ -353,7 +355,7 @@ public class OrganizationWSTest extends Fixtures {
                     "API_KEY", user.user.apiKey
                 ) ) );
         accountFixture.assertLogout();
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLogin( email, "pass123" );
         accountFixture.assertLogout();
     }
 
@@ -514,15 +516,16 @@ public class OrganizationWSTest extends Fixtures {
         accountFixture.accounts().storeAccount( data.organization.id, new Account( "acc2", "acc2" ) );
         accountFixture.accounts().storeAccount( data.organization.id, new Account( "acc1", "acc1" ) );
         accountFixture.organizationStorage().store( data );
-        UserData user = new UserData( REGULAR_USER, Map.of( data.organization.id, USER ) );
+        final String mail = "user@usr.com";
+        UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) );
         user.addAccount( data.organization.id, "acc1" );
         accountFixture.userStorage().store( user );
-        assertEquals( "acc1", accountFixture.userStorage().getUser( REGULAR_USER.email ).get().getDefaultAccount() );
+        assertEquals( "acc1", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount() );
         user.addAccount( data.organization.id, "acc2" );
-        assertEquals( "acc1", accountFixture.userStorage().getUser( REGULAR_USER.email ).get().getDefaultAccount() );
-        accountFixture.assertLogin( REGULAR_USER.email, DEFAULT_PASSWORD );
-        assertGet( accountFixture.httpUrl( "/organizations/users/" + REGULAR_USER.email + "/default-account/acc2" ) );
-        assertEquals( "acc2", accountFixture.userStorage().getUser( REGULAR_USER.email ).get().getDefaultAccount() );
+        assertEquals( "acc1", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount() );
+        accountFixture.assertLogin( "user@usr.com", "pass123" );
+        assertGet( accountFixture.httpUrl( "/organizations/users/" + mail + "/default-account/acc2" ) );
+        assertEquals( "acc2", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount() );
     }
 
 }

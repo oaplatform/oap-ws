@@ -338,8 +338,9 @@ public class OrganizationWSWithActiveOrgTest extends Fixtures {
 
     @Test
     public void ban() {
-        var user = accountFixture.userStorage().store( new UserData( REGULAR_USER, Map.of( DEFAULT_ORGANIZATION_ID, USER ) ) );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        final String email = "user@admin.com";
+        var user = accountFixture.userStorage().store( new UserData( new User( email, "Joe", "Epstein", "pass123", true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) ) );
+        accountFixture.assertLogin( email, "pass123" );
         accountFixture.assertLogout();
         accountFixture.assertOrgAdminLogin();
         assertGet( accountFixture.httpUrl( "/organizations/" + DEFAULT_ORGANIZATION_ID + "/users/ban/" + user.user.email ) )
@@ -360,7 +361,7 @@ public class OrganizationWSWithActiveOrgTest extends Fixtures {
                     "API_KEY", user.user.apiKey
                 ) ) );
         accountFixture.assertLogout();
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLogin( email, "pass123" );
         accountFixture.assertLogout();
     }
 

@@ -2,6 +2,7 @@
   {
     "banned": false,
     "confirmed": true,
+    "defaultOrganization" : "SYSTEM",
     "email": "systemadmin@admin.com",
     "firstName": "System",
     "lastName": "Admin",
@@ -15,6 +16,7 @@
     "banned": false,
     "confirmed": true,
     "email": "xenoss@xenoss.io",
+    "defaultOrganization" : "SYSTEM",
     "firstName": "System",
     "lastName": "Admin",
     "roles" : {
@@ -26,6 +28,7 @@
   {
     "banned": false,
     "confirmed": true,
+    "defaultOrganization" : "DFLT",
     "email": "orgadmin@admin.com",
     "firstName": "Johnny",
     "lastName": "Walker",
