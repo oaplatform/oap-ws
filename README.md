@@ -26,6 +26,22 @@ from https://chrome.google.com/webstore/detail/moesif-orign-cors-changer/digfbfa
 - make sure you've had this Chrome extension enabled and try open /swagger-ui/ again
 - Note: after using Swagger-UI switch off this Chrome extension to stay secured
 
+## web service root path
+API root path declaration:
+~~~
+some-ws {
+    implementation = ...
+    ws-service {
+      path = /api/path
+    }
+}
+~~~
+Internal path hierarchy inside service can be omitted, e.g.
+~~~
+@WsMethod( method = GET, path = "/{id}" )
+public Item get( @WsParam( from = PATH ) String id )
+~~~
+
 ## interceptors/filters
 interceptors are implementing oap.ws.Interceptor and 
 interceptors is configured as below 

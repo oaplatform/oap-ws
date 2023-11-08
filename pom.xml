@@ -69,7 +69,7 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>18.13.10</oap-ws.project.version>
+        <oap-ws.project.version>18.13.11</oap-ws.project.version>
         <oap.deps.oap.version>18.13.0</oap.deps.oap.version>
 
         <oap.deps.mail.version>18.7.0</oap.deps.mail.version>
