@@ -80,7 +80,7 @@ public class JwtUserAuthenticator implements Authenticator {
         }
         User user = authResult.getSuccessValue();
         try {
-            Authentication authentication = generateTokens( user );
+            Authentication authentication = generateTokenWithOrgId( user, user.getDefaultOrganization() );
             return Result.success( authentication );
         } catch( Exception exception ) {
             log.error( "JWT creation failed {}", exception.getMessage() );

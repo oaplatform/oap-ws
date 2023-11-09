@@ -78,6 +78,18 @@ public class UserData implements oap.ws.sso.User, Serializable {
 
     @JsonIgnore
     @Override
+    public String getDefaultOrganization() {
+        return user.defaultOrganization;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getDefaultAccount() {
+        return user.defaultAccount;
+    }
+
+    @JsonIgnore
+    @Override
     public View getView() {
         return view;
     }
@@ -88,6 +100,9 @@ public class UserData implements oap.ws.sso.User, Serializable {
     }
 
     public UserData addAccount( String organizationId, String accountId ) {
+        if( user.defaultAccount == null ) {
+            user.defaultAccount = accountId;
+        }
         if( ALL_ACCOUNTS.equals( accountId ) ) {
             accounts.put( organizationId, new ArrayList<>( List.of( ALL_ACCOUNTS ) ) );
             return this;
@@ -146,7 +161,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
     }
 
     public UserData confirm( boolean status ) {
-        this.user.confirm( status );
+        this.user.confirmed = status;
         return this;
     }
 
@@ -183,6 +198,13 @@ public class UserData implements oap.ws.sso.User, Serializable {
             return user.tfaEnabled;
         }
 
+        public String getDefaultAccount() {
+            return user.defaultAccount;
+        }
+
+        public String getDefaultOrganization() {
+            return user.defaultOrganization;
+        }
 
         @JsonFormat( shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" )
         public DateTime getLastLogin() {

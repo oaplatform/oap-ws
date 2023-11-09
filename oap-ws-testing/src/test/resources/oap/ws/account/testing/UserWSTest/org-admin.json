@@ -3,6 +3,7 @@
   "firstName": "Johnny",
   "lastName": "Walker",
   "lastLogin": "${LAST_LOGIN}",
+  "defaultOrganization" : "DFLT",
   "banned": false,
   "confirmed": true,
   "accessKey": "${ACCESS_KEY}",

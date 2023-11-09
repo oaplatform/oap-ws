@@ -146,6 +146,8 @@ public class IntegratedTest extends Fixtures {
         public Map<String, String> roles = new HashMap<>();
         public final boolean tfaEnabled;
         public final String apiKey = RandomStringUtils.random( 10, true, true );
+        public String defaultOrganization = "";
+        public String defaultAccount = "";
         @JsonIgnore
         public final View view = new View();
 
@@ -180,6 +182,16 @@ public class IntegratedTest extends Fixtures {
         @Override
         public Map<String, String> getRoles() {
             return roles;
+        }
+
+        @Override
+        public String getDefaultOrganization() {
+            return defaultOrganization;
+        }
+
+        @Override
+        public String getDefaultAccount() {
+            return defaultAccount;
         }
 
         @Override
