@@ -107,6 +107,11 @@
             <artifactId>plexus-component-annotations</artifactId>
             <version>${oap.deps.plexus-component-metadata.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${oap.deps.asm.version}</version>
+        </dependency>
     </dependencies>
 
 

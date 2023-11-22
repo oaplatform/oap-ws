@@ -111,5 +111,6 @@
         <oap.deps.plexus-component-metadata.version>2.1.1</oap.deps.plexus-component-metadata.version>
         <oap.deps.software.amazon.awssdk.version>2.20.25</oap.deps.software.amazon.awssdk.version>
         <oap.deps.com.google.gson.version>2.6.2</oap.deps.com.google.gson.version>
+        <oap.deps.asm.version>9.6</oap.deps.asm.version>
     </properties>
 </project>
