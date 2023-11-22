@@ -103,10 +103,10 @@
         <oap.deps.maven.plugin-annotations.version>3.6.1</oap.deps.maven.plugin-annotations.version>
         <oap.deps.maven.plugin-plugin.version>3.10.2</oap.deps.maven.plugin-plugin.version>
 
-        <oap.deps.maven-core.version>3.6.3</oap.deps.maven-core.version>
-        <oap.deps.maven-compat.version>3.3.9</oap.deps.maven-compat.version>
+        <oap.deps.maven-core.version>3.9.5</oap.deps.maven-core.version>
+        <oap.deps.maven-compat.version>3.9.5</oap.deps.maven-compat.version>
         <oap.deps.maven-plugin-api.version>3.9.3</oap.deps.maven-plugin-api.version>
-        <oap.deps.maven-plugin-annotations.version>3.9.0</oap.deps.maven-plugin-annotations.version>
+        <oap.deps.maven-plugin-annotations.version>3.10.2</oap.deps.maven-plugin-annotations.version>
         <oap.deps.versions-maven-plugin.version>2.11.0</oap.deps.versions-maven-plugin.version>
         <oap.deps.plexus-component-metadata.version>2.1.1</oap.deps.plexus-component-metadata.version>
         <oap.deps.software.amazon.awssdk.version>2.20.25</oap.deps.software.amazon.awssdk.version>
