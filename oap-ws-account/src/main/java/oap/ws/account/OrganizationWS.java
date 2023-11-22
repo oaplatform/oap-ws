@@ -308,7 +308,7 @@ public class OrganizationWS extends AbstractWS {
         return Response.notFound();
     }
 
-    @WsMethod( method = GET, path = "/users/{email}/default-org/{organizationId}", description = "Validate first tfa code from Google Authenticator" )
+    @WsMethod( method = GET, path = "/users/{email}/default-org/{organizationId}", description = "Set default organization to user" )
     @WsValidate( { "validateUserLoggedIn" } )
     public Optional<UserData.View> changeDefaultOrganization( @WsParam( from = PATH ) String email,
                                                               @WsParam( from = PATH ) String organizationId,
@@ -321,7 +321,7 @@ public class OrganizationWS extends AbstractWS {
         return Optional.empty();
     }
 
-    @WsMethod( method = GET, path = "/users/{email}/default-account/{accountId}", description = "Validate first tfa code from Google Authenticator" )
+    @WsMethod( method = GET, path = "/users/{email}/default-account/{accountId}", description = "Set default account to user" )
     @WsValidate( { "validateUserLoggedIn" } )
     public Optional<UserData.View> changeDefaultAccount( @WsParam( from = PATH ) String email,
                                                          @WsParam( from = PATH ) String accountId,
