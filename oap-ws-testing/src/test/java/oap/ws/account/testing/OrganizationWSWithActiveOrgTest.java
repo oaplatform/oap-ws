@@ -25,7 +25,7 @@
 package oap.ws.account.testing;
 
 import oap.http.Http;
-import oap.storage.mongo.memory.MongoFixture;
+import oap.storage.mongo.MongoFixture;
 import oap.testng.Fixtures;
 import oap.testng.TestDirectoryFixture;
 import oap.ws.account.Account;
