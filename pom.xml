@@ -73,7 +73,7 @@
         <oap.deps.oap.version>21.0.1</oap.deps.oap.version>
 
         <oap.deps.mail.version>21.0.0</oap.deps.mail.version>
-        <oap.deps.storage.version>21.0.1</oap.deps.storage.version>
+        <oap.deps.storage.version>21.0.2</oap.deps.storage.version>
 
         <oap.deps.assertj.version>3.24.2</oap.deps.assertj.version>
         <oap.deps.guava.version>32.1.2-jre</oap.deps.guava.version>
