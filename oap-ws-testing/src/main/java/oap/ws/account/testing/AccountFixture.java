@@ -56,6 +56,8 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         super( PREFIX, urlOrThrow( AccountFixture.class, "/application-account.fixture.conf" ) );
 
         define( "SESSION_MANAGER_EXPIRATION_TIME", "24h" );
+
+        withMigration( "oap.ws.account.testing.migration" );
     }
 
     public AccountFixture withMigration( String migrationPackage ) {

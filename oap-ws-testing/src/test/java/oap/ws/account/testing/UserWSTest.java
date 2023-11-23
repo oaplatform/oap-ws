@@ -42,8 +42,7 @@ public class UserWSTest extends Fixtures {
     public UserWSTest() {
         fixture( new TestDirectoryFixture() );
         fixture( new MongoFixture() );
-        accountFixture = fixture( new AccountFixture()
-            .withMigration( "oap.ws.account.testing.migration" ) );
+        accountFixture = fixture( new AccountFixture() );
         User.random = new Random() {
             @Override
             public void nextBytes( byte[] bytes ) {
