@@ -28,23 +28,17 @@ import oap.application.testng.AbstractKernelFixture;
 import oap.http.testng.HttpAsserts;
 import oap.json.Binder;
 import oap.mail.MailQueue;
-import oap.ws.account.Account;
 import oap.ws.account.AccountMailman;
 import oap.ws.account.Accounts;
 import oap.ws.account.AccountsService;
-import oap.ws.account.Organization;
-import oap.ws.account.OrganizationData;
 import oap.ws.account.OrganizationStorage;
 import oap.ws.account.User;
-import oap.ws.account.UserData;
 import oap.ws.account.UserStorage;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static oap.io.Resources.urlOrThrow;
-import static oap.ws.account.Roles.ADMIN;
-import static oap.ws.account.Roles.ORGANIZATION_ADMIN;
 
 public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
     public static final String DEFAULT_PASSWORD = "Xenoss123";
@@ -58,17 +52,14 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
 
     private static final String PREFIX = "ACCOUNT_FIXTURE_";
 
-    private boolean withoutMigration = false;
-
     public AccountFixture() {
         super( PREFIX, urlOrThrow( AccountFixture.class, "/application-account.fixture.conf" ) );
 
         define( "SESSION_MANAGER_EXPIRATION_TIME", "24h" );
     }
 
-    public AccountFixture withoutMigration() {
-        withoutMigration = true;
-        define( "MONGO_MIGRATIONS", false );
+    public AccountFixture withMigration( String migrationPackage ) {
+        define( "MONGO_MIGRATIONS_PACKAGE", migrationPackage );
         return this;
     }
 
@@ -115,38 +106,12 @@ public class AccountFixture extends AbstractKernelFixture<AccountFixture> {
         return service( "oap-ws-account", UserStorage.class );
     }
 
-    @Override
-    protected void before() {
-        super.before();
-
-        if( withoutMigration )
-            reset();
-    }
-
     public AccountMailman accountMailman() {
         return service( "oap-ws-account", AccountMailman.class );
     }
 
     public MailQueue mailQueue() {
         return service( "oap-mail", MailQueue.class );
-    }
-
-    public void reset() {
-        organizationStorage().deleteAllPermanently();
-        userStorage().deleteAllPermanently();
-
-        var defaultOrganization = new OrganizationData( new Organization( DEFAULT_ORGANIZATION_ID, "Default", "Default organization" ) );
-        organizationStorage().store( defaultOrganization );
-        accounts().storeAccount( DEFAULT_ORGANIZATION_ID, new Account( DEFAULT_ACCOUNT_ID, "Account Default" ) );
-
-        var orgAdmin = new UserData( new User( DEFAULT_ORGANIZATION_ADMIN_EMAIL, "Johnny", "Walker", DEFAULT_PASSWORD, true ),
-            Map.of( DEFAULT_ORGANIZATION_ID, ORGANIZATION_ADMIN ) );
-        orgAdmin.user.apiKey = "pz7r93Hh8ssbcV1Qhxsopej18ng2Q";
-        userStorage().store( orgAdmin );
-
-        var globalAdmin = new UserData( new User( DEFAULT_ADMIN_EMAIL, "System", "Admin", DEFAULT_PASSWORD, true ), Map.of( DEFAULT_ORGANIZATION_ID, ADMIN ) );
-        globalAdmin.user.apiKey = "bDzf7zu8ngd4YLH29GsqkTGDtL23jy";
-        userStorage().store( globalAdmin );
     }
 
     public String httpUrl( String url ) {

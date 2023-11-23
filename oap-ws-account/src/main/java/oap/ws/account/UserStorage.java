@@ -97,7 +97,8 @@ public class UserStorage extends MemoryStorage<String, UserData> implements oap.
     }
 
     @Override
-    public Result<? extends User, AuthenticationFailure> getAuthenticated( String email, Optional<String> tfaCode ) {
+    public Result<? extends User, AuthenticationFailure>
+    getAuthenticated( String email, Optional<String> tfaCode ) {
         Optional<UserData> authenticated = get( email );
         return getAuthenticationResult( email, tfaCode, authenticated );
     }
