@@ -69,7 +69,9 @@ public class OrganizationWSWithActiveOrgTest extends Fixtures {
     public OrganizationWSWithActiveOrgTest() {
         fixture( new TestDirectoryFixture() );
         fixture( new MongoFixture() );
-        accountFixture = fixture( new AccountFixture().withConfResource( AccountFixture.class, "/application-account.fixture-org.conf" ) );
+        accountFixture = fixture( new AccountFixture()
+            .withConfResource( AccountFixture.class, "/application-account.fixture-org.conf" )
+            .withMigration( "oap.ws.account.testing.migration" ) );
     }
 
     @AfterMethod
