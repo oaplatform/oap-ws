@@ -129,7 +129,11 @@ public class ApiWS {
             return "optional " + formatType( r.typeParameters.get( 0 ), types );
 
         if( r.assignableFrom( SoftReference.class ) ) {
-            return "soft reference -> " + formatType( r.typeParameters.get( 0 ), types );
+            if( !r.typeParameters.isEmpty() ) {
+                return "soft reference -> " + formatType( r.typeParameters.get( 0 ), types );
+            } else {
+                return "soft reference -> <UNKNOWN>";
+            }
         }
 
         if( r.assignableTo( Map.class ) ) return "map String -> " + formatType( r.getMapComponentsType()._2, types );
