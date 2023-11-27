@@ -40,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 
 import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -109,7 +110,7 @@ public class ApiWS {
         }
         result += "# TYPES " + "#".repeat( 72 ) + "\n";
         for( Reflection type : types ) {
-            if ( ignorableType( type ) ) continue;
+            if( ignorableType( type ) ) continue;
             result += "## " + type.name() + " " + "#".repeat( Math.max( 0, 76 - type.name().length() ) ) + "\n";
             result += formatComplexType( type, types, withDeprecated ) + "\n";
             result += "\n";
@@ -126,6 +127,15 @@ public class ApiWS {
     private String formatType( Reflection r, Types types ) {
         if( r.isOptional() )
             return "optional " + formatType( r.typeParameters.get( 0 ), types );
+
+        if( r.assignableFrom( SoftReference.class ) ) {
+            if( !r.typeParameters.isEmpty() ) {
+                return "soft reference -> " + formatType( r.typeParameters.get( 0 ), types );
+            } else {
+                return "soft reference -> <UNKNOWN>";
+            }
+        }
+
         if( r.assignableTo( Map.class ) ) return "map String -> " + formatType( r.getMapComponentsType()._2, types );
         if( r.assignableTo( Collection.class ) )
             return formatType( r.getCollectionComponentType(), types ) + "[]";

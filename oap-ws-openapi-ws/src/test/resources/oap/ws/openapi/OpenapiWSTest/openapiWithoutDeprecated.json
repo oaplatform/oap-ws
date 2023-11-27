@@ -155,6 +155,12 @@
         "properties" : {
           "empty" : {
             "type" : "boolean"
+          },
+          "first" : {
+            "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
+          },
+          "last" : {
+            "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
           }
         },
         "type" : "array"
@@ -676,6 +682,12 @@
             "properties" : {
               "empty" : {
                 "type" : "boolean"
+              },
+              "first" : {
+                "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
+              },
+              "last" : {
+                "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
               }
             },
             "type" : "array"
@@ -1822,6 +1834,12 @@
             "properties" : {
               "empty" : {
                 "type" : "boolean"
+              },
+              "first" : {
+                "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
+              },
+              "last" : {
+                "$ref" : "#/components/schemas/oap_ws_openapi_ExampleNewWS_NewWsBean2"
               }
             },
             "type" : "array"
