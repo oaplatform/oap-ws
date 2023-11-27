@@ -69,10 +69,10 @@ public class OrganizationWS extends AbstractWS {
 
     public static final String ORGANIZATION_ID = "organizationId";
     protected final Accounts accounts;
-    private final OauthService oauthService;
+    protected final OauthService oauthService;
     protected final AccountMailman mailman;
-    private final String confirmUrlFinish;
-    private final boolean selfRegistrationEnabled;
+    protected final String confirmUrlFinish;
+    protected final boolean selfRegistrationEnabled;
 
     public OrganizationWS( Accounts accounts, AccountMailman mailman, SecurityRoles roles, String confirmUrlFinish, boolean selfRegistrationEnabled, OauthService oauthService ) {
         super( roles );
