@@ -52,7 +52,7 @@ public class JWTSecurityInterceptor implements Interceptor {
     private final JWTExtractor jwtExtractor;
     private final UserProvider userProvider;
     private final SecurityRoles roles;
-    private boolean useOrganizationLogin = false;
+    private final boolean useOrganizationLogin;
 
     public JWTSecurityInterceptor( JWTExtractor jwtExtractor, UserProvider userProvider, SecurityRoles roles ) {
         this.jwtExtractor = Objects.requireNonNull( jwtExtractor );
@@ -80,7 +80,7 @@ public class JWTSecurityInterceptor implements Interceptor {
 
             final String token = JWTExtractor.extractBearerToken( jwtToken );
             if( token == null || !jwtExtractor.verifyToken( token ) ) {
-                return Optional.of( new Response( FORBIDDEN, "Invalid token: " + token ) );
+                return Optional.of( new Response( UNAUTHORIZED, "Invalid token: " + token ) );
             }
 
             final String email = jwtExtractor.getUserEmail( token );
@@ -98,7 +98,7 @@ public class JWTSecurityInterceptor implements Interceptor {
             return Optional.empty();
         }
         if( jwtToken == null && !isApiKeyInterceptor( issuerName, context ) ) {
-            return Optional.of( new Response( UNAUTHORIZED, "jwtToken is null" ) );
+            return Optional.of( new Response( UNAUTHORIZED, "JWT token is empty" ) );
         }
 
         Optional<String> realm =

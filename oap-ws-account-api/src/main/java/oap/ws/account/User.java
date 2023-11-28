@@ -23,6 +23,8 @@ import javax.annotation.Nonnull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.random.RandomGenerator;
 
 @ToString( exclude = { "password", "create" } )
@@ -46,7 +48,7 @@ public class User implements Serializable {
     public boolean create;
     public boolean tfaEnabled;
     public String defaultOrganization;
-    public String defaultAccount;
+    public Map<String, String> defaultAccounts = new HashMap<>();
     public static RandomGenerator random = new SecureRandom();
     public String secretKey = generateSecretKey();
 

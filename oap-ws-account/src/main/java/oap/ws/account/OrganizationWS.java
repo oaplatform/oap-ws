@@ -46,6 +46,7 @@ import static oap.ws.account.Permissions.ACCOUNT_READ;
 import static oap.ws.account.Permissions.ACCOUNT_STORE;
 import static oap.ws.account.Permissions.ASSIGN_ROLE;
 import static oap.ws.account.Permissions.BAN_USER;
+import static oap.ws.account.Permissions.MANAGE_SELF;
 import static oap.ws.account.Permissions.ORGANIZATION_APIKEY;
 import static oap.ws.account.Permissions.ORGANIZATION_LIST_USERS;
 import static oap.ws.account.Permissions.ORGANIZATION_READ;
@@ -130,7 +131,6 @@ public class OrganizationWS extends AbstractWS {
 
     @WsMethod( method = GET, path = "/{organizationId}/accounts" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { ACCOUNT_LIST } )
-    @WsValidate( "validateOrganizationAccess" )
     public Optional<List<Account>> accounts( @WsParam( from = PATH ) String organizationId,
                                              @WsParam( from = SESSION ) UserData loggedUser ) {
         return accounts.getOrganization( organizationId )
@@ -309,29 +309,42 @@ public class OrganizationWS extends AbstractWS {
     }
 
     @WsMethod( method = GET, path = "/users/{email}/default-org/{organizationId}", description = "Set default organization to user" )
-    @WsValidate( { "validateUserLoggedIn" } )
+    @WsSecurity( realm = ORGANIZATION_ID, permissions = { MANAGE_SELF } )
     public Optional<UserData.View> changeDefaultOrganization( @WsParam( from = PATH ) String email,
                                                               @WsParam( from = PATH ) String organizationId,
-                                                              @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
+                                                              @WsParam( from = SESSION ) UserData loggedUser ) {
         Optional<UserData> user = accounts.getUser( email );
 
-        if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
+        if( user.isPresent() && email.equals( loggedUser.user.email ) ) {
             return accounts.updateUser( email, u -> u.defaultOrganization = organizationId ).map( u -> u.view );
         }
         return Optional.empty();
     }
 
-    @WsMethod( method = GET, path = "/users/{email}/default-account/{accountId}", description = "Set default account to user" )
-    @WsValidate( { "validateUserLoggedIn" } )
-    public Optional<UserData.View> changeDefaultAccount( @WsParam( from = PATH ) String email,
+    @WsMethod( method = GET, path = "/{organizationId}/users/{email}/default-account/{accountId}", description = "Set default account in organization to user" )
+    @WsSecurity( realm = ORGANIZATION_ID, permissions = { MANAGE_SELF } )
+    @WsValidate( { "validateAccountAccess" } )
+    public Optional<UserData.View> changeDefaultAccount( @WsParam( from = PATH ) String organizationId,
+                                                         @WsParam( from = PATH ) String email,
                                                          @WsParam( from = PATH ) String accountId,
-                                                         @WsParam( from = SESSION ) Optional<UserData> loggedUser ) {
+                                                         @WsParam( from = SESSION ) UserData loggedUser ) {
         Optional<UserData> user = accounts.getUser( email );
 
-        if( user.isPresent() && email.equals( loggedUser.map( u -> u.user.email ).orElse( null ) ) ) {
-            return accounts.updateUser( email, u -> u.defaultAccount = accountId ).map( u -> u.view );
+        if( user.isPresent() && email.equals( loggedUser.user.email ) ) {
+            return accounts.updateUser( email, u -> u.defaultAccounts.put( organizationId, accountId ) ).map( u -> u.view );
         }
         return Optional.empty();
+    }
+
+    @WsMethod( method = GET, path = "/{organizationId}/add", description = "Add user to existing organization" )
+    @WsSecurity( realm = ORGANIZATION_ID, permissions = { ORGANIZATION_STORE_USER } )
+    @WsValidate( "validateAdminOrganizationAccess" )
+    public Optional<UserData.View> addUserToOrganization( @WsParam( from = PATH ) String organizationId,
+                                                          @WsParam( from = QUERY ) String newOrganizationId,
+                                                          @WsParam( from = QUERY ) String email,
+                                                          @WsParam( from = QUERY ) String role,
+                                                          @WsParam( from = SESSION ) UserData loggedUser ) {
+        return accounts.addOrganizationToUser( email, newOrganizationId, role ).map( u -> u.view );
     }
 
     @WsMethod( method = POST, path = "/{organizationId}/assign" )
@@ -411,6 +424,24 @@ public class OrganizationWS extends AbstractWS {
             return empty();
         }
     }
+
+    protected ValidationErrors validateAdminOrganizationAccess( String email, UserData loggedUser, String newOrganizationId ) {
+        final String loggedUserRoleInNewOrganization = loggedUser.roles.getOrDefault( newOrganizationId, "" );
+        if( loggedUserRoleInNewOrganization.isEmpty() && !isSystemAdmin( loggedUser ) ) {
+            return error( FORBIDDEN, "User is not allowed to add users to organization (%s)", newOrganizationId );
+        }
+        if( !loggedUserRoleInNewOrganization.equals( ADMIN ) && !isSystemAdmin( loggedUser ) ) {
+            return error( FORBIDDEN, "Only ADMIN can add user to organization" );
+        }
+        if( accounts.getUser( email ).isPresent() && isSystemAdmin( loggedUser ) ) {
+            return empty();
+        }
+        if( accounts.getUser( email ).isPresent() ) {
+            return empty();
+        }
+        return empty();
+    }
+
 
     public static class Passwd {
         public static final String SCHEMA = "/oap/ws/account/passwd.schema.conf";

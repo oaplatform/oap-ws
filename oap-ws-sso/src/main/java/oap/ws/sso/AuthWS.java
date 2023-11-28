@@ -135,7 +135,7 @@ public class AuthWS extends AbstractSecureWS {
         else if( WRONG_ORGANIZATION == result.getFailureValue() )
             return notAuthenticatedResponse( FORBIDDEN, "User doesn't belong to organization", sessionManager.cookieDomain );
         else if( TOKEN_NOT_VALID == result.getFailureValue() ) {
-            return notAuthenticatedResponse( BAD_REQUEST, "Token is not valid", sessionManager.cookieDomain );
+            return notAuthenticatedResponse( UNAUTHORIZED, "Token is invalid", sessionManager.cookieDomain );
         } else
             return notAuthenticatedResponse( UNAUTHORIZED, "User not found", sessionManager.cookieDomain );
     }

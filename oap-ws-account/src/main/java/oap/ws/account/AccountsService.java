@@ -178,4 +178,9 @@ public class AccountsService implements Accounts {
             organizationStorage.permanentlyDelete( organization );
         }
     }
+
+    @Override
+    public Optional<UserData> addOrganizationToUser( String email, String organizationId, String role ) {
+        return userStorage.update( email, u -> u.addOrganization( organizationId, role ) );
+    }
 }
