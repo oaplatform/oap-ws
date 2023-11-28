@@ -209,8 +209,8 @@ public class UserData implements oap.ws.sso.User, Serializable {
             return user.tfaEnabled;
         }
 
-        public String getDefaultAccount( String organizationId ) {
-            return user.defaultAccounts.get( organizationId );
+        public Map<String, String> getDefaultAccounts() {
+            return user.defaultAccounts;
         }
 
         public String getDefaultOrganization() {
