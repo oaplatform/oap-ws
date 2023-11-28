@@ -79,7 +79,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
     @JsonIgnore
     @Override
     public Optional<String> getDefaultOrganization() {
-        return Optional.ofNullable( user.defaultOrganization ).or( Optional::empty );
+        return Optional.ofNullable( user.defaultOrganization );
     }
 
     @Override
@@ -89,7 +89,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
 
     @JsonIgnore
     public Optional<String> getDefaultAccount( String organizationId ) {
-        return Optional.ofNullable( user.defaultAccounts.get( organizationId ) ).or( Optional::empty );
+        return Optional.ofNullable( user.defaultAccounts.get( organizationId ) );
     }
 
     @JsonIgnore
@@ -104,9 +104,8 @@ public class UserData implements oap.ws.sso.User, Serializable {
     }
 
     public UserData addAccount( String organizationId, String accountId ) {
-        if( !user.defaultAccounts.containsKey( organizationId ) ) {
-            user.defaultAccounts.put( organizationId, accountId );
-        }
+        user.defaultAccounts.computeIfAbsent( organizationId, k -> accountId );
+
         if( ALL_ACCOUNTS.equals( accountId ) ) {
             accounts.put( organizationId, new ArrayList<>( List.of( ALL_ACCOUNTS ) ) );
             return this;
@@ -171,7 +170,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
 
     public UserData addOrganization( String organizationId, String role ) {
         this.roles.put( organizationId, role );
-        if( getDefaultOrganization().isPresent()  ) {
+        if( getDefaultOrganization().isPresent() ) {
             this.user.defaultOrganization = organizationId;
         }
         return this;
