@@ -63,6 +63,7 @@ public class SSO {
                 .secure( cookieSecure )
             )
             .withCookie( new Cookie( REFRESH_TOKEN_KEY, authentication.refreshToken )
+                .withDomain( cookieDomain )
                 .withPath( "/" )
                 .withExpires( new DateTime( UTC ).plus( cookieExpiration + 24 * 60 * 60 * 1000  ) ) //todo move to config
                 .httpOnly( true )

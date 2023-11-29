@@ -78,14 +78,18 @@ public class UserData implements oap.ws.sso.User, Serializable {
 
     @JsonIgnore
     @Override
-    public String getDefaultOrganization() {
-        return user.defaultOrganization;
+    public Optional<String> getDefaultOrganization() {
+        return Optional.ofNullable( user.defaultOrganization );
+    }
+
+    @Override
+    public Map<String, String> getDefaultAccounts() {
+        return user.defaultAccounts;
     }
 
     @JsonIgnore
-    @Override
-    public String getDefaultAccount() {
-        return user.defaultAccount;
+    public Optional<String> getDefaultAccount( String organizationId ) {
+        return Optional.ofNullable( user.defaultAccounts.get( organizationId ) );
     }
 
     @JsonIgnore
@@ -100,9 +104,8 @@ public class UserData implements oap.ws.sso.User, Serializable {
     }
 
     public UserData addAccount( String organizationId, String accountId ) {
-        if( user.defaultAccount == null ) {
-            user.defaultAccount = accountId;
-        }
+        user.defaultAccounts.computeIfAbsent( organizationId, k -> accountId );
+
         if( ALL_ACCOUNTS.equals( accountId ) ) {
             accounts.put( organizationId, new ArrayList<>( List.of( ALL_ACCOUNTS ) ) );
             return this;
@@ -165,6 +168,14 @@ public class UserData implements oap.ws.sso.User, Serializable {
         return this;
     }
 
+    public UserData addOrganization( String organizationId, String role ) {
+        this.roles.put( organizationId, role );
+        if( getDefaultOrganization().isPresent() ) {
+            this.user.defaultOrganization = organizationId;
+        }
+        return this;
+    }
+
     public class View implements oap.ws.sso.User.View {
         public String getEmail() {
             return user.email;
@@ -198,8 +209,8 @@ public class UserData implements oap.ws.sso.User, Serializable {
             return user.tfaEnabled;
         }
 
-        public String getDefaultAccount() {
-            return user.defaultAccount;
+        public Map<String, String> getDefaultAccounts() {
+            return user.defaultAccounts;
         }
 
         public String getDefaultOrganization() {
