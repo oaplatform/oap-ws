@@ -27,6 +27,11 @@ package oap.ws.admin;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.Test;
 
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+
 @Slf4j
 public class LogWSTest {
     @Test
@@ -42,5 +47,14 @@ public class LogWSTest {
 
         logWS.reset();
         log.trace( "test trace2" );
+    }
+
+    @Test
+    public void testGetAll() {
+        var logWS = new LogWS();
+        Map<String, String> map = logWS.getAll();
+
+        assertThat( map ).contains( entry( "org", "DEBUG" ), entry( "ROOT", "TRACE" ) );
+
     }
 }
