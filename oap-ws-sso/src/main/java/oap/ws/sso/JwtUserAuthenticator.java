@@ -116,7 +116,8 @@ public class JwtUserAuthenticator implements Authenticator {
     public Result<Authentication, AuthenticationFailure> refreshToken( String refreshToken ) {
         if( jwtExtractor.verifyToken( refreshToken ) ) {
             log.trace( "generating new authentication by refreshToken {} ", refreshToken );
-            final Optional<Authentication> authentication = userProvider.getUser( jwtExtractor.getUserEmail( refreshToken ) ).map( user -> new Authentication( jwtTokenGenerator.generateAccessToken( user ), refreshToken, user ) );
+            final Optional<Authentication> authentication = userProvider.getUser( jwtExtractor.getUserEmail( refreshToken ) ).map( user ->
+                new Authentication( jwtTokenGenerator.generateAccessToken( user ), jwtTokenGenerator.generateRefreshToken( user ), user ) );
             return authentication.<Result<Authentication, AuthenticationFailure>>map( Result::success ).orElseGet( () -> Result.failure( AuthenticationFailure.UNAUTHENTICATED ) );
         }
         return Result.failure( AuthenticationFailure.TOKEN_NOT_VALID );

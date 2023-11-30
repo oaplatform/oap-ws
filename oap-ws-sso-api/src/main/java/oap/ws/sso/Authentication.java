@@ -27,22 +27,24 @@ package oap.ws.sso;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import oap.util.Pair;
 import org.joda.time.DateTime;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 @ToString
 @EqualsAndHashCode
 public class Authentication implements Serializable {
     @Serial
     private static final long serialVersionUID = -2221117654361445000L;
-    public final String accessToken;
-    public final String refreshToken;
+    public final Pair<Date, String> accessToken;
+    public final Pair<Date, String> refreshToken;
     public final User user;
     public DateTime created;
 
-    public Authentication( String accessToken, String refreshToken, User user ) {
+    public Authentication( Pair<Date, String> accessToken, Pair<Date, String> refreshToken, User user ) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.user = user;
@@ -53,11 +55,11 @@ public class Authentication implements Serializable {
     public View view = new View();
 
     public class View implements Serializable {
-        public String getAccessToken() {
+        public Pair<Date, String> getAccessToken() {
             return accessToken;
         }
 
-        public String getRefreshToken() {
+        public Pair<Date, String> getRefreshToken() {
             return refreshToken;
         }
 

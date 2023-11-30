@@ -32,6 +32,7 @@ import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
 
+import java.util.Date;
 import java.util.Objects;
 
 import static org.joda.time.DateTimeZone.UTC;
@@ -39,8 +40,6 @@ import static org.joda.time.DateTimeZone.UTC;
 public class SSO {
     public static final String AUTHENTICATION_KEY = "Authorization";
     public static final String REFRESH_TOKEN_KEY = "refreshToken";
-    public static final String ACTIVE_ORG = "activeOrganisation";
-    public static final String ACTIVE_ACCOUNT = "activeAccount";
     public static final String SESSION_USER_KEY = "loggedUser";
     public static final String ISSUER = "issuer";
 
@@ -54,18 +53,18 @@ public class SSO {
     public static Response authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration, Boolean cookieSecure ) {
         return Response
             .jsonOk()
-            .withHeader( AUTHENTICATION_KEY, authentication.accessToken )
-            .withCookie( new Cookie( AUTHENTICATION_KEY, authentication.accessToken )
+            .withHeader( AUTHENTICATION_KEY, authentication.accessToken._2 )
+            .withCookie( new Cookie( AUTHENTICATION_KEY, authentication.accessToken._2 )
                 .withDomain( cookieDomain )
                 .withPath( "/" )
-                .withExpires( new DateTime( UTC ).plus( cookieExpiration ) )
+                .withExpires( getExpirationTimeCookie( authentication.accessToken._1, cookieExpiration ) )
                 .httpOnly( true )
                 .secure( cookieSecure )
             )
-            .withCookie( new Cookie( REFRESH_TOKEN_KEY, authentication.refreshToken )
+            .withCookie( new Cookie( REFRESH_TOKEN_KEY, authentication.refreshToken._2 )
                 .withDomain( cookieDomain )
                 .withPath( "/" )
-                .withExpires( new DateTime( UTC ).plus( cookieExpiration + 24 * 60 * 60 * 1000  ) ) //todo move to config
+                .withExpires( getExpirationTimeCookie( authentication.refreshToken._1, cookieExpiration ) )
                 .httpOnly( true )
                 .secure( cookieSecure ) )
             .withBody( authentication.view, false );
@@ -73,6 +72,10 @@ public class SSO {
 
     public static Response authenticatedResponse( Authentication authentication, String cookieDomain, long cookieExpiration ) {
         return authenticatedResponse( authentication, cookieDomain, cookieExpiration, false );
+    }
+
+    private static DateTime getExpirationTimeCookie( Date expirationInToken, long cookieExpiration ) {
+        return new DateTime( UTC ).plus( expirationInToken != null ? expirationInToken.getTime() : cookieExpiration );
     }
 
     public static Response logoutResponse( String cookieDomain ) {

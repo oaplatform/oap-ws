@@ -25,14 +25,14 @@
 package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.ws.account.OauthService;
-import oap.ws.account.TokenInfo;
 import oap.http.Http;
 import oap.ws.Response;
 import oap.ws.Session;
 import oap.ws.SessionManager;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import oap.ws.account.OauthService;
+import oap.ws.account.TokenInfo;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.WsValidate;
 
