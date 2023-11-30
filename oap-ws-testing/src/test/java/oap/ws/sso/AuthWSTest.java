@@ -102,6 +102,7 @@ public class AuthWSTest extends IntegratedTest {
 
     @Test
     public void loginAndTryToReachOrganization() {
+        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
         userProvider().addUser( new TestUser( "user@user.com", "pass", __( "r1", "USER" ) ) );
         assertLogin( "admin@admin.com", "pass" );
@@ -114,6 +115,7 @@ public class AuthWSTest extends IntegratedTest {
 
     @Test
     public void loginThenUseSpecificOrganization() {
+        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", Map.of( "r1", "ADMIN", "r2", "USER" ) ) );
         assertLogin( "admin@admin.com", "pass" );
         assertSwitchOrganization( "r2" );

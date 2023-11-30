@@ -24,7 +24,6 @@
 
 package oap.ws.sso;
 
-import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
 import org.testng.annotations.Test;
 
 import static oap.http.Http.ContentType.TEXT_PLAIN;
@@ -61,7 +60,6 @@ public class JWTInterceptorTest extends IntegratedTest {
 
     @Test
     public void wrongRealmWithOrganizationLoggedIn() throws InterruptedException {
-        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) );
         assertLogin( "admin@admin.com", "pass" );
         assertSwitchOrganization( "r1" );
