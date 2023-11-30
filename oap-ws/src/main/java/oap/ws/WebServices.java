@@ -75,7 +75,7 @@ public class WebServices {
 
             for( var path : config.ext.path ) {
                 bind( path, config.getInstance(),
-                    config.ext.sessionAware, sessionManager, interceptors, config.ext.compression, config.ext.port );
+                    config.ext.sessionAware, sessionManager, interceptors, config.ext.compression, config.ext.port, config.ext.portType );
             }
         }
 
@@ -83,7 +83,7 @@ public class WebServices {
             log.trace( "handler = {}", config );
 
             for( var path : config.ext.path ) {
-                bind( path, ( HttpHandler ) config.getInstance(), config.ext.compression, config.ext.port );
+                bind( path, ( HttpHandler ) config.getInstance(), config.ext.compression, config.ext.port, config.ext.portType );
             }
         }
     }
@@ -95,19 +95,19 @@ public class WebServices {
 
     public void bind( String context, Object service, boolean sessionAware,
                       SessionManager sessionManager, List<Interceptor> interceptors, boolean compressionSupport,
-                      Optional<Integer> port ) {
+                      Optional<String> port, List<NioHttpServer.PortType> portType ) {
 
         services.put( context, service );
-        bind( context, new WebService( service, sessionAware, sessionManager, interceptors, compressionSupport ), compressionSupport, port );
+        bind( context, new WebService( service, sessionAware, sessionManager, interceptors, compressionSupport ), compressionSupport, port, portType );
     }
 
     @SuppressWarnings( "checkstyle:ParameterAssignment" )
     public void bind( String context, HttpHandler handler, boolean compressionSupport,
-                      Optional<Integer> port ) {
+                      Optional<String> port, List<NioHttpServer.PortType> portType ) {
         if( context.isEmpty() ) context = "/";
 
         if( port.isEmpty() ) {
-            server.bind( context, handler, compressionSupport );
+            server.bind( context, handler, compressionSupport, portType );
         } else {
             server.bind( context, handler, compressionSupport, port.get() );
         }
