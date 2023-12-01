@@ -55,12 +55,12 @@ public class Authentication implements Serializable {
     public View view = new View();
 
     public class View implements Serializable {
-        public Pair<Date, String> getAccessToken() {
-            return accessToken;
+        public String getAccessToken() {
+            return accessToken._2;
         }
 
-        public Pair<Date, String> getRefreshToken() {
-            return refreshToken;
+        public String getRefreshToken() {
+            return refreshToken._2;
         }
 
         public DateTime getCreated() {

@@ -25,6 +25,8 @@
 package oap.ws.sso;
 
 
+import oap.http.Http;
+import oap.json.Binder;
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
 import org.testng.annotations.Test;
 
@@ -34,6 +36,7 @@ import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.Http.StatusCode.OK;
 import static oap.http.Http.StatusCode.UNAUTHORIZED;
 import static oap.http.testng.HttpAsserts.assertGet;
+import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.getTestHttpPort;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.util.Pair.__;
@@ -46,6 +49,7 @@ import static oap.ws.account.testing.SecureWSFixture.assertLogout;
 import static oap.ws.account.testing.SecureWSFixture.assertSwitchOrganization;
 import static oap.ws.account.testing.SecureWSFixture.assertTfaRequiredLogin;
 import static oap.ws.account.testing.SecureWSFixture.assertWrongTfaLogin;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class AuthWSTest extends IntegratedTest {
     @Test
@@ -54,6 +58,17 @@ public class AuthWSTest extends IntegratedTest {
         assertLogin( "admin@admin.com", "pass" );
         assertGet( httpUrl( "/auth/whoami" ) )
             .respondedJson( "{\"email\":\"admin@admin.com\"}" );
+    }
+
+    @Test
+    public void loginResponseTest() {
+        final TestUser testUser = userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
+        assertPost( httpUrl( "/auth/login" ), "{ \"email\":\"admin@admin.com\",\"password\": \"pass\"}" )
+            .hasCode( Http.StatusCode.OK ).satisfies( resp -> {
+                Map<String, String> response = Binder.json.unmarshal( Map.class, resp.contentString() );
+                assertTrue( response.containsKey( "accessToken" ) );
+                assertTrue( response.containsKey( "refreshToken" ) );
+            } );
     }
 
     @Test
