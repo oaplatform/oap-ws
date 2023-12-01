@@ -72,7 +72,7 @@
 
     <properties>
         <oap-ws.project.version>21.1.0</oap-ws.project.version>
-        <oap.deps.oap.version>21.1.0.https.16</oap.deps.oap.version>
+        <oap.deps.oap.version>21.1.0.https.22</oap.deps.oap.version>
 
         <oap.deps.mail.version>21.0.0</oap.deps.mail.version>
         <oap.deps.storage.version>21.0.4</oap.deps.storage.version>
