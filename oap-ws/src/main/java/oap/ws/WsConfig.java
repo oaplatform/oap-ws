@@ -26,6 +26,7 @@ package oap.ws;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import oap.http.server.nio.NioHttpServer;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -40,5 +41,6 @@ public class WsConfig {
     public LinkedHashSet<String> path = new LinkedHashSet<>();
     public boolean sessionAware;
     public boolean compression = true;
-    public Optional<Integer> port = Optional.empty();
+    public Optional<String> port = Optional.empty();
+    public ArrayList<NioHttpServer.PortType> portType = new ArrayList<>();
 }
