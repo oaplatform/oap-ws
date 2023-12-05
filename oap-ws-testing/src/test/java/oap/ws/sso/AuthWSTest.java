@@ -62,7 +62,7 @@ public class AuthWSTest extends IntegratedTest {
 
     @Test
     public void loginResponseTest() {
-        final TestUser testUser = userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
+        userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
         assertPost( httpUrl( "/auth/login" ), "{ \"email\":\"admin@admin.com\",\"password\": \"pass\"}" )
             .hasCode( Http.StatusCode.OK ).satisfies( resp -> {
                 Map<String, String> response = Binder.json.unmarshal( Map.class, resp.contentString() );
