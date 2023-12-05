@@ -62,6 +62,11 @@ public class IntegratedTest extends Fixtures {
         return kernelFixture.service( "oap-ws-sso-test", TestUserProvider.class );
     }
 
+    protected JWTExtractor tokenExtractor() {
+        return kernelFixture.service( "oap-ws-sso-api", JWTExtractor.class );
+    }
+
+
     @AfterMethod
     public void afterMethod() {
         assertLogout();

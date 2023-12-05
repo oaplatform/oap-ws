@@ -140,15 +140,6 @@ public class AuthWS extends AbstractSecureWS {
             return notAuthenticatedResponse( UNAUTHORIZED, "User not found", sessionManager.cookieDomain );
     }
 
-    @WsMethod( method = GET, path = "/refresh" )
-    public Response refreshToken( @WsParam( from = COOKIE ) String refreshToken ) {
-        var result = authenticator.refreshToken( refreshToken );
-        if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
-            sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
-        else
-            return notAuthenticatedResponse( UNAUTHORIZED, "Token is invalid", sessionManager.cookieDomain );
-    }
-
     @WsMethod( method = GET, path = "/logout" )
     public Response logout( @WsParam( from = SESSION ) Optional<User> loggedUser,
                             Session session ) {

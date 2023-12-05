@@ -34,7 +34,7 @@ public interface Authenticator {
 
     Result<Authentication, AuthenticationFailure> authenticate( String email, Optional<String> tfaCode );
 
-    Result<Authentication, AuthenticationFailure> refreshToken( String refreshToken );
+    Result<Authentication, AuthenticationFailure> refreshToken( String refreshToken, Optional<String> currentOrganization );
 
     Optional<Authentication> authenticateTrusted( String email );
 

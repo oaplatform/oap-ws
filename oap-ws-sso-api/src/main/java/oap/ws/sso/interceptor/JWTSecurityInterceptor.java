@@ -34,6 +34,7 @@ import oap.ws.sso.SecurityRoles;
 import oap.ws.sso.User;
 import oap.ws.sso.UserProvider;
 import oap.ws.sso.WsSecurity;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -124,12 +125,12 @@ public class JWTSecurityInterceptor implements Interceptor {
     }
 
     private boolean hasRealmMismatchError( String organization, boolean useOrganizationLogin, String realmString ) {
-        boolean organizationNotNull = organization != null;
+        boolean organizationNotEmpty = !StringUtils.isEmpty( organization );
         boolean realmNotEqualOrganization = !realmString.equals( organization );
         boolean realmNotEqualSystem = !SYSTEM.equals( realmString );
         boolean organizationNotEqualSystem = !SYSTEM.equals( organization );
 
-        return organizationNotNull && useOrganizationLogin
+        return organizationNotEmpty && useOrganizationLogin
             && realmNotEqualOrganization
             && realmNotEqualSystem
             && organizationNotEqualSystem;
