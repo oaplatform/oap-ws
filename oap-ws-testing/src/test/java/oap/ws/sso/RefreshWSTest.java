@@ -27,6 +27,7 @@ package oap.ws.sso;
 
 import oap.json.Binder;
 import oap.ws.sso.interceptor.ThrottleLoginInterceptor;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Map;
@@ -44,9 +45,13 @@ import static org.testng.AssertJUnit.assertTrue;
 public class RefreshWSTest extends IntegratedTest {
 
 
+    @BeforeMethod
+    public void beforeMethod() {
+        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
+    }
+
     @Test
     public void refreshResponseTest() throws InterruptedException {
-        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
         final String[] accessToken = new String[1];
         final String[] refreshToken = new String[1];
@@ -72,7 +77,6 @@ public class RefreshWSTest extends IntegratedTest {
 
     @Test
     public void refreshResponseWithEWrongOrgIdTest() {
-        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         userProvider().addUser( new TestUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) ) );
         assertPost( httpUrl( "/auth/login" ), "{ \"email\":\"admin@admin.com\",\"password\": \"pass\"}" )
             .hasCode( OK ).satisfies( resp -> {
@@ -85,7 +89,6 @@ public class RefreshWSTest extends IntegratedTest {
 
     @Test
     public void refreshResponseWithoutOrgIdTest() {
-        kernelFixture.service( "oap-ws-sso-api", ThrottleLoginInterceptor.class ).delay = -1;
         final TestUser testUser = userProvider().addUser( new TestUser( "admin@admin.com", "pass", Map.of( "r1", "ADMIN", "r2", "USER" ) ) );
         testUser.defaultOrganization = "r2";
         final String[] refreshToken = new String[1];
