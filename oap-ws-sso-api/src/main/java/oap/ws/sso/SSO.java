@@ -32,6 +32,7 @@ import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
@@ -75,7 +76,7 @@ public class SSO {
     }
 
     private static DateTime getExpirationTimeCookie( Date expirationInToken, long cookieExpiration ) {
-        return new DateTime( UTC ).plus( expirationInToken != null ? expirationInToken.getTime() : cookieExpiration );
+        return expirationInToken != null ? new DateTime( expirationInToken ) : new DateTime( cookieExpiration );
     }
 
     public static Response logoutResponse( String cookieDomain ) {
