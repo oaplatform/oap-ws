@@ -54,7 +54,7 @@ public class JwtTokenGenerator {
             .withClaim( "user", user.getEmail() )
             .withClaim( "roles", user.getRoles() )
             .withIssuer( issuer )
-            .withExpiresAt( new Date( System.currentTimeMillis() + accessSecretExpiration ) )
+            .withExpiresAt( expiresAt )
             .sign( algorithm ) );
     }
 
