@@ -25,12 +25,11 @@
 package oap.ws.sso;
 
 import oap.util.Pair;
-import org.joda.time.DateTime;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
-import java.time.temporal.*;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Set;
 
@@ -51,8 +50,8 @@ public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
         assertNotNull( token._1 );
         assertString( token._2 ).isNotEmpty();
         Instant expirationTime = token._1.toInstant().truncatedTo( ChronoUnit.MINUTES );
-        Instant expectedExpirationTime = ( Instant.now().plus( Duration.ofMinutes( 15 ) ).truncatedTo( ChronoUnit.MINUTES ) );
-        assertTrue( ( expirationTime.compareTo( expectedExpirationTime ) ) == 0 );
+        Instant expectedExpirationTime = Instant.now().plus( Duration.ofMinutes( 15 ) ).truncatedTo( ChronoUnit.MINUTES );
+        assertTrue( expirationTime.compareTo( expectedExpirationTime ) == 0 );
         assertTrue( jwtExtractor.verifyToken( token._2 ) );
         assertEquals( jwtExtractor.getUserEmail( token._2 ), "email@email.com" );
         assertEquals( jwtExtractor.getPermissions( token._2, "org1" ), Set.of( "accounts:list", "accounts:create" ) );

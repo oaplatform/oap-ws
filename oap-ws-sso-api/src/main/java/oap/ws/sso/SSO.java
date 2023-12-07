@@ -31,8 +31,6 @@ import oap.ws.SessionManager;
 import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
-
-import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
