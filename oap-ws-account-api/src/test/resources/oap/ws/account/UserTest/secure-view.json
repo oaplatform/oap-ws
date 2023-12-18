@@ -3,6 +3,14 @@
   "accounts" : {
     "org1" : [ "acc1", "acc2" ]
   },
+  "defaultOrganization" : "r1",
+  "roles" : {
+    "r1" : "ADMIN",
+    "r2" : "USER"
+  },
+  "defaultAccounts" : {
+    "org1" : "acc1"
+  },
   "apiKey":"${API_KEY}",
   "banned" : false,
   "email" : "email",

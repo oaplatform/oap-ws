@@ -41,7 +41,6 @@ public class JWTInterceptorTest extends IntegratedTest {
     public void allowed() {
         userProvider().addUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) );
         assertLogin( "admin@admin.com", "pass" );
-        assertSwitchOrganization( "r1" );
         assertGet( httpUrl( "/secure/r1" ) )
             .responded( OK, "OK", TEXT_PLAIN, "admin@admin.com" );
         assertGet( httpUrl( "/secure/r1" ) )
@@ -60,7 +59,7 @@ public class JWTInterceptorTest extends IntegratedTest {
     }
 
     @Test
-    public void wrongRealmWithOrganizationLoggedIn() {
+    public void wrongRealmWithOrganizationLoggedIn() throws InterruptedException {
         userProvider().addUser( "admin@admin.com", "pass", __( "r1", "ADMIN" ) );
         assertLogin( "admin@admin.com", "pass" );
         assertSwitchOrganization( "r1" );

@@ -37,6 +37,12 @@ public interface User extends Serializable {
 
     Map<String, String> getRoles();
 
+    Optional<String> getDefaultOrganization();
+
+    Map<String, String> getDefaultAccounts();
+
+    Optional<String> getDefaultAccount( String organizationId );
+
     @JsonIgnore
     View getView();
 

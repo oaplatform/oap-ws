@@ -63,14 +63,14 @@ public class JwtUserAuthenticator implements Authenticator {
             if( user.isEmpty() ) {
                 return Result.failure( AuthenticationFailure.UNAUTHENTICATED );
             }
-            return user.filter( u -> validateUserAcess( u, orgId ) )
+            return user.filter( u -> validateUserAccess( u, orgId ) )
                 .map( u -> getAuthenticationTokens( u, orgId ) )
                 .orElse( Result.failure( AuthenticationFailure.WRONG_ORGANIZATION ) );
         }
         return Result.failure( AuthenticationFailure.TOKEN_NOT_VALID );
     }
 
-    private boolean validateUserAcess( User user, String orgId ) {
+    private boolean validateUserAccess( User user, String orgId ) {
         return user.getRoles().containsKey( orgId );
     }
 
@@ -80,7 +80,7 @@ public class JwtUserAuthenticator implements Authenticator {
         }
         User user = authResult.getSuccessValue();
         try {
-            Authentication authentication = generateTokens( user );
+            Authentication authentication = generateTokenWithOrgId( user, user.getDefaultOrganization().orElse( "" ) );
             return Result.success( authentication );
         } catch( Exception exception ) {
             log.error( "JWT creation failed {}", exception.getMessage() );
@@ -112,15 +112,38 @@ public class JwtUserAuthenticator implements Authenticator {
         return new Authentication( accessToken, refreshToken, user );
     }
 
-    @Override
-    public Result<Authentication, AuthenticationFailure> refreshToken( String refreshToken ) {
-        if( jwtExtractor.verifyToken( refreshToken ) ) {
-            log.trace( "generating new authentication by refreshToken {} ", refreshToken );
-            final Optional<Authentication> authentication = userProvider.getUser( jwtExtractor.getUserEmail( refreshToken ) ).map( user -> new Authentication( jwtTokenGenerator.generateAccessToken( user ), refreshToken, user ) );
-            return authentication.<Result<Authentication, AuthenticationFailure>>map( Result::success ).orElseGet( () -> Result.failure( AuthenticationFailure.UNAUTHENTICATED ) );
+    public Result<Authentication, AuthenticationFailure> refreshToken( String refreshToken, Optional<String> orgId ) {
+        if( !jwtExtractor.verifyToken( refreshToken ) ) {
+            return Result.failure( AuthenticationFailure.TOKEN_NOT_VALID );
         }
-        return Result.failure( AuthenticationFailure.TOKEN_NOT_VALID );
+        return generateAuthentication( refreshToken, orgId );
     }
+
+    private Result<Authentication, AuthenticationFailure> generateAuthentication( String refreshToken, Optional<String> orgId ) {
+        var userEmail = jwtExtractor.getUserEmail( refreshToken );
+        var user = userProvider.getUser( userEmail );
+
+        if( user.isEmpty() ) {
+            return Result.failure( AuthenticationFailure.UNAUTHENTICATED );
+        }
+        return buildAuthentication( user.get(), orgId );
+    }
+
+    private Result<Authentication, AuthenticationFailure> buildAuthentication( User user, Optional<String> orgId ) {
+        if( orgId.isPresent() && !user.getRoles().containsKey( orgId.get() ) ) {
+            return Result.failure( AuthenticationFailure.UNAUTHENTICATED );
+        }
+        String activeOrgId = orgId.orElse( user.getDefaultOrganization().orElse( "" ) );
+
+        var authentication = new Authentication(
+            jwtTokenGenerator.generateAccessTokenWithActiveOrgId( user, activeOrgId ),
+            jwtTokenGenerator.generateRefreshToken( user ),
+            user
+        );
+
+        return Result.success( authentication );
+    }
+
 
     @Override
     public Optional<Authentication> authenticateTrusted( String email ) {

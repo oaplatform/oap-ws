@@ -3,10 +3,21 @@
     "org1" : [ "acc1", "acc2" ]
   },
   "banned" : false,
+  "defaultAccounts" : {
+    "org1" : "acc1"
+  },
+  "roles" : {
+    "r1" : "ADMIN",
+    "r2" : "USER"
+  },
   "user" : {
     "accessKey" : "SXENLMSXMVUJ",
     "apiKey" : "${API_KEY}",
     "confirmed" : false,
+    "defaultOrganization" : "r1",
+    "defaultAccounts" : {
+      "org1" : "acc1"
+    },
     "email" : "email",
     "firstName" : "John",
     "lastName" : "Smith",

@@ -4,6 +4,7 @@
   "email": "vk@xenoss.io",
   "firstName": "John",
   "lastName": "Smith",
+  "defaultOrganization" : "XNSS",
   "roles" : {
     "XNSS" : "ORGANIZATION_ADMIN"
   },

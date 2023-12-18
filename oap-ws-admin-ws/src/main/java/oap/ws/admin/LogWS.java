@@ -34,12 +34,31 @@ import oap.ws.WsMethod;
 import oap.ws.WsParam;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.io.Resources.urlOrThrow;
 import static oap.ws.WsParam.From.PATH;
 
 @Slf4j
 public class LogWS {
+    @WsMethod( path = "/", method = GET )
+    public Map<String, String> getAll() {
+        log.debug( "get all" );
+
+        var map = new LinkedHashMap<String, String>();
+
+        var loggerContext = ( LoggerContext ) LoggerFactory.getILoggerFactory();
+        for( var logger : loggerContext.getLoggerList() ) {
+            if( logger.getLevel() != null ) {
+                map.put( logger.getName(), logger.getLevel().toString() );
+            }
+        }
+
+        return map;
+    }
+
     @WsMethod( path = "/reset", method = GET )
     public void reset() {
         log.debug( "reset" );

@@ -27,24 +27,33 @@ package oap.ws.sso;
 import oap.util.Pair;
 import org.testng.annotations.Test;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Set;
 
 import static oap.testng.Asserts.assertString;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 
 public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
 
-    private final JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "secret", "issuer", 100000, 100000 );
+    private final JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator( "secret", "secret", "issuer", 15 * 60 * 1000, 15 * 60 * 1000 * 24 );
     private final JWTExtractor jwtExtractor = new JWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
 
     @Test
     public void generateAndExtractToken() {
-        final String token = jwtTokenGenerator.generateAccessToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
-        assertString( token ).isNotEmpty();
-        assertTrue( jwtExtractor.verifyToken( token ) );
-        assertEquals( jwtExtractor.getUserEmail( token ), "email@email.com" );
-        assertEquals( jwtExtractor.getPermissions( token, "org1" ), Set.of( "accounts:list", "accounts:create" ) );
+        final Pair<Date, String> token = jwtTokenGenerator.generateAccessToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
+        assertNotNull( token._1 );
+        assertString( token._2 ).isNotEmpty();
+        Instant expirationTime = token._1.toInstant().truncatedTo( ChronoUnit.MINUTES );
+        Instant expectedExpirationTime = Instant.now().plus( Duration.ofMinutes( 15 ) ).truncatedTo( ChronoUnit.MINUTES );
+        assertTrue( expirationTime.compareTo( expectedExpirationTime ) == 0 );
+        assertTrue( jwtExtractor.verifyToken( token._2 ) );
+        assertEquals( jwtExtractor.getUserEmail( token._2 ), "email@email.com" );
+        assertEquals( jwtExtractor.getPermissions( token._2, "org1" ), Set.of( "accounts:list", "accounts:create" ) );
     }
 }

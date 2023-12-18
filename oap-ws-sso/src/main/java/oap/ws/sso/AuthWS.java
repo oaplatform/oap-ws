@@ -25,14 +25,14 @@
 package oap.ws.sso;
 
 import lombok.extern.slf4j.Slf4j;
-import oap.ws.account.OauthService;
-import oap.ws.account.TokenInfo;
 import oap.http.Http;
 import oap.ws.Response;
 import oap.ws.Session;
 import oap.ws.SessionManager;
 import oap.ws.WsMethod;
 import oap.ws.WsParam;
+import oap.ws.account.OauthService;
+import oap.ws.account.TokenInfo;
 import oap.ws.validate.ValidationErrors;
 import oap.ws.validate.WsValidate;
 
@@ -135,18 +135,9 @@ public class AuthWS extends AbstractSecureWS {
         else if( WRONG_ORGANIZATION == result.getFailureValue() )
             return notAuthenticatedResponse( FORBIDDEN, "User doesn't belong to organization", sessionManager.cookieDomain );
         else if( TOKEN_NOT_VALID == result.getFailureValue() ) {
-            return notAuthenticatedResponse( BAD_REQUEST, "Token is not valid", sessionManager.cookieDomain );
+            return notAuthenticatedResponse( UNAUTHORIZED, "Token is invalid", sessionManager.cookieDomain );
         } else
             return notAuthenticatedResponse( UNAUTHORIZED, "User not found", sessionManager.cookieDomain );
-    }
-
-    @WsMethod( method = GET, path = "/refresh" )
-    public Response refreshToken( @WsParam( from = COOKIE ) String refreshToken ) {
-        var result = authenticator.refreshToken( refreshToken );
-        if( result.isSuccess() ) return authenticatedResponse( result.getSuccessValue(),
-            sessionManager.cookieDomain, sessionManager.cookieExpiration, sessionManager.cookieSecure );
-        else
-            return notAuthenticatedResponse( UNAUTHORIZED, "Token is invalid", sessionManager.cookieDomain );
     }
 
     @WsMethod( method = GET, path = "/logout" )

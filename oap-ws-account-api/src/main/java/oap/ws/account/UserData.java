@@ -78,6 +78,22 @@ public class UserData implements oap.ws.sso.User, Serializable {
 
     @JsonIgnore
     @Override
+    public Optional<String> getDefaultOrganization() {
+        return Optional.ofNullable( user.defaultOrganization );
+    }
+
+    @Override
+    public Map<String, String> getDefaultAccounts() {
+        return user.defaultAccounts;
+    }
+
+    @JsonIgnore
+    public Optional<String> getDefaultAccount( String organizationId ) {
+        return Optional.ofNullable( user.defaultAccounts.get( organizationId ) );
+    }
+
+    @JsonIgnore
+    @Override
     public View getView() {
         return view;
     }
@@ -88,6 +104,8 @@ public class UserData implements oap.ws.sso.User, Serializable {
     }
 
     public UserData addAccount( String organizationId, String accountId ) {
+        user.defaultAccounts.computeIfAbsent( organizationId, k -> accountId );
+
         if( ALL_ACCOUNTS.equals( accountId ) ) {
             accounts.put( organizationId, new ArrayList<>( List.of( ALL_ACCOUNTS ) ) );
             return this;
@@ -146,7 +164,15 @@ public class UserData implements oap.ws.sso.User, Serializable {
     }
 
     public UserData confirm( boolean status ) {
-        this.user.confirm( status );
+        this.user.confirmed = status;
+        return this;
+    }
+
+    public UserData addOrganization( String organizationId, String role ) {
+        this.roles.put( organizationId, role );
+        if( getDefaultOrganization().isPresent() ) {
+            this.user.defaultOrganization = organizationId;
+        }
         return this;
     }
 
@@ -183,6 +209,13 @@ public class UserData implements oap.ws.sso.User, Serializable {
             return user.tfaEnabled;
         }
 
+        public Map<String, String> getDefaultAccounts() {
+            return user.defaultAccounts;
+        }
+
+        public String getDefaultOrganization() {
+            return user.defaultOrganization;
+        }
 
         @JsonFormat( shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" )
         public DateTime getLastLogin() {

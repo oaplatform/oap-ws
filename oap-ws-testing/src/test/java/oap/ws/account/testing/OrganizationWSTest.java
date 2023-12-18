@@ -7,7 +7,7 @@
 package oap.ws.account.testing;
 
 import oap.http.Http;
-import oap.storage.mongo.memory.MongoFixture;
+import oap.storage.mongo.MongoFixture;
 import oap.testng.Fixtures;
 import oap.testng.TestDirectoryFixture;
 import oap.ws.account.Account;
@@ -21,6 +21,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 import static oap.http.Http.StatusCode.FORBIDDEN;
@@ -42,6 +43,8 @@ import static oap.ws.account.testing.AccountFixture.REGULAR_USER;
 import static oap.ws.validate.testng.ValidationAssertion.assertValidation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.joda.time.DateTimeZone.UTC;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class OrganizationWSTest extends Fixtures {
     public static final String TODAY = DateTimeFormat.forPattern( "yyyy-MM-dd" ).print( DateTime.now( UTC ) );
@@ -330,8 +333,9 @@ public class OrganizationWSTest extends Fixtures {
 
     @Test
     public void ban() {
-        var user = accountFixture.userStorage().store( new UserData( REGULAR_USER, Map.of( DEFAULT_ORGANIZATION_ID, USER ) ) );
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        final String email = "user@admin.com";
+        var user = accountFixture.userStorage().store( new UserData( new User( email, "Joe", "Epstein", "pass123", true ), Map.of( DEFAULT_ORGANIZATION_ID, USER ) ) );
+        accountFixture.assertLogin( email, "pass123" );
         accountFixture.assertLogout();
         accountFixture.assertOrgAdminLogin();
         assertGet( accountFixture.httpUrl( "/organizations/" + DEFAULT_ORGANIZATION_ID + "/users/ban/" + user.user.email ) )
@@ -352,7 +356,7 @@ public class OrganizationWSTest extends Fixtures {
                     "API_KEY", user.user.apiKey
                 ) ) );
         accountFixture.assertLogout();
-        accountFixture.assertLogin( user.user.email, DEFAULT_PASSWORD );
+        accountFixture.assertLogin( email, "pass123" );
         accountFixture.assertLogout();
     }
 
@@ -505,5 +509,100 @@ public class OrganizationWSTest extends Fixtures {
                 assertThat( decodedString.contains( email ) );
                 assertThat( decodedString.contains( "secretKey" ) );
             } );
+    }
+
+    @Test
+    public void changeDefaultAccountUser() {
+        OrganizationData org1 = accountFixture.accounts().storeOrganization( new Organization( "First", "test" ) );
+        OrganizationData org2 = accountFixture.accounts().storeOrganization( new Organization( "Second", "test" ) );
+        final String orgId = org1.organization.id;
+        accountFixture.accounts().storeAccount( orgId, new Account( "acc1", "acc1" ) );
+        accountFixture.accounts().storeAccount( orgId, new Account( "acc2", "acc2" ) );
+
+        accountFixture.accounts().storeAccount( org2.organization.id, new Account( "acc3", "acc3" ) );
+        accountFixture.accounts().storeAccount( org2.organization.id, new Account( "acc4", "acc4" ) );
+
+        accountFixture.organizationStorage().store( org1 );
+        accountFixture.organizationStorage().store( org2 );
+
+        final String mail = "user@usr.com";
+        UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), Map.of( orgId, USER ) );
+        user.addAccount( orgId, "acc1" );
+        accountFixture.userStorage().store( user );
+        assertEquals( "acc1", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount( orgId ).get() );
+        user.addAccount( orgId, "acc2" );
+        assertEquals( "acc1", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount( orgId ).get() );
+        accountFixture.assertLogin( "user@usr.com", "pass123" );
+        assertGet( accountFixture.httpUrl( "/organizations/" + orgId + "/users/" + mail + "/default-account/acc2" ) ).hasCode( OK );
+        assertEquals( "acc2", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount( orgId ).get() );
+    }
+
+    @Test
+    public void addOrganizationToUserBySystemAdmin() {
+        OrganizationData org1 = accountFixture.accounts().storeOrganization( new Organization( "First", "test" ) );
+        OrganizationData org2 = accountFixture.accounts().storeOrganization( new Organization( "Second", "test" ) );
+        final String orgId = org1.organization.id;
+
+        Map<String, String> roles = new HashMap<>();
+        roles.put( orgId, USER );
+
+        final String mail = "user@usr.com";
+        UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), roles );
+        accountFixture.userStorage().store( user );
+
+        accountFixture.assertSystemAdminLogin();
+        assertGet( accountFixture.httpUrl( "/organizations/" + orgId + "/add?newOrganizationId=" + org2.organization.id + "&email=" + mail + "&role=ADMIN" ) ).hasCode( OK );
+        assertTrue( accountFixture.userStorage().getUser( mail ).get().getRoles().containsKey( org2.organization.id ) );
+    }
+
+    @Test
+    public void addOrganizationToUserByAdminInSeveralOrganizations() {
+        OrganizationData org1 = accountFixture.accounts().storeOrganization( new Organization( "First", "test" ) );
+        OrganizationData org2 = accountFixture.accounts().storeOrganization( new Organization( "Second", "test" ) );
+
+        Map<String, String> adminRoles = new HashMap<>();
+        adminRoles.put( org1.organization.id, ADMIN );
+        adminRoles.put( org2.organization.id, ADMIN );
+
+        final String adminMail = "orgadmin@usr.com";
+        UserData admin = new UserData( new User( adminMail, "John", "Smith", "pass123", true ), adminRoles );
+
+        final String userMail = "user@usr.com";
+        Map<String, String> roles = new HashMap<>();
+        roles.put( org1.organization.id, USER );
+        UserData user = new UserData( new User( userMail, "John", "Smith", "pass", true ), roles );
+
+        accountFixture.userStorage().store( admin );
+        accountFixture.userStorage().store( user );
+
+        accountFixture.assertLogin( adminMail, "pass123" );
+
+        assertGet( accountFixture.httpUrl( "/organizations/" + org2.organization.id + "/add?newOrganizationId=" + org2.organization.id + "&email=" + userMail + "&role=ADMIN" ) ).hasCode( OK );
+        assertTrue( accountFixture.userStorage().getUser( userMail ).get().getRoles().containsKey( org2.organization.id ) );
+    }
+
+    @Test
+    public void addOrganizationToUserByUserWithDIfferentRolesInOrganizations() {
+        OrganizationData org1 = accountFixture.accounts().storeOrganization( new Organization( "First", "test" ) );
+        OrganizationData org2 = accountFixture.accounts().storeOrganization( new Organization( "Second", "test" ) );
+
+        Map<String, String> adminRoles = new HashMap<>();
+        adminRoles.put( org1.organization.id, ADMIN );
+        adminRoles.put( org2.organization.id, USER );
+
+        final String adminMail = "orgadmin@usr.com";
+        UserData admin = new UserData( new User( adminMail, "John", "Smith", "pass123", true ), adminRoles );
+
+        final String userMail = "user@usr.com";
+        Map<String, String> roles = new HashMap<>();
+        roles.put( org1.organization.id, USER );
+        UserData user = new UserData( new User( userMail, "John", "Smith", "pass", true ), roles );
+
+        accountFixture.userStorage().store( admin );
+        accountFixture.userStorage().store( user );
+
+        accountFixture.assertLogin( adminMail, "pass123" );
+
+        assertGet( accountFixture.httpUrl( "/organizations/" + org2.organization.id + "/add?newOrganizationId=" + org2.organization.id + "&email=" + userMail + "&role=ADMIN" ) ).hasCode( FORBIDDEN );
     }
 }

@@ -22,10 +22,11 @@ public class UserTest {
 
     @Test
     public void marshal() {
-        UserData user = new UserData( new User( "email", "John", "Smith" ), null );
+        UserData user = new UserData( new User( "email", "John", "Smith" ), Map.of( "r1", "ADMIN", "r2", "USER" ) );
         user.addAccount( "org1", "acc1" );
         user.addAccount( "org1", "acc2" );
         user.addAccount( "org1", "acc2" );
+        user.user.defaultOrganization = "r1";
         String json = Binder.json.marshal( user );
         assertJson( json ).isStructurallyEqualTo( contentOfTestResource( getClass(), "user.json", Map.of(
             "API_KEY", user.user.apiKey, "SECRET_KEY", user.user.secretKey
@@ -35,10 +36,11 @@ public class UserTest {
 
     @Test
     public void marshalSecureView() {
-        UserData user = new UserData( new User( "email", "John", "Smith" ), null );
-        user.addAccount( "org1", "acc1" );
+        UserData user = new UserData( new User( "email", "John", "Smith" ), Map.of( "r1", "ADMIN", "r2", "USER" ) );
         user.addAccount( "org1", "acc1" );
         user.addAccount( "org1", "acc2" );
+        user.addAccount( "org1", "acc2" );
+        user.user.defaultOrganization = "r1";
         String json = Binder.json.marshal( user.secureView );
         assertJson( json ).isStructurallyEqualTo( contentOfTestResource( getClass(), "secure-view.json", Map.of(
             "API_KEY", user.user.apiKey, "SECRET_KEY", user.user.secretKey

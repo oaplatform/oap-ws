@@ -27,6 +27,7 @@ package oap.ws.sso;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import oap.util.Pair;
 
 import java.util.Date;
 
@@ -46,32 +47,36 @@ public class JwtTokenGenerator {
         this.refreshSecretExpiration = refreshSecretExpiration;
     }
 
-    public String generateAccessToken( User user ) throws JWTCreationException {
+    public Pair<Date, String> generateAccessToken( User user ) throws JWTCreationException {
         Algorithm algorithm = Algorithm.HMAC256( accessSecret );
-        return JWT.create()
+        final Date expiresAt = new Date( System.currentTimeMillis() + accessSecretExpiration );
+        return Pair.__( expiresAt, JWT.create()
             .withClaim( "user", user.getEmail() )
             .withClaim( "roles", user.getRoles() )
             .withIssuer( issuer )
-            .withExpiresAt( new Date( System.currentTimeMillis() + accessSecretExpiration ) )
-            .sign( algorithm );
+            .withExpiresAt( expiresAt )
+            .sign( algorithm ) );
     }
-    public String generateAccessTokenWithActiveOrgId( User user, String activeOrganization ) throws JWTCreationException {
+
+    public Pair<Date, String> generateAccessTokenWithActiveOrgId( User user, String activeOrganization ) throws JWTCreationException {
         Algorithm algorithm = Algorithm.HMAC256( accessSecret );
-        return JWT.create()
+        final Date expiresAt = new Date( System.currentTimeMillis() + accessSecretExpiration );
+        return Pair.__( expiresAt, JWT.create()
             .withClaim( "user", user.getEmail() )
             .withClaim( "roles", user.getRoles() )
             .withClaim( "org_id", activeOrganization )
             .withIssuer( issuer )
-            .withExpiresAt( new Date( System.currentTimeMillis() + accessSecretExpiration ) )
-            .sign( algorithm );
+            .withExpiresAt( expiresAt )
+            .sign( algorithm ) );
     }
 
-    public String generateRefreshToken( User user ) throws JWTCreationException {
+    public Pair<Date, String> generateRefreshToken( User user ) throws JWTCreationException {
         Algorithm algorithm = Algorithm.HMAC256( refreshSecret );
-        return JWT.create()
+        final Date expiresAt = new Date( System.currentTimeMillis() + refreshSecretExpiration );
+        return Pair.__( expiresAt, JWT.create()
             .withClaim( "user", user.getEmail() )
             .withIssuer( issuer )
-            .withExpiresAt( new Date( System.currentTimeMillis() + refreshSecretExpiration ) )
-            .sign( algorithm );
+            .withExpiresAt( expiresAt )
+            .sign( algorithm ) );
     }
 }

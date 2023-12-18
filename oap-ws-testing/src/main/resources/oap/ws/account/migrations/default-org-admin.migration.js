@@ -14,6 +14,7 @@ db.users.replaceOne(
                 "email": "orgadmin@admin.com",
                 "password": hex_md5("Xenoss123").toUpperCase(),
                 "confirmed": true,
+                "defaultOrganization": "DFLT",
                 "apiKey": "pz7r93Hh8ssbcV1Qhxsopej18ng2Q"
             },
             "roles": {"DFLT": "ORGANIZATION_ADMIN"},
@@ -34,6 +35,7 @@ db.users.replaceOne(
                 "email": "systemadmin@admin.com",
                 "password": hex_md5("Xenoss123").toUpperCase(),
                 "confirmed": true,
+                "defaultOrganization": "SYSTEM",
                 "apiKey": "qwfqwrqfdsgrwqewgreh4t2wrge43K"
             },
             "roles": {"DFLT": "ORGANIZATION_ADMIN", "SYSTEM": "ADMIN"},
