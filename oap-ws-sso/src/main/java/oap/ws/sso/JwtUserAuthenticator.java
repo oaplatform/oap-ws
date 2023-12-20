@@ -31,6 +31,8 @@ import oap.util.Result;
 import java.util.Objects;
 import java.util.Optional;
 
+import static oap.ws.sso.WsSecurity.SYSTEM;
+
 @Slf4j
 public class JwtUserAuthenticator implements Authenticator {
 
@@ -71,7 +73,7 @@ public class JwtUserAuthenticator implements Authenticator {
     }
 
     private boolean validateUserAccess( User user, String orgId ) {
-        return user.getRoles().containsKey( orgId );
+        return user.getRoles().containsKey( orgId ) || user.getRoles().containsKey (SYSTEM) ;
     }
 
     private Result<Authentication, AuthenticationFailure> getAuthenticationTokens( Result<? extends User, AuthenticationFailure> authResult ) {
