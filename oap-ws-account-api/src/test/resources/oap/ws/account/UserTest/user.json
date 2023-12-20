@@ -3,9 +3,6 @@
     "org1" : [ "acc1", "acc2" ]
   },
   "banned" : false,
-  "defaultAccounts" : {
-    "org1" : "acc1"
-  },
   "roles" : {
     "r1" : "ADMIN",
     "r2" : "USER"
