@@ -73,7 +73,7 @@ public class JwtUserAuthenticator implements Authenticator {
     }
 
     private boolean validateUserAccess( User user, String orgId ) {
-        return user.getRoles().containsKey( orgId ) || user.getRoles().containsKey (SYSTEM) ;
+        return user.getRoles().containsKey( orgId ) || user.getRoles().containsKey( SYSTEM );
     }
 
     private Result<Authentication, AuthenticationFailure> getAuthenticationTokens( Result<? extends User, AuthenticationFailure> authResult ) {
