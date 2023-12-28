@@ -82,6 +82,7 @@ public class UserData implements oap.ws.sso.User, Serializable {
         return Optional.ofNullable( user.defaultOrganization );
     }
 
+    @JsonIgnore
     @Override
     public Map<String, String> getDefaultAccounts() {
         return user.defaultAccounts;
