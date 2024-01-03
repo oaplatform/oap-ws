@@ -523,9 +523,6 @@ public class OrganizationWSTest extends Fixtures {
         accountFixture.accounts().storeAccount( org2.organization.id, new Account( "acc3", "acc3" ) );
         accountFixture.accounts().storeAccount( org2.organization.id, new Account( "acc4", "acc4" ) );
 
-        accountFixture.organizationStorage().store( org1 );
-        accountFixture.organizationStorage().store( org2 );
-
         final String mail = "user@usr.com";
         UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), Map.of( orgId, USER ) );
         user.addAccount( orgId, "acc1" );
@@ -549,9 +546,6 @@ public class OrganizationWSTest extends Fixtures {
         accountFixture.accounts().storeAccount( org2.organization.id, new Account( "acc3", "acc3" ) );
         accountFixture.accounts().storeAccount( org2.organization.id, new Account( "acc4", "acc4" ) );
 
-        accountFixture.organizationStorage().store( org1 );
-        accountFixture.organizationStorage().store( org2 );
-
         final String mail = "user@usr.com";
         UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), Map.of( orgId, USER ) );
         user.addAccount( orgId, "acc1" );
@@ -571,8 +565,6 @@ public class OrganizationWSTest extends Fixtures {
         final String orgId = org1.organization.id;
         accountFixture.accounts().storeAccount( orgId, new Account( "acc1", "acc1" ) );
         accountFixture.accounts().storeAccount( orgId, new Account( "acc2", "acc2" ) );
-
-        accountFixture.organizationStorage().store( org1 );
 
         final String mail = "user@usr.com";
         UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), Map.of( orgId, USER ) );
