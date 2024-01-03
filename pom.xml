@@ -121,10 +121,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.2</version>
+<!--                <version>3.2.2</version>-->
                 <configuration>
                     <reuseForks>false</reuseForks>
-                    <forkCount>1</forkCount>
+                    <forkCount>0</forkCount>
                     <argLine>-Xmx1024m</argLine>
                     <trimStackTrace>false</trimStackTrace>
                     <testFailureIgnore>true</testFailureIgnore>
