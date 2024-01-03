@@ -99,7 +99,7 @@
         <oap.deps.commons-lang3.version>3.4</oap.deps.commons-lang3.version>
         <oap.deps.commons-codec.version>1.16.0</oap.deps.commons-codec.version>
 
-        <oap.deps.jackson.version>2.13.3</oap.deps.jackson.version>
+        <oap.deps.jackson.version>2.16.1</oap.deps.jackson.version>
         <oap.deps.maven.plugin-build-helper.version>1.10</oap.deps.maven.plugin-build-helper.version>
         <oap.deps.maven.plugin-api.version>3.8.1</oap.deps.maven.plugin-api.version>
         <oap.deps.maven.version>3.0-alpha-2</oap.deps.maven.version>
