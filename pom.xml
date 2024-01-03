@@ -71,7 +71,7 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>21.1.4</oap-ws.project.version>
+        <oap-ws.project.version>21.1.5</oap-ws.project.version>
         <oap.deps.oap.version>21.1.2</oap.deps.oap.version>
 
         <oap.deps.mail.version>21.0.1</oap.deps.mail.version>
@@ -115,4 +115,5 @@
         <oap.deps.com.google.gson.version>2.6.2</oap.deps.com.google.gson.version>
         <oap.deps.asm.version>9.6</oap.deps.asm.version>
     </properties>
+
 </project>

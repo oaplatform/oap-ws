@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static io.undertow.util.StatusCodes.NO_CONTENT;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
@@ -310,6 +311,7 @@ public class OrganizationWS extends AbstractWS {
 
     @WsMethod( method = GET, path = "/users/{email}/default-org/{organizationId}", description = "Set default organization to user" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { MANAGE_SELF } )
+    @WsValidate( { "validateUsersOrganization", "validateDefaultOrganization" } )
     public Optional<UserData.View> changeDefaultOrganization( @WsParam( from = PATH ) String email,
                                                               @WsParam( from = PATH ) String organizationId,
                                                               @WsParam( from = SESSION ) UserData loggedUser ) {
@@ -323,7 +325,7 @@ public class OrganizationWS extends AbstractWS {
 
     @WsMethod( method = GET, path = "/{organizationId}/users/{email}/default-account/{accountId}", description = "Set default account in organization to user" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { MANAGE_SELF } )
-    @WsValidate( { "validateAccountAccess" } )
+    @WsValidate( { "validateUsersOrganization", "validateAccountAccess", "validateDefaultAccount" } )
     public Optional<UserData.View> changeDefaultAccount( @WsParam( from = PATH ) String organizationId,
                                                          @WsParam( from = PATH ) String email,
                                                          @WsParam( from = PATH ) String accountId,
@@ -385,7 +387,7 @@ public class OrganizationWS extends AbstractWS {
     private ValidationErrors validateEmailOrganizationAccess( String organizationId, String email ) {
         return accounts.getUser( email )
             .filter( u -> !u.belongsToOrganization( organizationId ) && u.getRole( SYSTEM ).isEmpty() )
-            .map( u -> error( FORBIDDEN, "User belongs to other organization  " + email + "::" + organizationId ) )
+            .map( u -> error( FORBIDDEN, "User " + email + " does not belong to organization " + organizationId ) )
             .orElse( empty() );
     }
 
@@ -439,6 +441,18 @@ public class OrganizationWS extends AbstractWS {
         if( accounts.getUser( email ).isPresent() ) {
             return empty();
         }
+        return empty();
+    }
+
+    protected ValidationErrors validateDefaultOrganization( UserData loggedUser, String organizationId ) {
+        if( loggedUser.user.defaultOrganization.equals( organizationId ) )
+            return error( NO_CONTENT, "Organization (%s) is already marked as default", organizationId );
+        return empty();
+    }
+
+    protected ValidationErrors validateDefaultAccount( UserData loggedUser, String organizationId, String accountId ) {
+        if( loggedUser.user.defaultAccounts.get( organizationId ).equals( accountId ) )
+            return error( NO_CONTENT, "Account (%s) is already marked as default in organization (%s)", accountId, organizationId );
         return empty();
     }
 
