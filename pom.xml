@@ -116,34 +116,4 @@
         <oap.deps.asm.version>9.6</oap.deps.asm.version>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-<!--                <version>3.2.2</version>-->
-                <configuration>
-                    <reuseForks>true</reuseForks>
-                    <forkCount>1</forkCount>
-                    <argLine>-Xmx1024m</argLine>
-                    <trimStackTrace>false</trimStackTrace>
-                    <testFailureIgnore>true</testFailureIgnore>
-                    <useFile>true</useFile>
-                    <disableXmlReport>false</disableXmlReport>
-                    <printSummary>true</printSummary>
-                    <forkedProcessTimeoutInSeconds>4800</forkedProcessTimeoutInSeconds>
-                    <useSystemClassLoader>false</useSystemClassLoader>
-                    <runOrder>balanced</runOrder>
-                    <includes>
-                        <include>**/*Test.*</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/*Performance.*</exclude>
-                        <exclude>**/*Perf.*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
