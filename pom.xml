@@ -123,8 +123,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.2</version>
                 <configuration>
-                    <reuseForks>true</reuseForks>
-                    <forkCount>3</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
                     <argLine>-Xmx1024m</argLine>
                     <trimStackTrace>false</trimStackTrace>
                     <testFailureIgnore>true</testFailureIgnore>
