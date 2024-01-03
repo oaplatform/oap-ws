@@ -115,4 +115,16 @@
         <oap.deps.com.google.gson.version>2.6.2</oap.deps.com.google.gson.version>
         <oap.deps.asm.version>9.6</oap.deps.asm.version>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
