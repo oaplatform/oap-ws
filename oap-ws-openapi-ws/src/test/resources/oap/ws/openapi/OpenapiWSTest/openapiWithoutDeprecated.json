@@ -1622,7 +1622,7 @@
         },
         "type" : "object"
       },
-      "Stream" : {
+      "StreamInteger" : {
         "properties" : {
           "parallel" : {
             "type" : "boolean"
@@ -1630,7 +1630,7 @@
         },
         "type" : "object"
       },
-      "StreamInteger" : {
+      "StreamObject" : {
         "properties" : {
           "parallel" : {
             "type" : "boolean"
@@ -1814,14 +1814,6 @@
       "oap_json_ext_Ext" : {
         "type" : "object"
       },
-      "oap_util_Stream" : {
-        "properties" : {
-          "parallel" : {
-            "type" : "boolean"
-          }
-        },
-        "type" : "object"
-      },
       "oap_ws_openapi_ExampleNewWS_NewWsBean" : {
         "properties" : {
           "b2" : {
@@ -1856,7 +1848,7 @@
             "type" : "integer"
           },
           "intStream" : {
-            "$ref" : "#/components/schemas/oap_util_Stream"
+            "$ref" : "#/components/schemas/StreamInteger"
           },
           "map" : {
             "additionalProperties" : {
@@ -1872,7 +1864,7 @@
             "type" : "string"
           },
           "stringStream" : {
-            "$ref" : "#/components/schemas/oap_util_Stream"
+            "$ref" : "#/components/schemas/StreamString"
           }
         },
         "type" : "object"
