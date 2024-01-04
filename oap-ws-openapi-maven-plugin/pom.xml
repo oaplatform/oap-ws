@@ -128,16 +128,28 @@
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-component-metadata</artifactId>
-                <version>${oap.deps.plexus-component-metadata.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                        <version>${oap.deps.asm.version}</version>
-                    </dependency>
-                </dependencies>
+                <groupId>org.eclipse.sisu</groupId>
+                <artifactId>sisu-maven-plugin</artifactId>
+                <version>0.3.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>index</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.plexus</groupId>-->
+<!--                <artifactId>plexus-component-metadata</artifactId>-->
+<!--                <version>${oap.deps.plexus-component-metadata.version}</version>-->
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.ow2.asm</groupId>-->
+<!--                        <artifactId>asm</artifactId>-->
+<!--                        <version>${oap.deps.asm.version}</version>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
 <!--                <executions>-->
 <!--                    <execution>-->
 <!--                        <goals>-->
@@ -145,7 +157,7 @@
 <!--                        </goals>-->
 <!--                    </execution>-->
 <!--                </executions>-->
-            </plugin>
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>
