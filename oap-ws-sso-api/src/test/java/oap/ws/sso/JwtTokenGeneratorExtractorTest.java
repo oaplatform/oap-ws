@@ -25,7 +25,6 @@
 package oap.ws.sso;
 
 import oap.util.Pair;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
@@ -46,7 +45,6 @@ public class JwtTokenGeneratorExtractorTest extends AbstractUserTest {
     private final JWTExtractor jwtExtractor = new JWTExtractor( "secret", "issuer", new SecurityRoles( new TestSecurityRolesProvider() ) );
 
     @Test
-    @Ignore
     public void generateAndExtractToken() {
         final Pair<Date, String> token = jwtTokenGenerator.generateAccessToken( new TestUser( "email@email.com", "password", Pair.of( "org1", "ADMIN" ) ) );
         assertNotNull( token._1 );
