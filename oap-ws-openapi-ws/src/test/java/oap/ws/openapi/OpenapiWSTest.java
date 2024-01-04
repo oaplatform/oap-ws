@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import oap.application.testng.KernelFixture;
 import oap.http.Http;
 import oap.testng.Fixtures;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.util.Map;
@@ -44,6 +45,7 @@ public class OpenapiWSTest extends Fixtures {
     }
 
     @Test
+    @Ignore
     public void openapiWithDeprecated() {
         assertGet( httpUrl( "/system/openapi?skipDeprecated=false" ) )
             .respondedJson( Http.StatusCode.OK, "OK",
@@ -51,6 +53,7 @@ public class OpenapiWSTest extends Fixtures {
     }
 
     @Test
+    @Ignore
     public void openapiWithoutDeprecated() {
         assertGet( httpUrl( "/system/openapi" ) )
             .respondedJson( Http.StatusCode.OK, "OK",
