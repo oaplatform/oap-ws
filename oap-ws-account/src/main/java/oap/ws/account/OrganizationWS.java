@@ -451,7 +451,7 @@ public class OrganizationWS extends AbstractWS {
     }
 
     protected ValidationErrors validateDefaultAccount( UserData loggedUser, String organizationId, String accountId ) {
-        if( loggedUser.user.defaultAccounts.get( organizationId ).equals( accountId ) )
+        if( accountId.equals( loggedUser.user.defaultAccounts.get( organizationId ) ) )
             return error( NO_CONTENT, "Account (%s) is already marked as default in organization (%s)", accountId, organizationId );
         return empty();
     }
