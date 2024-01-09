@@ -539,13 +539,9 @@ public class OrganizationWSTest extends Fixtures {
     @Test
     public void setTheSameDefaultAccountToUser() {
         OrganizationData org1 = accountFixture.accounts().storeOrganization( new Organization( "First", "test" ) );
-        OrganizationData org2 = accountFixture.accounts().storeOrganization( new Organization( "Second", "test" ) );
         final String orgId = org1.organization.id;
         accountFixture.accounts().storeAccount( orgId, new Account( "acc1", "acc1" ) );
         accountFixture.accounts().storeAccount( orgId, new Account( "acc2", "acc2" ) );
-
-        accountFixture.accounts().storeAccount( org2.organization.id, new Account( "acc3", "acc3" ) );
-        accountFixture.accounts().storeAccount( org2.organization.id, new Account( "acc4", "acc4" ) );
 
         final String mail = "user@usr.com";
         UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), Map.of( orgId, USER ) );
@@ -576,7 +572,7 @@ public class OrganizationWSTest extends Fixtures {
     }
 
     @Test
-    public void setNonExistentDefaultAccountToUser() {
+    public void setNonExistingDefaultAccountToUser() {
         OrganizationData org1 = accountFixture.accounts().storeOrganization( new Organization( "First", "test" ) );
         final String orgId = org1.organization.id;
         accountFixture.accounts().storeAccount( orgId, new Account( "acc1", "acc1" ) );
@@ -640,7 +636,7 @@ public class OrganizationWSTest extends Fixtures {
     }
 
     @Test
-    public void addOrganizationToUserByUserWithDIfferentRolesInOrganizations() {
+    public void addOrganizationToUserByUserWithDifferentRolesInOrganizations() {
         OrganizationData org1 = accountFixture.accounts().storeOrganization( new Organization( "First", "test" ) );
         OrganizationData org2 = accountFixture.accounts().storeOrganization( new Organization( "Second", "test" ) );
 
