@@ -32,7 +32,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.undertow.util.StatusCodes.NO_CONTENT;
+import static io.undertow.util.StatusCodes.BAD_REQUEST;
+import static io.undertow.util.StatusCodes.NOT_FOUND;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
@@ -315,12 +316,7 @@ public class OrganizationWS extends AbstractWS {
     public Optional<UserData.View> changeDefaultOrganization( @WsParam( from = PATH ) String email,
                                                               @WsParam( from = PATH ) String organizationId,
                                                               @WsParam( from = SESSION ) UserData loggedUser ) {
-        Optional<UserData> user = accounts.getUser( email );
-
-        if( user.isPresent() && email.equals( loggedUser.user.email ) ) {
-            return accounts.updateUser( email, u -> u.defaultOrganization = organizationId ).map( u -> u.view );
-        }
-        return Optional.empty();
+        return accounts.updateUser( email, u -> u.defaultOrganization = organizationId ).map( u -> u.view );
     }
 
     @WsMethod( method = GET, path = "/{organizationId}/users/{email}/default-account/{accountId}", description = "Set default account in organization to user" )
@@ -330,12 +326,7 @@ public class OrganizationWS extends AbstractWS {
                                                          @WsParam( from = PATH ) String email,
                                                          @WsParam( from = PATH ) String accountId,
                                                          @WsParam( from = SESSION ) UserData loggedUser ) {
-        Optional<UserData> user = accounts.getUser( email );
-
-        if( user.isPresent() && email.equals( loggedUser.user.email ) ) {
-            return accounts.updateUser( email, u -> u.defaultAccounts.put( organizationId, accountId ) ).map( u -> u.view );
-        }
-        return Optional.empty();
+        return accounts.updateUser( email, u -> u.defaultAccounts.put( organizationId, accountId ) ).map( u -> u.view );
     }
 
     @WsMethod( method = GET, path = "/{organizationId}/add", description = "Add user to existing organization" )
@@ -444,15 +435,25 @@ public class OrganizationWS extends AbstractWS {
         return empty();
     }
 
-    protected ValidationErrors validateDefaultOrganization( UserData loggedUser, String organizationId ) {
-        if( loggedUser.user.defaultOrganization.equals( organizationId ) )
-            return error( NO_CONTENT, "Organization (%s) is already marked as default", organizationId );
+    protected ValidationErrors validateDefaultOrganization( String email, String organizationId ) {
+        Optional<UserData> user = accounts.getUser( email );
+        if( user.isEmpty() ) {
+            return error( NOT_FOUND, String.format( "User (%s) doesn't exist", email ) );
+        }
+        if( organizationId.equals( user.get().user.defaultOrganization ) ) {
+            return error( BAD_REQUEST, String.format( "Organization (%s) is already marked as default", organizationId ) );
+        }
         return empty();
     }
 
-    protected ValidationErrors validateDefaultAccount( UserData loggedUser, String organizationId, String accountId ) {
-        if( accountId.equals( loggedUser.user.defaultAccounts.get( organizationId ) ) )
-            return error( NO_CONTENT, "Account (%s) is already marked as default in organization (%s)", accountId, organizationId );
+    protected ValidationErrors validateDefaultAccount( String email, String organizationId, String accountId ) {
+        Optional<UserData> user = accounts.getUser( email );
+        if( user.isEmpty() ) {
+            return error( NOT_FOUND, String.format( "User (%s) doesn't exist", email ) );
+        }
+        if( accountId.equals( user.get().user.defaultAccounts.get( organizationId ) ) ) {
+            return error( BAD_REQUEST, String.format( "Account (%s) is already marked as default in organization (%s)", accountId, organizationId ) );
+        }
         return empty();
     }
 
