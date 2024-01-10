@@ -579,7 +579,7 @@ public class OrganizationWSTest extends Fixtures {
         accountFixture.accounts().storeAccount( orgId, new Account( "acc2", "acc2" ) );
 
         final String mail = "user@usr.com";
-        UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), Map.of( orgId, USER ) );
+        UserData user = new UserData( new User( mail, "John", "Smith", "pass123", true ), Map.of( orgId, ORGANIZATION_ADMIN ) );
         user.addAccount( orgId, "acc1" );
         accountFixture.userStorage().store( user );
         assertEquals( "acc1", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount( orgId ).get() );
@@ -587,7 +587,7 @@ public class OrganizationWSTest extends Fixtures {
         assertEquals( "acc1", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount( orgId ).get() );
         accountFixture.assertLogin( "user@usr.com", "pass123" );
         assertGet( accountFixture.httpUrl( "/organizations/" + orgId + "/users/" + mail + "/default-account/acc2" ) ).hasCode( OK );
-        assertGet( accountFixture.httpUrl( "/organizations/" + orgId + "/users/" + mail + "/default-account/acc3" ) ).hasCode( FORBIDDEN );
+        assertGet( accountFixture.httpUrl( "/organizations/" + orgId + "/users/" + mail + "/default-account/acc3" ) ).hasCode( NOT_FOUND );
         assertEquals( "acc2", accountFixture.userStorage().getUser( mail ).get().getDefaultAccount( orgId ).get() );
     }
 
