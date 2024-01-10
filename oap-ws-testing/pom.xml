@@ -37,12 +37,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>oap</groupId>
             <artifactId>oap-ws-sso</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-test</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
             <artifactId>oap-ws-sso-api-default</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
@@ -61,6 +66,18 @@
             <groupId>oap</groupId>
             <artifactId>oap-ws-account-api</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-storage-mongo-test</artifactId>
+            <version>${oap.deps.storage.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-mail-test</artifactId>
+            <version>${oap.deps.mail.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
