@@ -31,6 +31,12 @@
         </dependency>
         <dependency>
             <groupId>oap</groupId>
+            <artifactId>oap-ws-test</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
             <artifactId>oap-ws-api-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

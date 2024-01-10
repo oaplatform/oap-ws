@@ -40,6 +40,12 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-test</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${oap.deps.lombok.version}</version>
