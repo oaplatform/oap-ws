@@ -26,7 +26,7 @@ package oap.ws.account.testing.migration;
 
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.ReplaceOptions;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
@@ -57,7 +57,7 @@ public class DefaultOrgAdminUnit {
                     ) ),
                     "object:type", "user",
                     "modified", System.currentTimeMillis()
-                ) ), new UpdateOptions().upsert( true ) );
+                ) ), new ReplaceOptions().upsert( true ) );
 
         mongoDatabase.getCollection( "users" )
             .replaceOne( Filters.eq( "_id", "systemadmin@admin.com" ),
@@ -76,7 +76,7 @@ public class DefaultOrgAdminUnit {
                     ) ),
                     "object:type", "user",
                     "modified", System.currentTimeMillis()
-                ) ), new UpdateOptions().upsert( true ) );
+                ) ), new ReplaceOptions().upsert( true ) );
     }
 
     @RollbackExecution
