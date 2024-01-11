@@ -42,11 +42,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${oap.deps.assertj.version}</version>
-        </dependency>
-        <dependency>
             <groupId>de.taimos</groupId>
             <artifactId>totp</artifactId>
             <version>${oap.deps.totp.version}</version>
@@ -56,6 +51,12 @@
             <artifactId>oap-ws-sso</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-test</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -33,7 +33,6 @@
     <artifactId>oap-ws-openapi-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
-
     <dependencies>
         <dependency>
             <groupId>oap</groupId>
@@ -50,6 +49,12 @@
             <groupId>oap</groupId>
             <artifactId>oap-ws</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-ws-test</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
@@ -109,7 +114,6 @@
         </dependency>
     </dependencies>
 
-
     <build>
         <plugins>
             <plugin>
@@ -148,4 +152,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

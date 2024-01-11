@@ -112,7 +112,7 @@ public class User implements Serializable {
     }
 
     public void refreshApiKey() {
-        this.apiKey = org.apache.commons.lang.RandomStringUtils.random( 30, true, true );
+        this.apiKey = org.apache.commons.lang3.RandomStringUtils.random( 30, true, true );
     }
 
     public String getSecretKey() {

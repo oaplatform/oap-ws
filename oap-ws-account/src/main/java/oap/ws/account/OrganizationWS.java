@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static io.undertow.util.StatusCodes.BAD_REQUEST;
+import static io.undertow.util.StatusCodes.NOT_FOUND;
 import static oap.http.Http.StatusCode.FORBIDDEN;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.POST;
@@ -310,30 +312,21 @@ public class OrganizationWS extends AbstractWS {
 
     @WsMethod( method = GET, path = "/users/{email}/default-org/{organizationId}", description = "Set default organization to user" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { MANAGE_SELF } )
+    @WsValidate( { "validateUsersOrganization", "validateDefaultOrganization" } )
     public Optional<UserData.View> changeDefaultOrganization( @WsParam( from = PATH ) String email,
                                                               @WsParam( from = PATH ) String organizationId,
                                                               @WsParam( from = SESSION ) UserData loggedUser ) {
-        Optional<UserData> user = accounts.getUser( email );
-
-        if( user.isPresent() && email.equals( loggedUser.user.email ) ) {
-            return accounts.updateUser( email, u -> u.defaultOrganization = organizationId ).map( u -> u.view );
-        }
-        return Optional.empty();
+        return accounts.updateUser( email, u -> u.defaultOrganization = organizationId ).map( u -> u.view );
     }
 
     @WsMethod( method = GET, path = "/{organizationId}/users/{email}/default-account/{accountId}", description = "Set default account in organization to user" )
     @WsSecurity( realm = ORGANIZATION_ID, permissions = { MANAGE_SELF } )
-    @WsValidate( { "validateAccountAccess" } )
+    @WsValidate( { "validateUsersOrganization", "validateAccountAccess", "validateDefaultAccount" } )
     public Optional<UserData.View> changeDefaultAccount( @WsParam( from = PATH ) String organizationId,
                                                          @WsParam( from = PATH ) String email,
                                                          @WsParam( from = PATH ) String accountId,
                                                          @WsParam( from = SESSION ) UserData loggedUser ) {
-        Optional<UserData> user = accounts.getUser( email );
-
-        if( user.isPresent() && email.equals( loggedUser.user.email ) ) {
-            return accounts.updateUser( email, u -> u.defaultAccounts.put( organizationId, accountId ) ).map( u -> u.view );
-        }
-        return Optional.empty();
+        return accounts.updateUser( email, u -> u.defaultAccounts.put( organizationId, accountId ) ).map( u -> u.view );
     }
 
     @WsMethod( method = GET, path = "/{organizationId}/add", description = "Add user to existing organization" )
@@ -385,7 +378,7 @@ public class OrganizationWS extends AbstractWS {
     private ValidationErrors validateEmailOrganizationAccess( String organizationId, String email ) {
         return accounts.getUser( email )
             .filter( u -> !u.belongsToOrganization( organizationId ) && u.getRole( SYSTEM ).isEmpty() )
-            .map( u -> error( FORBIDDEN, "User belongs to other organization  " + email + "::" + organizationId ) )
+            .map( u -> error( FORBIDDEN, "User " + email + " does not belong to organization " + organizationId ) )
             .orElse( empty() );
     }
 
@@ -438,6 +431,35 @@ public class OrganizationWS extends AbstractWS {
         }
         if( accounts.getUser( email ).isPresent() ) {
             return empty();
+        }
+        return empty();
+    }
+
+    protected ValidationErrors validateDefaultOrganization( String email, String organizationId ) {
+        Optional<UserData> user = accounts.getUser( email );
+        if( user.isEmpty() ) {
+            return error( NOT_FOUND, String.format( "User (%s) doesn't exist", email ) );
+        }
+        if( organizationId.equals( user.get().user.defaultOrganization ) ) {
+            return error( BAD_REQUEST, String.format( "Organization (%s) is already marked as default", organizationId ) );
+        }
+        return empty();
+    }
+
+    protected ValidationErrors validateDefaultAccount( String email, String organizationId, String accountId ) {
+        Optional<UserData> user = accounts.getUser( email );
+        if( user.isEmpty() ) {
+            return error( NOT_FOUND, String.format( "User (%s) doesn't exist", email ) );
+        }
+        final Optional<OrganizationData> organization = accounts.getOrganization( organizationId );
+        if( organization.isEmpty() ) {
+            return error( NOT_FOUND, String.format( "Organization (%s) does not exist", organizationId ) );
+        }
+        if( organization.get().accounts.get( accountId ).isEmpty() ) {
+            return error( NOT_FOUND, String.format( "Account (%s) does not exist in organization (%s)", accountId, organizationId ) );
+        }
+        if( accountId.equals( user.get().user.defaultAccounts.get( organizationId ) ) ) {
+            return error( BAD_REQUEST, String.format( "Account (%s) is already marked as default in organization (%s)", accountId, organizationId ) );
         }
         return empty();
     }

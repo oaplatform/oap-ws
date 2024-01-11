@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>oap-ws-file-ws</artifactId>
+    <artifactId>oap-ws-test</artifactId>
 
     <parent>
         <groupId>oap</groupId>
@@ -15,36 +15,21 @@
     <dependencies>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-stdlib</artifactId>
-            <version>${oap.deps.oap.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.java-json-tools</groupId>
-                    <artifactId>jackson-coreutils</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
             <artifactId>oap-ws</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-ws-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <artifactId>oap-stdlib-test</artifactId>
+            <version>${oap.deps.oap.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${oap.deps.lombok.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${oap.deps.guava.version}</version>
         </dependency>
     </dependencies>
 </project>
