@@ -440,6 +440,10 @@ public class OrganizationWS extends AbstractWS {
         if( user.isEmpty() ) {
             return error( NOT_FOUND, String.format( "User (%s) doesn't exist", email ) );
         }
+        final Optional<OrganizationData> organization = accounts.getOrganization( organizationId );
+        if( organization.isEmpty() ) {
+            return error( NOT_FOUND, String.format( "Organization (%s) does not exist", organizationId ) );
+        }
         if( organizationId.equals( user.get().user.defaultOrganization ) ) {
             return error( BAD_REQUEST, String.format( "Organization (%s) is already marked as default", organizationId ) );
         }
