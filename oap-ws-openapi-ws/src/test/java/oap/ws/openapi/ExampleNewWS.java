@@ -1,7 +1,6 @@
 
 package oap.ws.openapi;
 
-import aQute.lib.base64.Base64;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import oap.http.server.nio.HttpServerExchange;
 import oap.json.ext.Ext;
@@ -16,6 +15,7 @@ import org.joda.time.LocalDateTime;
 
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,12 +97,13 @@ class ExampleNewWS {
     public String bytesParam( @WsParam( from = BODY ) byte[] bytes ) {
         return new String( bytes );
     }
+
     public byte[] bytesResult( @WsParam( from = BODY ) String toBytes ) {
-        return Base64.decodeBase64( toBytes );
+        return Base64.getDecoder().decode( toBytes );
     }
 
     public List<byte[]> listOfBytesResult( @WsParam( from = BODY ) String toBytes ) {
-        return Lists.of( Base64.decodeBase64( toBytes ), new byte[] { 0x1, 0x2, 0x3 } );
+        return Lists.of( Base64.getDecoder().decode( toBytes ), new byte[] { 0x1, 0x2, 0x3 } );
     }
 
     public String stringParam( @WsParam( from = BODY ) String bytes ) {
@@ -112,9 +113,11 @@ class ExampleNewWS {
     public oap.util.Stream<String> getOapStreamOfStrings() {
         return Stream.of();
     }
+
     public java.util.stream.Stream<String> getVanillaStreamOfStrings( @WsParam( from = BODY ) List<String> str ) {
         return new ArrayList<>( str ).stream();
     }
+
     public CreativeUniversal getCreativeUniversal() {
         return new CreativeUniversal();
     }
