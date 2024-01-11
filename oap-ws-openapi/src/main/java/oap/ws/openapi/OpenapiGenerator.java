@@ -59,7 +59,7 @@ import oap.util.Strings;
 import oap.ws.WsParam;
 import oap.ws.api.Info.WebMethodInfo;
 import oap.ws.openapi.swagger.DeprecationAnnotationResolver;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 
 import java.lang.reflect.GenericArrayType;
