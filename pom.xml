@@ -72,12 +72,12 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>21.2.1</oap-ws.project.version>
+        <oap-ws.project.version>21.2.2</oap-ws.project.version>
 
-        <oap.deps.oap.version>21.2.0</oap.deps.oap.version>
+        <oap.deps.oap.version>21.2.1</oap.deps.oap.version>
 
-        <oap.deps.mail.version>21.1.1</oap.deps.mail.version>
-        <oap.deps.storage.version>21.1.0</oap.deps.storage.version>
+        <oap.deps.mail.version>21.1.2</oap.deps.mail.version>
+        <oap.deps.storage.version>21.1.1</oap.deps.storage.version>
 
         <oap.deps.guava.version>33.0.0-jre</oap.deps.guava.version>
         <oap.deps.slf4j.version>2.0.9</oap.deps.slf4j.version>
