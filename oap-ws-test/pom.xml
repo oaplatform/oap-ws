@@ -24,6 +24,11 @@
             <artifactId>oap-stdlib-test</artifactId>
             <version>${oap.deps.oap.version}</version>
         </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-application-test</artifactId>
+            <version>${oap.deps.oap.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>

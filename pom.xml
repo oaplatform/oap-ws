@@ -64,6 +64,13 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>oap</id>
+            <url>https://artifacts.oaplatform.org/repository/maven/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <distributionManagement>
         <repository>
             <id>oap</id>
@@ -72,9 +79,9 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>21.2.5</oap-ws.project.version>
+        <oap-ws.project.version>21.3.0</oap-ws.project.version>
 
-        <oap.deps.oap.version>21.2.1</oap.deps.oap.version>
+        <oap.deps.oap.version>21.5.0</oap.deps.oap.version>
 
         <oap.deps.mail.version>21.1.2</oap.deps.mail.version>
         <oap.deps.storage.version>21.1.2</oap.deps.storage.version>
