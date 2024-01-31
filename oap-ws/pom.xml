@@ -19,6 +19,11 @@
             <version>${oap.deps.oap.version}</version>
         </dependency>
         <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-application</artifactId>
+            <version>${oap.deps.oap.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
             <version>${oap.deps.httpcomponents.version}</version>
