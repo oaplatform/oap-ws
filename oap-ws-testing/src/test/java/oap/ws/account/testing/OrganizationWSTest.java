@@ -205,7 +205,7 @@ public class OrganizationWSTest extends Fixtures {
             .isPresent()
             .get()
             .satisfies( u -> {
-                assertThat( u.belongsToOrganization( DEFAULT_ORGANIZATION_ID ) ).isTrue();
+                assertThat( u.canAccessOrganization( DEFAULT_ORGANIZATION_ID ) ).isTrue();
                 assertString( u.getRole( DEFAULT_ORGANIZATION_ID ).orElse( null ) ).isEqualTo( ADMIN );
             } );
     }

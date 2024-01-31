@@ -44,7 +44,7 @@ public abstract class AbstractWS extends AbstractSecureWS {
 
     protected boolean canAccessOrganization( UserData loggedUser, String organizationId ) {
         return isSystem( loggedUser )
-            || loggedUser.belongsToOrganization( organizationId );
+            || loggedUser.canAccessOrganization( organizationId );
     }
 
     protected boolean isSystem( UserData loggedUser ) {

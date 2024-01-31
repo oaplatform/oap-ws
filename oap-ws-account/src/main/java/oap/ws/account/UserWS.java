@@ -49,7 +49,7 @@ public class UserWS extends AbstractWS {
 
     protected ValidationErrors validateSameOrganization( String organizationId, String email ) {
         return accounts.getUser( email )
-            .filter( user -> user.belongsToOrganization( organizationId ) )
+            .filter( user -> user.canAccessOrganization( organizationId ) )
             .map( user -> ValidationErrors.empty() )
             .orElseGet( () -> ValidationErrors.error( HttpURLConnection.HTTP_NOT_FOUND, "not found " + email ) );
     }
