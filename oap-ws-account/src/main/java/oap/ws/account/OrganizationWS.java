@@ -377,7 +377,7 @@ public class OrganizationWS extends AbstractWS {
 
     private ValidationErrors validateEmailOrganizationAccess( String organizationId, String email ) {
         return accounts.getUser( email )
-            .filter( u -> !u.belongsToOrganization( organizationId ) && u.getRole( SYSTEM ).isEmpty() )
+            .filter( u -> !u.canAccessOrganization( organizationId ) && u.getRole( SYSTEM ).isEmpty() )
             .map( u -> error( FORBIDDEN, "User " + email + " does not belong to organization " + organizationId ) )
             .orElse( empty() );
     }

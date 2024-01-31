@@ -155,8 +155,12 @@ public class UserData implements oap.ws.sso.User, Serializable {
         return this;
     }
 
-    public boolean belongsToOrganization( String organizationId ) {
+    public boolean canAccessOrganization( String organizationId ) {
         return roles.containsKey( organizationId ) || roles.containsKey( SYSTEM );
+    }
+
+    public boolean belongsToOrganization( String organizationId ) {
+        return roles.containsKey( organizationId );
     }
 
     public UserData encryptPassword( String password ) {
