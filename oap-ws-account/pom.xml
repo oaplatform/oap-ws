@@ -73,7 +73,7 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-mail</artifactId>
-            <version>${oap.deps.mail.version}</version>
+            <version>${oap.deps.oap.version}</version>
         </dependency>
         <dependency>
             <groupId>oap</groupId>

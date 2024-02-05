@@ -36,7 +36,6 @@ import oap.ws.Response;
 import oap.ws.WebServices;
 import oap.ws.WsMethod;
 import oap.ws.openapi.OpenapiIgnore;
-import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 
 import java.lang.ref.Reference;
@@ -217,7 +216,6 @@ public class ApiWS {
             if( !processed.contains( type ) && !types.contains( type ) ) types.add( type );
         }
 
-        @NotNull
         public Iterator<Reflection> iterator() {
             return new Iterator<>() {
                 @Override

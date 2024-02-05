@@ -27,7 +27,6 @@ package oap.ws.openapi;
 import oap.application.module.Module;
 import oap.application.module.Service;
 import oap.ws.WsConfig;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -36,12 +35,10 @@ import java.util.List;
 public interface WebServiceVisitor {
     void visit( WsConfig wsService, Class<?> aClass, String basePath );
 
-    @NotNull
     default Class<?> loadClass( Service service ) throws ClassNotFoundException {
         return Class.forName( service.implementation );
     }
 
-    @NotNull
     default List<URL> getWebServiceUrls() {
         return new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath() );
     }

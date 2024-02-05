@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.zip.GZIPOutputStream;
 
-import static oap.cli.Option.__;
 import static oap.http.Http.ContentType.APPLICATION_JSON;
 import static oap.http.Http.StatusCode.OK;
 import static oap.http.server.nio.HttpServerExchange.HttpMethod.GET;
@@ -52,6 +51,7 @@ import static oap.http.testng.HttpAsserts.assertGet;
 import static oap.http.testng.HttpAsserts.assertPost;
 import static oap.http.testng.HttpAsserts.httpUrl;
 import static oap.io.Resources.urlOrThrow;
+import static oap.util.Pair.__;
 import static oap.ws.WsParam.From.BODY;
 import static oap.ws.WsParam.From.COOKIE;
 import static oap.ws.WsParam.From.HEADER;
