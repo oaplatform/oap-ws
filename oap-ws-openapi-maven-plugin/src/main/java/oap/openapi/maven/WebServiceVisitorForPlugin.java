@@ -32,7 +32,6 @@ import oap.ws.openapi.WebServiceVisitor;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.UncheckedIOException;
@@ -52,21 +51,8 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
     private final LinkedHashSet<String> moduleConfigurations;
     private final List<String> classpath;
     private final List<String> excludeModules;
-
-    String getOutputPath() {
-        return outputPath;
-    }
-
-    LinkedHashSet<String> getModuleConfigurations() {
-        return moduleConfigurations;
-    }
-
-    LinkedHashSet<String> getDescription() {
-        return description;
-    }
-
-    private String outputPath;
     private final LinkedHashSet<String> description = new LinkedHashSet<>();
+    private String outputPath;
 
     public WebServiceVisitorForPlugin( PluginDescriptor pluginDescriptor,
                                        OpenapiGenerator openapiGenerator,
@@ -83,6 +69,18 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
         this.excludeModules = excludeModules;
     }
 
+    String getOutputPath() {
+        return outputPath;
+    }
+
+    LinkedHashSet<String> getModuleConfigurations() {
+        return moduleConfigurations;
+    }
+
+    LinkedHashSet<String> getDescription() {
+        return description;
+    }
+
     @Override
     public void visit( WsConfig wsService, Class<?> clazz, String basePath ) {
         OpenapiGenerator.Result result = openapiGenerator.processWebservice( clazz, wsService.path.stream().findFirst().orElse( "" ) );
@@ -90,7 +88,6 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
         description.add( clazz.getCanonicalName() );
     }
 
-    @NotNull
     @Override
     public Class<?> loadClass( Service service ) throws ClassNotFoundException {
         if( pluginDescriptor == null ) throw new ClassNotFoundException( "PluginDescriptor is null" );
@@ -98,7 +95,6 @@ public class WebServiceVisitorForPlugin implements WebServiceVisitor {
         return realm.loadClass( service.implementation );
     }
 
-    @NotNull
     @Override
     public List<URL> getWebServiceUrls() {
         List<URL> urls = new ArrayList<>( Module.CONFIGURATION.urlsFromClassPath()

@@ -46,8 +46,8 @@ import oap.json.ext.Ext;
 import oap.json.ext.ExtDeserializer;
 import oap.util.Pair;
 import oap.util.Strings;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
