@@ -79,11 +79,10 @@
     </distributionManagement>
 
     <properties>
-        <oap-ws.project.version>21.3.0</oap-ws.project.version>
+        <oap-ws.project.version>21.4.0</oap-ws.project.version>
 
-        <oap.deps.oap.version>21.5.0</oap.deps.oap.version>
+        <oap.deps.oap.version>21.6.2.OAP-215-Move-oap-mail-into-the-oap-project.135</oap.deps.oap.version>
 
-        <oap.deps.mail.version>21.1.2</oap.deps.mail.version>
         <oap.deps.storage.version>21.1.2</oap.deps.storage.version>
 
         <oap.deps.guava.version>33.0.0-jre</oap.deps.guava.version>

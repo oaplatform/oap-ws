@@ -76,7 +76,7 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-mail-test</artifactId>
-            <version>${oap.deps.mail.version}</version>
+            <version>${oap.deps.oap.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
