@@ -70,7 +70,7 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-storage-mongo-test</artifactId>
-            <version>${oap.deps.storage.version}</version>
+            <version>${oap.deps.oap.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
