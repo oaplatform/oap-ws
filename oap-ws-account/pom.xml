@@ -78,12 +78,12 @@
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-storage</artifactId>
-            <version>${oap.deps.storage.version}</version>
+            <version>${oap.deps.oap.version}</version>
         </dependency>
         <dependency>
             <groupId>oap</groupId>
             <artifactId>oap-storage-mongo</artifactId>
-            <version>${oap.deps.storage.version}</version>
+            <version>${oap.deps.oap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
